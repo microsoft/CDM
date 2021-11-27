@@ -30,16 +30,20 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
 
   CdmAttribute copyAtt(final ResolveOptions resOpt, final CdmAttribute copy) {
     copy.setPurpose(
-        this.getPurpose() != null ? (CdmPurposeReference) this.getPurpose().copy(resOpt) : null);
+            this.getPurpose() != null ?
+                    (CdmPurposeReference) this.getPurpose().copy(resOpt) : null);
     copy.setResolutionGuidance(
-        this.getResolutionGuidance() != null ? (CdmAttributeResolutionGuidance) this
-            .getResolutionGuidance().copy(resOpt) : null);
+        this.getResolutionGuidance() != null ?
+                (CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt) : null);
 
     copy.getAppliedTraits().clear();
-    for (final CdmTraitReference appliedTrait : this.getAppliedTraits()) {
-      copy.getAppliedTraits().add(appliedTrait);
+
+    for (final CdmTraitReferenceBase trait : this.getAppliedTraits()) {
+      copy.getAppliedTraits().add((CdmTraitReferenceBase) trait.copy(resOpt));
     }
+
     this.copyDef(resOpt, copy);
+
     return copy;
   }
 
@@ -60,10 +64,18 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     this.purpose = value;
   }
 
+  /**
+   * @deprecated
+   * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+   */
   public CdmAttributeResolutionGuidance getResolutionGuidance() {
     return this.resolutionGuidance;
   }
 
+  /**
+   * @deprecated
+   * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+   */
   public void setResolutionGuidance(final CdmAttributeResolutionGuidance value) {
     this.resolutionGuidance = value;
   }
@@ -120,11 +132,8 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     return this.visitDef(pathFrom, preChildren, postChildren);
   }
 
-  ResolvedTraitSet addResolvedTraitsApplied(
-      final ResolvedTraitSetBuilder rtsb,
-      final ResolveOptions resOpt) {
-    this.getAppliedTraits()
-        .forEach(appliedTraits -> rtsb.mergeTraits(appliedTraits.fetchResolvedTraits(resOpt)));
+  ResolvedTraitSet addResolvedTraitsApplied(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
+    getAppliedTraits().forEach(item -> rtsb.mergeTraits(item.fetchResolvedTraits(resOpt)));
     // dynamic applied on use
     return rtsb.getResolvedTraitSet();
   }

@@ -138,7 +138,6 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
     // Set the document to dirty so it will get saved in the new folder location if saved.
     makeDocumentDirty();
     this.getOwner().getCorpus().addDocumentObjects(this.getOwner(), document);
-    this.getOwner().getDocumentLookup().put(document.getName(), document);
   }
 
   /**

@@ -30,12 +30,12 @@ class ProjectionExpansionTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionExpansion')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionExpansionTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):
         """Test for creating a projection with an ArrayExpansion operation on an entity attribute using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -92,7 +92,7 @@ class ProjectionExpansionTest(unittest.TestCase):
     @async_test
     async def test_entity_proj_using_object_model(self):
         """Test for creating a projection with an ArrayExpansion operation on an entity definition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -147,7 +147,7 @@ class ProjectionExpansionTest(unittest.TestCase):
     @async_test
     async def test_conditional_proj_using_object_model(self):
         """Test for creating a projection with an ArrayExpansion operation and a condition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_conditional_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -224,7 +224,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """Expansion on an entity attribute"""
         test_name = 'test_expansion'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -247,11 +247,11 @@ class ProjectionExpansionTest(unittest.TestCase):
         self.assertEqual('address3', resolved_entity.attributes[9].name)
 
     @async_test
-    async def test_proj(self):
+    async def test_entity_attribute(self):
         """ArrayExpansion on an entity attribute"""
-        test_name = 'test_proj'
+        test_name = 'test_entity_attribute'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -277,7 +277,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """ArrayExpansion on an entity attribute without a RenameAttributes"""
         test_name = 'test_proj_no_rename'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -301,7 +301,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """
         test_name = 'test_extends_entity'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -320,7 +320,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """ArrayExpansion on an entity definition"""
         test_name = 'test_extends_entity_proj'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -346,7 +346,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """Nested projections with ArrayExpansion"""
         test_name = 'test_nested_proj'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -377,37 +377,11 @@ class ProjectionExpansionTest(unittest.TestCase):
         self.assertEqual('address_3_2', resolved_entity.attributes[17].name)
 
     @async_test
-    async def test_multiple_ops(self):
-        """Multiple ArrayExpansion operations in a single projection"""
-        test_name = 'test_multiple_ops'
-        entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
-
-        for res_opt in self.res_opts_combinations:
-            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
-
-        entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
-
-        # Original set of attributes: ["name", "age", "address"]
-        # Expand 1...2 and 1...3, renameFormat = {m}{o}
-        self.assertEqual(9, len(resolved_entity.attributes))
-        self.assertEqual('name1', resolved_entity.attributes[0].name)
-        self.assertEqual('age1', resolved_entity.attributes[1].name)
-        self.assertEqual('address1', resolved_entity.attributes[2].name)
-        self.assertEqual('name2', resolved_entity.attributes[3].name)
-        self.assertEqual('age2', resolved_entity.attributes[4].name)
-        self.assertEqual('address2', resolved_entity.attributes[5].name)
-        self.assertEqual('name3', resolved_entity.attributes[6].name)
-        self.assertEqual('age3', resolved_entity.attributes[7].name)
-        self.assertEqual('address3', resolved_entity.attributes[8].name)
-
-    @async_test
     async def test_negative_start_ordinal(self):
         """Start and end ordinals of -2...2"""
         test_name = 'test_negative_start_ordinal'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -434,7 +408,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """Start ordinal greater than end ordinal"""
         test_name = 'test_start_GT_end_ordinal'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         # A warning should be logged when startOrdinal > endOrdinal
         def callback(level: 'CdmStatusLevel', message: str):
@@ -461,7 +435,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """Same start and end ordinals"""
         test_name = 'test_same_start_end_ordinals'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -481,7 +455,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """Combine ArrayExpansion, RenameAttributes, and IncludeAttributes in a single projection"""
         test_name = 'test_combine_ops'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -493,16 +467,16 @@ class ProjectionExpansionTest(unittest.TestCase):
         # Expand 1...3, renameFormat = {m}{o}, include [name, age1]
         self.assertEqual(4, len(resolved_entity.attributes))
         self.assertEqual('name1', resolved_entity.attributes[0].name)
-        self.assertEqual('age1', resolved_entity.attributes[1].name)
-        self.assertEqual('name2', resolved_entity.attributes[2].name)
-        self.assertEqual('name3', resolved_entity.attributes[3].name)
+        self.assertEqual('name2', resolved_entity.attributes[1].name)
+        self.assertEqual('name3', resolved_entity.attributes[2].name)
+        self.assertEqual('age1', resolved_entity.attributes[3].name)
 
     @async_test
     async def test_polymorphic(self):
         """Expansion on a polymorphic source"""
         test_name = 'test_polymorphic'
         entity_name = 'BusinessPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -530,9 +504,12 @@ class ProjectionExpansionTest(unittest.TestCase):
         """ArrayExpansion on a polymorphic source"""
         test_name = 'test_polymorphic_proj'
         entity_name = 'BusinessPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
+            if 'structured' in res_opt:
+                # Array expansion is not supported on an attribute group yet.
+                continue
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
@@ -562,7 +539,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """
         test_name = 'test_array_source'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -590,7 +567,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """ArrayExpansion on an array source"""
         test_name = 'test_array_source_proj'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -621,7 +598,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """Expansion on an entity with an attribute group"""
         test_name = 'test_group'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -648,7 +625,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """ArrayExpansion on an entity with an attribute group"""
         test_name = 'test_group_proj'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -674,7 +651,7 @@ class ProjectionExpansionTest(unittest.TestCase):
         """ArrayExpansion with a condition"""
         test_name = 'test_conditional_proj'
         entity_name = 'ThreeMusketeers'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)

@@ -3,7 +3,7 @@
 
 from typing import TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.persistence.cdmfolder.types import OperationRenameAttributes
 from cdm.utilities.logging import logger
 
@@ -33,7 +33,7 @@ class OperationRenameAttributesPersistence:
         elif isinstance(data.applyTo, list):
             rename_attributes_op.apply_to = data.applyTo
         elif data.applyTo is not None:
-            logger.error(_TAG, ctx, 'Unsupported: applyTo property type should be string or List<string>.')
+            logger.error(ctx, _TAG, OperationRenameAttributesPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_UNSUPPORTED_PROP, 'applyTo', 'string or list of strings')
 
         return rename_attributes_op
 

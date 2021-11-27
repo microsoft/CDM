@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,12 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// The CDM definition that contains a collection of CdmAttributeItem objects.
     /// </summary>
     public class CdmAttributeGroupDefinition : CdmObjectDefinitionBase, CdmReferencesEntities
     {
+        private static readonly string Tag = nameof(CdmAttributeGroupDefinition);
         /// <summary>
         /// Constructs a CdmAttributeGroupDefinition.
         /// </summary>
@@ -77,7 +79,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmAttributeGroupDefinition;
-                copy.Ctx = this.Ctx;
                 copy.AttributeGroupName = this.AttributeGroupName;
                 copy.Members.Clear();
             }
@@ -85,7 +86,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.AttributeContext = (CdmAttributeContextReference)this.AttributeContext?.Copy(resOpt);
 
             foreach (var newMember in this.Members)
-                copy.Members.Add(newMember);
+            {
+                copy.Members.Add(newMember.Copy(resOpt) as CdmAttributeItem);
+            }
             this.CopyDef(resOpt, copy);
             return copy;
         }
@@ -95,7 +98,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.AttributeGroupName))
             {
-                Logger.Error(nameof(CdmAttributeGroupDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "AttributeGroupName" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "AttributeGroupName" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             return true;
@@ -107,6 +111,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return attributeDef;
         }
 
+        [Obsolete("For internal use only.")]
         public ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
@@ -128,16 +133,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + this.AttributeGroupName;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
             //trackVisits(path);
 
             if (preChildren?.Invoke(this, path) == true)

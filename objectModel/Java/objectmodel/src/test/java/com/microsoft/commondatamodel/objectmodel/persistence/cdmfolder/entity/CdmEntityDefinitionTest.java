@@ -4,19 +4,13 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.entity;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReferenceBase;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
-import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.AttributeGroupPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeGroup;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
@@ -25,9 +19,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LogEvent;
-import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,7 +45,7 @@ public class CdmEntityDefinitionTest {
 
     final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
 
-    final StorageAdapter localAdapter;
+    final StorageAdapterBase localAdapter;
     localAdapter = new LocalAdapter(testInputPath);
     corpus.getStorage().mount(LOCAL, localAdapter);
     corpus.getStorage().setDefaultNamespace(LOCAL);
@@ -64,7 +55,7 @@ public class CdmEntityDefinitionTest {
             "local:/entA.cdm.json/Entity A"
         ).join();
     final CdmTypeAttributeDefinition att = (CdmTypeAttributeDefinition) obj.getAttributes().get(0);
-    List<CdmTraitReference> result = att.getAppliedTraits()
+    List<CdmTraitReferenceBase> result = att.getAppliedTraits()
         .getAllItems()
         .parallelStream()
         .filter(x -> "is.constrained".equals(x.getNamedReference()))
@@ -92,7 +83,7 @@ public class CdmEntityDefinitionTest {
    */
   @Test
   public void testFromAndToDataWithElevatedTraits() throws InterruptedException, ExecutionException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFromAndToDataWithElevatedTraits", null);
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFromAndToDataWithElevatedTraits");
     cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
     cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
       Assert.assertFalse(message.contains("unable to resolve an entity"));
@@ -109,7 +100,7 @@ public class CdmEntityDefinitionTest {
    */
   @Test
   public void testLoadingEntityWithShallowValidation() throws InterruptedException {
-    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation");
     cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
     cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
       // When messages regarding references not being resolved or loaded are logged, check that they are warnings and not errors.
@@ -129,7 +120,7 @@ public class CdmEntityDefinitionTest {
    */
   @Test
   public void testLoadingEntityWithoutShallowValidation() throws InterruptedException, ExecutionException {
-    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation");
     cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
     cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
       // When messages regarding references not being resolved or loaded are logged, check that they are errors.

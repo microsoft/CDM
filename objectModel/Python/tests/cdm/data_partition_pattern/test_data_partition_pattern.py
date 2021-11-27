@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+from cdm.storage.local import LocalAdapter
 from datetime import datetime, timezone
 import os
 import unittest
@@ -23,7 +24,7 @@ class _data_partition_patternTest(unittest.TestCase):
         test_name = 'test_refresh_data_partition_patterns'
         cdm_corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
         cdm_manifest = await cdm_corpus.fetch_object_async('local:/patternManifest.manifest.cdm.json')
-        partition_entity = cdm_manifest.entities[0]
+        partition_entity = cdm_manifest.entities[1]
         self.assertEqual(1, len(partition_entity.data_partitions))
         time_before_load = datetime.now(timezone.utc)
         await cdm_manifest.file_status_check_async()
@@ -82,12 +83,33 @@ class _data_partition_patternTest(unittest.TestCase):
         content = TestHelper.get_input_file_content(self.test_subpath, "test_pattern_with_non_existing_folder", "entities.manifest.cdm.json")
         manifest_content = ManifestContent()
         manifest_content.decode(content)
-
         cdmManifest = ManifestPersistence.from_object(CdmCorpusContext(corpus, None), "entities", "local", "/", manifest_content)
+
+        error_logged = 0
+        def callback(level: CdmStatusLevel, message: str):
+            if 'Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception:' in message:
+                nonlocal error_logged
+                error_logged += 1
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
         await cdmManifest.file_status_check_async()
+        self.assertEqual(1, error_logged)
         self.assertEqual(len(cdmManifest.entities[0].data_partitions), 0)
         # make sure the last check time is still being set
         self.assertIsNotNone(cdmManifest.entities[0].data_partition_patterns[0].last_file_status_check_time)
+
+    @async_test
+    async def test_pattern_with_different_namespace(self):
+        test_name = 'test_pattern_with_different_namespace'
+        cdm_corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
+        local_adapter = cdm_corpus.storage.fetch_adapter('local')
+        local_path = local_adapter._full_root
+        cdm_corpus.storage.mount('other', LocalAdapter(os.path.join(local_path, 'other')))
+        cdm_manifest = await cdm_corpus.fetch_object_async('local:/patternManifest.manifest.cdm.json')
+
+        await cdm_manifest.file_status_check_async()
+        
+        self.assertEqual(1, len(cdm_manifest.entities[0].data_partitions))
 
     @async_test
     async def test_variations_in_root_location(self):
@@ -118,7 +140,7 @@ class _data_partition_patternTest(unittest.TestCase):
 
         def callback(level, message):
             nonlocal patterns_with_glob_and_regex
-            if message.endswith('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | file_status_check_async'):
+            if message.find('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | file_status_check_async') != -1:
                 patterns_with_glob_and_regex = patterns_with_glob_and_regex + 1
         corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
 

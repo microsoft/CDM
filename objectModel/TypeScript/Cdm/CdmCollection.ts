@@ -141,7 +141,6 @@ export class CdmCollection<T extends CdmObject> {
 
     protected propagateInDocument(cdmObject: CdmObject, document: CdmDocumentDefinition): void {
         if (!this.ctx.corpus.isCurrentlyResolving) {
-            this.ctx.corpus.blockDeclaredPathChanges = true;
             cdmObject.visit(
                 '',
                 (iObject: CdmObject, path: string) => {
@@ -156,7 +155,6 @@ export class CdmCollection<T extends CdmObject> {
                     return false;
                 },
                 undefined);
-            this.ctx.corpus.blockDeclaredPathChanges = false;
         }
     }
 }

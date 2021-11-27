@@ -3,9 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 
 public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements CdmObjectDefinition {
@@ -43,7 +43,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
 
     final String name;
 
-    if (!Strings.isNullOrEmpty(this.getDeclaredPath())) {
+    if (!StringUtils.isNullOrEmpty(this.getDeclaredPath())) {
       name = this.getDeclaredPath();
     } else {
       name = this.getName();
@@ -82,11 +82,12 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
    */
   @Deprecated
   public void copyDef(final ResolveOptions resOpt, final CdmObjectDefinitionBase copy) {
+    copy.setCtx(this.getCtx());
     copy.setDeclaredPath(this.getDeclaredPath());
     copy.setExplanation(this.getExplanation());
     copy.getExhibitsTraits().clear();
 
-    for (final CdmTraitReference trait : this.getExhibitsTraits()) {
+    for (final CdmTraitReferenceBase trait : this.getExhibitsTraits()) {
       copy.getExhibitsTraits().add(trait);
     }
     copy.setInDocument(this.getInDocument()); // if gets put into a new document, this will change. until, use the source
@@ -121,7 +122,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
 
     // Merge in dynamic that are exhibited by this class.
     if (null != this.getExhibitsTraits()) {
-      for (final CdmTraitReference exhibitsTrait : this.getExhibitsTraits()) {
+      for (final CdmTraitReferenceBase exhibitsTrait : this.getExhibitsTraits()) {
         rtsb.mergeTraits(exhibitsTrait.fetchResolvedTraits(resOpt));
       }
     }
@@ -132,12 +133,23 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
             && exhibitsTraits.visitList(pathFrom + "/exhibitsTraits/", preChildren, postChildren);
   }
 
+  /**
+   * Given an initial path, returns this object's declared path
+   * @param pathFrom
+   * @return
+   * @deprecated
+   */
+  @Deprecated
+  public String fetchDeclaredPath(String pathFrom) {
+    return pathFrom + this.getName();
+  }
+
   // Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
   @Override
   @Deprecated
   public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
     CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase)this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
-    cdmObjectRef.setExplicitReference((CdmObjectDefinition) this.copy());
+    cdmObjectRef.portableReference = this;
     cdmObjectRef.setInDocument(this.getInDocument()); // where it started life
     cdmObjectRef.setOwner(this.getOwner());
 

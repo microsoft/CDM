@@ -4,7 +4,7 @@
 from typing import List, TYPE_CHECKING
 import dateutil.parser
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import logger, TraitToPropertyMap
 
 from . import extension_helper, utils
@@ -28,10 +28,6 @@ class LocalEntityDeclarationPersistence:
 
         local_extension_trait_def_list = []  # type: List[CdmTraitDefinition]
         entity_doc = await DocumentPersistence.from_data(ctx, data, extension_trait_def_list, local_extension_trait_def_list)
-
-        if not entity_doc:
-            logger.error(_TAG, ctx, 'There was an error while trying to fetch the entity doc from local entity declaration persistence.')
-            return None
 
         document_folder.documents.append(entity_doc)
 
@@ -64,7 +60,7 @@ class LocalEntityDeclarationPersistence:
             if data_partition is not None:
                 local_entity_dec.data_partitions.append(data_partition)
             else:
-                logger.error(_TAG, ctx, 'There was an error while trying to convert model.json partition to cdm local data partition.')
+                logger.error(ctx, _TAG, "from_data", None, CdmLogCode.ERR_PERSIST_DOC_FETCH_ERROR)
                 return None
 
         import_docs = await extension_helper.standard_import_detection(ctx, extension_trait_def_list, local_extension_trait_def_list)  # type: List[CdmImport]
@@ -103,7 +99,7 @@ class LocalEntityDeclarationPersistence:
                 if partition:
                     entity.partitions.append(partiton)
                 else:
-                    logger.error(_TAG, instance.ctx, 'There was an error while trying to convert cdm data partition to model.json partition.')
+                    logger.error(ctx, _TAG, "to_data", instance.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_PARTITION_CONVERSION_ERROR)
                     return None
 
         return entity

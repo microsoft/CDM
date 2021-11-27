@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.*;
@@ -15,28 +16,36 @@ import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle ExcludeAttributes operations
  */
 public class CdmOperationExcludeAttributes extends CdmOperationBase {
-    private String TAG = CdmOperationExcludeAttributes.class.getSimpleName();
+    private static final String TAG = CdmOperationExcludeAttributes.class.getSimpleName();
     private List<String> excludeAttributes;
 
     public CdmOperationExcludeAttributes(final CdmCorpusContext ctx) {
         super(ctx);
         this.setObjectType(CdmObjectType.OperationExcludeAttributesDef);
         this.setType(CdmOperationType.ExcludeAttributes);
-        this.excludeAttributes = new ArrayList<>();
     }
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationExcludeAttributes copy = new CdmOperationExcludeAttributes(this.getCtx());
-        copy.excludeAttributes = new ArrayList<String>(this.excludeAttributes);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationExcludeAttributes copy = host == null ? new CdmOperationExcludeAttributes(this.getCtx()) : (CdmOperationExcludeAttributes)host;
+
+        if (this.excludeAttributes != null) {
+            copy.setExcludeAttributes(new ArrayList<String>(this.excludeAttributes));
+        }
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -81,7 +90,7 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
             missingFields.add("excludeAttributes");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -89,14 +98,7 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationExcludeAttributes";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -159,7 +161,7 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
                 attrCtxTreeBuilder.createAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(),
-                        CdmAttributeContextType.AttributeDefinition,
+                        CdmAttributeContextType.AttributeExcluded,
                         currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the included attribute
                         null);
             }

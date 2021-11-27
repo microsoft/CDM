@@ -7,7 +7,7 @@ import unittest
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusDefinition, CdmFolderDefinition, CdmEntityDefinition
 from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
-from tests.common import async_test, TestHelper
+from tests.common import async_test
 from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
@@ -27,12 +27,12 @@ class ProjectionRenameTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionRename')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionRenameTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):
         """Test for creating a projection with an RenameAttributes operation on an entity attribute using the object model  """
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')  # type: CdmCorpusDefinition
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -70,7 +70,7 @@ class ProjectionRenameTest(unittest.TestCase):
     @async_test
     async def test_entity_proj_using_object_model(self):
         """Test for creating a projection with an RenameAttributes operation on an entity definition using the object model.  """
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestEntityProjUsingObjectModel')  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'TestEntityProjUsingObjectModel')  # type: CdmCorpusDefinition
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -106,7 +106,7 @@ class ProjectionRenameTest(unittest.TestCase):
     @async_test
     async def test_nested_proj_using_object_model(self):
         """Test for creating nested projections with RenameAttributes operations using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestNestedProjUsingObjectModel')  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'TestNestedProjUsingObjectModel')  # type: CdmCorpusDefinition
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -158,7 +158,7 @@ class ProjectionRenameTest(unittest.TestCase):
     @async_test
     async def test_repeated_pattern_proj(self):
         """Test correctness when renameFormat has repeated pattern"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')  # type: CdmCorpusDefinition
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -196,7 +196,7 @@ class ProjectionRenameTest(unittest.TestCase):
     @async_test
     async def test_conditional_proj_using_object_model(self):
         """Test for creating a projection with an RenameAttributes operation and a condition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestConditionalProjUsingObjectModel')  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'TestConditionalProjUsingObjectModel')  # type: CdmCorpusDefinition
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity.
@@ -254,7 +254,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameAttributes with a plain string as rename format."""
         test_name = 'test_rename_format_as_string_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -276,7 +276,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameFormat on an entity attribute."""
         test_name = 'test_rename_format'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -298,7 +298,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameFormat on an entity attribute."""
         test_name = 'test_rename_format_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -320,7 +320,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """A nested RenameAttributes operation in a single projection."""
         test_name = 'test_single_nested_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -342,7 +342,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """Nested projections with RenameAttributes"""
         test_name = 'test_nested_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -351,20 +351,20 @@ class ProjectionRenameTest(unittest.TestCase):
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])  # type: CdmEntityDefinition
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        # Rename all attributes attributes with format {A}.{o}.{M}, then rename 'age' with format '{a}-{o}-{m}'
+        # Rename all attributes attributes with format {A}.{o}.{M}, then rename 'age' with format '{a}-{o}-{m}', finally rename 'email' with format '{a}-{o}-{mo}'
         self.assertEqual(5, len(resolved_entity.attributes))
         self.assertEqual('PersonInfo..Name', resolved_entity.attributes[0].name)
         self.assertEqual('PersonInfo--PersonInfo..Age', resolved_entity.attributes[1].name)
         self.assertEqual('PersonInfo..Address', resolved_entity.attributes[2].name)
         self.assertEqual('PersonInfo..PhoneNumber', resolved_entity.attributes[3].name)
-        self.assertEqual('PersonInfo..Email', resolved_entity.attributes[4].name)
+        self.assertEqual('PersonInfo--email', resolved_entity.attributes[4].name)
 
     @async_test
     async def test_multiple_rename(self):
         """Multiple RenameAttributes in a single projection."""
         test_name = 'test_multiple_rename'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -388,7 +388,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameFormat on an entity definition."""
         test_name = 'test_extends_entity_proj'
         entity_name = 'Child'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -411,7 +411,7 @@ class ProjectionRenameTest(unittest.TestCase):
         NOTE: this is not supported with resolution guidance."""
         test_name = 'test_extends_entity'
         entity_name = 'Child'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -433,9 +433,12 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameAttributes on a polymorphic source"""
         test_name = 'test_polymorphic_proj'
         entity_name = 'BusinessPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
+            if 'structured' in res_opt:
+                # Rename attributes is not supported on an attribute group yet.
+                continue
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
@@ -457,7 +460,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameAttributes on a polymorphic source"""
         test_name = 'test_polymorphic_apply_to_proj'
         entity_name = 'BusinessPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -481,7 +484,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """SelectsSomeAvoidNames on a polymorphic source"""
         test_name = 'test_polymorphic'
         entity_name = 'BusinessPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -505,7 +508,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameAttributes on an array source"""
         test_name = 'test_array_source_proj'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -539,7 +542,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameFormat on an array source"""
         test_name = 'test_array_source'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -574,7 +577,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameFormat on an array source using apply to."""
         test_name = 'test_array_source_rename_apply_to_proj'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -607,7 +610,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameAttributes with a condition."""
         test_name = 'test_conditional_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -640,7 +643,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameAttributes with an empty apply to list."""
         test_name = 'test_empty_apply_to'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -662,7 +665,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameFormat on an entity with an attribute group."""
         test_name = 'test_group_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -684,7 +687,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """RenameFormat on an entity with an attribute group."""
         test_name = 'test_group_rename'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -707,7 +710,7 @@ class ProjectionRenameTest(unittest.TestCase):
 
         test_name = 'test_rename_and_exclude_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -731,7 +734,7 @@ class ProjectionRenameTest(unittest.TestCase):
 
         test_name = 'test_EA_name_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -764,7 +767,7 @@ class ProjectionRenameTest(unittest.TestCase):
         """Test resolving a type attribute with a rename attributes operation"""
         test_name = 'test_type_attribute_proj'
         entity_name = 'Person'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -774,9 +777,11 @@ class ProjectionRenameTest(unittest.TestCase):
 
         # Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         # Rename with format "n{a}e{o}w{M}" attributes ["address"]
-        self.assertEqual(5, len(resolved_entity.attributes))
+        # Add new attribute realNewAddress with rename format "n{a}e{o}w{M}"
+        self.assertEqual(6, len(resolved_entity.attributes))
         self.assertEqual('name', resolved_entity.attributes[0].name)
         self.assertEqual('age', resolved_entity.attributes[1].name)
-        self.assertEqual('newAddress', resolved_entity.attributes[2].name)
-        self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
-        self.assertEqual('email', resolved_entity.attributes[4].name)
+        self.assertEqual('naddressewAddress', resolved_entity.attributes[2].name)
+        self.assertEqual('naddressewRealNewAddress', resolved_entity.attributes[3].name)
+        self.assertEqual('phoneNumber', resolved_entity.attributes[4].name)
+        self.assertEqual('email', resolved_entity.attributes[5].name)

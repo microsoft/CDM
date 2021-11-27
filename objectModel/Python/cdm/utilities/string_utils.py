@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from enum import Enum
+import re
 
 
 def rchop(the_string, ending):
@@ -39,20 +40,48 @@ class StringUtils:
         return s is None or s.strip() == ''
 
     @staticmethod
-    def _replace(source: str, pattern: str, value: str) -> str:
-        if len(pattern) > 1:
-            # This exception is just for safety since Python doesn't support char type.
-            raise Exception('Pattern should have size 1.')
+    def _capitalize_value(s: str) -> str:
+        """
+        Capitalizes first letter of the given string.
+        """
+        if StringUtils.is_null_or_white_space(s):
+            return ''
+        return s[0].upper() + s[1:]
 
+    @staticmethod
+    def _replace(source: str, pattern: str, value: str) -> str:
         if value is None:
             value = ''
 
         lower_case_pattern = pattern.lower()
         upper_case_pattern = pattern.upper()
-        upper_case_value = ''
-        
-        if value:
-            upper_case_value = value[0].upper() + value[1:]
+        upper_case_value = StringUtils._capitalize_value(value) if not StringUtils.is_null_or_white_space(value) else ''
 
         result = source.replace('{{{}}}'.format(lower_case_pattern), value)
         return result.replace('{{{}}}'.format(upper_case_pattern), upper_case_value)
+
+    @staticmethod
+    def snake_case_to_pascal_case(snake_str: str) -> str:
+        if StringUtils.is_null_or_white_space(snake_str):
+            return snake_str
+
+        components = snake_str.split('_')
+
+        return ''.join(x.title() for x in components)
+
+    @staticmethod
+    def pascal_case_to_snake_case(pascal_str: str) -> str:
+        if StringUtils.is_null_or_white_space(pascal_str):
+            return pascal_str
+
+        pattern = re.compile(r'(?<!^)(?=[A-Z])')
+
+        return pattern.sub('_', pascal_str).upper()
+
+    @staticmethod
+    def trim_start(inputstring, word_to_remove):
+        return inputstring[len(word_to_remove):] if inputstring.startswith(word_to_remove) else inputstring
+
+    @staticmethod
+    def trim_end(inputstring, word_to_remove):
+        return inputstring[:len(word_to_remove)] if inputstring.endswith(word_to_remove) else inputstring

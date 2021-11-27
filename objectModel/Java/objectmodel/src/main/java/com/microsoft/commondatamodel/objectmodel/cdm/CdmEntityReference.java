@@ -16,6 +16,14 @@ public class CdmEntityReference extends CdmObjectReferenceBase implements CdmObj
   }
 
   /**
+   * Returns true if this entity reference points to a projection.
+   * @deprecated
+   */
+  public boolean getIsProjection() {
+    return this.getExplicitReference() != null && this.getExplicitReference().getObjectType() == CdmObjectType.ProjectionDef;
+  }
+
+  /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    * @param resOpt Resolved Options

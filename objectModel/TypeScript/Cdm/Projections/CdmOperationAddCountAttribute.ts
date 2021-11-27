@@ -6,18 +6,19 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
     CdmTypeAttributeDefinition,
-    Errors,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
     ResolvedAttribute,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -38,10 +39,16 @@ export class CdmOperationAddCountAttribute extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationAddCountAttribute = new CdmOperationAddCountAttribute(this.ctx);
-        copy.countAttribute = this.countAttribute.copy(resOpt, host) as CdmTypeAttributeDefinition;
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
 
+        const copy: CdmOperationAddCountAttribute = !host ? new CdmOperationAddCountAttribute(this.ctx) : host as CdmOperationAddCountAttribute;
+
+        copy.countAttribute = this.countAttribute ? this.countAttribute.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -70,13 +77,7 @@ export class CdmOperationAddCountAttribute extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -87,14 +88,7 @@ export class CdmOperationAddCountAttribute extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationAddCountAttribute';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;

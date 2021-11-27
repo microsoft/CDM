@@ -1,0 +1,100 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Product",
+      "extendsEntity": "CdmEntity",
+      "hasAttributes": [
+        {
+          "name": "ID",
+          "purpose": "identifiedBy",
+          "dataType": "entityId",
+          "sourceName": "ID"
+        },
+        {
+          "name": "StateCode",
+          "purpose": "hasA",
+          "dataType": "integer",
+          "defaultValue": [
+            {
+              "languageTag": "en",
+              "displayText": "Active",
+              "attributeValue": "0",
+              "displayOrder": "0"
+            },
+            {
+              "languageTag": "en",
+              "displayText": "Inactive",
+              "attributeValue": "1",
+              "displayOrder": "1"
+            }
+          ],
+          "sourceName": "StateCode"
+        },
+        {
+          "name": "StateCode_display",
+          "appliedTraits": [
+            {
+              "traitReference": "is.addedInSupportOf",
+              "arguments": [
+                "StateCode"
+              ]
+            }
+          ],
+          "dataFormat": "string"
+        },
+        {
+          "name": "StatusCode",
+          "purpose": "hasA",
+          "dataType": "integer",
+          "appliedTraits": [
+            {
+              "traitReference": "is.correlatedWith",
+              "arguments": [
+                "StateCode"
+              ]
+            }
+          ],
+          "defaultValue": [
+            {
+              "languageTag": "en",
+              "displayText": "Active",
+              "attributeValue": "1",
+              "displayOrder": "0",
+              "correlatedValue": "0"
+            },
+            {
+              "languageTag": "en",
+              "displayText": "Inactive",
+              "attributeValue": "2",
+              "displayOrder": "1",
+              "correlatedValue": "1"
+            }
+          ],
+          "sourceName": "StatusCode"
+        },
+        {
+          "name": "StatusCode_display",
+          "appliedTraits": [
+            {
+              "traitReference": "is.addedInSupportOf",
+              "arguments": [
+                "StatusCode"
+              ]
+            }
+          ],
+          "dataFormat": "string"
+        }
+      ],
+      "sourceName": "Product",
+      "displayName": "Product",
+      "description": "Product information.",
+      "version": "1.1"
+    }
+  ]
+}

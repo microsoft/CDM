@@ -5,24 +5,26 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle CombineAttributes operations
  */
 public class CdmOperationCombineAttributes extends CdmOperationBase {
-    private String TAG = CdmOperationCombineAttributes.class.getSimpleName();
+    private static final String TAG = CdmOperationCombineAttributes.class.getSimpleName();
     private List<String> select;
     private CdmTypeAttributeDefinition mergeInto;
 
@@ -36,9 +38,18 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationCombineAttributes copy = new CdmOperationCombineAttributes(this.getCtx());
-        copy.select = (this.select != null) ? new ArrayList<String>(this.select) :  null;
-        copy.mergeInto = (this.mergeInto != null) ? (CdmTypeAttributeDefinition) this.mergeInto.copy(resOpt, host) : null;
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationCombineAttributes copy = host == null ? new CdmOperationCombineAttributes(this.getCtx()) : (CdmOperationCombineAttributes)host;
+
+        if (this.select != null) {
+            copy.setSelect(new ArrayList<String>(this.select));
+        }
+        copy.setMergeInto((CdmTypeAttributeDefinition)this.getMergeInto().copy(resOpt));
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -94,7 +105,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
             missingFields.add("mergeInto");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -102,14 +113,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationCombineAttributes";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -159,9 +163,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
         // Run through the top-level PAS objects
         for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
-            if ((projCtx.getProjectionDirective().getOwnerType() == CdmObjectType.EntityDef ||
-                    projCtx.getProjectionDirective().getIsSourcePolymorphic()) &&
-                    leafLevelCombineAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
+            if (leafLevelCombineAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
                 // Attribute to Merge
 
                 if (!pasMergeList.contains(currentPAS)) {
@@ -195,6 +197,8 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
             newMergeIntoPAS.setCurrentResolvedAttribute(raNewMergeInto);
             newMergeIntoPAS.setPreviousStateList(pasMergeList);
 
+            LinkedHashSet<String> attributesAddedToContext = new LinkedHashSet<String>();
+
             // Create the attribute context parameters and just store it in the builder for now
             // We will create the attribute contexts at the end
             for (String select : leafLevelCombineAttributeNames.keySet()) {
@@ -202,13 +206,18 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
                         leafLevelCombineAttributeNames.get(select) != null &&
                         leafLevelCombineAttributeNames.get(select).size() > 0) {
                     for (ProjectionAttributeState leafLevelForSelect : leafLevelCombineAttributeNames.get(select)) {
-                        attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
-                                select,
-                                leafLevelForSelect,
-                                newMergeIntoPAS.getCurrentResolvedAttribute(),
-                                CdmAttributeContextType.AttributeDefinition,
-                                leafLevelForSelect.getCurrentResolvedAttribute().getAttCtx(), // lineage is the source att
-                                newMergeIntoPAS.getCurrentResolvedAttribute().getAttCtx()); // merge into points back here
+                        // When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                            // Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                            if (!attributesAddedToContext.contains(leafLevelForSelect.getCurrentResolvedAttribute().getResolvedName())) {
+                                attributesAddedToContext.add(leafLevelForSelect.getCurrentResolvedAttribute().getResolvedName());
+                                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                                    select,
+                                    leafLevelForSelect,
+                                    newMergeIntoPAS.getCurrentResolvedAttribute(),
+                                    CdmAttributeContextType.AttributeDefinition,
+                                    leafLevelForSelect.getCurrentResolvedAttribute().getAttCtx(), // lineage is the source att
+                                    newMergeIntoPAS.getCurrentResolvedAttribute().getAttCtx()); // merge into points back here
+                            }
                     }
                 }
             }

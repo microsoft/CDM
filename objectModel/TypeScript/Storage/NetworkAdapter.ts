@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
-import { configObjectType } from './StorageAdapter';
+import { configObjectType, StorageAdapterBase } from '../internal';
 import { StorageAdapterConfigCallback } from './StorageAdapterConfigCallback';
-import { StorageAdapterBase } from './StorageAdapterBase'
 
 /**
  * Network adapter is an abstract class that contains logic for adapters dealing with data across network.
@@ -28,6 +27,11 @@ export abstract class NetworkAdapter extends StorageAdapterBase {
     protected _maximumTimeout: number = this.defaultMaximumTimeout;
     protected _numberOfRetries: number = this.defaultNumberOfRetries;
     protected _waitTimeCallback: StorageAdapterConfigCallback;
+
+    /**
+     * A set of HttpStatusCodes that will stop the retry logic if the HTTP response has one of these types.
+     */
+    public avoidRetryCodes: Set<number> = new Set<number>([ 404 ]);
 
     public get timeout(): number {
         return this._timeout;
@@ -132,7 +136,7 @@ export abstract class NetworkAdapter extends StorageAdapterBase {
      * @return {number}, specifying the waiting time in milliseconds, or undefined if no wait time is necessary.
      */
     protected defaultWaitTimeCallback(response: CdmHttpResponse, hasFailed: boolean, retryNumber: number): number {
-        if (response !== undefined && response.isSuccessful && !hasFailed) {
+        if (response !== undefined && ((response.isSuccessful && !hasFailed) || this.avoidRetryCodes.has(response.statusCode))) {
             return undefined;
         } else {
             const upperBound: number = 1 << retryNumber;

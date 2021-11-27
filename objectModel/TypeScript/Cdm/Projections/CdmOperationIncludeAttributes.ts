@@ -6,11 +6,11 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
-    Errors,
     Logger,
     ProjectionAttributeContextTreeBuilder,
     ProjectionAttributeState,
@@ -32,18 +32,21 @@ export class CdmOperationIncludeAttributes extends CdmOperationBase {
         super(ctx);
         this.objectType = cdmObjectType.operationIncludeAttributesDef;
         this.type = cdmOperationType.includeAttributes;
-
-        this.includeAttributes = [];
     }
 
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy = new CdmOperationIncludeAttributes(this.ctx);
-        for (const includeAttribute in this.includeAttributes) {
-            copy.includeAttributes.push(includeAttribute);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
+
+        const copy: CdmOperationIncludeAttributes = !host ? new CdmOperationIncludeAttributes(this.ctx) : host as CdmOperationIncludeAttributes;
+
+        copy.includeAttributes = this.includeAttributes ? this.includeAttributes.slice() : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -72,13 +75,7 @@ export class CdmOperationIncludeAttributes extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -89,14 +86,7 @@ export class CdmOperationIncludeAttributes extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationIncludeAttributes';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -131,28 +121,60 @@ export class CdmOperationIncludeAttributes extends CdmOperationBase {
         // Initialize a projection attribute context tree builder with the created attribute context for the operation
         const attrCtxTreeBuilder: ProjectionAttributeContextTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpIncludeAttrs);
 
+        // Index that holds the current attribute name as the key and the attribute as value
+        const topLevelIncludeAttribute: Map<string, ProjectionAttributeState> = new Map<string, ProjectionAttributeState>();
+
+        // List of attributes that were not included on the final attribute list
+        const removedAttributes: ProjectionAttributeState[] = [];
+
         // Iterate through all the PAS in the PASSet generated from the projection source's resolved attributes
         for (const currentPAS of projCtx.currentAttributeStateSet.states) {
             // Check if the current PAS's RA is in the list of attributes to include.
             if (topLevelIncludeAttributeNames.has(currentPAS.currentResolvedAttribute.resolvedName)) {
-                // Get the attribute name the way it appears in the include list
-                const includeAttributeName: string = topLevelIncludeAttributeNames.get(currentPAS.currentResolvedAttribute.resolvedName);
-
-                // Create the attribute context parameters and just store it in the builder for now
-                // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.currentResolvedAttribute, cdmAttributeContextType.attributeDefinition);
-
-                // Create a projection attribute state for the included attribute by creating a copy of the current state
-                // Copy() sets the current state as the previous state for the new one
-                // We only create projection attribute states for attributes in the include list
-                const newPAS: ProjectionAttributeState = currentPAS.copy();
-
-                projAttrStateSet.add(newPAS);
+                topLevelIncludeAttribute.set(currentPAS.currentResolvedAttribute.resolvedName, currentPAS);
             } else {
-                // Create the attribute context parameters and just store it in the builder for now
-                // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(undefined, currentPAS, currentPAS.currentResolvedAttribute, cdmAttributeContextType.attributeDefinition);
+                removedAttributes.push(currentPAS);
             }
+        }
+
+        for (const entry of topLevelIncludeAttributeNames) {
+            // Get the attribute state
+            const currentPAS: ProjectionAttributeState = topLevelIncludeAttribute.get(entry[0]);
+
+            // Get the attribute name the way it appears in the include list
+            const includeAttributeName: string = entry[1];
+
+            // Create the attribute context parameters and just store it in the builder for now
+            // We will create the attribute contexts at the end
+            attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                includeAttributeName,
+                currentPAS,
+                currentPAS.currentResolvedAttribute,
+                cdmAttributeContextType.attributeDefinition,
+                currentPAS.currentResolvedAttribute.attCtx, // lineage is the included attribute
+                undefined // don't know who will point here yet
+            );
+
+            // Create a projection attribute state for the included attribute by creating a copy of the current state
+            // Copy() sets the current state as the previous state for the new one
+            // We only create projection attribute states for attributes in the include list
+            const newPAS: ProjectionAttributeState = currentPAS.copy();
+
+            projAttrStateSet.add(newPAS);
+        }
+
+        // Generate attribute context nodes for the attributes that were not included
+        for (const currentPAS of removedAttributes) {
+            // Create the attribute context parameters and just store it in the builder for now
+            // We will create the attribute contexts at the end
+            attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                undefined,
+                currentPAS,
+                currentPAS.currentResolvedAttribute,
+                cdmAttributeContextType.attributeExcluded,
+                currentPAS.currentResolvedAttribute.attCtx, // lineage is the excluded attribute
+                undefined // don't know who will point here, probably nobody, I mean, we got excluded
+            );
         }
 
         // Create all the attribute contexts and construct the tree

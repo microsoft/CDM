@@ -2,23 +2,25 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional, TYPE_CHECKING
-import json
+import copy
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, logger
 
+from cdm.enums import CdmLogCode
 from .cdm_object import CdmObject
 from .cdm_object_simple import CdmObjectSimple
-from cdm.utilities.errors import Errors
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmParameterDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.utilities import VisitCallback
 
 
 class CdmArgumentDefinition(CdmObjectSimple):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmArgumentDefinition.__name__
 
         # the argument explanation.
         self.explanation = None  # type: Optional[str]
@@ -35,8 +37,6 @@ class CdmArgumentDefinition(CdmObjectSimple):
         self._declared_path = None  # Optional[str]
         self._unresolved_value = None  # type: Optional[CdmArgumentValue]
 
-        self._TAG = CdmArgumentDefinition.__name__
-
     @property
     def object_type(self) -> CdmObjectType:
         return CdmObjectType.ARGUMENT_DEF
@@ -48,24 +48,23 @@ class CdmArgumentDefinition(CdmObjectSimple):
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
-            copy = CdmArgumentDefinition(self.ctx, self.name)
+            copy_obj = CdmArgumentDefinition(self.ctx, self.name)
         else:
-            copy = host
-            copy.ctx = self.ctx
-            copy.name = self.name
+            copy_obj = host
+            copy_obj.ctx = self.ctx
+            copy_obj.name = self.name
 
         if self.value:
             if isinstance(self.value, CdmObject):
-                copy.value = self.value.copy(res_opt)
+                copy_obj.value = self.value.copy(res_opt)
             elif isinstance(self.value, object):
-                # TODO: check if the type check should be dict
-                copy.value = dict(self.value)
+                copy_obj.value = copy.copy(self.value)
             else:
-                copy.value = self.value
+                copy_obj.value = self.value
 
-        copy._resolved_parameter = self._resolved_parameter
-        copy.explanation = self.explanation
-        return copy
+        copy_obj._resolved_parameter = self._resolved_parameter
+        copy_obj.explanation = self.explanation
+        return copy_obj
 
     def get_name(self) -> str:
         return self.name
@@ -75,17 +74,13 @@ class CdmArgumentDefinition(CdmObjectSimple):
 
     def validate(self) -> bool:
         if self.value is None:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['value']))
+            missing_fields = ['value']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from # name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
-                self._declared_path = path
+        path = path_from  # name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
 
         if pre_children and pre_children(self, path):
             return False

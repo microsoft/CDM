@@ -4,7 +4,7 @@
 import { CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import { DocumentPersistence as cdmDocument } from '../../../Persistence/CdmFolder/DocumentPersistence';
-import { DocumentContent, ManifestContent } from '../../../Persistence/CdmFolder/types';
+import { DocumentContent } from '../../../Persistence/CdmFolder/types';
 import { Model } from '../../../Persistence/ModelJson/types';
 import { testHelper } from '../../testHelper';
 
@@ -56,13 +56,14 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
     /**
      * Reads Model.Json, converts to manifest and compares files from obtained manifest to stored files.
      */
-    it('ModelJsonExtensibilityManifestDocuments', async () => {
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'ModelJsonExtensibilityManifestDocuments');
+    it('TestModelJsonExtensibilityManifestDocs', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonExtensibilityManifestDocs');
         const manifest: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>(
             'model.json',
             cdmCorpus.storage.fetchRootFolder('local')
         );
         const folderObject: CdmFolderDefinition = cdmCorpus.storage.fetchRootFolder('default');
+        const serializedManifest: string = JSON.stringify(CdmFolder.ManifestPersistence.toData(manifest, undefined, undefined));
 
         if (doesWriteTestDebuggingFiles) {
             folderObject.documents.allItems.forEach((doc: CdmDocumentDefinition) => {
@@ -70,16 +71,15 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
                 const serializedDocument: string = JSON.stringify(docContent);
                 testHelper.writeActualOutputFileContent(
                     testsSubpath,
-                    'ModelJsonExtensibilityManifestDocuments',
+                    'TestModelJsonExtensibilityManifestDocs',
                     doc.name,
                     serializedDocument
                 );
             });
 
-            const serializedManifest: string = JSON.stringify(CdmFolder.ManifestPersistence.toData(manifest, undefined, undefined));
             testHelper.writeActualOutputFileContent(
                 testsSubpath,
-                'ModelJsonExtensibilityManifestDocuments',
+                'TestModelJsonExtensibilityManifestDocs',
                 manifest.name,
                 serializedManifest
             );
@@ -90,21 +90,17 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
             if (doc.name === manifest.name) {
                 continue;
             }
-            const docContent: DocumentContent = cdmDocument.toData(doc, undefined, undefined);
+            const serializedDocument: string = JSON.stringify(cdmDocument.toData(doc, undefined, undefined));
 
             const expectedOutputDocument: string =
-                testHelper.getExpectedOutputFileContent(testsSubpath, 'ModelJsonExtensibilityManifestDocuments', doc.name);
+                testHelper.getExpectedOutputFileContent(testsSubpath, 'TestModelJsonExtensibilityManifestDocs', doc.name);
 
-            const expectedDocContent: object = JSON.parse(expectedOutputDocument) as object;
-
-            testHelper.assertObjectContentEquality(expectedDocContent, docContent);
+            testHelper.assertSameObjectWasSerialized(expectedOutputDocument, serializedDocument);
         }
 
         const expectedOutput: string =
-            testHelper.getExpectedOutputFileContent(testsSubpath, 'ModelJsonExtensibilityManifestDocuments', manifest.name);
-        const expectedManifestContent: object = JSON.parse(expectedOutput) as object;
+            testHelper.getExpectedOutputFileContent(testsSubpath, 'TestModelJsonExtensibilityManifestDocs', manifest.name);
 
-        const actualManifestContent: ManifestContent = CdmFolder.ManifestPersistence.toData(manifest, undefined, undefined);
-        testHelper.assertObjectContentEquality(expectedManifestContent, actualManifestContent);
+        testHelper.assertSameObjectWasSerialized(expectedOutput, serializedManifest);
     });
 });

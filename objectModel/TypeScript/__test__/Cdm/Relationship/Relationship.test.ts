@@ -1,15 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import * as fs from 'fs';
 import {
+    CdmAttributeItem,
     CdmCorpusDefinition,
     CdmE2ERelationship,
     CdmEntityDefinition,
+    cdmLogCode,
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     cdmObjectType,
     cdmRelationshipDiscoveryStyle,
-    cdmStatusLevel
+    copyOptions
 } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
@@ -262,6 +265,25 @@ describe('Cdm/Relationship/Relationship', () => {
     });
 
     /**
+     * Test the relationship calculation when using a replace as foreign key operation while extending an entity.
+     */
+    it('testExtendsEntityAndReplaceAsForeignKey', async (done) => {
+        const testName = 'TestExtendsEntityAndReplaceAsForeignKey';
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnProjFKWithoutSourceEntity]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName, undefined, false, expectedLogCodes);
+
+        const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+        await corpus.calculateEntityGraphAsync(manifest);
+        // Check if the warning was logged.
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnProjFKWithoutSourceEntity, true);
+        await manifest.populateManifestRelationshipsAsync();
+
+        expect(manifest.relationships.length)
+            .toEqual(0);
+        done();
+    });
+
+    /**
      * Test relationships are generated correctly when the document name and entity name do not match
      */
     it('TestRelationshipsEntityAndDocumentNameDifferent', async (done) => {
@@ -300,6 +322,107 @@ describe('Cdm/Relationship/Relationship', () => {
         verifyRelationships(manifest, expectedRels);
         done();
     });
+
+    /**
+     * Test that relationships between entities in different namespaces are created correctly
+     */
+    it('TestRelationshipToDifferentNamespace', async (done) => {
+        const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
+            testsSubpath,
+            'TestRelationshipToDifferentNamespace',
+            'expectedRels.json')) as CdmE2ERelationship[];
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRelationshipToDifferentNamespace');
+
+        // entity B will be in a different namespace
+        corpus.storage.mount('differentNamespace', new LocalAdapter(`${testHelper.getInputFolderPath(testsSubpath, 'TestRelationshipToDifferentNamespace')}\\differentNamespace`));
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/main.manifest.cdm.json');
+
+        await corpus.calculateEntityGraphAsync(manifest);
+        await manifest.populateManifestRelationshipsAsync();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+        done();
+    });
+
+    /**
+     * Test that ensures relationships are updated correctly after entities are changed
+     */
+    it('TestUpdateRelationships', async (done) => {
+        const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
+            testsSubpath,
+            'TestUpdateRelationships',
+            'expectedRels.json')) as CdmE2ERelationship[];
+        const tempFromFilePath: string = 'fromEntTemp.cdm.json';
+        const tempFromEntityPath: string = 'local:/fromEntTemp.cdm.json/fromEnt';
+        const tempToEntityPath: string = 'local:/toEnt.cdm.json/toEnt';
+
+        // Initialize corpus and entity files
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestUpdateRelationships');
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/main.manifest.cdm.json');
+        const manifestNoToEnt: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/mainNoToEnt.manifest.cdm.json');
+        const fromEnt: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/fromEnt.cdm.json/fromEnt');
+        const options: copyOptions = new copyOptions();
+        options.isTopLevelDocument = false;
+        await fromEnt.inDocument.saveAsAsync(tempFromFilePath, false, options);
+
+        const reloadFromEntity = async () => {
+            await fromEnt.inDocument.saveAsAsync(tempFromFilePath, false, options);
+            // fetch again to reset the cache
+            await corpus.fetchObjectAsync<CdmEntityDefinition>(tempFromEntityPath, undefined, false, true);
+        };
+
+        try {
+            // 1. test when entity attribute is removed
+            await corpus.calculateEntityGraphAsync(manifest);
+            await manifest.populateManifestRelationshipsAsync();
+
+            // check that the relationship has been created correctly
+            verifyRelationships(manifest, expectedRels);
+
+            // now remove the entity attribute, which removes the relationship
+            const removedAttribute: CdmAttributeItem = fromEnt.attributes.allItems[0];
+            fromEnt.attributes.removeAt(0);
+            await reloadFromEntity();
+
+            await corpus.calculateEntityGraphAsync(manifest);
+            await manifest.populateManifestRelationshipsAsync();
+
+            // check that the relationship has been removed
+            verifyRelationships(manifest, []);
+
+            // 2. test when the to entity is removed
+            // restore the entity to the original state
+            fromEnt.attributes.push(removedAttribute);
+            await reloadFromEntity();
+
+            await corpus.calculateEntityGraphAsync(manifest);
+            await manifest.populateManifestRelationshipsAsync();
+
+            // check that the relationship has been created correctly
+            verifyRelationships(manifest, expectedRels);
+
+            // remove the to entity
+            fromEnt.attributes.removeAt(0);
+            await reloadFromEntity();
+            // fetch again to reset the cache
+            await corpus.fetchObjectAsync<CdmEntityDefinition>(tempToEntityPath, null, false, true);
+
+            await corpus.calculateEntityGraphAsync(manifestNoToEnt);
+            await manifestNoToEnt.populateManifestRelationshipsAsync();
+
+            // check that the relationship has been removed
+            verifyRelationships(manifestNoToEnt, []);
+        } finally {
+            // clean up created file created
+            const fromPath: string = corpus.storage.corpusPathToAdapterPath(`local:/${tempFromFilePath}`);
+            try {
+                fs.unlinkSync(fromPath);
+            } catch (err) { }
+        }
+        done();
+    });
 });
 
 function verifyRelationships(manifest: CdmManifestDefinition, expectedRelationships: CdmE2ERelationship[]): void {
@@ -312,8 +435,6 @@ function verifyRelationships(manifest: CdmManifestDefinition, expectedRelationsh
             && x.fromEntityAttribute === expectedRel.fromEntityAttribute
             && x.toEntity === expectedRel.toEntity
             && x.toEntityAttribute === expectedRel.toEntityAttribute
-            && ((!x.name && !expectedRel.name)
-            || x.name === expectedRel.name)
         );
         expect(found.length)
             .toBe(1);

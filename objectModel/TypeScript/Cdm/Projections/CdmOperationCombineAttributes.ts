@@ -6,13 +6,12 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
-    CdmEntityReference,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
     CdmTypeAttributeDefinition,
-    Errors,
     Logger,
     ProjectionAttributeContextTreeBuilder,
     ProjectionAttributeState,
@@ -20,7 +19,6 @@ import {
     ProjectionContext,
     ProjectionResolutionCommonUtil,
     ResolvedAttribute,
-    ResolvedTrait,
     resolveOptions,
     VisitCallback
 } from '../../internal';
@@ -45,14 +43,17 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy = new CdmOperationCombineAttributes(this.ctx);
-        if (this.select !== undefined) {
-            copy.select = Object.assign(this.select);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
-        if (!this.mergeInto) {
-            copy.mergeInto = this.mergeInto.copy(resOpt, host) as CdmTypeAttributeDefinition;
-        }
+
+        const copy: CdmOperationCombineAttributes = !host ? new CdmOperationCombineAttributes(this.ctx) : host as CdmOperationCombineAttributes;
+
+        copy.select = this.select ? this.select.slice() : undefined;
+        copy.mergeInto = this.mergeInto ? this.mergeInto.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -85,13 +86,7 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -102,14 +97,7 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationCombineAttributes';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -140,7 +128,7 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
 
         // Get all the leaf level PAS nodes from the tree for each selected attribute and cache to a dictionary
         const leafLevelCombineAttributeNames: Map<string, ProjectionAttributeState[]> = new Map<string, ProjectionAttributeState[]>();
-        // Also, create a single list of leaf level PAS to add to the `is.linkedEntity.identifier` trait parameter
+        // Also, create a single list of leaf level PAS
         const leafLevelMergePASList: ProjectionAttributeState[] = [];
         for (const select of this.select) {
             const leafLevelListForCurrentSelect: ProjectionAttributeState[] = ProjectionResolutionCommonUtil.getLeafList(projCtx, select);
@@ -158,16 +146,13 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
 
         // Run through the top-level PAS objects 
         for (const currentPAS of projCtx.currentAttributeStateSet.states) {
-            if ((projCtx.projectionDirective.ownerType === cdmObjectType.entityDef ||
-                projCtx.projectionDirective.isSourcePolymorphic) &&
-                leafLevelCombineAttributeNames.has(currentPAS.currentResolvedAttribute.resolvedName)) {
+            if (leafLevelCombineAttributeNames.has(currentPAS.currentResolvedAttribute.resolvedName)) {
                 // Attribute to Merge
 
                 if (!pasMergeList.includes(currentPAS)) {
                     pasMergeList.push(currentPAS);
                 }
-            }
-            else {
+            } else {
                 // Attribute to Pass Through
 
                 // Create a projection attribute state for the non-selected / pass-through attribute by creating a copy of the current state
@@ -179,23 +164,26 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
         }
 
         if (pasMergeList.length > 0) {
-            const mergeIntoAttribute: CdmTypeAttributeDefinition = this.mergeInto as CdmTypeAttributeDefinition;
-            const addTrait: string[] = [`is.linkedEntity.identifier`];
+            const mergeIntoAttribute: CdmTypeAttributeDefinition = this.mergeInto;
 
-            // Create new resolved attribute, set the new attribute as target, and apply `is.linkedEntity.identifier` trait
-            const raNewMergeInto: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxOpCombineAttrs, mergeIntoAttribute, undefined, addTrait);
+            // the merged attribute needs one new place to live, so here it is
+            const mergedAttrCtxParam: AttributeContextParameters = {
+                under: attrCtxOpCombineAttrs,
+                type: cdmAttributeContextType.attributeDefinition,
+                name: mergeIntoAttribute.getName()
+            };
 
-            // update the new foreign key resolved attribute with trait param with reference details
-            const reqdTrait: ResolvedTrait = raNewMergeInto.resolvedTraits.find(projCtx.projectionDirective.resOpt, `is.linkedEntity.identifier`);
-            if (reqdTrait !== undefined) {
-                const traitParamEntRef: CdmEntityReference = ProjectionResolutionCommonUtil.createForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.projectionDirective, projAttrStateSet.ctx.corpus, leafLevelMergePASList);
-                reqdTrait.parameterValues.setParameterValue(projCtx.projectionDirective.resOpt, `entityReferences`, traitParamEntRef);
-            }
+            const mergedAttrCtx: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, mergedAttrCtxParam)
 
-            // Create new output projection attribute state set for FK and add prevPas as previous state set
+            // Create new resolved attribute, set the new attribute as target
+            const raNewMergeInto: ResolvedAttribute = CdmOperationCombineAttributes.createNewResolvedAttribute(projCtx, mergedAttrCtx, mergeIntoAttribute);
+
+            // Create new output projection attribute state set
             const newMergeIntoPAS: ProjectionAttributeState = new ProjectionAttributeState(projAttrStateSet.ctx);
             newMergeIntoPAS.currentResolvedAttribute = raNewMergeInto;
             newMergeIntoPAS.previousStateList = pasMergeList;
+
+            const attributesAddedToContext: Set<string> = new Set<string>();
 
             // Create the attribute context parameters and just store it in the builder for now
             // We will create the attribute contexts at the end
@@ -204,7 +192,19 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
                     leafLevelCombineAttributeNames.get(select) !== undefined &&
                     leafLevelCombineAttributeNames.get(select).length > 0) {
                     for (const leafLevelForSelect of leafLevelCombineAttributeNames.get(select)) {
-                        attrCtxTreeBuilder.createAndStoreAttributeContextParameters(select, leafLevelForSelect, newMergeIntoPAS.currentResolvedAttribute, cdmAttributeContextType.attributeDefinition);
+                        // When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                        // Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                        if (!attributesAddedToContext.has(leafLevelForSelect.currentResolvedAttribute.resolvedName)) {
+                            attributesAddedToContext.add(leafLevelForSelect.currentResolvedAttribute.resolvedName);
+                            attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                                select,
+                                leafLevelForSelect,
+                                newMergeIntoPAS.currentResolvedAttribute,
+                                cdmAttributeContextType.attributeDefinition,
+                                leafLevelForSelect.currentResolvedAttribute.attCtx, // lineage is the source att
+                                newMergeIntoPAS.currentResolvedAttribute.attCtx // merge into points back here
+                            );
+                        }
                     }
                 }
             }
@@ -213,7 +213,7 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
         }
 
         // Create all the attribute contexts and construct the tree
-        attrCtxTreeBuilder.constructAttributeContextTree(projCtx, true);
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
 
         return projAttrStateSet;
     }

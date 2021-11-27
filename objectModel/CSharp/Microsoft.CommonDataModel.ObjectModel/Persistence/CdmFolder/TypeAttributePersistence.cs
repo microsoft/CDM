@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -15,6 +15,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class TypeAttributePersistence
     {
+        private static readonly string Tag = nameof(TypeAttributePersistence);
+
         public static CdmTypeAttributeDefinition FromData(CdmCorpusContext ctx, JToken obj, string entityName = null)
         {
             if (obj == null)
@@ -26,37 +28,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             typeAttribute.Purpose = PurposeReferencePersistence.FromData(ctx, obj["purpose"]);
             typeAttribute.DataType = DataTypeReferencePersistence.FromData(ctx, obj["dataType"]);
-            if (obj["cardinality"] != null)
-            {
-                string minCardinality = null;
-                if (obj["cardinality"]["minimum"] != null)
-                    minCardinality = (string)obj["cardinality"]["minimum"];
 
-                string maxCardinality = null;
-                if (obj["cardinality"]["maximum"] != null)
-                    maxCardinality = (string)obj["cardinality"]["maximum"];
+            typeAttribute.Cardinality = Utils.CardinalitySettingsFromData(obj["cardinality"], typeAttribute);
 
-                if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Both minimum and maximum are required for the Cardinality property.", nameof(FromData));
-
-                if (!CardinalitySettings.IsMinimumValid(minCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid minimum cardinality {minCardinality}.", nameof(FromData));
-
-                if (!CardinalitySettings.IsMaximumValid(maxCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid maximum cardinality {maxCardinality}.", nameof(FromData));
-
-                if (!string.IsNullOrWhiteSpace(minCardinality) &&
-                    !string.IsNullOrWhiteSpace(maxCardinality) &&
-                    CardinalitySettings.IsMinimumValid(minCardinality) &&
-                    CardinalitySettings.IsMinimumValid(maxCardinality))
-                {
-                    typeAttribute.Cardinality = new CardinalitySettings(typeAttribute)
-                    {
-                        Minimum = minCardinality,
-                        Maximum = maxCardinality
-                    };
-                }
-            }
             typeAttribute.AttributeContext = AttributeContextReferencePersistence.FromData(ctx, obj["attributeContext"]);
             Utils.AddListToCdmCollection(typeAttribute.AppliedTraits, Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]));
             typeAttribute.ResolutionGuidance = AttributeResolutionGuidancePersistence.FromData(ctx, obj["resolutionGuidance"]);
@@ -91,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 }
                 else
                 {
-                    Logger.Warning(nameof(TypeAttributePersistence), ctx, $"Couldn't find an enum value for {dataFormat}.", nameof(FromData));
+                    Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistEnumNotFound, dataFormat);
                 }
             }
 
@@ -112,9 +86,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Name = instance.Name,
                 Purpose = Utils.JsonForm(instance.Purpose, resOpt, options),
                 DataType = Utils.JsonForm(instance.DataType, resOpt, options),
-                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty), options),
+                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?
+                    .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty), options),
                 AttributeContext = Utils.JsonForm(instance.AttributeContext, resOpt, options),
-                ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options)
+                ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options),
+                Cardinality = Utils.CardinalitySettingsToData(instance.Cardinality)
             };
 
             obj.Projection = ProjectionPersistence.ToData(instance.Projection, resOpt, options);

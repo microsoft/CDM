@@ -4,20 +4,15 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContextReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.io.IOException;
@@ -25,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttributeContextPersistence {
+  private static final String TAG = AttributeContextPersistence.class.getSimpleName();
+
   public static CdmAttributeContext fromData(final CdmCorpusContext ctx, final AttributeContext obj) {
     if (obj == null)
       return null;
@@ -37,7 +34,7 @@ public class AttributeContextPersistence {
     if (obj.getParent() != null)
       attributeContext.setParent(AttributeContextReferencePersistence.fromData(ctx, obj.getParent()));
 
-    if (!Strings.isNullOrEmpty(obj.getExplanation()))
+    if (!StringUtils.isNullOrEmpty(obj.getExplanation()))
       attributeContext.setExplanation(obj.getExplanation());
 
     if (obj.getDefinition() != null) {
@@ -49,11 +46,13 @@ public class AttributeContextPersistence {
         case AttributeGroup:
           attributeContext.setDefinition(AttributeGroupReferencePersistence.fromData(ctx, JMapper.MAP.valueToTree(obj.getDefinition())));
           break;
+        case AddedAttributeNewArtifact:
         case AddedAttributeSupporting:
         case AddedAttributeIdentity:
         case AddedAttributeExpansionTotal:
         case AddedAttributeSelectedType:
         case AttributeDefinition:
+        case AttributeExcluded:
           attributeContext.setDefinition(AttributeReferencePersistence.fromData(ctx, JMapper.MAP.valueToTree(obj.getDefinition())));
           break;
       }
@@ -70,12 +69,7 @@ public class AttributeContextPersistence {
           try {
             attributeContext.getContents().add(fromData(ctx, JMapper.MAP.treeToValue(node, AttributeContext.class)));
           } catch (final IOException ex) {
-            Logger.error(
-                AttributeContextPersistence.class.getSimpleName(),
-                ctx,
-                Logger.format("There was an error while trying to convert from JSON to CdmAttributeContext. Reason: '{0}'", ex.getLocalizedMessage()),
-                "fromData"
-            );
+            Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistJsonAttrContextConversionError, ex.getLocalizedMessage());
           }
       }
     }
@@ -100,7 +94,7 @@ public class AttributeContextPersistence {
     final CdmObjectReference definition = instance.getDefinition();
     if (definition != null) {
       final Object resolvedDefinition = definition.copyData(resOpt, options);
-      if (resolvedDefinition != null) {
+      if (resolvedDefinition instanceof String) {
         result.setDefinition(resolvedDefinition.toString());
       }
     } else {
@@ -110,8 +104,8 @@ public class AttributeContextPersistence {
     // i know the trait collection names look wrong. but I wanted to use the def baseclass
     if (instance.getExhibitsTraits() != null) {
       final List<CdmObject> traits = new ArrayList<>();
-      instance.getExhibitsTraits().forEach((CdmTraitReference trait) -> {
-        if (!trait.isFromProperty())
+      instance.getExhibitsTraits().forEach((CdmTraitReferenceBase trait) -> {
+        if (trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
           traits.add(trait);
       });
       result.setAppliedTraits(Utils.listCopyDataAsArrayNode(traits, resOpt, options));
@@ -138,6 +132,8 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.AttributeGroup;
       case "attributeDefinition":
         return CdmAttributeContextType.AttributeDefinition;
+      case "attributeExcluded":
+        return CdmAttributeContextType.AttributeExcluded;
       case "addedAttributeSupporting":
         return CdmAttributeContextType.AddedAttributeSupporting;
       case "addedAttributeIdentity":
@@ -146,6 +142,8 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.AddedAttributeExpansionTotal;
       case "addedAttributeSelectedType":
         return CdmAttributeContextType.AddedAttributeSelectedType;
+      case "addedAttributeNewArtifact":
+        return CdmAttributeContextType.AddedAttributeNewArtifact;
       case "generatedRound":
         return CdmAttributeContextType.GeneratedRound;
       case "generatedSet":
@@ -176,6 +174,10 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.OperationIncludeAttributes;
       case "operationAddAttributeGroup":
         return CdmAttributeContextType.OperationAddAttributeGroup;
+      case "operationAlterTraits":
+        return CdmAttributeContextType.OperationAlterTraits;
+      case "operationAddArtifactAttribute":
+        return CdmAttributeContextType.OperationAddArtifactAttribute;
       default:
         return CdmAttributeContextType.Unknown;
     }
@@ -191,6 +193,8 @@ public class AttributeContextPersistence {
         return "attributeGroup";
       case AttributeDefinition:
         return "attributeDefinition";
+      case AttributeExcluded:
+        return "attributeExcluded";
       case AddedAttributeSupporting:
         return "addedAttributeSupporting";
       case AddedAttributeIdentity:
@@ -199,6 +203,8 @@ public class AttributeContextPersistence {
         return "addedAttributeExpansionTotal";
       case AddedAttributeSelectedType:
         return "addedAttributeSelectedType";
+      case AddedAttributeNewArtifact:
+        return "addedAttributeNewArtifact";
       case GeneratedRound:
         return "generatedRound";
       case GeneratedSet:
@@ -229,6 +235,10 @@ public class AttributeContextPersistence {
         return "operationIncludeAttributes";
       case OperationAddAttributeGroup:
         return "operationAddAttributeGroup";
+      case OperationAlterTraits:
+        return "operationAlterTraits";
+      case OperationAddArtifactAttribute:
+        return "operationAddArtifactAttribute";
       default:
         return "unknown";
     }

@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
-    ArgumentValue,
     AttributeResolutionDirectiveSet,
     CdmArgumentDefinition,
     CdmAttribute,
@@ -34,10 +33,9 @@ import {
     CdmObject,
     CdmObjectBase,
     CdmObjectDefinition,
-    CdmObjectDefinitionBase,
     CdmObjectReference,
-    CdmObjectReferenceBase,
     cdmObjectType,
+    cdmLogCode,
     CdmOperationAddAttributeGroup,
     CdmOperationAddCountAttribute,
     CdmOperationAddSupportingAttribute,
@@ -48,6 +46,8 @@ import {
     CdmOperationIncludeAttributes,
     CdmOperationRenameAttributes,
     CdmOperationReplaceAsForeignKey,
+    CdmOperationAlterTraits,
+    CdmOperationAddArtifactAttribute,
     CdmParameterDefinition,
     CdmProjection,
     CdmPurposeDefinition,
@@ -66,26 +66,32 @@ import {
     ImportInfo,
     Logger,
     p,
-    ParameterCollection,
     resolveContext,
     ResolvedTrait,
     ResolvedTraitSet,
     resolveOptions,
-    StorageAdapter,
+    StorageAdapterBase,
     StorageManager,
-    SymbolSet
+    SymbolSet,
+    TelemetryClient,
+    CdmTraitGroupDefinition,
+    CdmTraitGroupReference,
+    CdmTraitReferenceBase
 } from '../internal';
 import { PersistenceLayer } from '../Persistence';
 import {
     isAttributeGroupDefinition,
     isCdmTraitDefinition,
+    isCdmTraitGroupDefinition,
     isConstantEntityDefinition,
     isDataTypeDefinition,
     isEntityDefinition,
+    isOperationAddArtifactAttribute,
     isOperationAddAttributeGroup,
     isOperationAddCountAttribute,
     isOperationAddSupportingAttribute,
     isOperationAddTypeAttribute,
+    isOperationAlterTraits,
     isOperationArrayExpansion,
     isOperationCombineAttributes,
     isOperationExcludeAttributes,
@@ -102,6 +108,8 @@ import { using } from "using-statement";
 import { enterScope } from '../Utilities/Logging/Logger';
 
 export class CdmCorpusDefinition {
+    private TAG: string = CdmCorpusDefinition.name;
+
     public get profiler(): ICdmProfiler {
         return p;
     }
@@ -111,14 +119,13 @@ export class CdmCorpusDefinition {
     // tslint:disable-next-line:variable-name
     public static _nextID: number = 0;
     public appId: string;
+
+    public telemetryClient: TelemetryClient;
+
     /**
      * @internal
      */
     public isCurrentlyResolving: boolean = false;
-    /**
-     * @internal
-     */
-    public blockDeclaredPathChanges: boolean = false;
 
     /**
      * The set of resolution directives that will be used by default by the object model when it is resolving
@@ -154,9 +161,10 @@ export class CdmCorpusDefinition {
     private readonly symbolDefinitions: Map<string, CdmDocumentDefinition[]>;
     private readonly emptyRTS: Map<string, ResolvedTraitSet>;
     private readonly namespaceFolders: Map<string, CdmFolderDefinition>;
+    private knownArtifactAttributes: Map<string, CdmTypeAttributeDefinition>;
 
-    private readonly outgoingRelationships: Map<CdmObjectDefinition, CdmE2ERelationship[]>;
-    private readonly incomingRelationships: Map<CdmObjectDefinition, CdmE2ERelationship[]>;
+    private readonly outgoingRelationships: Map<string, CdmE2ERelationship[]>;
+    private readonly incomingRelationships: Map<string, CdmE2ERelationship[]>;
 
     private readonly cdmExtension: string = CdmConstants.cdmExtension;
 
@@ -168,10 +176,10 @@ export class CdmCorpusDefinition {
             this.symbolDefinitions = new Map<string, CdmDocumentDefinition[]>();
             this.definitionReferenceSymbols = new Map<string, SymbolSet>();
             this.emptyRTS = new Map<string, ResolvedTraitSet>();
-            this.outgoingRelationships = new Map<CdmObjectDefinition, CdmE2ERelationship[]>();
-            this.incomingRelationships = new Map<CdmObjectDefinition, CdmE2ERelationship[]>();
+            this.outgoingRelationships = new Map<string, CdmE2ERelationship[]>();
+            this.incomingRelationships = new Map<string, CdmE2ERelationship[]>();
             this.resEntMap = new Map<string, string>();
-            this.documentLibrary = new DocumentLibrary();
+            this.documentLibrary = new DocumentLibrary(this);
 
             this.ctx = new resolveContext(this);
             this.storage = new StorageManager(this);
@@ -228,6 +236,10 @@ export class CdmCorpusDefinition {
                 case cdmObjectType.traitDef:
                 case cdmObjectType.traitRef:
                     return cdmObjectType.traitRef;
+
+                case cdmObjectType.traitGroupDef:
+                case cdmObjectType.traitGroupRef:
+                    return cdmObjectType.traitGroupRef;
 
                 case cdmObjectType.entityAttributeDef:
                 case cdmObjectType.typeAttributeDef:
@@ -337,11 +349,7 @@ export class CdmCorpusDefinition {
                 const preEnd: number = symbolDef.indexOf('/');
                 if (preEnd === 0) {
                     // absolute refererence
-                    Logger.error(
-                        CdmCorpusDefinition.name,
-                        ctx,
-                        `no support for absolute references yet. fix '${symbolDef}'`, ctx.relativePath
-                    );
+                    Logger.error(this.ctx, this.TAG, this.docsForSymbol.name, wrtDoc.atCorpusPath, cdmLogCode.ErrUnsupportedRef, symbolDef, ctx.relativePath);
 
                     return undefined;
                 }
@@ -371,7 +379,6 @@ export class CdmCorpusDefinition {
                                 return currDocsResult;
                             }
                         }
-                        resOpt.fromMoniker = prefix;
                         result.docBest = tempMonikerDoc;
                     } else {
                         // moniker not recognized in either doc, fail with grace
@@ -400,20 +407,36 @@ export class CdmCorpusDefinition {
         // find the 'highest priority' definition of the object from the point of view of a given document (with respect to, wrtDoc)
         // (meaning given a document and the things it defines and the files it imports and the files they import,
         // where is the 'last' definition found)
-        if (!resOpt || !resOpt.wrtDoc) {
+        if (!resOpt || !resOpt.wrtDoc || !symbolDef) {
             return undefined;
         } // no way to figure this out
         const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
 
         if (wrtDoc.needsIndexing && !wrtDoc.currentlyIndexing) {
-            Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Please set the 'importsLoadStrategy' to 'load' on the ResolveOptions object when calling fetchObjectAsync.`, this.resolveSymbolReference.name);
+            Logger.error(this.ctx, this.TAG, this.resolveSymbolReference.name, wrtDoc.atCorpusPath, cdmLogCode.ErrSymbolNotFound, symbolDef, 'because the ImportsLoadStrategy is set to DoNotLoad"');
             return undefined;
+        }
+
+        // save the symbol name as it got here
+        let initialSymbol: string = symbolDef;
+
+        // when trying to find a reference, first find the definition that contains it
+        // and then look for the reference inside it.
+        const isReference: Boolean = symbolDef?.endsWith('(ref)') === true;
+        if (isReference) {
+            const defIndex: number = symbolDef.indexOf('/');
+            symbolDef = symbolDef.substring(0, defIndex);
         }
 
         // get the array of documents where the symbol is defined
         const symbolDocsResult: docsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
         let docBest: CdmDocumentDefinition = symbolDocsResult.docBest;
         symbolDef = symbolDocsResult.newSymbol;
+
+        if (!isReference) {
+            initialSymbol = symbolDef;
+        }
+
         const docs: CdmDocumentDefinition[] = symbolDocsResult.docList;
         if (docs) {
             // add this symbol to the set being collected in resOpt, we will need this when caching
@@ -443,12 +466,30 @@ export class CdmCorpusDefinition {
 
         // return the definition found in the best document
         let found: CdmObjectBase = docBest.internalDeclarations.get(symbolDef);
+
+        // in case we are trying to find a reference, the object we found previously is the definition that contains the reference.
+        // look inside the definition now.
+        if (found && isReference) {
+            let foundRef: CdmObjectBase = undefined;
+            // try to find the reference
+            found.visit('',
+                (obj, objPath) => {
+                    if (initialSymbol === objPath) {
+                        foundRef = obj as CdmObjectBase;
+                        return true;
+                    }
+                    return false;
+                },
+                undefined);
+            found = foundRef;
+        }
+
         if (found === undefined && retry === true) {
             // maybe just locatable from here not defined here.
             // this happens when the symbol is monikered, but the moniker path doesn't lead to the document where the symbol is defined.
             // it leads to the document from where the symbol can be found.
             // Ex.: resolvedFrom/Owner, while resolvedFrom is the Account that imports Owner.
-            found = this.resolveSymbolReference(resOpt, docBest, symbolDef, expectedType, false);
+            found = this.resolveSymbolReference(resOpt, docBest, initialSymbol, expectedType, false);
         }
 
         if (found && expectedType !== cdmObjectType.error) {
@@ -527,10 +568,37 @@ export class CdmCorpusDefinition {
             }
 
             let tagSuffix: string = `-${kind}-${thisId}`;
-            tagSuffix += `-(${resOpt.directives ? resOpt.directives.getTag() : ''})`;
-            if (resOpt.depthInfo.maxDepthExceeded) {
-                const currDepthInfo: DepthInfo = resOpt.depthInfo;
-                tagSuffix += `-${currDepthInfo.maxDepth - currDepthInfo.currentDepth}`;
+
+            // Some object types like traits don't change their resolved from depending on the directives.
+            // This optimization is only useful when the same corpus is used to resolve objects using different directives.
+            let simpleCacheTag: boolean = false;
+
+            switch (definition.objectType) {
+                case cdmObjectType.dataTypeDef:
+                case cdmObjectType.purposeDef:
+                case cdmObjectType.traitDef:
+                case cdmObjectType.traitGroupDef:
+                    simpleCacheTag = true;
+                    break;
+            }
+            if (!simpleCacheTag) {
+                tagSuffix += `-(${resOpt.directives ? resOpt.directives.getTag() : ''})`;
+            }
+
+            // only for attributes
+            if (kind === 'rasb') {
+                // if MaxDepth was not initialized before, initialize it now
+                if (resOpt.depthInfo.maxDepth === undefined) {
+                    resOpt.depthInfo.maxDepth = resOpt.maxDepth;
+                }
+
+                // add to the cache tag either if we reached maximum depth or how many levels we can go down until reaching the maximum depth
+                if (resOpt.depthInfo.currentDepth > resOpt.depthInfo.maxDepth) {
+                    tagSuffix += '-overMaxDepth';
+                } else {
+                    const currDepthInfo: DepthInfo = resOpt.depthInfo;
+                    tagSuffix += `-${currDepthInfo.maxDepth - currDepthInfo.currentDepth}toMaxDepth`;
+                }
             }
             if (resOpt.inCircularReference) {
                 tagSuffix += '-pk';
@@ -641,6 +709,9 @@ export class CdmCorpusDefinition {
                     break;
                 case cdmObjectType.manifestDef:
                     newObj = new CdmManifestDefinition(this.ctx, nameOrRef);
+
+                    // Log and ingest a message when a new manifest is created
+                    Logger.debug(this.ctx, this.TAG, this.MakeObject.name, newObj.atCorpusPath, "New Manifest created.", true);
                     break;
                 case cdmObjectType.entityAttributeDef:
                     newObj = new CdmEntityAttributeDefinition(this.ctx, nameOrRef);
@@ -668,6 +739,12 @@ export class CdmCorpusDefinition {
                     break;
                 case cdmObjectType.traitRef:
                     newObj = new CdmTraitReference(this.ctx, nameOrRef, simmpleNameRef, false);
+                    break;
+                case cdmObjectType.traitGroupDef:
+                    newObj = new CdmTraitGroupDefinition(this.ctx, nameOrRef);
+                    break;
+                case cdmObjectType.traitGroupRef:
+                    newObj = new CdmTraitGroupReference(this.ctx, nameOrRef, simmpleNameRef);
                     break;
                 case cdmObjectType.typeAttributeDef:
                     newObj = new CdmTypeAttributeDefinition(this.ctx, nameOrRef);
@@ -738,6 +815,12 @@ export class CdmCorpusDefinition {
                 case cdmObjectType.operationAddAttributeGroupDef:
                     newObj = new CdmOperationAddAttributeGroup(this.ctx);
                     break;
+                case cdmObjectType.operationAlterTraitsDef:
+                    newObj = new CdmOperationAlterTraits(this.ctx);
+                    break;
+                case cdmObjectType.operationAddArtifactAttributeDef:
+                    newObj = new CdmOperationAddArtifactAttribute(this.ctx);
+                    break;
                 default:
             }
 
@@ -749,12 +832,10 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public addDocumentObjects(folder: CdmFolderDefinition, docDef: CdmDocumentDefinition): CdmDocumentDefinition {
+    public addDocumentObjects(folder: CdmFolderDefinition, doc: CdmDocumentDefinition): CdmDocumentDefinition {
         // let bodyCode = () =>
         {
-            const doc: CdmDocumentDefinition = docDef;
-            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc)
-                .toLowerCase();
+            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc);
             this.documentLibrary.addDocumentPath(path, folder, doc);
 
             return doc;
@@ -765,18 +846,16 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public removeDocumentObjects(folder: CdmFolderDefinition, docDef: CdmDocumentDefinition): void {
+    public removeDocumentObjects(folder: CdmFolderDefinition, doc: CdmDocumentDefinition): void {
         // let bodyCode = () =>
         {
-            const doc: CdmDocumentDefinition = docDef;
 
             // every symbol defined in this document is pointing at the document, so remove from cache.
             // also remove the list of docs that it depends on
             this.removeObjectDefinitions(doc);
 
             // remove from path lookup, folder lookup and global list of documents
-            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc)
-                .toLowerCase();
+            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc);
             this.documentLibrary.removeDocumentPath(path, folder, doc);
         }
         // return p.measure(bodyCode);
@@ -785,65 +864,61 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public indexDocuments(resOpt: resolveOptions, loadImports: boolean): boolean {
-        const docsNotIndexed: Set<CdmDocumentDefinition> = this.documentLibrary.listDocsNotIndexed();
+    public indexDocuments(resOpt: resolveOptions, loadImports: boolean, rootDoc: CdmDocumentDefinition, docsLoaded: Set<string>): boolean {
+        const docsNotIndexed: Set<CdmDocumentDefinition> = this.documentLibrary.listDocsNotIndexed(rootDoc, docsLoaded);
 
-        if (docsNotIndexed.size === 0) {
-            return true;
-        }
-
+        // Step: clear document caches.
         for (const doc of docsNotIndexed) {
-            if (!doc.declarationsIndexed) {
-                Logger.debug(CdmCorpusDefinition.name, this.ctx, `index start: ${doc.atCorpusPath}`, this.indexDocuments.name);
+            if (!doc.declarationsIndexed || loadImports) {
+                Logger.debug(this.ctx, this.TAG, this.indexDocuments.name, doc.atCorpusPath, `index start: ${doc.atCorpusPath}`);
                 doc.clearCaches();
             }
         }
 
-        // check basic integrity
+        // Step: check basic integrity.
         for (const doc of docsNotIndexed) {
-            if (!doc.declarationsIndexed) {
-                doc.isValid = true; // assume valid unless this fails
-                if (!this.checkObjectIntegrity(doc)) {
-                    doc.isValid = false;
-                }
+            if (!doc.declarationsIndexed || loadImports) {
+                doc.checkIntegrity();
             }
         }
 
-        // declare definitions of objects in this doc
+        // Step: declare definitions in objects in this doc.
         for (const doc of docsNotIndexed) {
-            if (!doc.declarationsIndexed && doc.isValid) {
-                this.declareObjectDefinitions(doc, '');
+            if ((!doc.declarationsIndexed || loadImports) && doc.isValid) {
+                doc.declareObjectDefinitions();
             }
         }
 
         if (loadImports) {
-            // index any imports
-            for (const doc of docsNotIndexed) {
-                doc.getImportPriorities();
-            }
-
-            // make sure we can find everything that is named by reference
+            // Step: Index import priorities.
             for (const doc of docsNotIndexed) {
                 if (doc.isValid) {
-                    const resOptLocal: resolveOptions = resOpt.copy();
-                    resOptLocal.wrtDoc = doc;
-                    this.resolveObjectDefinitions(resOptLocal, doc);
+                    // index any imports
+                    doc.getImportPriorities();
                 }
             }
-            // now resolve any trait arguments that are type object
+
+            // Step: make sure we can find everything that is named by reference.
             for (const doc of docsNotIndexed) {
                 if (doc.isValid) {
                     const resOptLocal: resolveOptions = resOpt.copy();
                     resOptLocal.wrtDoc = doc;
-                    this.resolveTraitArguments(resOptLocal, doc);
+                    doc.resolveObjectDefinitions(resOptLocal);
+                }
+            }
+            // Step: now resolve any trait arguments that are type object.
+            for (const doc of docsNotIndexed) {
+                if (doc.isValid) {
+                    const resOptLocal: resolveOptions = resOpt.copy();
+                    resOptLocal.wrtDoc = doc;
+                    doc.resolveTraitArguments(resOptLocal);
                 }
             }
         }
 
-        // finish up
+        // Step: finish up.
         for (const doc of docsNotIndexed) {
-            Logger.debug(CdmCorpusDefinition.name, this.ctx, `index finish: ${doc.atCorpusPath}`, this.indexDocuments.name);
-            this.finishDocumentResolve(doc, loadImports);
+            doc.finishIndexing(loadImports);
         }
 
         return true;
@@ -854,59 +929,6 @@ export class CdmCorpusDefinition {
      */
     public visit(path: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         return false;
-    }
-
-    /**
-     * @internal
-     */
-    public async loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = null): Promise<CdmContainerDefinition> {
-        // let bodyCode = () =>
-        {
-            if (objectPath) {
-                // first check for namespace
-                const pathTuple: [string, string] = StorageUtils.splitNamespacePath(objectPath);
-                if (!pathTuple) {
-                    Logger.error(CdmCorpusDefinition.name, this.ctx, 'The object path cannot be null or empty.', this.loadFolderOrDocument.name);
-
-                    return undefined;
-                }
-                const namespace: string = pathTuple[0] || this.storage.defaultNamespace;
-                objectPath = pathTuple[1];
-
-                if (objectPath.indexOf('/') === 0) {
-                    const namespaceFolder: CdmFolderDefinition = this.storage.fetchRootFolder(namespace);
-                    const namespaceAdapter: StorageAdapter = this.storage.fetchAdapter(namespace);
-                    if (!namespaceFolder || !namespaceAdapter) {
-                        Logger.error(
-                            CdmCorpusDefinition.name,
-                            this.ctx,
-                            `The namespace '${namespace}' has not been registered`,
-                            `loadFolderOrDocument(${objectPath})`
-                        );
-
-                        return;
-                    }
-                    const lastFolder: CdmFolderDefinition = namespaceFolder.fetchChildFolderFromPath(objectPath, false);
-
-                    // don't create new folders, just go as far as possible
-                    if (lastFolder) {
-                        // maybe the search is for a folder?
-                        const lastPath: string = lastFolder.folderPath;
-                        if (lastPath === objectPath) {
-                            return lastFolder;
-                        }
-
-                        // remove path to folder and then look in the folder
-                        objectPath = objectPath.slice(lastPath.length);
-
-                        return lastFolder.fetchDocumentFromFolderPathAsync(objectPath, namespaceAdapter, forceReload, resOpt);
-                    }
-                }
-            }
-
-            return undefined;
-        }
-        // return p.measure(bodyCode);
     }
 
     /**
@@ -944,8 +966,8 @@ export class CdmCorpusDefinition {
                 documentPath = objectPath.slice(0, documentNameIndex);
             }
 
-            Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this.fetchObjectAsync.name);
-            const newObj: CdmContainerDefinition = await this.loadFolderOrDocument(documentPath, forceReload);
+            Logger.debug(this.ctx, this.TAG, this.fetchObjectAsync.name, objectPath, `request object: ${objectPath}`);
+            const newObj: CdmContainerDefinition = await this.documentLibrary.loadFolderOrDocument(documentPath, forceReload);
 
             if (newObj) {
                 // get imports and index each document that is loaded
@@ -954,16 +976,17 @@ export class CdmCorpusDefinition {
                         return undefined;
                     }
                     if (!newObj.isValid) {
-                        Logger.error(
-                            CdmCorpusDefinition.name, this.ctx,
-                            `The requested path: ${objectPath} involves a document that failed validation`,
-                            this.fetchObjectAsync.name);
+                        Logger.error(this.ctx, this.TAG, this.fetchObjectAsync.name, newObj.atCorpusPath, cdmLogCode.ErrValdnInvalidDoc, objectPath);
 
                         return undefined;
                     }
                 }
 
                 if (documentPath === objectPath) {
+                    if (newObj instanceof CdmManifestDefinition) {
+                        Logger.ingestManifestTelemetry(newObj as CdmManifestDefinition, this.ctx, this.TAG, this.fetchObjectAsync.name, newObj.atCorpusPath);
+                    }
+
                     return newObj as unknown as T;
                 }
 
@@ -977,12 +1000,17 @@ export class CdmCorpusDefinition {
 
                 const result: CdmObject = (newObj as CdmDocumentDefinition).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
                 if (result === undefined) {
-                    Logger.error(
-                        CdmCorpusDefinition.name,
-                        this.ctx,
-                        `Could not find symbol '${remainingObjectPath}' in document [${newObj.atCorpusPath}]`,
-                        this.fetchObjectAsync.name
-                    );
+                    Logger.error(this.ctx, this.TAG, this.fetchObjectAsync.name, newObj.atCorpusPath, cdmLogCode.ErrDocSymbolNotFound, objectPath, newObj.atCorpusPath);
+                } else {
+                    // Log the telemetry if the object is a manifest
+                    if (result instanceof CdmManifestDefinition) {
+                        Logger.ingestManifestTelemetry(result as CdmManifestDefinition, this.ctx, this.TAG, this.fetchObjectAsync.name, result.atCorpusPath);
+                    }
+
+                    // Log the telemetry if the object is an entity
+                    else if (result instanceof CdmEntityDefinition) {
+                        Logger.ingestEntityTelemetry(result as CdmEntityDefinition, this.ctx, this.TAG, this.fetchObjectAsync.name, result.atCorpusPath);
+                    }
                 }
 
                 return result as unknown as T;
@@ -999,25 +1027,6 @@ export class CdmCorpusDefinition {
         ctx.statusEvent = status;
         ctx.reportAtLevel = reportAtLevel;
         ctx.correlationId = correlationId;
-    }
-
-    /**
-     * @internal
-     */
-    public findMissingImportsFromDocument(doc: CdmDocumentDefinition): void {
-        // let bodyCode = () =>
-        {
-            if (doc.imports) {
-                for (const imp of doc.imports) {
-                    if (!imp.document) {
-                        // no document set for this import, see if it is already loaded into the corpus
-                        const path: string = this.storage.createAbsoluteCorpusPath(imp.corpusPath, doc);
-                        this.documentLibrary.addToDocsNotLoaded(path);
-                    }
-                }
-            }
-        }
-        // return p.measure(bodyCode);
     }
 
     /**
@@ -1042,445 +1051,51 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public async loadImportsAsync(doc: CdmDocumentDefinition, resOpt: resolveOptions): Promise<void> {
-        const docsNowLoaded: Set<CdmDocumentDefinition> = new Set<CdmDocumentDefinition>();
-        const docsNotLoaded: Set<string> = this.documentLibrary.listDocsNotLoaded();
-
-        if (docsNotLoaded.size === 0) {
+    public async loadImportsAsync(doc: CdmDocumentDefinition, docsLoading: Set<string>, resOpt: resolveOptions): Promise<void> {
+        if (!doc) {
+            // if there's not document, our job here is done.
             return;
         }
 
-        await Promise.all(Array.from(docsNotLoaded)
-            .map(async (missing: string) => {
-                if (this.documentLibrary.needToLoadDocument(missing, docsNowLoaded)) {
-                    await this.documentLibrary.concurrentReadLock.acquire();
-                    // load it
-                    const newDoc: CdmDocumentDefinition = await this.loadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
+        const loadDocs = async (docPath: string) => {
+            if (!this.documentLibrary.needToLoadDocument(docPath, docsLoading)) {
+                return;
+            }
 
-                    if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
-                        Logger.info(CdmCorpusDefinition.name, this.ctx, `resolved import for '${newDoc.name}'`, doc.atCorpusPath);
-                    } else {
-                        Logger.warning(CdmCorpusDefinition.name, this.ctx, `unable to resolve import for '${missing}'`, doc.atCorpusPath);
-                    }
-                    this.documentLibrary.concurrentReadLock.release();
-                }
-            }));
+            // load it
+            const loadedDoc: CdmDocumentDefinition = await this.documentLibrary.loadFolderOrDocument(docPath, false, resOpt) as CdmDocumentDefinition;
 
-        // now that we've loaded new docs, find imports from them that need loading
-        for (const loadedDoc of docsNowLoaded) {
-            this.findMissingImportsFromDocument(loadedDoc);
+            if (loadedDoc) {
+                Logger.info(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, `resolved import for '${loadedDoc.name}'`);
+            } else {
+                Logger.warning(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, cdmLogCode.WarnResolveImportFailed, docPath, doc.atCorpusPath);
+            }
+
+            await this.loadImportsAsync(loadedDoc, docsLoading, resOpt);
         }
 
-        // repeat this process for the imports of the imports
-        await Promise.all(Array.from(docsNowLoaded)
-            .map(async (loadedDoc: CdmDocumentDefinition) => {
-                await this.loadImportsAsync(loadedDoc, resOpt);
-            })
-        );
+        // Loop through all of the document's imports and load them recursively.
+        const taskList: Promise<void>[] = [];
+        for (const imp of doc.imports) {
+            if (!imp.document) {
+                const docPath = this.storage.createAbsoluteCorpusPath(imp.corpusPath, doc);
+                const loadTask: Promise<void> = loadDocs(docPath);
+                taskList.push(loadTask);
+            }
+        }
+
+        // Wait for all of the missing docs to finish loading.
+        await Promise.all(taskList);
     }
 
     /**
      * @internal
      */
-    public async resolveImportsAsync(doc: CdmDocumentDefinition, resOpt: resolveOptions): Promise<void> {
-        // find imports for this doc
-        this.findMissingImportsFromDocument(doc);
+    public async resolveImportsAsync(doc: CdmDocumentDefinition, docsLoading: Set<string>, resOpt: resolveOptions): Promise<void> {
         // load imports (and imports of imports)
-        await this.loadImportsAsync(doc, resOpt);
+        await this.loadImportsAsync(doc, docsLoading, resOpt);
         // now that everything is loaded, attach import docs to this doc's import list
         this.setImportDocuments(doc);
-    }
-
-    /**
-     * @internal
-     */
-    public checkObjectIntegrity(currentDoc: CdmDocumentDefinition): boolean {
-        // let bodyCode = () =>
-        {
-            const ctx: resolveContext = this.ctx as resolveContext;
-            let errorCount: number = 0;
-            currentDoc.visit(
-                '',
-                (iObject: CdmObject, path: string) => {
-                    if (iObject.validate() === false) {
-                        errorCount++;
-                    } else {
-                        (iObject as CdmObjectBase).ctx = ctx;
-                    }
-                    Logger.info(CdmCorpusDefinition.name, ctx, `checked '${path}'`, currentDoc.folderPath + path);
-
-                    return false;
-                },
-                undefined
-            );
-
-            return errorCount === 0;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public declareObjectDefinitions(currentDoc: CdmDocumentDefinition, relativePath: string): void {
-        // let bodyCode = () =>
-        {
-            const ctx: resolveContext = this.ctx as resolveContext;
-            const corpusPathRoot: string = currentDoc.folderPath + currentDoc.name;
-            currentDoc.visit(
-                relativePath,
-                (iObject: CdmObject, path: string) => {
-                    if (path.indexOf('(unspecified)') > 0) {
-                        return true;
-                    }
-                    let skipDuplicates: boolean = false;
-                    switch (iObject.objectType) {
-                        case cdmObjectType.attributeGroupRef:
-                        case cdmObjectType.attributeContextRef:
-                        case cdmObjectType.dataTypeRef:
-                        case cdmObjectType.entityRef:
-                        case cdmObjectType.purposeRef:
-                        case cdmObjectType.traitRef:
-                        case cdmObjectType.constantEntityDef:
-                            // these are all references
-                            // we will now allow looking up a reference object based on path, so they get indexed too
-                            // if there is a duplicate, don't complain, the path just finds the first one
-                            skipDuplicates = true;
-                        case cdmObjectType.attributeGroupDef:
-                        case cdmObjectType.entityDef:
-                        case cdmObjectType.parameterDef:
-                        case cdmObjectType.traitDef:
-                        case cdmObjectType.purposeDef:
-                        case cdmObjectType.dataTypeDef:
-                        case cdmObjectType.typeAttributeDef:
-                        case cdmObjectType.entityAttributeDef:
-                        case cdmObjectType.attributeContextDef:
-                        case cdmObjectType.localEntityDeclarationDef:
-                        case cdmObjectType.referencedEntityDeclarationDef:
-                        case cdmObjectType.projectionDef:
-                        case cdmObjectType.operationAddCountAttributeDef:
-                        case cdmObjectType.operationAddSupportingAttributeDef:
-                        case cdmObjectType.operationAddTypeAttributeDef:
-                        case cdmObjectType.operationExcludeAttributesDef:
-                        case cdmObjectType.operationArrayExpansionDef:
-                        case cdmObjectType.operationCombineAttributesDef:
-                        case cdmObjectType.operationRenameAttributesDef:
-                        case cdmObjectType.operationReplaceAsForeignKeyDef:
-                        case cdmObjectType.operationIncludeAttributesDef:
-                        case cdmObjectType.operationAddAttributeGroupDef:
-                            ctx.relativePath = relativePath;
-                            const corpusPath: string = `${corpusPathRoot}/${path}`;
-                            if (currentDoc.internalDeclarations.has(path) && !skipDuplicates) {
-                                Logger.error(CdmCorpusDefinition.name, ctx, `duplicate declaration for item '${path}'`, corpusPath);
-
-                                return false;
-                            } else {
-                                currentDoc.internalDeclarations.set(path, iObject as CdmObjectDefinitionBase);
-                                this.registerSymbol(path, currentDoc);
-
-                                Logger.info(CdmCorpusDefinition.name, ctx, `declared '${path}'`, corpusPath);
-                            }
-                        default:
-                    }
-
-                    return false;
-                },
-                undefined
-            );
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public constTypeCheck(
-        resOpt: resolveOptions,
-        currentDoc: CdmDocumentDefinition,
-        paramDef: CdmParameterDefinition,
-        aValue: ArgumentValue
-    ): ArgumentValue {
-        // let bodyCode = () =>
-        {
-            const ctx: resolveContext = this.ctx as resolveContext;
-            let replacement: ArgumentValue = aValue;
-            // if parameter type is entity, then the value should be an entity or ref to one
-            // same is true of 'dataType' dataType
-            if (paramDef.dataTypeRef) {
-                const dt: CdmDataTypeDefinition = paramDef.dataTypeRef.fetchObjectDefinition(resOpt);
-                // compare with passed in value or default for parameter
-                let pValue: ArgumentValue = aValue;
-                if (!pValue) {
-                    pValue = paramDef.getDefaultValue();
-                    replacement = pValue;
-                }
-                if (pValue) {
-                    if (dt.isDerivedFrom('cdmObject', resOpt)) {
-                        const expectedTypes: cdmObjectType[] = [];
-                        let expected: string;
-                        if (dt.isDerivedFrom('entity', resOpt)) {
-                            expectedTypes.push(cdmObjectType.constantEntityDef);
-                            expectedTypes.push(cdmObjectType.entityRef);
-                            expectedTypes.push(cdmObjectType.entityDef);
-                            expectedTypes.push(cdmObjectType.projectionDef);
-                            expected = 'entity';
-                        } else if (dt.isDerivedFrom('attribute', resOpt)) {
-                            expectedTypes.push(cdmObjectType.attributeRef);
-                            expectedTypes.push(cdmObjectType.typeAttributeDef);
-                            expectedTypes.push(cdmObjectType.entityAttributeDef);
-                            expected = 'attribute';
-                        } else if (dt.isDerivedFrom('dataType', resOpt)) {
-                            expectedTypes.push(cdmObjectType.dataTypeRef);
-                            expectedTypes.push(cdmObjectType.dataTypeDef);
-                            expected = 'dataType';
-                        } else if (dt.isDerivedFrom('purpose', resOpt)) {
-                            expectedTypes.push(cdmObjectType.purposeRef);
-                            expectedTypes.push(cdmObjectType.purposeDef);
-                            expected = 'purpose';
-                        } else if (dt.isDerivedFrom('trait', resOpt)) {
-                            expectedTypes.push(cdmObjectType.traitRef);
-                            expectedTypes.push(cdmObjectType.traitDef);
-                            expected = 'trait';
-                        } else if (dt.isDerivedFrom('attributeGroup', resOpt)) {
-                            expectedTypes.push(cdmObjectType.attributeGroupRef);
-                            expectedTypes.push(cdmObjectType.attributeGroupDef);
-                            expected = 'attributeGroup';
-                        }
-
-                        if (expectedTypes.length === 0) {
-                            Logger.error(
-                                CdmCorpusDefinition.name,
-                                ctx,
-                                `parameter '${paramDef.getName()}' has an unexpected dataType.`,
-                                ctx.relativePath
-                            );
-                        }
-
-                        // if a string constant, resolve to an object ref.
-                        let foundType: cdmObjectType = cdmObjectType.error;
-                        if (typeof pValue === 'object' && 'objectType' in pValue) {
-                            foundType = pValue.objectType;
-                        }
-                        let foundDesc: string = ctx.relativePath;
-                        if (!(pValue instanceof CdmObjectBase)) {
-                            // pValue is a string or object
-                            pValue = pValue as string;
-                            if (pValue === 'this.attribute' && expected === 'attribute') {
-                                // will get sorted out later when resolving traits
-                                foundType = cdmObjectType.attributeRef;
-                            } else {
-                                foundDesc = pValue;
-                                const seekResAtt: number = CdmObjectReferenceBase.offsetAttributePromise(pValue);
-                                if (seekResAtt >= 0) {
-                                    // get an object there that will get resolved later after resolved attributes
-                                    replacement = new CdmAttributeReference(this.ctx, pValue, true);
-                                    (replacement as CdmAttributeReference).inDocument = currentDoc;
-                                    foundType = cdmObjectType.attributeRef;
-                                } else {
-                                    const lu: CdmObjectBase = ctx.corpus.resolveSymbolReference(
-                                        resOpt,
-                                        currentDoc,
-                                        pValue,
-                                        cdmObjectType.error,
-                                        true
-                                    );
-                                    if (lu) {
-                                        if (expected === 'attribute') {
-                                            replacement = new CdmAttributeReference(this.ctx, pValue, true);
-                                            (replacement as CdmAttributeReference).inDocument = ctx.currentDoc;
-                                            foundType = cdmObjectType.attributeRef;
-                                        } else {
-                                            replacement = lu;
-                                            if (typeof replacement === 'object' && 'objectType' in replacement) {
-                                                foundType = replacement.objectType;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (expectedTypes.indexOf(foundType) === -1) {
-                            Logger.error(
-                                CdmCorpusDefinition.name,
-                                ctx,
-                                `parameter '${paramDef.getName()}' has the dataType of '${expected}' but the value '${foundDesc}' does't resolve to a known ${expected} referenece`,
-                                currentDoc.folderPath + ctx.relativePath
-                            );
-                        } else {
-                            Logger.info(CdmCorpusDefinition.name, ctx, `resolved '${foundDesc}'`, ctx.relativePath);
-                        }
-                    }
-                }
-            }
-
-            return replacement;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public resolveObjectDefinitions(resOpt: resolveOptions, currentDoc: CdmDocumentDefinition): void {
-        // let bodyCode = () =>
-        {
-            const ctx: resolveContext = this.ctx as resolveContext;
-            resOpt.indexingDoc = currentDoc;
-
-            currentDoc.visit(
-                '',
-                (iObject: CdmObject, path: string) => {
-                    const ot: cdmObjectType = iObject.objectType;
-                    switch (ot) {
-                        case cdmObjectType.attributeRef:
-                        case cdmObjectType.attributeGroupRef:
-                        case cdmObjectType.attributeContextRef:
-                        case cdmObjectType.dataTypeRef:
-                        case cdmObjectType.entityRef:
-                        case cdmObjectType.purposeRef:
-                        case cdmObjectType.traitRef:
-                            ctx.relativePath = path;
-                            const ref: CdmObjectReferenceBase = iObject as CdmObjectReferenceBase;
-
-                            if (CdmObjectReferenceBase.offsetAttributePromise(ref.namedReference) < 0) {
-                                const resNew: CdmObjectDefinitionBase = ref.fetchObjectDefinition(resOpt);
-
-                                if (!resNew) {
-                                    const message: string = `Unable to resolve the reference '${ref.namedReference}' to a known object`;
-                                    const messagePath: string = currentDoc.folderPath + path;
-
-                                    // It's okay if references can't be resolved when shallow validation is enabled.
-                                    if (resOpt.shallowValidation) {
-                                        Logger.warning(CdmCorpusDefinition.name, ctx, message, messagePath);
-                                    } else {
-                                        Logger.error(CdmCorpusDefinition.name, ctx, message, messagePath);
-                                    }
-                                    // don't check in this file without both of these comments. handy for debug of failed lookups
-                                    //const resTest: CdmObjectDefinitionBase = ref.fetchObjectDefinition(resOpt);
-                                } else {
-                                    Logger.info(
-                                        CdmCorpusDefinition.name,
-                                        ctx,
-                                        `    resolved '${ref.namedReference}'`,
-                                        currentDoc.folderPath + path
-                                    );
-                                }
-                            }
-                        default:
-                    }
-
-                    return false;
-                },
-                (iObject: CdmObject, path: string) => {
-                    const ot: cdmObjectType = iObject.objectType;
-                    switch (ot) {
-                        case cdmObjectType.parameterDef:
-                            // when a parameter has a datatype that is a cdm object, validate that any default value is the
-                            // right kind object
-                            const param: CdmParameterDefinition = iObject as CdmParameterDefinition;
-                            this.constTypeCheck(resOpt, currentDoc, param, undefined);
-                            break;
-                        default:
-                    }
-
-                    return false;
-                }
-            );
-        }
-        resOpt.indexingDoc = undefined;
-
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public resolveTraitArguments(resOpt: resolveOptions, currentDoc: CdmDocumentDefinition): void {
-        // let bodyCode = () =>
-        {
-            const ctx: resolveContext = this.ctx as resolveContext;
-            currentDoc.visit(
-                '',
-                (iObject: CdmObject, path: string) => {
-                    const ot: cdmObjectType = iObject.objectType;
-                    switch (ot) {
-                        case cdmObjectType.traitRef:
-                            ctx.pushScope(iObject.fetchObjectDefinition<CdmTraitDefinition>(resOpt));
-                            break;
-                        case cdmObjectType.argumentDef:
-                            try {
-                                if (ctx.currentScope.currentTrait) {
-                                    ctx.relativePath = path;
-                                    const params: ParameterCollection = ctx.currentScope.currentTrait.fetchAllParameters(resOpt);
-                                    let paramFound: CdmParameterDefinition;
-                                    let aValue: ArgumentValue;
-                                    if (ot === cdmObjectType.argumentDef) {
-                                        paramFound = params.resolveParameter(
-                                            ctx.currentScope.currentParameter,
-                                            (iObject as CdmArgumentDefinition).getName()
-                                        );
-                                        (iObject as CdmArgumentDefinition).resolvedParameter = paramFound;
-                                        aValue = (iObject as CdmArgumentDefinition).value;
-
-                                        // if parameter type is entity, then the value should be an entity or ref to one
-                                        // same is true of 'dataType' dataType
-                                        aValue = this.constTypeCheck(resOpt, currentDoc, paramFound, aValue);
-                                        if (aValue) {
-                                            (iObject as CdmArgumentDefinition).setValue(aValue);
-                                        }
-                                    }
-                                }
-                            } catch (e) {
-                                Logger.error(CdmCorpusDefinition.name, ctx, (e as Error).toString(), path);
-                                Logger.error(
-                                    CdmCorpusDefinition.name,
-                                    ctx,
-                                    `failed to resolve parameter on trait '${ctx.currentScope.currentTrait.getName()}'`,
-                                    currentDoc.folderPath + path
-                                );
-                            }
-                            ctx.currentScope.currentParameter++;
-                        default:
-                    }
-
-                    return false;
-                },
-                (iObject: CdmObject, path: string) => {
-                    const ot: cdmObjectType = iObject.objectType;
-                    if (ot === cdmObjectType.traitRef) {
-                        (iObject as CdmTraitReference).resolvedArguments = true;
-                        ctx.popScope();
-                    }
-
-                    return false;
-                }
-            );
-
-            return;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public finishDocumentResolve(doc: CdmDocumentDefinition, loadedImports: boolean): void {
-        const wasIndexedPreviously = doc.declarationsIndexed;
-
-        doc.currentlyIndexing = false;
-        doc.importsIndexed = doc.importsIndexed || loadedImports;
-        doc.declarationsIndexed = true;
-        doc.needsIndexing = !loadedImports;
-        this.documentLibrary.markDocumentAsIndexed(doc);
-
-        // if the document declarations were indexed previously, do not log again.
-        if (!wasIndexedPreviously && doc.isValid) {
-            for (const def of doc.definitions.allItems) {
-                if (isEntityDefinition(def)) {
-                    Logger.debug(CdmCorpusDefinition.name, this.ctx as resolveContext, `indexed entity: ${def.atCorpusPath}`);
-                }
-            }
-        }
     }
 
     /**
@@ -1490,9 +1105,9 @@ export class CdmCorpusDefinition {
         // let bodyCode = () =>
         {
             const ctx: resolveContext = this.ctx as resolveContext;
-            Logger.debug(CdmCorpusDefinition.name, ctx, 'finishing...');
+            Logger.debug(ctx, this.TAG, this.finishResolve.name, undefined, 'finishing...');
             for (const doc of this.documentLibrary.listAllDocuments()) {
-                this.finishDocumentResolve(doc, false);
+                doc.finishIndexing(false);
             }
         }
         // return p.measure(bodyCode);
@@ -1506,7 +1121,7 @@ export class CdmCorpusDefinition {
     public async computeLastModifiedTimeAsync(corpusPath: string, obj?: CdmObject): Promise<Date> {
         const currObject: CdmObject = await this.fetchObjectAsync(corpusPath, obj, true);
         if (currObject) {
-            return this.getLastModifiedTimeAsyncFromObject(currObject);
+            return this.getLastModifiedTimeFromObjectAsync(currObject);
         }
     }
 
@@ -1515,24 +1130,19 @@ export class CdmCorpusDefinition {
      * Returns the last modified time of the file where the input object can be found
      * @param currObject A CDM object
      */
-    public async getLastModifiedTimeAsyncFromObject(currObject: CdmObject): Promise<Date> {
+    public async getLastModifiedTimeFromObjectAsync(currObject: CdmObject): Promise<Date> {
         if ("namespace" in currObject) {
-            const adapter: StorageAdapter = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
+            const adapter: StorageAdapterBase = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
 
             if (adapter === undefined) {
-                Logger.error(
-                    CdmCorpusDefinition.name,
-                    this.ctx,
-                    `Adapter not found for the CDM object by ID ${(currObject as CdmContainerDefinition).ID}`,
-                    this.getLastModifiedTimeAsyncFromObject.name
-                );
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).namespace);
 
                 return undefined;
             }
             // Remove namespace from path
             const pathTuple: [string, string] = StorageUtils.splitNamespacePath((currObject as CdmContainerDefinition).atCorpusPath);
             if (!pathTuple) {
-                Logger.error(CdmCorpusDefinition.name, this.ctx, 'The object\'s AtCorpusPath should not be null or empty.', this.getLastModifiedTimeAsyncFromObject.name);
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
 
                 return undefined;
             }
@@ -1540,16 +1150,11 @@ export class CdmCorpusDefinition {
             try {
                 return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
             } catch (e) {
-                Logger.error(
-                    CdmCorpusDefinition.name,
-                    this.ctx,
-                    `Failed to compute last modified time for partition file ${pathTuple[1]}. Exception: ${(e as Error).toString()}`,
-                    this.getLastModifiedTimeAsyncFromObject.name
-                );
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
                 return null;
             }
         } else {
-            return this.getLastModifiedTimeAsyncFromObject(currObject.inDocument);
+            return this.getLastModifiedTimeFromObjectAsync(currObject.inDocument);
         }
     }
 
@@ -1559,38 +1164,28 @@ export class CdmCorpusDefinition {
      * as getLastModifiedTime does
      * @param corpusPath The corpus path to a CDM object
      */
-    public async getLastModifiedTimeFromPartitionPath(corpusPath: string): Promise<Date> {
+    public async getLastModifiedTimeFromPartitionPathAsync(corpusPath: string): Promise<Date> {
         // we do not want to load partitions from file, just check the modified times
         const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
         if (!pathTuple) {
-            Logger.error(CdmCorpusDefinition.name, this.ctx, 'The object path cannot be null or empty.', this.getLastModifiedTimeFromPartitionPath.name);
+            Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPathNullObjectPath);
 
             return undefined;
         }
         const namespace: string = pathTuple[0];
         if (namespace) {
-            const adapter: StorageAdapter = this.storage.fetchAdapter(namespace);
+            const adapter: StorageAdapterBase = this.storage.fetchAdapter(namespace);
 
             if (adapter === undefined) {
-                Logger.error(
-                    CdmCorpusDefinition.name,
-                    this.ctx,
-                    `Adapter not found for the corpus path '${corpusPath}'.`,
-                    this.getLastModifiedTimeFromPartitionPath.name
-                );
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrAdapterNotFound);
 
                 return undefined;
             }
-            
+
             try {
                 return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
             } catch (e) {
-                Logger.error(
-                    CdmCorpusDefinition.name,
-                    this.ctx,
-                    `Failed to compute last modified time for partition file ${pathTuple[1]}. Exception: ${(e as Error).toString()}`,
-                    this.getLastModifiedTimeFromPartitionPath.name
-                );
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
             }
         }
         return null;
@@ -1601,8 +1196,8 @@ export class CdmCorpusDefinition {
      * @param entity The entity that we want to get relationships for
      */
     public fetchIncomingRelationships(entity: CdmEntityDefinition): CdmE2ERelationship[] {
-        if (this.incomingRelationships !== undefined && this.incomingRelationships.has(entity)) {
-            return this.incomingRelationships.get(entity);
+        if (this.incomingRelationships !== undefined && this.incomingRelationships.has(entity.atCorpusPath)) {
+            return this.incomingRelationships.get(entity.atCorpusPath);
         }
 
         return [];
@@ -1613,8 +1208,8 @@ export class CdmCorpusDefinition {
      * @param entity The entity that we want to get relationships for
      */
     public fetchOutgoingRelationships(entity: CdmEntityDefinition): CdmE2ERelationship[] {
-        if (this.outgoingRelationships !== undefined && this.outgoingRelationships.has(entity)) {
-            return this.outgoingRelationships.get(entity);
+        if (this.outgoingRelationships !== undefined && this.outgoingRelationships.has(entity.atCorpusPath)) {
+            return this.outgoingRelationships.get(entity.atCorpusPath);
         }
 
         return [];
@@ -1626,61 +1221,87 @@ export class CdmCorpusDefinition {
      * @returns A Promise for the completion of entity graph calculation.
      */
     public async calculateEntityGraphAsync(currManifest: CdmManifestDefinition): Promise<void> {
-        for (const entityDec of currManifest.entities) {
-            const entityPath: string = await currManifest.getEntityPathFromDeclaration(entityDec, currManifest);
-            // the path returned by GetEntityPathFromDeclaration is an absolute path.
-            // no need to pass the manifest to FetchObjectAsync.
-            const entity: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(entityPath);
+        return await using(enterScope(CdmCorpusDefinition.name, this.ctx, this.calculateEntityGraphAsync.name), async _ => {
+            for (const entityDec of currManifest.entities) {
+                const entityPath: string = await currManifest.getEntityPathFromDeclaration(entityDec, currManifest);
+                // the path returned by GetEntityPathFromDeclaration is an absolute path.
+                // no need to pass the manifest to FetchObjectAsync.
+                const entity: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(entityPath);
 
-            if (!entity) {
-                continue;
-            }
+                if (!entity) {
+                    continue;
+                }
 
-            let resEntity: CdmEntityDefinition;
-            // make options wrt this entity document and "relational" always
-            const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+                let resEntity: CdmEntityDefinition;
+                // make options wrt this entity document and "relational" always
+                const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
 
-            const isResolvedEntity: boolean = entity.attributeContext !== undefined;
+                const isResolvedEntity: boolean = entity.isResolved;
 
-            // only create a resolved entity if the entity passed in was not a resolved entity
-            if (!isResolvedEntity) {
-                // first get the resolved entity so that all of the references are present
-                resEntity = await entity.createResolvedEntityAsync(`wrtSelf_${entity.entityName}`, resOpt);
-            } else {
-                resEntity = entity;
-            }
+                // only create a resolved entity if the entity passed in was not a resolved entity
+                if (!isResolvedEntity) {
+                    // first get the resolved entity so that all of the references are present
+                    resEntity = await entity.createResolvedEntityAsync(`wrtSelf_${entity.entityName}`, resOpt);
+                } else {
+                    resEntity = entity;
+                }
 
-            // find outgoing entity relationships using attribute context
-            const outgoingRelationships: CdmE2ERelationship[] =
-                this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext, isResolvedEntity);
+                // find outgoing entity relationships using attribute context
+                const newOutgoingRelationships: CdmE2ERelationship[] =
+                    this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext, isResolvedEntity);
 
-            this.outgoingRelationships.set(entity, outgoingRelationships);
+                const oldOutgoingRelationships: CdmE2ERelationship[] = this.outgoingRelationships.get(entity.atCorpusPath);
 
-            // flip outgoing entity relationships list to get incoming relationships map
-            for (const rel of this.outgoingRelationships.get(entity)) {
-                const targetEnt: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(rel.toEntity, currManifest);
-                if (targetEnt) {
-                    if (!this.incomingRelationships.has(targetEnt)) {
-                        this.incomingRelationships.set(targetEnt, []);
+                // fix incoming rels based on any changes made to the outgoing rels
+                if (oldOutgoingRelationships) {
+                    for (const rel of oldOutgoingRelationships) {
+                        const relString: string = rel.createCacheKey();
+                        const hasRel: boolean = newOutgoingRelationships.some(x => x.createCacheKey() === relString);
+
+                        // remove any relationships that no longer exist
+                        if (!hasRel) {
+                            const targetEnt: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(rel.toEntity, currManifest);
+                            if (targetEnt) {
+                                const currIncoming: CdmE2ERelationship[] = this.incomingRelationships.get(targetEnt.atCorpusPath);
+                                if (currIncoming) {
+                                    currIncoming.splice(currIncoming.indexOf(rel), 1);
+                                }
+                            } else {
+                                const absolutePath: string = this.storage.createAbsoluteCorpusPath(rel.toEntity, rel.inDocument);
+                                this.incomingRelationships.delete(absolutePath);
+                            }
+                        }
                     }
-                    this.incomingRelationships.get(targetEnt)
-                        .push(rel);
+                }
+
+                this.outgoingRelationships.set(entity.atCorpusPath, newOutgoingRelationships);
+
+                // flip outgoing entity relationships list to get incoming relationships map
+                for (const rel of newOutgoingRelationships) {
+                    const targetEnt: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(rel.toEntity, currManifest);
+                    if (targetEnt) {
+                        if (!this.incomingRelationships.has(targetEnt.atCorpusPath)) {
+                            this.incomingRelationships.set(targetEnt.atCorpusPath, []);
+                        }
+                        this.incomingRelationships.get(targetEnt.atCorpusPath)
+                            .push(rel);
+                    }
+                }
+
+                // delete the resolved entity if we created one here
+                if (!isResolvedEntity) {
+                    resEntity.inDocument.folder.documents.remove(resEntity.inDocument.name);
                 }
             }
 
-            // delete the resolved entity if we created one here
-            if (!isResolvedEntity) {
-                resEntity.inDocument.folder.documents.remove(resEntity.inDocument.name);
+            for (const subManifestDef of currManifest.subManifests) {
+                const corpusPath: string = this.storage.createAbsoluteCorpusPath(subManifestDef.definition, currManifest);
+                const subManifest: CdmManifestDefinition = await this.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                if (subManifest) {
+                    await this.calculateEntityGraphAsync(subManifest);
+                }
             }
-        }
-
-        for (const subManifestDef of currManifest.subManifests) {
-            const corpusPath: string = this.storage.createAbsoluteCorpusPath(subManifestDef.definition, currManifest);
-            const subManifest: CdmManifestDefinition = await this.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
-            if (subManifest) {
-                await this.calculateEntityGraphAsync(subManifest);
-            }
-        }
+        });
     }
 
     /**
@@ -1693,8 +1314,8 @@ export class CdmCorpusDefinition {
         isResolvedEntity: boolean = false,
         generatedAttSetContext?: CdmAttributeContext,
         wasProjectionPolymorphic: boolean = false,
-        wasEntityRef: boolean = false,
-        fromAtts: CdmAttributeReference[] = null
+        fromAtts: CdmAttributeReference[] = null,
+        entityAttAttContext: CdmAttributeContext = null
     ): CdmE2ERelationship[] {
         let outRels: CdmE2ERelationship[] = [];
         if (attCtx && attCtx.contents) {
@@ -1711,6 +1332,11 @@ export class CdmCorpusDefinition {
             let isPolymorphicSource: boolean = false;
             for (const subAttCtx of attCtx.contents.allItems) {
                 if (subAttCtx.objectType === cdmObjectType.attributeContextDef) {
+                    // find the top level entity definition's attribute context
+                    if (entityAttAttContext == null && attCtx.type == cdmAttributeContextType.attributeDefinition
+                        && attCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt)?.objectType == cdmObjectType.entityAttributeDef) {
+                        entityAttAttContext = attCtx;
+                    }
                     // find entity references that identifies the 'this' entity
                     const child: CdmAttributeContext = subAttCtx as CdmAttributeContext;
                     if (child.definition && child.definition.getObjectType() === cdmObjectType.entityRef) {
@@ -1719,9 +1345,15 @@ export class CdmCorpusDefinition {
                         if (toEntity?.objectType === cdmObjectType.projectionDef) {
                             // Projections
 
-                            isEntityRef = false;
-                            isPolymorphicSource = (toEntity?.owner?.objectType === cdmObjectType.entityAttributeDef &&
-                                ((toEntity.owner as CdmEntityAttributeDefinition).isPolymorphicSource === true));
+                            const owner: CdmObject = toEntity.owner && toEntity.owner.owner;
+
+                            if (owner) {
+                                isPolymorphicSource = (owner.objectType === cdmObjectType.entityAttributeDef &&
+                                    (owner as CdmEntityAttributeDefinition).isPolymorphicSource);
+                            }
+                            else {
+                                Logger.error(this.ctx, this.TAG, this.findOutgoingRelationships.name, subAttCtx.atCorpusPath, cdmLogCode.ErrObjectWithoutOwnerFound);
+                            }
 
                             // From the top of the projection (or the top most which contains a generatedSet / operations)
                             // get the attribute names for the foreign key
@@ -1729,7 +1361,14 @@ export class CdmCorpusDefinition {
                                 fromAtts = this.getFromAttributes(newGenSet, fromAtts);
                             }
 
-                            outRels = this.findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, fromAtts);
+                            // Fetch purpose traits
+                            let resolvedTraitSet: ResolvedTraitSet = null;
+                            const entityAtt: CdmEntityAttributeDefinition = owner.fetchObjectDefinition<CdmObjectDefinition>(resOpt) as CdmEntityAttributeDefinition;
+                            if (entityAtt?.purpose != null) {
+                                resolvedTraitSet = entityAtt.purpose.fetchResolvedTraits(resOpt);
+                            }
+
+                            outRels = this.findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, fromAtts, resolvedTraitSet);
 
                             wasProjectionPolymorphic = isPolymorphicSource;
                         } else {
@@ -1738,23 +1377,23 @@ export class CdmCorpusDefinition {
                             isEntityRef = true;
 
                             const toAtt: string[] = child.exhibitsTraits.allItems.filter(
-                                (x: CdmTraitReference) => {
-                                    return x.namedReference === 'is.identifiedBy' && x.arguments.length > 0;
+                                (x: CdmTraitReferenceBase) => {
+                                    return x.namedReference === 'is.identifiedBy' && (x as CdmTraitReference).arguments.length > 0;
                                 })
-                                .map((y: CdmTraitReference) => {
-                                    const namedRef: string = (y.arguments.allItems[0].value as CdmAttributeReference).namedReference;
+                                .map((y: CdmTraitReferenceBase) => {
+                                    const namedRef: string = ((y as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference).namedReference;
 
                                     return namedRef.slice(namedRef.lastIndexOf('/') + 1);
                                 });
 
-                            outRels = this.findOutgoingRelationshipsForEntityRef(toEntity, toAtt, outRels, newGenSet, child, resOpt, resEntity, isResolvedEntity, wasProjectionPolymorphic, isEntityRef);
+                            outRels = this.findOutgoingRelationshipsForEntityRef(toEntity, toAtt, outRels, newGenSet, child, resOpt, resEntity, isResolvedEntity, wasProjectionPolymorphic, isEntityRef, entityAttAttContext);
                         }
                     }
 
                     // repeat the process on the child node
                     const skipAdd: boolean = wasProjectionPolymorphic && isEntityRef;
 
-                    const subOutRels: CdmE2ERelationship[] = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet, wasProjectionPolymorphic, isEntityRef, fromAtts);
+                    const subOutRels: CdmE2ERelationship[] = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet, wasProjectionPolymorphic, fromAtts, entityAttAttContext);
                     outRels = outRels.concat(subOutRels);
 
                     // if it was a projection-based polymorphic source up through this branch of the tree and currently it has reached the end of the projection tree to come to a non-projection source,
@@ -1771,6 +1410,20 @@ export class CdmCorpusDefinition {
     }
 
     /**
+     * Fetch resolved traits on purpose.
+     * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
+     * @internal
+     */
+    public fetchPurposeResolvedTraitsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): ResolvedTraitSet {
+        const def: CdmObjectDefinition = attributeCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
+        if (def?.objectType == cdmObjectType.entityAttributeDef && (def as CdmEntityAttributeDefinition)?.purpose != null) {
+            return (def as CdmEntityAttributeDefinition).purpose.fetchResolvedTraits(resOpt);
+        }
+
+        return null;
+    }
+
+    /**
      * Find the outgoing relationships for Projections.
      * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
      * @internal
@@ -1780,7 +1433,8 @@ export class CdmCorpusDefinition {
         child: CdmAttributeContext,
         resOpt: resolveOptions,
         resEntity: CdmEntityDefinition,
-        fromAtts: CdmAttributeReference[] = null
+        fromAtts: CdmAttributeReference[] = null,
+        resolvedTraitSet: ResolvedTraitSet = null
     ): CdmE2ERelationship[] {
         if (fromAtts) {
             const resOptCopy: resolveOptions = resOpt.copy();
@@ -1804,6 +1458,15 @@ export class CdmCorpusDefinition {
                     newE2ERel.toEntity = this.storage.createAbsoluteCorpusPath(tuple[0], unResolvedEntity);
                     newE2ERel.toEntityAttribute = tuple[1];
 
+                    if (resolvedTraitSet != null) {
+                        resolvedTraitSet.set.forEach((rt: ResolvedTrait) => {
+                            const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
+                            if (traitRef != null) {
+                                newE2ERel.exhibitsTraits.push(traitRef);
+                            }
+                        });
+                    }
+
                     outRels.push(newE2ERel);
                 }
             }
@@ -1826,7 +1489,8 @@ export class CdmCorpusDefinition {
         resEntity: CdmEntityDefinition,
         isResolvedEntity: boolean,
         wasProjectionPolymorphic: boolean = false,
-        wasEntityRef: boolean = false
+        wasEntityRef: boolean = false,
+        attributeCtx: CdmAttributeContext = null
     ): CdmE2ERelationship[] {
         // entity references should have the "is.identifiedBy" trait, and the entity ref should be valid
         if (toAtt.length === 1 && toEntity) {
@@ -1864,10 +1528,12 @@ export class CdmCorpusDefinition {
                     const fkArgValues: [string, string, string][] = this.getToAttributes(attFromFk, resolvedResOpt);
 
                     for (const constEnt of fkArgValues) {
-                        const absolutePath: string = this.storage.createAbsoluteCorpusPath(constEnt[0], toEntity);
+                        const absolutePath: string = this.storage.createAbsoluteCorpusPath(constEnt[0], attFromFk);
                         toAttList.push([absolutePath, constEnt[1]]);
                     }
                 }
+
+                const resolvedTraitSet: ResolvedTraitSet = this.fetchPurposeResolvedTraitsFromAttCtx(resOpt, attributeCtx);
 
                 for (const attributeTuple of toAttList) {
                     const fromAtt: string = foreignKey.slice(foreignKey.lastIndexOf('/') + 1)
@@ -1876,6 +1542,15 @@ export class CdmCorpusDefinition {
                     const newE2ERel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
                     newE2ERel.fromEntityAttribute = fromAtt;
                     newE2ERel.toEntityAttribute = attributeTuple[1];
+
+                    if (resolvedTraitSet != null) {
+                        resolvedTraitSet.set.forEach((rt: ResolvedTrait) => {
+                            const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
+                            if (traitRef != null) {
+                                newE2ERel.exhibitsTraits.push(traitRef);
+                            }
+                        });
+                    }
 
                     if (isResolvedEntity) {
                         newE2ERel.fromEntity = resEntity.atCorpusPath;
@@ -2013,6 +1688,61 @@ export class CdmCorpusDefinition {
         }
     }
 
+    /**
+     * @internal
+     * fetches from primitives or creates the default attributes that get added by resolution 
+     */
+    public async prepareArtifactAttributesAsync(): Promise<boolean> {
+        if (!this.knownArtifactAttributes) {
+            this.knownArtifactAttributes = new Map<string, CdmTypeAttributeDefinition>();
+            // see if we can get the value from primitives doc
+            // this might fail, and we do not want the user to know about it.
+            const oldStatus = this.ctx.statusEvent; // todo, we should make an easy way for our code to do this and set it back
+            const oldLevel = this.ctx.reportAtLevel;
+            this.setEventCallback(() => { }, cdmStatusLevel.error);
+
+            let entArt: CdmEntityDefinition;
+            try {
+                entArt = await this.fetchObjectAsync<CdmEntityDefinition>('cdm:/primitives.cdm.json/defaultArtifacts');
+            }
+            finally {
+                this.setEventCallback(oldStatus, oldLevel);
+            }
+
+            if (!entArt) {
+                // fallback to the old ways, just make some
+                let artAtt: CdmTypeAttributeDefinition = this.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'count');
+                artAtt.dataType = this.MakeObject<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'integer', true);
+                this.knownArtifactAttributes.set('count', artAtt);
+                artAtt = this.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'id');
+                artAtt.dataType = this.MakeObject<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'entityId', true);
+                this.knownArtifactAttributes.set('id', artAtt);
+                artAtt = this.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'type');
+                artAtt.dataType = this.MakeObject<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'entityName', true);
+                this.knownArtifactAttributes.set('type', artAtt);
+            } else {
+                // point to the ones from the file
+                for (const att of entArt.attributes) {
+                    this.knownArtifactAttributes.set((att as CdmAttribute).name, att as CdmTypeAttributeDefinition);
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @internal
+     * returns the (previously prepared) artifact attribute of the known name
+     */
+    public fetchArtifactAttribute(name: string): CdmTypeAttributeDefinition {
+        if (!this.knownArtifactAttributes) {
+            // this is a usage mistake. never call this before success from the PrepareArtifactAttributesAsync
+            return undefined;
+        }
+
+        return this.knownArtifactAttributes.get(name).copy() as CdmTypeAttributeDefinition;
+    }
+
     private removeObjectDefinitions(doc: CdmDocumentDefinition): void {
         // let bodyCode = () =>
         {
@@ -2020,13 +1750,14 @@ export class CdmCorpusDefinition {
             doc.visit(
                 '',
                 (iObject: CdmObject, path: string) => {
-                    if (path.indexOf('(unspecified)') > 0) {
+                    if (path.indexOf('(unspecified)') !== -1) {
                         return true;
                     }
                     switch (iObject.objectType) {
                         case cdmObjectType.entityDef:
                         case cdmObjectType.parameterDef:
                         case cdmObjectType.traitDef:
+                        case cdmObjectType.traitGroupDef:
                         case cdmObjectType.purposeDef:
                         case cdmObjectType.dataTypeDef:
                         case cdmObjectType.typeAttributeDef:
@@ -2047,6 +1778,8 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.operationReplaceAsForeignKeyDef:
                         case cdmObjectType.operationIncludeAttributesDef:
                         case cdmObjectType.operationAddAttributeGroupDef:
+                        case cdmObjectType.operationAlterTraitsDef:
+                        case cdmObjectType.operationAddArtifactAttributeDef:
                             this.unRegisterSymbol(path, doc);
                             this.unRegisterDefinitionReferenceDocuments(iObject, 'rasb');
                         default:
@@ -2060,7 +1793,12 @@ export class CdmCorpusDefinition {
         // return p.measure(bodyCode);
     }
 
-    private registerSymbol(symbolDef: string, inDoc: CdmDocumentDefinition): void {
+    /**
+     * @internal
+     * @param symbolDef
+     * @param inDoc 
+     */
+    public registerSymbol(symbolDef: string, inDoc: CdmDocumentDefinition): void {
         // let bodyCode = () =>
         {
             let docs: CdmDocumentDefinition[] = this.symbolDefinitions.get(symbolDef);
@@ -2104,6 +1842,7 @@ export class CdmCorpusDefinition {
                             break;
                         }
                     case cdmObjectType.traitDef:
+                    case cdmObjectType.traitGroupDef:
                     case cdmObjectType.purposeDef:
                     case cdmObjectType.dataTypeDef:
                         (this.ctx as resolveContext).relativePath = path;
@@ -2149,13 +1888,9 @@ export class CdmCorpusDefinition {
                                         .getName();
                                     const objectName: string = obj.fetchObjectDefinition(resOpt)
                                         .getName();
-                                    Logger.error(
-                                        CdmCorpusDefinition.name,
-                                        ctx,
-                                        `no argument supplied for required parameter '${paramName}' of trait '${rt.traitName
-                                        }' on '${objectName}'`,
-                                        currentDoc.folderPath + ctx.relativePath
-                                    );
+
+                                    Logger.error(this.ctx, this.TAG, this.resolveReferencesTraitsArguments.name, currentDoc.atCorpusPath, cdmLogCode.ErrTraitArgumentMissing, paramName, rt.traitName, objectName);
+
                                 } else {
                                     resolved++;
                                 }
@@ -2163,14 +1898,9 @@ export class CdmCorpusDefinition {
                         }
                     }
                     if (found > 0 && found === resolved) {
-                        Logger.info(
-                            CdmCorpusDefinition.name,
-                            ctx,
-                            `found and resolved '${found}' required parameters of trait '${rt.traitName}' on '${obj
-                                .fetchObjectDefinition(resOpt)
-                                .getName()}'`,
-                            currentDoc.folderPath + ctx.relativePath
-                        );
+                        Logger.info(ctx, this.TAG, this.resolveReferencesTraitsArguments.name, currentDoc.atCorpusPath, `found and resolved '${found}' required parameters of trait '${rt.traitName}' on '${obj
+                            .fetchObjectDefinition(resOpt)
+                            .getName()}'`);
                     }
                 }
             }
@@ -2277,7 +2007,7 @@ export class CdmCorpusDefinition {
         nextStage: cdmValidationStep
     ): cdmValidationStep {
         const ctx: resolveContext = this.ctx as resolveContext;
-        Logger.debug(CdmCorpusDefinition.name, ctx, statusMessage);
+        Logger.debug(ctx, this.TAG, this.resolveReferencesStep.name, undefined, statusMessage);
         const entityNesting: number = 0;
         for (const doc of this.documentLibrary.listAllDocuments()) {
             // cache import documents
@@ -2331,7 +2061,7 @@ export class CdmCorpusDefinition {
         if (resolvedEntity.fetchResolvedTraits(resOpt)
             .find(resOpt, 'is.identifiedBy') === undefined) {
 
-            Logger.warning(CdmCorpusDefinition.name, ctx, `There is a primary key missing for the entity ${resolvedEntity.getName()}.`);
+            Logger.warning(this.ctx, this.TAG, this.checkPrimaryKeyAttributes.name, resolvedEntity.atCorpusPath, cdmLogCode.WarnValdnPrimaryKeyMissing, resolvedEntity.getName());
         }
     }
 
@@ -2340,120 +2070,125 @@ export class CdmCorpusDefinition {
         switch (expectedType) {
             case cdmObjectType.traitRef:
                 if (!isCdmTraitDefinition(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type trait', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'trait', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.dataTypeRef:
                 if (!isDataTypeDefinition(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type dataType', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'dataType', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.entityRef:
                 if (!isEntityDefinition(found) && !isProjection(found) && !isConstantEntityDefinition(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type entity or type projection or type constant entity', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'entity or type projection or type constant entity', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.parameterDef:
                 if (!isParameterDefinition(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type parameter', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'parameter', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.purposeRef:
                 if (!isPurposeDefinition(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type purpose', symbolDef);
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'purpose', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.traitGroupRef:
+                if (!isCdmTraitGroupDefinition(found)) {
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'traitGroup', symbolDef);
 
                     return undefined;
                 }
                 break;
             case cdmObjectType.attributeGroupRef:
                 if (!isAttributeGroupDefinition(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type attributeGroup', symbolDef);
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'attributeGroup', symbolDef);
 
                     return undefined;
                 }
                 break;
             case cdmObjectType.projectionDef:
                 if (!isProjection(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type projection', symbolDef);
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'projection', symbolDef);
 
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationAddCountAttributeDef:
                 if (!isOperationAddCountAttribute(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add count attribute operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'add count attribute operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationAddSupportingAttributeDef:
                 if (!isOperationAddSupportingAttribute(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add supporting attribute operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'add supporting attribute operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationAddTypeAttributeDef:
                 if (!isOperationAddTypeAttribute(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add type attribute operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'add type attribute operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationExcludeAttributesDef:
                 if (!isOperationExcludeAttributes(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type exclude attributes operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'exclude attributes operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationArrayExpansionDef:
                 if (!isOperationArrayExpansion(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type array expansion operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'array expansion operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationCombineAttributesDef:
                 if (!isOperationCombineAttributes(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type combine attributes operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'combine attributes operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationRenameAttributesDef:
                 if (!isOperationRenameAttributes(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type rename attributes operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'rename attributes operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationReplaceAsForeignKeyDef:
                 if (!isOperationReplaceAsForeignKey(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type replace as foreign key operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'replace as foreign key operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationIncludeAttributesDef:
                 if (!isOperationIncludeAttributes(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type include attributes operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'include attributes operation', symbolDef);
                     return undefined;
                 }
                 break;
             case cdmObjectType.operationAddAttributeGroupDef:
                 if (!isOperationAddAttributeGroup(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add attribute group operation', symbolDef);
-
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'add attribute group operation', symbolDef);
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAlterTraitsDef:
+                if (!isOperationAlterTraits(found)) {
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'alter traits operation', symbolDef);
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAddArtifactAttributeDef:
+                if (!isOperationAddArtifactAttribute(found)) {
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'add artifact attribute operation', symbolDef);
                     return undefined;
                 }
                 break;
@@ -2545,8 +2280,9 @@ export class CdmCorpusDefinition {
         if (fromAttrDef?.appliedTraits) {
             const tupleList: [string, string, string][] = [];
             for (const trait of fromAttrDef.appliedTraits) {
-                if (trait.namedReference === 'is.linkedEntity.identifier' && trait.arguments.length > 0) {
-                    const constEnt: CdmConstantEntityDefinition = (trait.arguments.allItems[0].value as CdmEntityReference).fetchObjectDefinition<CdmConstantEntityDefinition>(resOpt);
+                if (trait.namedReference === 'is.linkedEntity.identifier' && (trait as CdmTraitReference).arguments.length > 0) {
+                    const constEnt: CdmConstantEntityDefinition = ((trait as CdmTraitReference).arguments.allItems[0].value as CdmEntityReference)
+                        .fetchObjectDefinition<CdmConstantEntityDefinition>(resOpt);
                     if (constEnt && constEnt.constantValues.length > 0) {
                         for (const constantValues of constEnt.constantValues) {
                             tupleList.push([constantValues[0], constantValues[1], constantValues.length > 2 ? constantValues[2] : '']);

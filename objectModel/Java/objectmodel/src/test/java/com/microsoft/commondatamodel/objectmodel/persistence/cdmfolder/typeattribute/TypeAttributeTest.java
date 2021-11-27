@@ -10,15 +10,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
@@ -34,6 +26,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ent
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ConstantEntity;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -121,7 +114,7 @@ public class TypeAttributeTest {
    */
   @Test
   public void testReadingIsPrimaryKey() throws InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testReadingIsPrimaryKey", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testReadingIsPrimaryKey");
 
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
@@ -134,9 +127,9 @@ public class TypeAttributeTest {
     Assert.assertTrue(typeAttribute.fetchIsPrimaryKey());
 
     // Check that the trait "is.identifiedBy" is created with the correct argument.
-    CdmTraitReference isIdentifiedBy1 = typeAttribute.getAppliedTraits().get(1);
+    CdmTraitReference isIdentifiedBy1 = (CdmTraitReference) typeAttribute.getAppliedTraits().get(1);
     Assert.assertEquals(isIdentifiedBy1.getNamedReference(), "is.identifiedBy");
-    Assert.assertEquals(isIdentifiedBy1.getArguments().get(0).getValue(), "TeamMembership/(resolvedAttributes)/teamMembershipId");
+    Assert.assertEquals(((CdmAttributeReference)isIdentifiedBy1.getArguments().get(0).getValue()).getNamedReference(), "TeamMembership/(resolvedAttributes)/teamMembershipId");
 
     // Read from a resolved entity schema.
     final CdmEntityDefinition resolvedEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TeamMembership_Resolved.cdm.json/TeamMembership", null, resOpt).join();
@@ -145,7 +138,7 @@ public class TypeAttributeTest {
     Assert.assertTrue(resolvedTypeAttribute.fetchIsPrimaryKey());
 
     // Check that the trait "is.identifiedBy" is created with the correct argument.
-    CdmTraitReference isIdentifiedBy2 = resolvedTypeAttribute.getAppliedTraits().get(6);
+    CdmTraitReference isIdentifiedBy2 = (CdmTraitReference) resolvedTypeAttribute.getAppliedTraits().get(6);
     Assert.assertEquals(isIdentifiedBy2.getNamedReference(), "is.identifiedBy");
 
     CdmAttributeReference argumentValue = (CdmAttributeReference) isIdentifiedBy2.getArguments().get(0).getValue();
@@ -178,7 +171,7 @@ public class TypeAttributeTest {
   @Test
   public void testPropertyPersistence() throws InterruptedException, ExecutionException, JsonProcessingException {
     final ObjectMapper mapper = new ObjectMapper();
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestPropertyPersistence", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestPropertyPersistence");
 
     HashMap<String, String> functionParameters = new HashMap<>();
     final EventCallback callback = (CdmStatusLevel statusLevel, String message1) -> {
@@ -241,7 +234,7 @@ public class TypeAttributeTest {
     final CdmTypeAttributeDefinition emptyDefaultValueAttribute = (CdmTypeAttributeDefinition)entity.getAttributes().get(4);
     Assert.assertEquals(functionParameters.get("functionWasCalled"), "true");
     Assert.assertEquals(functionParameters.get("functionParameter1"), CdmStatusLevel.Error.toString());
-    Assert.assertTrue(functionParameters.get("functionParameter2").contains("Default value missing languageTag or displayText."));
+    Assert.assertTrue(functionParameters.get("functionParameter2").contains("A 'defaultValue' property is empty or one of its entries is missing 'languageTag' and 'displayText' values."));
     Assert.assertNull(emptyDefaultValueAttribute.fetchDefaultValue());
     // set the default value to an empty list for testing that it should be removed from the generated json.
     emptyDefaultValueAttribute.updateDefaultValue(new ArrayList());
@@ -348,7 +341,7 @@ public class TypeAttributeTest {
    */
   @Test
   public void testDataFormatToTraitMappings() throws InterruptedException, ExecutionException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testDataFormatToTraitMappings", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testDataFormatToTraitMappings");
     final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").get();
 
     // Check that the traits we expect for each DataFormat are found in the type attribute's applied traits.
@@ -451,9 +444,31 @@ public class TypeAttributeTest {
     Assert.assertTrue(qTraitNamedReferences.contains("means.content.text.JSON"));
   }
 
+  /**
+   * Testing that cardinality settings are loaded and saved correctly
+   */
+  @Test
+  public void testCardinalityPersistence() throws InterruptedException, ExecutionException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCardinalityPersistence");
+
+    // test fromData
+    final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/someEntity.cdm.json/someEntity").get();
+    final CdmTypeAttributeDefinition attribute = (CdmTypeAttributeDefinition)entity.getAttributes().get(0);
+
+    Assert.assertNotNull(attribute.getCardinality());
+    Assert.assertEquals((attribute.getCardinality().getMinimum()), "0");
+    Assert.assertEquals((attribute.getCardinality().getMaximum()), "1");
+
+    // test toData
+    final TypeAttribute attributeData = TypeAttributePersistence.toData(attribute, new ResolveOptions(entity.getInDocument()), new CopyOptions());
+    Assert.assertNotNull(attributeData.getCardinalitySettings());
+    Assert.assertEquals((attributeData.getCardinalitySettings().get("minimum").asText()), "0");
+    Assert.assertEquals((attributeData.getCardinalitySettings().get("maximum").asText()), "1");
+  }
+
   private Set<String> fetchTraitNamedReferences(CdmTraitCollection traits) {
     Set<String> namedReferences = new HashSet<String>();
-    for (CdmTraitReference trait : traits) {
+    for (CdmTraitReferenceBase trait : traits) {
       namedReferences.add(trait.getNamedReference());
     }
     return namedReferences;

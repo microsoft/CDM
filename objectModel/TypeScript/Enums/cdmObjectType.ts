@@ -8,6 +8,8 @@ export enum cdmObjectType {
     parameterDef,
     traitDef,
     traitRef,
+    traitGroupDef,
+    traitGroupRef,
     purposeDef,
     purposeRef,
     dataTypeDef,
@@ -43,5 +45,7 @@ export enum cdmObjectType {
     operationReplaceAsForeignKeyDef,
     operationIncludeAttributesDef,
     operationAddAttributeGroupDef,
+    operationAlterTraitsDef,
+    operationAddArtifactAttributeDef,
     projectionDef
 }

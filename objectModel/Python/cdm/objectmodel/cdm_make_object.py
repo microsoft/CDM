@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from cdm.enums import CdmObjectType
+from cdm.utilities import logger
 
 from .cdm_attribute_context import CdmAttributeContext
 from .cdm_attribute_context_ref import CdmAttributeContextReference
@@ -28,6 +29,8 @@ from .cdm_referenced_entity_declaration_def import CdmReferencedEntityDeclaratio
 from .cdm_type_attribute_def import CdmTypeAttributeDefinition
 from .cdm_trait_ref import CdmTraitReference
 from .cdm_trait_def import CdmTraitDefinition
+from .cdm_trait_group_ref import CdmTraitGroupReference
+from .cdm_trait_group_def import CdmTraitGroupDefinition
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_parameter_def import CdmParameterDefinition
 from .cdm_purpose_def import CdmPurposeDefinition
@@ -43,6 +46,8 @@ from cdm.objectmodel.projections.cdm_operation_rename_attributes import CdmOpera
 from cdm.objectmodel.projections.cdm_operation_replace_as_foreign_key import CdmOperationReplaceAsForeignKey
 from cdm.objectmodel.projections.cdm_operation_include_attributes import CdmOperationIncludeAttributes
 from cdm.objectmodel.projections.cdm_operation_add_attribute_group import CdmOperationAddAttributeGroup
+from cdm.objectmodel.projections.cdm_operation_alter_traits import CdmOperationAlterTraits
+from cdm.objectmodel.projections.cdm_operation_add_artifact_attribute import CdmOperationAddArtifactAttribute
 
 switcher = {
     CdmObjectType.ARGUMENT_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmArgumentDefinition(ctx, name_or_ref),
@@ -71,7 +76,8 @@ switcher = {
     CdmObjectType.TYPE_ATTRIBUTE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmTypeAttributeDefinition(ctx, name_or_ref),
     CdmObjectType.TRAIT_REF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitReference(ctx, name_or_ref, simple_name_ref),
     CdmObjectType.TRAIT_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitDefinition(ctx, name_or_ref, None),
-    CdmObjectType.ARGUMENT_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmArgumentDefinition(ctx, name_or_ref),
+    CdmObjectType.TRAIT_GROUP_REF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitGroupReference(ctx, name_or_ref, simple_name_ref),
+    CdmObjectType.TRAIT_GROUP_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitGroupDefinition(ctx, name_or_ref),
     CdmObjectType.PARAMETER_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmParameterDefinition(ctx, name_or_ref),
     CdmObjectType.PURPOSE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmPurposeDefinition(ctx, name_or_ref, None),
     CdmObjectType.PURPOSE_REF: lambda ctx, name_or_ref, simple_name_ref: CdmPurposeReference(ctx, name_or_ref, simple_name_ref),
@@ -85,11 +91,16 @@ switcher = {
     CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationRenameAttributes(ctx),
     CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationReplaceAsForeignKey(ctx),
     CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationIncludeAttributes(ctx),
-    CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddAttributeGroup(ctx)
+    CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddAttributeGroup(ctx),
+    CdmObjectType.OPERATION_ALTER_TRAITS_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAlterTraits(ctx),
+    CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddArtifactAttribute(ctx)
 }
 
 
 def make_object(ctx, of_type: 'CdmObjectType', name_or_ref: str, simple_name_ref: bool) -> 'TObject':
     """instantiates a OM class based on the object type passed as first parameter."""
+    # Log and ingest a message when a new manifest is created
+    if of_type == CdmObjectType.MANIFEST_DEF:
+        logger.debug(ctx, None, make_object.__name__, None, 'New Manifest created.', True)
 
     return switcher[of_type](ctx, name_or_ref, simple_name_ref)

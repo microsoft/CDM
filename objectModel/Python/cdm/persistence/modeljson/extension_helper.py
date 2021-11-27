@@ -2,17 +2,16 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from collections import OrderedDict
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Dict, Optional, Tuple, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import JObject, logger
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCollection, CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmParameterDefinition, CdmTraitCollection, CdmTraitDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmTraitCollection, CdmTraitDefinition
 
-cached_def_docs = {}  # type: Dict[str, CdmDocumentDefinition]
+cached_def_docs = {}  # type: Dict[Tuple[CdmCorpusContext, str], CdmDocumentDefinition]
 
-# TODO: confirm this mapping
 convert_type_to_expected_string = {
     str: 'string',
     int: 'number',
@@ -39,14 +38,18 @@ def add_import_docs_to_manifest(ctx: 'CdmCorpusContext', import_docs: List['CdmI
 
 
 async def fetch_def_doc(ctx: 'CdmCorpusContext', file_name: str) -> None:
-    if file_name in cached_def_docs:
-        return cached_def_docs[file_name]
+    # Since the CachedDefDocs is a static property and there might be multiple corpus running,
+    # we need to make sure that each corpus will have its own cached def document.
+    # This is achieved by adding the context as part of the key to the document.
+    key = (ctx, file_name)
+    if key in cached_def_docs:
+        return cached_def_docs[key]
 
     path = '/extensions/{}'.format(file_name)
     document = await ctx.corpus.fetch_object_async(path, ctx.corpus.storage.fetch_root_folder('cdm'))
 
     if document is not None:
-        cached_def_docs[file_name] = document
+        cached_def_docs[key] = document
 
     return document
 
@@ -61,7 +64,7 @@ async def standard_import_detection(ctx: 'CdmCorpusContext', extension_trait_def
         extension_trait_def = local_extension_trait_def_list[trait_index]
 
         if not extension_trait_def.trait_name or not extension_trait_def.trait_name.startswith(EXTENSION_TRAIT_NAME_PREFIX):
-            logger.error(_TAG, ctx, 'Invalid extension trait name {}, expected prefix {}'.format(extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX))
+            logger.error(ctx, _TAG, standard_import_detection.__name__, extension_trait_def.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_INVALID_EXTENSION_TRAIT, extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX)
             return None
 
         extension_breakdown = extension_trait_def.trait_name[len(EXTENSION_TRAIT_NAME_PREFIX):].split(':')

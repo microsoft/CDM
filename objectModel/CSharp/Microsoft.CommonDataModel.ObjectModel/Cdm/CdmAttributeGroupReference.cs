@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -47,7 +47,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return new CdmAttributeGroupReference(this.Ctx, refTo, simpleReference);
             }
             else
+            {
                 return host.CopyToHost(this.Ctx, refTo, simpleReference);
+            }
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]
@@ -61,6 +63,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        [Obsolete("For internal use only.")]
         public ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
             if (resOpt == null)

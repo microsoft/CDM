@@ -12,6 +12,7 @@ import {
     CdmTraitCollection,
     CdmTraitDefinition,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
@@ -27,6 +28,10 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
      * @internal
      */
     public attributeCount: number;
+    /**
+     * @deprecated
+     * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+     */
     public resolutionGuidance: CdmAttributeResolutionGuidance;
 
     /**
@@ -51,13 +56,11 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     public copyAtt(resOpt: resolveOptions, copy: CdmAttribute): CdmAttribute {
         // let bodyCode = () =>
         {
-            copy.purpose = this.purpose ? <CdmPurposeReference>this.purpose.copy(resOpt) : undefined;
-            copy.resolutionGuidance = this.resolutionGuidance ?
-                this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance
-                : undefined;
+            copy.purpose = this.purpose ? this.purpose.copy(resOpt) as CdmPurposeReference : undefined;
+            copy.resolutionGuidance = this.resolutionGuidance ? this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance : undefined;
             copy.appliedTraits.clear();
             for (const trait of this.appliedTraits) {
-                copy.appliedTraits.push(trait);
+                copy.appliedTraits.push(trait.copy(resOpt) as CdmTraitReferenceBase);
             }
             this.copyDef(resOpt, copy);
 
@@ -92,6 +95,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         // let bodyCode = () =>
         {
             if (this.purpose) {
+                this.purpose.owner = this;
                 if (this.purpose.visit(`${pathFrom}/purpose/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -102,6 +106,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
                 }
             }
             if (this.resolutionGuidance) {
+                this.resolutionGuidance.owner = this;
                 if (this.resolutionGuidance.visit(`${pathFrom}/resolutionGuidance/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -121,10 +126,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     public addResolvedTraitsApplied(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): ResolvedTraitSet {
         // let bodyCode = () =>
         {
-            const l: number = this.appliedTraits.length;
-            for (let i: number = 0; i < l; i++) {
-                rtsb.mergeTraits(this.appliedTraits.allItems[i].fetchResolvedTraits(resOpt));
-            }
+            this.appliedTraits.allItems.forEach(trait => rtsb.mergeTraits(trait.fetchResolvedTraits(resOpt)));
 
             // any applied on use
             return rtsb.rts;
@@ -154,6 +156,11 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         }
         // return p.measure(bodyCode);
     }
+
+    /**
+     * @deprecated
+     * For internal use only.
+     */
     public abstract fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet;
 
 }

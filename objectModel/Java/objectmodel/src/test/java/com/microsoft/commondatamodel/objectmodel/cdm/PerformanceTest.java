@@ -5,20 +5,14 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.CommonDataModelLoader;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.resolution.CdmEntityDefinitionResolutionTest;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +32,7 @@ public class PerformanceTest {
   /**
    * The path between TestDataPath and TestName.
    */
-  private static final String TESTS_SUBPATH = new File("cdm", "performance").toString();
+  private static final String TESTS_SUBPATH = new File("Cdm", "Performance").toString();
 
   /**
    * Test the time taken to resolve all the entities
@@ -175,7 +169,7 @@ public class PerformanceTest {
           .map(att -> (CdmTypeAttributeDefinition) att)
           .collect(Collectors.toList());
 
-      final List<CdmTraitReference> reqdTraits = atts
+      final List<CdmTraitReferenceBase> reqdTraits = atts
           .parallelStream()
           .map(att -> att
               .getAppliedTraits()
@@ -188,12 +182,14 @@ public class PerformanceTest {
               .orElse(null))
           .filter(trait -> trait != null)
           .collect(Collectors.toList());
+
       final List<CdmEntityDefinition> references = new ArrayList<>();
+
       reqdTraits.forEach(trait -> {
         CdmConstantEntityDefinition constEnt = null;
-        if (trait.fetchArgumentValue("entityReferences") != null) {
+        if (((CdmTraitReference) trait).fetchArgumentValue("entityReferences") != null) {
           constEnt =
-              ((CdmEntityReference) trait.fetchArgumentValue("entityReferences"))
+              ((CdmEntityReference) ((CdmTraitReference) trait).fetchArgumentValue("entityReferences"))
                   .fetchObjectDefinition(resOpt);
         }
         if (constEnt != null) {

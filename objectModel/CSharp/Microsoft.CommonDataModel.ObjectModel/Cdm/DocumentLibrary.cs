@@ -3,33 +3,40 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Concurrent;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Synchronizes all dictionaries relating to the documents (and their statuses) in the corpus.
     /// </summary>
     internal class DocumentLibrary
     {
-        internal IDictionary<string, byte> docsNotLoaded;
-        internal IDictionary<string, byte> docsCurrentlyLoading;
-        internal IDictionary<CdmDocumentDefinition, byte> docsNotIndexed;
-        internal IDictionary<string, byte> docsNotFound;
-        internal List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
-        internal IDictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
-        internal ConcurrentSemaphore concurrentReadLock;
+        private readonly List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
+        private readonly CdmCorpusDefinition corpus;
+        private readonly ISet<CdmDocumentDefinition> docsCurrentlyIndexing;
+        private readonly ISet<string> docsCurrentlyLoading;
+        private readonly ISet<string> docsNotFound;
+        private readonly IDictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
 
-        internal DocumentLibrary()
+        private readonly string TAG = nameof(DocumentLibrary);
+
+        internal readonly ConcurrentSemaphore concurrentReadLock;
+
+        internal DocumentLibrary(CdmCorpusDefinition corpus)
         {
             this.allDocuments = new List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
-            this.pathLookup = new Dictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
-            this.docsNotLoaded = new Dictionary<string, byte>();
-            this.docsCurrentlyLoading = new Dictionary<string, byte>();
-            this.docsNotFound = new Dictionary<string, byte>();
-            this.docsNotIndexed = new Dictionary<CdmDocumentDefinition, byte>();
             this.concurrentReadLock = new ConcurrentSemaphore();
+            this.corpus = corpus;
+            this.docsCurrentlyIndexing = new HashSet<CdmDocumentDefinition>();
+            this.docsCurrentlyLoading = new HashSet<string>();
+            this.docsNotFound = new HashSet<string>();
+            this.pathLookup = new Dictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
         }
 
         /// <summary>
@@ -46,6 +53,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     this.allDocuments.Add(Tuple.Create(folder, doc));
                     this.pathLookup.Add(path, Tuple.Create(folder, doc));
+                    folder.DocumentLookup.Add(doc.Name, doc);
                 }
             }
         }
@@ -72,30 +80,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Returns a list of all the documents that are not indexed.
         /// </summary>
-        internal List<CdmDocumentDefinition> ListDocsNotIndexed()
+        internal List<CdmDocumentDefinition> ListDocsNotIndexed(CdmDocumentDefinition rootDoc, ISet<string> docsLoaded)
         {
             var docsNotIndexed = new List<CdmDocumentDefinition>();
             lock (this.allDocuments)
             {
                 // gets all the documents that needs indexing and set the currentlyIndexing flag to true.
-                foreach (var doc in this.docsNotIndexed.Keys)
+                foreach (var docPath in docsLoaded)
                 {
-                    doc.CurrentlyIndexing = true;
-                    docsNotIndexed.Add(doc);
+                    var doc = this.FetchDocument(docPath);
+                    if (doc == null)
+                    {
+                        continue;
+                    }
+
+                    // The root document that started this indexing process is already masked for indexing, don't mark it again.
+                    if (doc != rootDoc)
+                    {
+                        if (this.MarkDocumentForIndexing(doc))
+                        {
+                            docsNotIndexed.Add(doc);
+                        }
+                    }
+                    else
+                    {
+                        docsNotIndexed.Add(rootDoc);
+                    }
                 }
             }
             return docsNotIndexed;
-        }
-
-        /// <summary>
-        /// Returns a list of all the documents that are not loaded.
-        /// </summary>
-        internal List<String> ListDocsNotLoaded()
-        {
-            lock (this.allDocuments)
-            {
-                return new List<String>(this.docsNotLoaded.Keys);
-            }
         }
 
         /// <summary>
@@ -115,26 +128,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Adds a document to the list of documents that are not loaded if its path does not exist in the path lookup.
-        /// </summary>
-        /// <param name="path">The document path.</param>
-        internal void AddToDocsNotLoaded(string path)
-        {
-            lock (this.allDocuments)
-            {
-                if (!this.docsNotFound.ContainsKey(path))
-                {
-                    this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
-                    // If the imports were not indexed yet there might be documents imported that weren't loaded.
-                    if (lookup == null || (!lookup.Item2.ImportsIndexed && !lookup.Item2.CurrentlyIndexing))
-                    {
-                        this.docsNotLoaded[path] = 1;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Fetches a document from the path lookup.
         /// </summary>
         /// <param name="path">The document path.</param>
@@ -143,9 +136,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             lock (this.allDocuments)
             {
-                if (!this.docsNotFound.ContainsKey(path))
+                if (!this.docsNotFound.Contains(path))
                 {
-                    this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
+                    this.pathLookup.TryGetValue(path, out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
                     if (lookup != null)
                     {
                         return lookup.Item2;
@@ -158,71 +151,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Sets a document's status to loading if the document needs to be loaded.
         /// </summary>
-        /// <param name="docName">The document name.</param>
+        /// <param name="docPath">The document path.</param>
         /// <returns>Whether a document needs to be loaded.</returns>
-        internal bool NeedToLoadDocument(string docName, ConcurrentDictionary<CdmDocumentDefinition, byte> docsNowLoaded)
+        internal bool NeedToLoadDocument(string docPath, ISet<string> docsLoading)
         {
-            bool needToLoad = false;
-            CdmDocumentDefinition doc = null;
-
             lock (this.allDocuments)
             {
-                if (this.docsNotLoaded.ContainsKey(docName) && !this.docsNotFound.ContainsKey(docName) && !this.docsCurrentlyLoading.ContainsKey(docName))
+                this.pathLookup.TryGetValue(docPath, out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
+                var document = lookup?.Item2;
+
+                // first check if the document was not found or is currently loading.
+                // if the document was loaded previously, check if its imports were not indexed and it's not being indexed currently.
+                var needToLoad = !this.docsNotFound.Contains(docPath) && !docsLoading.Contains(docPath) && (document == null || (!document.ImportsIndexed && !document.CurrentlyIndexing));
+
+                if (needToLoad)
                 {
-                    // Set status to loading.
-                    this.docsNotLoaded.Remove(docName);
+                    docsLoading.Add(docPath);
+                }
 
-                    // The document was loaded already, skip it.
-                    if (this.pathLookup.TryGetValue(docName.ToLower(), out var lookup))
-                    {
-                        doc = lookup.Item2;
-                    }
-                    else
-                    {
-                        this.docsCurrentlyLoading.Add(docName, 1);
-                        needToLoad = true;
-                    }
-                }                
+                return needToLoad;
             }
-
-            if (doc != null)
-            {
-                MarkDocumentAsLoadedOrFailed(doc, docName, docsNowLoaded);
-            }
-
-            return needToLoad;
         }
 
         /// <summary>
         /// Marks a document for indexing if it has loaded successfully, or adds it to the list of documents not found if it failed to load.
         /// </summary>
+        /// <param name="docPath">The document path.</param>
         /// <param name="doc">The document that was loaded.</param>
-        /// <param name="docName">The document name.</param>
-        /// <param name="docsNowLoaded">The dictionary of documents that are now loaded.</param>
         /// <returns>Returns true if the document has loaded, false if it failed to load.</returns>
-        internal bool MarkDocumentAsLoadedOrFailed(CdmDocumentDefinition doc, string docName, ConcurrentDictionary<CdmDocumentDefinition, byte> docsNowLoaded)
+        private void MarkAsLoadedOrFailed(string docPath, CdmContainerDefinition doc)
         {
             lock (this.allDocuments)
             {
                 // Doc is no longer loading.
-                this.docsCurrentlyLoading.Remove(docName);
+                this.docsCurrentlyLoading.Remove(docPath);
 
-                if (doc != null)
-                {
-                    // Doc is now loaded.
-                    docsNowLoaded.TryAdd(doc, 1);
-                    // Doc needs to be indexed.
-                    this.docsNotIndexed.Add(doc, 1);
-                    doc.CurrentlyIndexing = true;
-
-                    return true;
-                }
-                else
+                if (doc == null)
                 {
                     // The doc failed to load, so set doc as not found.
-                    this.docsNotFound.Add(docName, 1);
-
-                    return false;
+                    this.docsNotFound.Add(docPath);
                 }
             }
         }
@@ -235,7 +202,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             lock (this.allDocuments)
             {
-                this.docsNotIndexed.Remove(doc);
+                doc.CurrentlyIndexing = false;
+                this.docsCurrentlyIndexing.Remove(doc);
             }
         }
 
@@ -243,11 +211,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Adds a document to the list of documents that are not indexed to mark it for indexing.
         /// </summary>
         /// <param name="doc">The document.</param>
-        internal void MarkDocumentForIndexing(CdmDocumentDefinition doc)
+        /// <returns>If the document needs indexing or not.</returns>
+        internal bool MarkDocumentForIndexing(CdmDocumentDefinition doc)
         {
             lock (this.allDocuments)
             {
-                this.docsNotIndexed[doc] = 1;
+                if (doc.NeedsIndexing && !doc.CurrentlyIndexing)
+                {
+                    // If the document was not indexed before and it's not currently being indexed.
+                    this.docsCurrentlyIndexing.Add(doc);
+                    doc.CurrentlyIndexing = true;
+                }
+
+                return doc.NeedsIndexing;
             }
         }
 
@@ -258,6 +234,104 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal bool Contains(Tuple<CdmFolderDefinition, CdmDocumentDefinition> fd)
         {
             return this.allDocuments.Contains(fd);
+        }
+
+        /// <summary>
+        /// Loads a folder or document given its corpus path.
+        /// </summary>
+        /// <param name="objectPath"></param>
+        /// <param name="forceReload"></param>
+        /// <param name="resOpt"></param>
+        /// <param name="indexing"></param>
+        /// <returns></returns>
+        internal Task<CdmContainerDefinition> LoadFolderOrDocument(string objectPath, bool forceReload = false, ResolveOptions resOpt = null)
+        {
+            lock (this.allDocuments)
+            {
+                // If the document is already loaded and the user do not want to force a reload, return the document previously loaded.
+                if (!forceReload && this.pathLookup.ContainsKey(objectPath))
+                {
+                    CdmContainerDefinition doc = this.pathLookup[objectPath].Item2;
+                    return Task.FromResult(doc);
+                }
+
+                // Mark as loading.
+                this.docsCurrentlyLoading.Add(objectPath);
+            }
+
+            // The document needs to be loaded. Create a task to load it and add to the list of documents currently loading.
+            var task = Task.Run(async () =>
+            {
+                var result = await this._LoadFolderOrDocument(objectPath, forceReload, resOpt);
+                this.MarkAsLoadedOrFailed(objectPath, result);
+                return result;
+            });
+
+            return task;
+        }
+
+        /// <summary>
+        /// Loads a folder or document given its obejct path.
+        /// </summary>
+        /// <param name="objectPath"></param>
+        /// <param name="forceReload"></param>
+        /// <param name="resOpt"></param>
+        /// <returns></returns>
+        private async Task<CdmContainerDefinition> _LoadFolderOrDocument(string objectPath, bool forceReload = false, ResolveOptions resOpt = null)
+        {
+            if (string.IsNullOrWhiteSpace(objectPath))
+            {
+                return null;
+            }
+
+            // first check for namespace
+            Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(objectPath);
+            if (pathTuple == null)
+            {
+                Logger.Error(this.corpus.Ctx, TAG, nameof(LoadFolderOrDocument), objectPath, CdmLogCode.ErrPathNullObjectPath);
+                return null;
+            }
+            string nameSpace = !string.IsNullOrWhiteSpace(pathTuple.Item1) ? pathTuple.Item1 : this.corpus.Storage.DefaultNamespace;
+            objectPath = pathTuple.Item2;
+
+            if (!objectPath.StartsWith("/"))
+            {
+                return null;
+            }
+
+            var namespaceFolder = this.corpus.Storage.FetchRootFolder(nameSpace);
+            StorageAdapterBase namespaceAdapter = this.corpus.Storage.FetchAdapter(nameSpace);
+            if (namespaceFolder == null || namespaceAdapter == null)
+            {
+                Logger.Error(this.corpus.Ctx, TAG, nameof(LoadFolderOrDocument), objectPath, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);
+                return null;
+            }
+            CdmFolderDefinition lastFolder = namespaceFolder.FetchChildFolderFromPath(objectPath, false);
+
+            // don't create new folders, just go as far as possible
+            if (lastFolder == null)
+            {
+                return null;
+            }
+
+            // maybe the search is for a folder?
+            string lastPath = lastFolder.FolderPath;
+            if (lastPath == objectPath)
+            {
+                return lastFolder;
+            }
+
+            // remove path to folder and then look in the folder
+            objectPath = StringUtils.Slice(objectPath, lastPath.Length);
+
+            this.concurrentReadLock.Acquire();
+            
+            // During this step the document will be added to the pathLookup when it is added to a folder.
+            var doc = await lastFolder.FetchDocumentFromFolderPathAsync(objectPath, forceReload, resOpt);
+
+            this.concurrentReadLock.Release();
+
+            return doc;
         }
     }
 }

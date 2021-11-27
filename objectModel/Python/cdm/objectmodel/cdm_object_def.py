@@ -31,7 +31,8 @@ class CdmObjectDefinition(CdmObject):
     def exhibits_traits(self) -> 'CdmTraitCollection':
         return self._exhibits_traits
 
-    def _construct_resolved_traits_def(self, base: 'CdmObjectReference', rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
+    def _construct_resolved_traits_def(self, base: Optional['CdmObjectReference'], rtsb: 'ResolvedTraitSetBuilder',
+                                       res_opt: 'ResolveOptions') -> None:
         if base:
             # merge in all from base class
             rtsb.merge_traits(base._fetch_resolved_traits(res_opt))
@@ -42,6 +43,7 @@ class CdmObjectDefinition(CdmObject):
                 rtsb.merge_traits(et._fetch_resolved_traits(res_opt))
 
     def _copy_def(self, res_opt: 'ResolveOptions', copy: 'CdmObjectDefinition') -> None:
+        copy.ctx = self.ctx
         copy._declared_path = self._declared_path
         copy.explanation = self.explanation
         copy.exhibits_traits.clear()
@@ -68,7 +70,7 @@ class CdmObjectDefinition(CdmObject):
         """
         from .cdm_corpus_def import CdmCorpusDefinition
         cdm_object_ref = self.ctx.corpus.make_object(CdmCorpusDefinition._map_reference_type(self.object_type), 'portable', True)  # type: CdmObjectReference
-        cdm_object_ref.explicit_reference = self.copy()
+        cdm_object_ref._portable_reference = self
         cdm_object_ref.in_document = self.in_document
         cdm_object_ref.owner = self.owner # where it started life
 
@@ -78,11 +80,16 @@ class CdmObjectDefinition(CdmObject):
     def fetch_object_definition_name(self) -> str:
         return self.get_name()
 
-    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObjectDefinition':
         """Returns the resolved object reference."""
         if res_opt is None:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         return self
+
+    def _fetch_declared_path(self, path_from: str) -> str:
+        """Given an initial path, returns this object's declared path"""
+        name = self.get_name()
+        return path_from + (name if name is not None else '')
 
     def _is_derived_from_def(self, res_opt: 'ResolveOptions', base: 'CdmObjectReference', name: str, seek: str) -> bool:
         if seek == name:

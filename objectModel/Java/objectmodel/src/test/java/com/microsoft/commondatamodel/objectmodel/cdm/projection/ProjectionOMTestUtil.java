@@ -168,13 +168,13 @@ public class ProjectionOMTestUtil {
         setClassName(className);
         setTestName(testName);
 
-        testsSubPath = new File(new File(new File("cdm"), "projection"), getClassName()).toString();
+        testsSubPath = new File(new File(new File("Cdm"), "Projection"), getClassName()).toString();
 
         setInputPath(TestHelper.getInputFolderPath(testsSubPath, getTestName()));
         setExpectedOutputPath(TestHelper.getExpectedOutputFolderPath(testsSubPath, getTestName()));
         setActualOutputPath(TestHelper.getActualOutputFolderPath(testsSubPath, getTestName()));
 
-        setCorpus(TestHelper.getLocalCorpus(testsSubPath, getTestName(), null));
+        setCorpus(TestHelper.getLocalCorpus(testsSubPath, getTestName()));
         getCorpus().getStorage().mount(LOCAL_OUTPUT_STORAGE_NS, new LocalAdapter(getActualOutputPath()));
         getCorpus().getStorage().setDefaultNamespace(LOCAL_OUTPUT_STORAGE_NS);
 
@@ -322,7 +322,7 @@ public class ProjectionOMTestUtil {
     }
 
     public CdmEntityDefinition getAndValidateResolvedEntity(CdmEntityDefinition entity, List<String> resOpts) {
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(getCorpus(), entity, resOpts, true).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(getCorpus(), entity, resOpts).join();
         Assert.assertNotNull(resolvedEntity, "GetAndValidateResolvedEntity: " + entity.getEntityName() + " resolution with options '" + String.join(",", resOpts) + "' failed!");
 
         return resolvedEntity;

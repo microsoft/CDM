@@ -3,24 +3,27 @@
 
 import {
     CdmCorpusContext,
-    CdmCorpusDefinition,
     CdmFileStatus,
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     resolveOptions,
-    StorageAdapter,
+    StorageAdapterBase,
     VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
-import { Logger } from '../Utilities/Logging/Logger';
+import { Logger, enterScope } from '../Utilities/Logging/Logger';
 import { StorageUtils } from '../Utilities/StorageUtils';
+import { using } from "using-statement";
+import path = require('node:path');
 
 /**
  * The object model implementation for Data Partition Pattern.
  */
 export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
+    private TAG: string = CdmDataPartitionPatternDefinition.name;
+
     /**
      * The name of the data partition pattern.
      */
@@ -103,13 +106,8 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      */
     public validate(): boolean {
         if (!this.rootLocation) {
-            Logger.error(
-                CdmDataPartitionPatternDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, ['rootLocation']),
-                this.validate.name
-            );
-
+            let missingFields: string[] = ['rootLocation'];
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
             return false;
         }
 
@@ -128,7 +126,6 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             copy = new CdmDataPartitionPatternDefinition(this.ctx, this.name);
         } else {
             copy = host as CdmDataPartitionPatternDefinition;
-            copy.ctx = this.ctx;
             copy.name = this.name;
         }
         copy.rootLocation = this.rootLocation;
@@ -136,7 +133,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         copy.regularExpression = this.regularExpression;
         copy.lastFileStatusCheckTime = this.lastFileStatusCheckTime;
         copy.lastFileModifiedTime = this.lastFileModifiedTime;
-        copy.parameters = this.parameters;
+        copy.parameters = this.parameters ? this.parameters.slice() : undefined;
         if (this.specializedSchema) {
             copy.specializedSchema = this.specializedSchema;
         }
@@ -156,18 +153,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (this.ctx.corpus.blockDeclaredPathChanges === false) {
-            path = this.declaredPath;
-            if (!path) {
-                let thisName: string = this.getName();
-                if (!thisName) {
-                    thisName = 'UNNAMED';
-                }
-                path = pathFrom + thisName;
-                this.declaredPath = path;
-            }
-        }
+        const path: string = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -178,10 +164,17 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         }
 
         if (postChildren && postChildren(this, path)) {
-            return false;
+            return true;
         }
 
         return false;
+    }
+
+    /**
+     * @internal
+     */
+     public fetchDeclaredPath(pathFrom: string): string {
+        return pathFrom + (this.getName() || 'UNNAMED');
     }
 
     /**
@@ -195,113 +188,101 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const namespace: string = this.inDocument.namespace;
-        const adapter: StorageAdapter = this.ctx.corpus.storage.fetchAdapter(namespace);
+        return await using(enterScope(CdmDataPartitionPatternDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
+            let namespace: string = undefined;
+            let adapter: StorageAdapterBase = undefined;
 
-        if (adapter === undefined) {
-            Logger.error(
-                CdmDataPartitionPatternDefinition.name,
-                this.ctx,
-                `Adapter not found for the document '${this.inDocument.name}'.`,
-                this.fileStatusCheckAsync.name
-            );
-
-            return;
-        }
-
-        // make sure the root is a good full corpus path
-        let rootCleaned: string = this.rootLocation && this.rootLocation.endsWith('/') ? this.rootLocation.substring(0, this.rootLocation.length - 1) : this.rootLocation;
-        if (rootCleaned === undefined) {
-            rootCleaned = '';
-        }
-        const rootCorpus: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(rootCleaned, this.inDocument);
-
-        let fileInfoList: string[];
-        try {
-            // Remove namespace from path
-            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(rootCorpus);
-            if (!pathTuple) {
-                Logger.error(CdmDataPartitionPatternDefinition.name, this.ctx, 'The root corpus path should not be null or empty.', this.fileStatusCheckAsync.name);
-
-                return;
+            // make sure the root is a good full corpus path
+            let rootCleaned: string = this.rootLocation && this.rootLocation.endsWith('/') ? this.rootLocation.substring(0, this.rootLocation.length - 1) : this.rootLocation;
+            if (rootCleaned === undefined) {
+                rootCleaned = '';
             }
-            // get a list of all corpusPaths under the root
-            fileInfoList = await adapter.fetchAllFilesAsync(pathTuple[1]);
-        } catch (e) {
-            Logger.warning(CdmDataPartitionPatternDefinition.name, this.ctx, `Failed to fetch all files in the folder location '${rootCorpus}' described by a partition pattern. Exception: ${e.Message}`, this.fileStatusCheckAsync.name);
-        }
+            const rootCorpus: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(rootCleaned, this.inDocument);
 
-        if (fileInfoList !== undefined) {
-            // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-            for (let i: number = 0; i < fileInfoList.length; i++) {
-                fileInfoList[i] = `${namespace}:${fileInfoList[i]}`;
-                fileInfoList[i] = fileInfoList[i].slice(rootCorpus.length);
-            }
-
-            if (isLocalEntityDeclarationDefinition(this.owner)) {
-                // if both are present log warning and use glob pattern, otherwise use regularExpression
-                if (this.globPattern && this.globPattern.trim() !== '' && this.regularExpression && this.regularExpression.trim() !== '') {
-                    Logger.warning(
-                        CdmDataPartitionPatternDefinition.name,
-                        this.ctx,
-                        `The Data Partition Pattern contains both a glob pattern (${this.globPattern}) and a regular expression (${this.regularExpression}) set, the glob pattern will be used.`,
-                        this.fileStatusCheckAsync.name
-                    );
-                }
-                const regularExpression: string =
-                    this.globPattern && this.globPattern.trim() !== '' ? this.globPatternToRegex(this.globPattern) : this.regularExpression;
-                let regexPattern: RegExp;
-
-                try {
-                    regexPattern = new RegExp(regularExpression);
-                } catch (e) {
-                    Logger.error(
-                        CdmDataPartitionPatternDefinition.name,
-                        this.ctx,
-                        `The ${this.globPattern && this.globPattern.trim() !== '' ? 'glob pattern' : 'regular expression'} '${this.globPattern && this.globPattern.trim() !== '' ? this.globPattern : this.regularExpression}' could not form a valid regular expression. Reason: ${e}`,
-                        this.fileStatusCheckAsync.name
-                    );
+            let fileInfoList: string[];
+            try {
+                // Remove namespace from path
+                const pathTuple: [string, string] = StorageUtils.splitNamespacePath(rootCorpus);
+                if (!pathTuple) {
+                    Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
+                    return;
                 }
 
-                if (regexPattern !== undefined) {
-                    for (const fi of fileInfoList) {
-                        const m: RegExpExecArray = regexPattern.exec(fi);
-                        if (m && m.length > 0 && m[0] === fi) {
-                            // create a map of arguments out of capture groups
-                            const args: Map<string, string[]> = new Map();
-                            // captures start after the string match at m[0]
-                            for (let i: number = 1; i < m.length; i++) {
-                                const iParam: number = i - 1;
-                                if (this.parameters && iParam < this.parameters.length) {
-                                    const currentParam: string = this.parameters[iParam];
-                                    if (!args.has(currentParam)) {
-                                        args.set(currentParam, []);
+                namespace = pathTuple[0];
+                adapter = this.ctx.corpus.storage.fetchAdapter(namespace);
+
+                if (adapter === undefined) {
+                    Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrDocAdapterNotFound, this.inDocument.name);
+                    return;
+                }
+
+                // get a list of all corpusPaths under the root
+                fileInfoList = await adapter.fetchAllFilesAsync(pathTuple[1]);
+            } catch (e) {
+                Logger.warning(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
+            }
+
+            if (fileInfoList !== undefined && namespace !== undefined) {
+                // remove root of the search from the beginning of all paths so anything in the root is not found by regex
+                for (let i: number = 0; i < fileInfoList.length; i++) {
+                    fileInfoList[i] = `${namespace}:${fileInfoList[i]}`;
+                    fileInfoList[i] = fileInfoList[i].slice(rootCorpus.length);
+                }
+
+                if (isLocalEntityDeclarationDefinition(this.owner)) {
+                    // if both are present log warning and use glob pattern, otherwise use regularExpression
+                    if (this.globPattern && this.globPattern.trim() !== '' && this.regularExpression && this.regularExpression.trim() !== '') {
+                        Logger.warning(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.WarnPartitionGlobAndRegexPresent, this.globPattern, this.regularExpression);
+                    }
+                    const regularExpression: string =
+                        this.globPattern && this.globPattern.trim() !== '' ? this.globPatternToRegex(this.globPattern) : this.regularExpression;
+                    let regexPattern: RegExp;
+
+                    try {
+                        regexPattern = new RegExp(regularExpression);
+                    } catch (e) {
+                        Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidExpression, this.globPattern, this.regularExpression, e.message);
+                    }
+
+                    if (regexPattern !== undefined) {
+                        for (const fi of fileInfoList) {
+                            const m: RegExpExecArray = regexPattern.exec(fi);
+                            if (m && m.length > 0 && m[0] === fi) {
+                                // create a map of arguments out of capture groups
+                                const args: Map<string, string[]> = new Map();
+                                // captures start after the string match at m[0]
+                                for (let i: number = 1; i < m.length; i++) {
+                                    const iParam: number = i - 1;
+                                    if (this.parameters && iParam < this.parameters.length) {
+                                        const currentParam: string = this.parameters[iParam];
+                                        if (!args.has(currentParam)) {
+                                            args.set(currentParam, []);
+                                        }
+                                        args.get(currentParam)
+                                            .push(m[i]);
                                     }
-                                    args.get(currentParam)
-                                        .push(m[i]);
                                 }
-                            }
 
-                            // put the origial but cleaned up root back onto the matched doc as the location stored in the partition
-                            const locationCorpusPath: string = `${rootCleaned}${fi}`;
-                            const fullPath: string = `${rootCorpus}${fi}`;
-                            // Remove namespace from path
-                            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(fullPath);
-                            if (!pathTuple) {
-                                Logger.error(CdmDataPartitionPatternDefinition.name, this.ctx, 'The corpus path should not be null or empty.', this.fileStatusCheckAsync.name);
-
-                                return;
+                                // put the origial but cleaned up root back onto the matched doc as the location stored in the partition
+                                const locationCorpusPath: string = `${rootCleaned}${fi}`;
+                                const fullPath: string = `${rootCorpus}${fi}`;
+                                // Remove namespace from path
+                                const pathTuple: [string, string] = StorageUtils.splitNamespacePath(fullPath);
+                                if (!pathTuple) {
+                                    Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
+                                    return;
+                                }
+                                const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+                                (this.owner).createDataPartitionFromPattern(
+                                    locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
                             }
-                            const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(pathTuple[1]);
-                            (this.owner).createDataPartitionFromPattern(
-                                locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
                         }
                     }
                 }
             }
-        }
-        // update modified times
-        this.lastFileStatusCheckTime = new Date();
+            // update modified times
+            this.lastFileStatusCheckTime = new Date();
+        });
     }
 
     /**

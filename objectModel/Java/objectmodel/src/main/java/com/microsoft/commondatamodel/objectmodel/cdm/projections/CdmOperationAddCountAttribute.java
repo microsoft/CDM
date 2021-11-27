@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
@@ -17,12 +18,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle AddCountAttribute operations
  */
 public class CdmOperationAddCountAttribute extends CdmOperationBase {
-    private String TAG = CdmOperationAddCountAttribute.class.getSimpleName();
+    private static final String TAG = CdmOperationAddCountAttribute.class.getSimpleName();
     private CdmTypeAttributeDefinition countAttribute;
 
     public CdmOperationAddCountAttribute(final CdmCorpusContext ctx) {
@@ -33,8 +35,17 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationAddCountAttribute copy = new CdmOperationAddCountAttribute(this.getCtx());
-        copy.countAttribute = (CdmTypeAttributeDefinition) this.countAttribute.copy(resOpt, host);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationAddCountAttribute copy = host == null ? new CdmOperationAddCountAttribute(this.getCtx()) : (CdmOperationAddCountAttribute)host;
+
+        copy.setCountAttribute(
+                this.getCountAttribute() != null
+                        ? (CdmTypeAttributeDefinition)this.getCountAttribute().copy(resOpt) : null);
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -79,7 +90,7 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
             missingFields.add("countAttribute");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -87,14 +98,7 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrTrimEmpty(path)) {
-                path = pathFrom + "operationAddCountAttribute";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;

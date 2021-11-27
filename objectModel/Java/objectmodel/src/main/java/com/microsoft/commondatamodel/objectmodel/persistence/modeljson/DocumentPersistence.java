@@ -3,13 +3,13 @@
 
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
@@ -17,6 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Imp
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class DocumentPersistence {
+  private static final String TAG = DocumentPersistence.class.getSimpleName();
+
   public static CompletableFuture<CdmDocumentDefinition> fromData(
       final CdmCorpusContext ctx,
       final LocalEntity obj,
@@ -48,7 +51,7 @@ public class DocumentPersistence {
               localExtensionTraitDefList)
               .join();
       if (entity == null) {
-        Logger.error(DocumentPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert a model.json entity to the CDM entity.");
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonEntityConversionError, obj.getName());
         return null;
       }
 
@@ -99,7 +102,7 @@ public class DocumentPersistence {
                     String absolutePath = ctx.getCorpus()
                         .getStorage()
                         .createAbsoluteCorpusPath(cdmImport.getCorpusPath(), documentDefinition);
-                    if (!Strings.isNullOrEmpty(documentDefinition.getNamespace()) && absolutePath.startsWith(documentDefinition.getNamespace() + ":")) {
+                    if (!StringUtils.isNullOrEmpty(documentDefinition.getNamespace()) && absolutePath.startsWith(documentDefinition.getNamespace() + ":")) {
                       absolutePath = absolutePath.substring(documentDefinition.getNamespace().length() + 1);
                     }
                     cdmImport.setCorpusPath(ctx.getCorpus()
@@ -109,16 +112,12 @@ public class DocumentPersistence {
                   });
                 }
               } else {
-                Logger.warning(
-                    DocumentPersistence.class.getSimpleName(),
-                    ctx,
-                    Logger.format("Entity '{0}' is not inside a document or its owner is not a document.", ((CdmEntityDefinition) cdmEntity).getName())
-                );
+                Logger.warning(ctx, TAG, "toData", manifest.getAtCorpusPath(), CdmLogCode.WarnPersistEntityMissing, ((CdmEntityDefinition) cdmEntity).getName());
               }
 
               return entity;
             } else {
-              Logger.error(DocumentPersistence.class.getSimpleName(), ctx, "There was an error while trying to fetch cdm entity doc.");
+              Logger.error(ctx, TAG, "toData", manifest.getAtCorpusPath(), CdmLogCode.ErrPersistCdmEntityFetchError);
               return null;
             }
           });

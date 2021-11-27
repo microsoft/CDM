@@ -13,8 +13,9 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +29,11 @@ public class Program {
     // discovered while navigating objects and paths.
     CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
 
+    // set callback to receive error and warning logs.
+    cdmCorpus.setEventCallback((level, message) -> {
+      System.out.println(message);
+    }, CdmStatusLevel.Warning);
+
     // This tells corpus to callback with info to our hook. To report progress messages and to fail
     // if an error happens when looking symbols up.
     System.out.println("Configure storage adapters.");
@@ -36,13 +42,13 @@ public class Program {
     String pathFromExeToExampleRoot = "../../";
 
     // Register it as the 'local' device.
-    StorageAdapter localAdapter = new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest/sample-data");
+    StorageAdapterBase localAdapter = new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest/sample-data");
     cdmCorpus.getStorage().mount("local", localAdapter);
     // Local is our default. So any paths that start out navigating without a device tag will assume local.
     cdmCorpus.getStorage().setDefaultNamespace("local");
 
     // Register it as the 'cdm' device, not the default so must use "cdm:/folder" to get there.
-    StorageAdapter cdmAdapter = new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards");
+    StorageAdapterBase cdmAdapter = new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards");
     cdmCorpus.getStorage().mount("cdm", cdmAdapter);
 
     // Example how to mount to the ADLS.
@@ -101,7 +107,7 @@ public class Program {
       part.setLocation(cdmCorpus.getStorage().createRelativeCorpusPath(location, manifestResolved));
 
       // Add trait to partition for csv params.
-      CdmTraitReference csvTrait = part.getExhibitsTraits().add("is.partition.format.CSV");
+      CdmTraitReference csvTrait = (CdmTraitReference) part.getExhibitsTraits().add("is.partition.format.CSV");
       csvTrait.getArguments().add("columnHeaders", "true");
       csvTrait.getArguments().add("delimiter", ",");
 

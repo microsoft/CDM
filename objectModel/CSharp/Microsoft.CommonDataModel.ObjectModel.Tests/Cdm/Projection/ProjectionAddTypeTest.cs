@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -199,7 +199,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestAddTypeAttributeProj";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -231,7 +231,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSelectedTypeAttr";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -263,7 +263,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntityProj";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -295,7 +295,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntity";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -327,7 +327,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestAddTypeWithCombineProj";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -357,7 +357,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestCombineOpsProj";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -390,7 +390,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestCombineOpsNestedProj";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -404,8 +404,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             // Merge ["emailId, "phoneId, "socialId"] into "contactId", type attribute: "contactType",
             // rename ["contactId", "isPrimary"] as "new_{m}", include ["contactId", "new_isPrimary", "contactType"]
             Assert.AreEqual(3, resolvedEntity.Attributes.Count);
-            Assert.AreEqual("new_isPrimary", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("new_contactId", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("new_contactId", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("new_isPrimary", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("contactType", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("is.linkedEntity.name", resolvedEntity.Attributes[2].AppliedTraits[4].NamedReference);
         }
@@ -418,7 +418,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestConditionalProj";
             string entityName = "Customer";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {

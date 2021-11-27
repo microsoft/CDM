@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -10,13 +10,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Logger = Microsoft.CommonDataModel.ObjectModel.Utilities.Logging.Logger;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle CombineAttributes operations
     /// </summary>
     public class CdmOperationCombineAttributes : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationCombineAttributes);
+        private static readonly string Tag = nameof(CdmOperationCombineAttributes);
 
         public List<string> Select { get; set; }
 
@@ -33,14 +34,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationCombineAttributes copy = new CdmOperationCombineAttributes(this.Ctx);
-            copy.Select = null;
+            if (resOpt == null)
+            {
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationCombineAttributes(this.Ctx) : host as CdmOperationCombineAttributes;
+
             if (this.Select != null)
             {
-                copy.Select = new List<string>();
-                copy.Select.AddRange(this.Select);
+                copy.Select = new List<string>(this.Select);
             }
-            copy.MergeInto = (this.MergeInto != null) ? this.MergeInto.Copy(resOpt, host) as CdmTypeAttributeDefinition : null;
+            copy.MergeInto = this.MergeInto?.Copy(resOpt) as CdmTypeAttributeDefinition;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -76,7 +83,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -86,16 +93,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + "operationCombineAttributes";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
@@ -147,9 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // Run through the top-level PAS objects 
             foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
             {
-                if ((projCtx.ProjectionDirective.OwnerType == CdmObjectType.EntityDef ||
-                    projCtx.ProjectionDirective.IsSourcePolymorphic) &&
-                    leafLevelCombineAttributeNames.ContainsKey(currentPAS.CurrentResolvedAttribute.ResolvedName))
+                if (leafLevelCombineAttributeNames.ContainsKey(currentPAS.CurrentResolvedAttribute.ResolvedName))
                 {
                     // Attribute to Merge
 
@@ -193,6 +189,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     PreviousStateList = pasMergeList
                 };
 
+                HashSet<string> attributesAddedToContext = new HashSet<string>();
+
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
                 foreach (string select in leafLevelCombineAttributeNames.Keys)
@@ -203,10 +201,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         foreach (ProjectionAttributeState leafLevelForSelect in leafLevelCombineAttributeNames[select])
                         {
-                            attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(select, leafLevelForSelect, newMergeIntoPAS.CurrentResolvedAttribute,
-                                CdmAttributeContextType.AttributeDefinition,
-                                leafLevelForSelect.CurrentResolvedAttribute.AttCtx, // lineage is the source att
-                                newMergeIntoPAS.CurrentResolvedAttribute.AttCtx); // merge into points back here
+                            // When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                            // Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                            if (!attributesAddedToContext.Contains(leafLevelForSelect.CurrentResolvedAttribute.ResolvedName))
+                            {
+                                attributesAddedToContext.Add(leafLevelForSelect.CurrentResolvedAttribute.ResolvedName);
+                                attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(select, leafLevelForSelect, newMergeIntoPAS.CurrentResolvedAttribute,
+                                    CdmAttributeContextType.AttributeDefinition,
+                                    leafLevelForSelect.CurrentResolvedAttribute.AttCtx, // lineage is the source att
+                                    newMergeIntoPAS.CurrentResolvedAttribute.AttCtx); // merge into points back here
+                            }
                         }
                     }
                 }

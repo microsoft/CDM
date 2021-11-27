@@ -7,6 +7,7 @@ import dateutil.parser
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmLocalEntityDeclarationDefinition
 from cdm.utilities import logger, time_utils, copy_data_utils
+from cdm.enums import CdmLogCode
 
 from . import utils
 from .data_partition_persistence import DataPartitionPersistence
@@ -27,7 +28,7 @@ class LocalEntityDeclarationPersistence:
         entity_path = data.get('entityPath') or data.get('entitySchema')
 
         if entity_path is None:
-            logger.error(LocalEntityDeclarationPersistence.__name__, ctx, 'Couldn\'t find entity path or similar.', LocalEntityDeclarationPersistence.from_data.__name__)
+            logger.error(ctx, LocalEntityDeclarationPersistence.__name__, LocalEntityDeclarationPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_PATH_NOT_FOUND, data.get('entityName'))
 
         local_entity.entity_path = entity_path
 
@@ -40,9 +41,8 @@ class LocalEntityDeclarationPersistence:
         if data.get('lastChildFileModifiedTime'):
             local_entity.last_child_file_modified_time = dateutil.parser.parse(data.lastChildFileModifiedTime)
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            local_entity.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(local_entity.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         if data.get('dataPartitions'):
             for data_partition in data.dataPartitions:

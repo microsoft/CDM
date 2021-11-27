@@ -40,7 +40,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAddCount';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAddCountTest';
 
     /**
      * Test for creating a projection with an AddCountAttribute operation on an entity attribute using the object model
@@ -222,42 +222,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestAddCountAttribute', async () => {
         const testName: string = 'TestAddCountAttribute';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
-
-        for (const resOpt of resOptsCombinations) {
-            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
-        }
-
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
-
-        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        // Count attribute: "someCount"
-        expect(resolvedEntity.attributes.length)
-            .toEqual(6);
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
-            .toEqual('name');
-        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
-            .toEqual('age');
-        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
-            .toEqual('address');
-        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
-            .toEqual('phoneNumber');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
-            .toEqual('email');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
-            .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
-    });
-
-    /**
-     * AddCountAttribute on an entity attribute
-     */
-    it('TestAddCountAttribute', async () => {
-        const testName: string = 'TestAddCountAttribute';
-        const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -292,7 +257,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestCountAttribute', async () => {
         const testName: string = 'TestCountAttribute';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -328,7 +293,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestExtendsEntityProj', async () => {
         const testName: string = 'TestExtendsEntityProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -363,7 +328,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestExtendsEntity', async () => {
         const testName: string = 'TestExtendsEntity';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -390,7 +355,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestWithNestedArrayExpansion', async () => {
         const testName: string = 'TestWithNestedArrayExpansion';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -427,63 +392,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('personCount');
         expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
             .toEqual('is.linkedEntity.array.count');
-    });
-
-    /**
-     * AddCountAttribute with ArrayExpansion in the same projection (and then RenameAttributes)
-     */
-    it('TestWithArrayExpansion', async () => {
-        const testName: string = 'TestWithArrayExpansion';
-        const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
-
-        for (const resOpt of resOptsCombinations) {
-            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
-        }
-
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
-
-        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        // Expand 1...2, count attribute: "personCount" (first projection)
-        // The first projection will give us the expanded attributes as well as the pass-through input attributes
-        // Then do renameFormat = {m}{o} in the second projection
-        expect(resolvedEntity.attributes.length)
-            .toEqual(16);
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
-            .toEqual('name1');
-        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
-            .toEqual('age1');
-        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
-            .toEqual('address1');
-        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
-            .toEqual('phoneNumber1');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
-            .toEqual('email1');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
-            .toEqual('name2');
-        expect((resolvedEntity.attributes.allItems[6] as CdmTypeAttributeDefinition).name)
-            .toEqual('age2');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
-            .toEqual('address2');
-        expect((resolvedEntity.attributes.allItems[8] as CdmTypeAttributeDefinition).name)
-            .toEqual('phoneNumber2');
-        expect((resolvedEntity.attributes.allItems[9] as CdmTypeAttributeDefinition).name)
-            .toEqual('email2');
-        expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).name)
-            .toEqual('name');
-        expect((resolvedEntity.attributes.allItems[11] as CdmTypeAttributeDefinition).name)
-            .toEqual('age');
-        expect((resolvedEntity.attributes.allItems[12] as CdmTypeAttributeDefinition).name)
-            .toEqual('address');
-        expect((resolvedEntity.attributes.allItems[13] as CdmTypeAttributeDefinition).name)
-            .toEqual('phoneNumber');
-        expect((resolvedEntity.attributes.allItems[14] as CdmTypeAttributeDefinition).name)
-            .toEqual('email');
-        expect((resolvedEntity.attributes.allItems[15] as CdmTypeAttributeDefinition).name)
-            .toEqual('personCount');
-        expect((resolvedEntity.attributes.allItems[15] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).appliedTraits.allItems[2].namedReference)
+            .toEqual('indicates.expansionInfo.count');
     });
 
     /**
@@ -492,7 +402,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestCombineOps', async () => {
         const testName: string = 'TestCombineOps';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -533,7 +443,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestCombineOpsNestedProj', async () => {
         const testName: string = 'TestCombineOpsNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -562,7 +472,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestConditionalProj', async () => {
         const testName: string = 'TestConditionalProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -594,7 +504,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestGroupProj', async () => {
         const testName: string = 'TestGroupProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -629,7 +539,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestGroup', async () => {
         const testName: string = 'TestGroup';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -665,7 +575,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     it('TestDuplicate', async () => {
         const testName: string = 'TestDuplicate';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

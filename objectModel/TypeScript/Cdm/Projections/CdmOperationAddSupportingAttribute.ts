@@ -12,13 +12,14 @@ import {
     cdmOperationType,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
-    Errors,
+    cdmLogCode,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
     ResolvedAttribute,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -39,10 +40,16 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationAddSupportingAttribute = new CdmOperationAddSupportingAttribute(this.ctx);
-        copy.supportingAttribute = this.supportingAttribute?.copy() as CdmTypeAttributeDefinition;
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
 
+        const copy: CdmOperationAddSupportingAttribute = !host ? new CdmOperationAddSupportingAttribute(this.ctx) : host as CdmOperationAddSupportingAttribute;
+
+        copy.supportingAttribute = this.supportingAttribute ? this.supportingAttribute.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -71,13 +78,7 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -88,14 +89,7 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = `${pathFrom}operationAddSupportingAttribute`;
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -144,7 +138,7 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
         if (projCtx.currentAttributeStateSet.states.length > 0) {
             const lastIndex: number = projCtx.currentAttributeStateSet.states.length - 1;
             const lastState: ProjectionAttributeState = projCtx.currentAttributeStateSet.states[lastIndex];
-            const inSupportOfTrait: CdmTraitReference = this.supportingAttribute.appliedTraits.push('is.addedInSupportOf');
+            const inSupportOfTrait: CdmTraitReference = this.supportingAttribute.appliedTraits.push('is.addedInSupportOf') as CdmTraitReference;
             inSupportOfTrait.arguments.push('inSupportOf', lastState.currentResolvedAttribute.resolvedName);
         }
 

@@ -3,8 +3,10 @@
 
 from typing import Optional, TYPE_CHECKING, cast
 
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
 from cdm.resolvedmodel import ResolvedAttributeSet
 
 from .cdm_collection import CdmCollection
@@ -19,6 +21,7 @@ if TYPE_CHECKING:
 class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+        self._TAG = CdmAttributeGroupDefinition.__name__
 
         # the attribute group name.
         self.attribute_group_name = name  # type: str
@@ -30,7 +33,6 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         self._members = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection[CdmAttributeItem]
 
-        self._TAG = CdmAttributeGroupDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -108,14 +110,13 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
             copy = CdmAttributeGroupDefinition(self.ctx, self.attribute_group_name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.attribute_group_name = self.attribute_group_name
             copy.members.clear()
 
         copy.attribute_context = self.attribute_context.copy(res_opt) if self.attribute_context else None
 
         for att in self.members:
-            copy.members.append(att.copy())
+            copy.members.append(att.copy(res_opt))
 
         self._copy_def(res_opt, copy)
         return copy
@@ -124,6 +125,8 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return self.attribute_group_name
 
     def fetch_resolved_entity_references(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedEntityReferenceSet':
+        """Deprecated: for internal use only"""
+
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
 
         from cdm.resolvedmodel import ResolvedEntityReferenceSet
@@ -139,17 +142,13 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
     def validate(self) -> bool:
         if not bool(self.attribute_group_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['attribute_group_name']))
+            missing_fields = ['attribute_group_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.attribute_group_name
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False

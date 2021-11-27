@@ -36,11 +36,14 @@ import {
     PurposeReference,
     Trait,
     TraitReference,
+    TraitGroup,
+    TraitGroupReference,
     TypeAttribute
 } from '.';
 
 export type CdmJsonType = (
     string |
+    number |
     object |
     Argument |
     AttributeContext |
@@ -77,4 +80,6 @@ export type CdmJsonType = (
     PurposeReference |
     Trait |
     TraitReference |
+    TraitGroup |
+    TraitGroupReference |
     TypeAttribute);

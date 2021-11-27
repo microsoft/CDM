@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -38,7 +38,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             RegisteredClasses.Register<CdmPurposeReference, PurposeReferencePersistence>();
             RegisteredClasses.Register<CdmReferencedEntityDeclarationDefinition, ReferencedEntityDeclarationPersistence>();
             RegisteredClasses.Register<CdmTraitDefinition, TraitPersistence>();
+            RegisteredClasses.Register<CdmTraitGroupDefinition, TraitGroupPersistence>();
             RegisteredClasses.Register<CdmTraitReference, TraitReferencePersistence>();
+            RegisteredClasses.Register<CdmTraitGroupReference, TraitGroupReferencePersistence>();
             RegisteredClasses.Register<CdmTypeAttributeDefinition, TypeAttributePersistence>();
             RegisteredClasses.Register<CdmProjection, ProjectionPersistence>();
             RegisteredClasses.Register<CdmOperationAddCountAttribute, OperationAddCountAttributePersistence>();
@@ -51,6 +53,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             RegisteredClasses.Register<CdmOperationReplaceAsForeignKey, OperationReplaceAsForeignKeyPersistence>();
             RegisteredClasses.Register<CdmOperationIncludeAttributes, OperationIncludeAttributesPersistence>();
             RegisteredClasses.Register<CdmOperationAddAttributeGroup, OperationAddAttributeGroupPersistence>();
+            RegisteredClasses.Register<CdmOperationAlterTraits, OperationAlterTraitsPersistence>();
+            RegisteredClasses.Register<CdmOperationAddArtifactAttribute, OperationAddArtifactAttributePersistence>();
         }
     }
 }

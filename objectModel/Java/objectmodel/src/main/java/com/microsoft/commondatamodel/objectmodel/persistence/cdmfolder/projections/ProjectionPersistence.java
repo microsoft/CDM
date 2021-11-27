@@ -5,17 +5,18 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projecti
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityReferencePersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import java.util.List;
  * Projection persistence
  */
 public class ProjectionPersistence {
+    private static final String TAG = ProjectionPersistence.class.getSimpleName();
+
     public static CdmProjection fromData(final CdmCorpusContext ctx, final JsonNode obj) {
         if (obj == null) {
             return null;
@@ -93,8 +96,16 @@ public class ProjectionPersistence {
                         CdmOperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.fromData(ctx, operationJson);
                         projection.getOperations().add(addAttributeGroupOp);
                         break;
+                    case "alterTraits":
+                        CdmOperationAlterTraits addAlterTraitsOp = OperationAlterTraitsPersistence.fromData(ctx, operationJson);
+                        projection.getOperations().add(addAlterTraitsOp);
+                        break;
+                    case "addArtifactAttribute":
+                        CdmOperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.fromData(ctx, operationJson);
+                        projection.getOperations().add(addArtifactAttributeOp);
+                        break;
                     default:
-                        Logger.error(ProjectionPersistence.class.getSimpleName(), ctx, Logger.format("Invalid operation type '{0}'.", type), "fromData");
+                        Logger.error(ctx, TAG, "fromData", source.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidOpsType, type);
                         break;
                 }
             }
@@ -112,10 +123,10 @@ public class ProjectionPersistence {
 
         Object source = null;
         if (instance.getSource() != null &&
-                !Strings.isNullOrEmpty(instance.getSource().getNamedReference()) &&
+                !StringUtils.isNullOrEmpty(instance.getSource().getNamedReference()) &&
                 instance.getSource().getExplicitReference() == null) {
             source = instance.getSource().getNamedReference();
-        } else if (instance.getSource() != null && instance.getSource() instanceof CdmEntityReference) {
+        } else if (instance.getSource() != null && instance.getSource().getObjectType() == CdmObjectType.EntityRef) {
             source = EntityReferencePersistence.toData(instance.getSource(), resOpt, options);
         } else if (instance.getSource() != null) {
             source = instance.getSource();
@@ -165,6 +176,14 @@ public class ProjectionPersistence {
                     case OperationAddAttributeGroupDef:
                         OperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.toData((CdmOperationAddAttributeGroup) operation, resOpt, options);
                         operations.add(addAttributeGroupOp);
+                        break;
+                    case OperationAlterTraitsDef:
+                        OperationAlterTraits alterTraitsOp = OperationAlterTraitsPersistence.toData((CdmOperationAlterTraits) operation, resOpt, options);
+                        operations.add(alterTraitsOp);
+                        break;
+                    case OperationAddArtifactAttributeDef:
+                        OperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.toData((CdmOperationAddArtifactAttribute) operation, resOpt, options);
+                        operations.add(addArtifactAttributeOp);
                         break;
                     default:
                         OperationBase baseOp = new OperationBase();

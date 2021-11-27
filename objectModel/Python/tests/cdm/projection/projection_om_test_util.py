@@ -36,7 +36,7 @@ class ProjectionOMTestUtil:
         self._expected_output_path = TestHelper.get_expected_output_folder_path(self._tests_sub_path, test_name)  # type: str
         self._actual_output_path = TestHelper.get_actual_output_folder_path(self._tests_sub_path, test_name)  # type: str
 
-        self._corpus = TestHelper.get_local_corpus(self._tests_sub_path, test_name)  # type: CdmCorpusDefinition
+        self._corpus = ProjectionTestUtils.get_local_corpus(self._tests_sub_path, test_name)  # type: CdmCorpusDefinition
         self._corpus.storage.mount(self._local_output_storage_ns, LocalAdapter(self._actual_output_path))
         self._corpus.storage.defaultNamespace = self._local_output_storage_ns
 
@@ -218,7 +218,7 @@ class ProjectionOMTestUtil:
 
     #  Get & validate resolved entity
     async def get_and_validate_resolved_entity(self, test, entity: 'CdmEntityDefinition', res_opts: [str]) -> 'CdmEntityDefinition':
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(self._corpus, entity, res_opts, True)  # type: CdmEntityDefinition
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(self._corpus, entity, res_opts)  # type: CdmEntityDefinition
         separator = ', '  # type: str
         test.assertIsNotNone(resolved_entity, 'get_and_validate_resolved_entity: entity.entity_name resolution with options {} failed!'.format(separator.join(res_opts)))
 

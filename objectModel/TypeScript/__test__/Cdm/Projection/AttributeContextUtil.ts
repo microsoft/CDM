@@ -1,19 +1,24 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
 import * as fs from 'fs';
 import { EOL } from 'os';
 import {
     CdmArgumentDefinition,
     CdmAttributeContext,
+    CdmAttributeGroupDefinition,
     CdmAttributeReference,
+    CdmCollection,
     CdmConstantEntityDefinition,
-    CdmCorpusDefinition,
+    CdmAttributeItem,
     CdmEntityDefinition,
+    CdmAttributeGroupReference,
     CdmObjectReference,
     CdmObjectReferenceBase,
-    cdmObjectType
+    cdmObjectType,
+    CdmTraitCollection,
+    CdmTraitReference
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 
 /**
  * Multiple test classes in projections test the attribute context tree generated for various scenarios.
@@ -35,7 +40,7 @@ export class AttributeContextUtil {
     /**
      * Function to get the attribute context string tree from a resolved entity
      */
-    public getAttributeContextStrings(resolvedEntity: CdmEntityDefinition, attribContext: CdmAttributeContext): string {
+    public getAttributeContextStrings(resolvedEntity: CdmEntityDefinition): string {
         // clear the string builder
         this.bldr = '';
 
@@ -43,7 +48,16 @@ export class AttributeContextUtil {
         this.getContentDeclaredPath(resolvedEntity.attributeContext);
 
         // get the traits for all the attributes of a resolved entity
-        this.getTraits(resolvedEntity);
+        this.getTraits(resolvedEntity.attributes);
+
+        return this.bldr;
+    }
+
+    public getArgumentValuesAsString(args: CdmArgumentDefinition): string {
+        // clear the string builder
+        this.bldr = '';
+
+        this.getArgumentValues(args);
 
         return this.bldr;
     }
@@ -75,25 +89,40 @@ export class AttributeContextUtil {
     /**
      * Get the traits for all the attributes of a resolved entity
      */
-    private getTraits(resolvedEntity: CdmEntityDefinition): void {
-        for (const attrib of resolvedEntity.attributes) {
+    private getTraits(attributes: CdmCollection<CdmAttributeItem>): void {
+        for (const attrib of attributes) {
             const attribCorpusPath: string = attrib.atCorpusPath;
             this.bldr += attribCorpusPath;
             this.bldr += this.endOfLine;
 
-            for (const trait of attrib.appliedTraits) {
-                const attribTraits: string = trait.namedReference;
-                this.bldr += attribTraits;
+            if (attrib instanceof CdmAttributeGroupReference) {
+                const attGroupDef: CdmAttributeGroupDefinition = attrib.explicitReference as CdmAttributeGroupDefinition
+                this.bldr += attGroupDef.atCorpusPath;
                 this.bldr += this.endOfLine;
+                this.getTraitCollection(attGroupDef.exhibitsTraits);
+                this.getTraits(attGroupDef.members);
+            } else {
+                this.getTraitCollection(attrib.appliedTraits);
+            }
+        }
+    
+    }
 
+    private getTraitCollection(traitCollection: CdmTraitCollection): void {
+        for (const trait of traitCollection) {
+            const attribTraits: string = trait.namedReference;
+            this.bldr += attribTraits;
+            this.bldr += this.endOfLine;
+
+            if (trait instanceof CdmTraitReference) {
                 for (const args of trait.arguments) {
-                    this.getArgumentValuesAsString(args);
+                    this.getArgumentValues(args);
                 }
             }
         }
-    }
+    } 
 
-    private getArgumentValuesAsString(args: CdmArgumentDefinition): void {
+    private getArgumentValues(args: CdmArgumentDefinition): void {
         const paramName: string = args.resolvedParameter?.name;
         const paramDefaultValue: string = args.resolvedParameter?.defaultValue as string;
 
@@ -132,25 +161,28 @@ export class AttributeContextUtil {
      * A function to validate if the attribute context tree & traits generated for a resolved entity is the same as the expected and
      * saved attribute context tree & traits for a test case
      */
-    public static async validateAttributeContext(corpus: CdmCorpusDefinition, expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition): Promise<void> {
+    public static async validateAttributeContext(expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition, updateExpectedOutput: boolean = false): Promise<void> {
         if (resolvedEntity.attributeContext) {
+            // Actual
+            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', testHelper.getTestActualOutputFolderName())}/AttrCtx_${entityName}.txt`;
+            
+            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             const attrCtxUtil: AttributeContextUtil = new AttributeContextUtil();
+            const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity);
+            fs.writeFileSync(actualStringFilePath, actualText);
+            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
 
             // Expected
             const expectedStringFilePath: string = `${expectedOutputPath}/AttrCtx_${entityName}.txt`;
+            if (updateExpectedOutput) {
+                fs.writeFileSync(expectedStringFilePath, actualText);
+            }
             const expectedText: string = fs.readFileSync(expectedStringFilePath).toString();
-
-            // Actual
-            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
-            const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.attributeContext);
 
             // Test if Actual is Equal to Expected
             expect(actualText)
                 .toEqual(expectedText);
 
-            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
-            fs.writeFileSync(actualStringFilePath, actualText);
-            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
         }
     }
 }

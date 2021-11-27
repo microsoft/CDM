@@ -5,9 +5,11 @@ export enum cdmAttributeContextType {
     entity,
     entityReferenceExtends,
     attributeDefinition,
+    attributeExcluded,
     attributeGroup,
     generatedSet,
     generatedRound,
+    addedAttributeNewArtifact,
     addedAttributeSupporting,
     addedAttributeIdentity,
     addedAttributeSelectedType,
@@ -26,5 +28,7 @@ export enum cdmAttributeContextType {
     operationReplaceAsForeignKey,
     operationIncludeAttributes,
     operationAddAttributeGroup,
+    operationAlterTraits,
+    operationAddArtifactAttribute,
     unknown
 }

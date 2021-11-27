@@ -40,7 +40,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAddType';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAddTypeTest';
 
     /**
      * Test for creating a projection with an AddTypeAttribute operation on an entity attribute using the object model
@@ -89,9 +89,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('date');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testType');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -139,9 +138,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('date');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testType');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -196,9 +194,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('date');
         expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testType');
-        expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
 
         // Now resolve the entity with the 'structured' directive
         resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['structured']));
@@ -225,7 +222,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestAddTypeAttributeProj', async () => {
         const testName: string = 'TestAddTypeAttributeProj';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -254,9 +251,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -265,7 +261,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestSelectedTypeAttr', async () => {
         const testName: string = 'TestSelectedTypeAttr';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -294,9 +290,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -305,7 +300,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestExtendsEntityProj', async () => {
         const testName: string = 'TestExtendsEntityProj';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -334,9 +329,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -345,7 +339,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestExtendsEntity', async () => {
         const testName: string = 'TestExtendsEntity';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -374,9 +368,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -385,7 +378,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestAddTypeWithCombineProj', async () => {
         const testName: string = 'TestAddTypeWithCombineProj';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -410,9 +403,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('contactId');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('contactType');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -421,7 +413,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestCombineOpsProj', async () => {
         const testName: string = 'TestCombineOpsProj';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -450,9 +442,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
         expect((resolvedEntity.attributes.allItems[8] as CdmTypeAttributeDefinition).name)
             .toEqual('homeAddress');
     });
@@ -463,7 +454,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestCombineOpsNestedProj', async () => {
         const testName: string = 'TestCombineOpsNestedProj';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -477,15 +468,14 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
         // rename ["contactId", "isPrimary"] as "new_{m}", include ["contactId", "new_isPrimary", "contactType"]
         expect(resolvedEntity.attributes.length)
             .toEqual(3);
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
-            .toEqual('new_isPrimary');
-        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+            expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('new_contactId');
+            expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+                .toEqual('new_isPrimary');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('contactType');
-        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -494,7 +484,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     it('TestConditionalProj', async () => {
         const testName: string = 'TestConditionalProj';
         const entityName: string = 'Customer';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

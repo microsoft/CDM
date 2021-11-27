@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -41,7 +41,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     case CdmAttributeContextType.AddedAttributeIdentity:
                     case CdmAttributeContextType.AddedAttributeExpansionTotal:
                     case CdmAttributeContextType.AddedAttributeSelectedType:
+                    case CdmAttributeContextType.AddedAttributeNewArtifact:
                     case CdmAttributeContextType.AttributeDefinition:
+                    case CdmAttributeContextType.AttributeExcluded:
                         attributeContext.Definition = AttributeReferencePersistence.FromData(ctx, obj.Value<string>("definition"));
                         break;
                 }
@@ -82,7 +84,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Parent = instance.Parent?.CopyData(resOpt, options) as string,
                 Definition = instance.Definition?.CopyData(resOpt, options) as string,
                 // i know the trait collection names look wrong. but I wanted to use the def baseclass
-                AppliedTraits = Utils.ListCopyData<dynamic>(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
+                AppliedTraits = Utils.ListCopyData<dynamic>(resOpt, instance.ExhibitsTraits?.Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty)?.ToList(), options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
                 Contents = Utils.ListCopyData<dynamic>(resOpt, instance.Contents, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
                 Lineage = Utils.ListCopyData<dynamic>(resOpt, instance.Lineage, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer))
             };
@@ -100,6 +102,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return CdmAttributeContextType.AttributeGroup;
                 case "attributeDefinition":
                     return CdmAttributeContextType.AttributeDefinition;
+                case "attributeExcluded":
+                    return CdmAttributeContextType.AttributeExcluded;
                 case "addedAttributeSupporting":
                     return CdmAttributeContextType.AddedAttributeSupporting;
                 case "addedAttributeIdentity":
@@ -108,6 +112,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return CdmAttributeContextType.AddedAttributeExpansionTotal;
                 case "addedAttributeSelectedType":
                     return CdmAttributeContextType.AddedAttributeSelectedType;
+                case "addedAttributeNewArtifact":
+                    return CdmAttributeContextType.AddedAttributeNewArtifact;
                 case "generatedRound":
                     return CdmAttributeContextType.GeneratedRound;
                 case "generatedSet":
@@ -138,6 +144,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return CdmAttributeContextType.OperationIncludeAttributes;
                 case "operationAddAttributeGroup":
                     return CdmAttributeContextType.OperationAddAttributeGroup;
+                case "operationAlterTraits":
+                    return CdmAttributeContextType.OperationAlterTraits;
+                case "operationAddArtifactAttribute":
+                    return CdmAttributeContextType.OperationAddArtifactAttribute;
                 default:
                     return CdmAttributeContextType.Unknown;
             }
@@ -155,6 +165,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return "attributeGroup";
                 case CdmAttributeContextType.AttributeDefinition:
                     return "attributeDefinition";
+                case CdmAttributeContextType.AttributeExcluded:
+                    return "attributeExcluded";
                 case CdmAttributeContextType.AddedAttributeSupporting:
                     return "addedAttributeSupporting";
                 case CdmAttributeContextType.AddedAttributeIdentity:
@@ -163,6 +175,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return "addedAttributeExpansionTotal";
                 case CdmAttributeContextType.AddedAttributeSelectedType:
                     return "addedAttributeSelectedType";
+                case CdmAttributeContextType.AddedAttributeNewArtifact:
+                    return "addedAttributeNewArtifact";
                 case CdmAttributeContextType.GeneratedRound:
                     return "generatedRound";
                 case CdmAttributeContextType.GeneratedSet:
@@ -193,6 +207,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return "operationIncludeAttributes";
                 case CdmAttributeContextType.OperationAddAttributeGroup:
                     return "operationAddAttributeGroup";
+                case CdmAttributeContextType.OperationAlterTraits:
+                    return "operationAlterTraits";
+                case CdmAttributeContextType.OperationAddArtifactAttribute:
+                    return "operationAddArtifactAttribute";
                 default:
                     return "unknown";
             }

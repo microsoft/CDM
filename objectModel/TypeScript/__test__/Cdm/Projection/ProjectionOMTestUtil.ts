@@ -271,13 +271,7 @@ export class ProjectionOMTestUtil {
     public createOperationInputAttribute(projection: CdmProjection, includeAttributes: string[]): CdmOperationIncludeAttributes {
         // IncludeAttributes Operation
         const includeAttributesOp: CdmOperationIncludeAttributes = new CdmOperationIncludeAttributes(this.corpus.ctx)
-        {
-            includeAttributes = []
-        };
-
-        for (const includeAttribute of includeAttributes) {
-            includeAttributesOp.includeAttributes.push(includeAttribute);
-        }
+        includeAttributesOp.includeAttributes = includeAttributes?.slice()
 
         projection.operations.push(includeAttributesOp);
 

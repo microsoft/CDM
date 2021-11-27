@@ -12,7 +12,9 @@ from cdm.resolvedmodel.expression_parser.node import Node
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
-from cdm.utilities import Errors, logger, AttributeContextParameters
+from cdm.utilities import logger, AttributeContextParameters
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmEntityReference
@@ -27,6 +29,8 @@ class CdmProjection(CdmObjectDefinition):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmProjection.__name__
+
         # Property of a projection that holds the condition expression string
         self.condition = None  # type: str
 
@@ -37,13 +41,8 @@ class CdmProjection(CdmObjectDefinition):
 
         # --- internal ---
 
-        # Condition expression tree that is built out of a condition expression string
-        self._condition_expression_tree_root = None  # type: Node
-
         # Property of a projection that holds the source of the operation
         self._source = None  # type: Optional[CdmEntityReference]
-
-        self._TAG = CdmProjection.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmProjection'] = None) -> 'CdmProjection':
         copy = None
@@ -56,10 +55,10 @@ class CdmProjection(CdmObjectDefinition):
             copy.operations.clear()
         
         copy.condition = self.condition
-        copy.source = self.source.copy() if self.source else None
+        copy.source = self.source.copy(res_opt) if self.source else None
 
         for operation in self.operations:
-            copy.operations.append(operation.copy())
+            copy.operations.append(operation.copy(res_opt))
 
         # Don't do anything else after this, as it may cause InDocument to become dirty
         copy.in_document = self.in_document
@@ -100,21 +99,16 @@ class CdmProjection(CdmObjectDefinition):
             root_owner = self._get_root_owner()
             if root_owner.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF:
                 # If the projection is used in a type attribute
-                logger.error(self._TAG, self.ctx, 'Source can only be another projection in a type attribute.', 'validate')
+               logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_PROJ_SOURCE_ERROR)
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + 'projection'
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -157,16 +151,7 @@ class CdmProjection(CdmObjectDefinition):
         if not attr_ctx:
             return None
 
-        if self.run_sequentially is not None:
-            logger.error(self._TAG, self.ctx, 'RunSequentially is not supported by this Object Model version.')
-
         proj_context = None
-
-        condition = self.condition if self.condition  else "(true)"
-
-        # create an expression tree based on the condition
-        tree = ExpressionTree()
-        self._condition_expression_tree_root = tree._construct_expression_tree(condition)
 
         # Add projection to context tree
         acp_proj = AttributeContextParameters()
@@ -210,11 +195,10 @@ class CdmProjection(CdmObjectDefinition):
                 # clean up the context tree, it was left in a bad state on purpose in this call
                 ras.attribute_context._finalize_attribute_context(proj_directive._res_opt, ac_source.at_corpus_path, self.in_document, self.in_document, None, False)
 
-
                 # if polymorphic keep original source as previous state
                 poly_source_set = None
                 if proj_directive._is_source_polymorphic:
-                    poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, ras, acp_source_projection)
+                    poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, ras)
 
                 # Now initialize projection attribute state
                 pas_set = ProjectionResolutionCommonUtil._initialize_projection_attribute_state_set(
@@ -243,20 +227,9 @@ class CdmProjection(CdmObjectDefinition):
             proj_context._current_attribute_state_set = pas_set
 
         is_condition_valid = False
-        if self._condition_expression_tree_root:
-            input = InputValues()
-            input.no_max_depth = proj_directive._has_no_maximum_depth
-            input.is_array = proj_directive._is_array
-            input.reference_only = proj_directive._is_reference_only
-            input.normalized = proj_directive._is_normalized
-            input.structured = proj_directive._is_structured
-            input.is_virtual = proj_directive._is_virtual
-            input.next_depth = proj_directive._res_opt._depth_info.current_depth
-            input.max_depth = proj_directive._maximum_depth
-            input.min_cardinality = proj_directive._cardinality._minimum_number if proj_directive._cardinality else None
-            input.max_cardinality = proj_directive._cardinality._maximum_number if proj_directive._cardinality else None
+        input_values = InputValues(proj_directive)
+        is_condition_valid = ExpressionTree._evaluate_condition(self.condition, input_values)
 
-            is_condition_valid = ExpressionTree._evaluate_expression_tree(self._condition_expression_tree_root, input)
 
         if is_condition_valid and self.operations and len(self.operations) > 0:
             # Just in case operations were added programmatically, reindex operations
@@ -274,22 +247,47 @@ class CdmProjection(CdmObjectDefinition):
 
             # Start with an empty list for each projection
             pas_operations = ProjectionAttributeStateSet(proj_context._current_attribute_state_set._ctx)
+            
+            # The attribute set that the operation will execute on
+            operation_working_attribute_set = None  # type: ProjectionAttributeStateSet
+
+            # The attribute set containing the attributes from the source
+            source_attribute_set = proj_context._current_attribute_state_set  # type: ProjectionAttributeStateSet
+
+            # Specifies if the operation is the first on the list to run
+            first_operation_to_run = True
             for operation in self.operations:
-                if operation.condition is not None:
-                    logger.error(self._TAG, self.ctx, 'Condition on the operation level is not supported by this Object Model version.')
-                
-                if operation.source_input is not None:
-                    logger.error(self._TAG, self.ctx, 'SourceInput on the operation level is not supported by this Object Model version.')
+                operation_condition = ExpressionTree._evaluate_condition(operation.condition, input_values)
+
+                if not operation_condition:
+                    # Skip this operation if the condition does not evaluate to true
+                    continue
+
+                # If run_sequentially is not true then all the operations will receive the source input
+                # Unless the operation overwrites this behavior using the source_input property
+                source_input = operation.source_input if operation.source_input is not None else not self.run_sequentially
+
+                # If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
+                if source_input or first_operation_to_run:
+                    proj_context._current_attribute_state_set = source_attribute_set
+                    operation_working_attribute_set = pas_operations
+                else:
+                    # Needs to create a copy since this set can be modified by the operation
+                    proj_context._current_attribute_state_set = pas_operations._copy()
+                    operation_working_attribute_set = ProjectionAttributeStateSet(proj_context._current_attribute_state_set._ctx)
 
                 # Evaluate projections and apply to empty state
-                new_pas_operations = operation._append_projection_attribute_state(proj_context, pas_operations, ac_gen_attr_set)
+                new_pas_operations = operation._append_projection_attribute_state(proj_context, operation_working_attribute_set, ac_gen_attr_set)
 
                 # If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
                 if new_pas_operations is not None:
+                    first_operation_to_run = False
                     pas_operations = new_pas_operations
 
-            # Finally update the current state to the projection context
-            proj_context._current_attribute_state_set = pas_operations
+            # If no operation ran successfully pas_operations will be empty
+            if not first_operation_to_run:
+                # Finally update the current state to the projection context
+                proj_context._current_attribute_state_set = pas_operations
 
         return proj_context
 
@@ -297,6 +295,10 @@ class CdmProjection(CdmObjectDefinition):
         """Create resolved attribute set based on the CurrentResolvedAttribute array"""
         resolved_attribute_set = ResolvedAttributeSet()
         resolved_attribute_set.attribute_context = att_ctx_under
+
+        if not proj_ctx:
+            logger.error(self.ctx, self._TAG, '_extract_resolved_attributes', self.at_corpus_path, CdmLogCode.ERR_PROJ_FAILED_TO_RESOLVE)
+            return resolved_attribute_set
 
         for pas in proj_ctx._current_attribute_state_set._states:
             resolved_attribute_set.merge(pas._current_resolved_attribute)

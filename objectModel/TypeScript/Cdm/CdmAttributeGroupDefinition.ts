@@ -12,17 +12,21 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
+    ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    StringUtils
 } from '../internal';
 
 export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmAttributeGroupDefinition.name;
+
     public attributeGroupName: string;
     public readonly members: CdmCollection<CdmAttributeItem>;
     public attributeContext?: CdmAttributeContextReference;
@@ -69,14 +73,13 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmAttributeGroupDefinition(this.ctx, this.attributeGroupName);
             } else {
                 copy = host as CdmAttributeGroupDefinition;
-                copy.ctx = this.ctx;
                 copy.attributeGroupName = this.attributeGroupName;
                 copy.members.clear();
             }
 
             copy.attributeContext = this.attributeContext ? <CdmAttributeContextReference>this.attributeContext.copy(resOpt) : undefined;
             for (const att of this.members) {
-                copy.members.push(att);
+                copy.members.push(att.copy(resOpt) as CdmAttributeItem);
             }
             this.copyDef(resOpt, copy);
 
@@ -89,12 +92,8 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!this.attributeGroupName) {
-                Logger.error(
-                    CdmAttributeGroupDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['attributeGroupName']),
-                    this.validate.name
-                );
+                let missingFields: string[] = ['attributeGroupName'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
 
                 return false;
             }
@@ -139,19 +138,13 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.attributeGroupName;
-                    this.declaredPath = path;
-                }
-            }
+            const path = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
             }
             if (this.attributeContext) {
+                this.attributeContext.owner = this;
                 if (this.attributeContext.visit(`${path}/attributeContext/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -181,6 +174,7 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             const rasb: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder();
+            const allUnder: CdmAttributeContext = under;
 
             if (under) {
                 const acpAttGrp: AttributeContextParameters = {
@@ -205,10 +199,18 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
                             includeTraits: false
                         };
                     }
-                    rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
+                    const rasFromAtt: ResolvedAttributeSet = att.fetchResolvedAttributes(resOpt, acpAtt);
+                    // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+                    // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+                    // that didn't just pop out of that same named attribute now need to go away.
+                    // mark any attributes formerly from this named attribute that don't show again as orphans
+                    rasb.ras.markOrphansForRemoval((att as CdmAttributeItem).fetchObjectDefinitionName(), rasFromAtt);
+                    // now merge
+                    rasb.mergeAttributes(rasFromAtt);
                 }
             }
-            rasb.ras.setAttributeContext(under);
+            // context must be the one expected from the caller's pov.
+            rasb.ras.setAttributeContext(allUnder);
 
             // things that need to go away
             rasb.removeRequestedAtts();
@@ -218,6 +220,10 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @deprecated
+     * For internal use only.
+     */
     public fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet {
         // let bodyCode = () =>
         {

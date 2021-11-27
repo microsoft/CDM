@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System.Collections.Generic;
 
@@ -12,6 +13,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// </summary>
     internal sealed class ProjectionAttributeStateSet
     {
+        private static readonly string Tag = nameof(ProjectionAttributeStateSet);
+
         /// <summary>
         /// A list containing all the ProjectionAttributeStates
         /// </summary>
@@ -37,7 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 pas.CurrentResolvedAttribute == null ||
                 string.IsNullOrWhiteSpace(pas.CurrentResolvedAttribute.ResolvedName))
             {
-                Logger.Error(nameof(ProjectionAttributeStateSet), this.Ctx, $"Invalid ProjectionAttributeState provided for addition to the Set. Add operation failed.", nameof(Add));
+                Logger.Error(this.Ctx, Tag, nameof(Add), null, CdmLogCode.ErrProjInvalidAttrState);
             }
             else
             {
@@ -46,20 +49,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         }
 
         /// <summary>
-        /// Remove from collection
+        /// Creates a copy of this projection attribute state set
         /// </summary>
-        internal bool Remove(ProjectionAttributeState pas)
+        /// <returns></returns>
+        internal ProjectionAttributeStateSet Copy()
         {
-            if (pas != null && Contains(pas))
-            {
-                States.Remove(pas);
-                return true;
-            }
-            else
-            {
-                Logger.Warning(nameof(ProjectionAttributeStateSet), this.Ctx, $"Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.", nameof(Remove));
-                return false;
-            }
+            ProjectionAttributeStateSet copy = new ProjectionAttributeStateSet(Ctx);
+            copy.States.AddRange(this.States);
+
+            return copy;
         }
 
         /// <summary>

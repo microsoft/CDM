@@ -5,6 +5,9 @@ package com.microsoft.commondatamodel.objectmodel.utilities.logger;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * EventList is a supporting class for the logging system and allows subset of messages
@@ -35,19 +38,31 @@ public class EventList extends ArrayList<Map<String, String>> {
    */
   private int nestingLevel = 0;
 
+  private UUID apiCorrelationId;
+
+  /**
+   * Lock to be used to enter and leave scope.
+   */
+  Lock lock = new ReentrantLock();
+
   /**
    * Clears the log recorder and enables recoding of log messages.
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   public void enable() {
+    lock.lock();
+
     // If we are going into nested recorded functions, we should not clear previously recorded events
     if (nestingLevel == 0) {
       clear();
       isRecording = true;
+      apiCorrelationId = UUID.randomUUID();
     }
 
     nestingLevel++;
+
+    lock.unlock();
   }
 
   /**
@@ -56,11 +71,16 @@ public class EventList extends ArrayList<Map<String, String>> {
    * meant to be called externally at all. Please refrain from using it.
    */
   public void disable() {
+    lock.lock();
+
     nestingLevel--;
 
     if (nestingLevel == 0) {
       isRecording = false;
+      apiCorrelationId = UUID.randomUUID();
     }
+
+    lock.unlock();
   }
 
   /**
@@ -82,5 +102,21 @@ public class EventList extends ArrayList<Map<String, String>> {
    */
   public boolean isRecording() {
     return isRecording;
+  }
+
+  /**
+   * Gets the apiCorrelationId of the event.
+   * @return The API correlation ID.
+   */
+  public UUID getApiCorrelationId() {
+    return this.apiCorrelationId;
+  }
+
+  /**
+   * Gets the nestingLevel of the event.
+   * @return The nesting level.
+   */
+  public int getNestingLevel() {
+    return this.nestingLevel;
   }
 }

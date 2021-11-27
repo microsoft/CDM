@@ -9,11 +9,14 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     cdmOperationType,
+    CdmTraitReference,
+    ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
     ResolvedAttribute,
     ResolvedTraitSet,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -43,6 +46,19 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
 
     constructor(ctx: CdmCorpusContext) {
         super(ctx);
+    }
+
+    /**
+     * @internal
+     */
+    copyProj(resOpt: resolveOptions, copy: CdmOperationBase): CdmOperationBase {
+        copy.type = this.type;
+        copy.index = this.index;
+        copy.condition = this.condition;
+        copy.sourceInput = this.sourceInput;
+
+        this.copyDef(resOpt, copy);
+        return copy;
     }
 
     /**
@@ -91,35 +107,79 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     public static createNewResolvedAttribute(
         projCtx: ProjectionContext,
         attrCtxUnder: CdmAttributeContext,
-        targetAttr: CdmAttribute,
+        target_attr_or_resolved_attr: CdmAttribute | ResolvedAttribute,
         overrideDefaultName: string = null,
         addedSimpleRefTraits: string[] = null
     ): ResolvedAttribute {
-        targetAttr = targetAttr.copy(undefined) as CdmAttribute;
+
+        const targetAttr: CdmAttribute = target_attr_or_resolved_attr instanceof CdmAttribute 
+                                            ? target_attr_or_resolved_attr.copy() as CdmAttribute 
+                                            : (target_attr_or_resolved_attr.target as CdmAttribute).copy() as CdmAttribute;
+
         const newResAttr: ResolvedAttribute = new ResolvedAttribute(
             projCtx.projectionDirective.resOpt,
             targetAttr,
             overrideDefaultName ? overrideDefaultName : targetAttr.getName(),
             attrCtxUnder
         );
-
         targetAttr.inDocument = projCtx.projectionDirective.owner.inDocument;
 
-        if (addedSimpleRefTraits) {
-            for (const trait of addedSimpleRefTraits) {
-                if (!targetAttr.appliedTraits.item(trait)) {
-                    targetAttr.appliedTraits.push(trait, true);
+        if (target_attr_or_resolved_attr instanceof CdmAttribute) {
+            if (addedSimpleRefTraits) {
+                for (const trait of addedSimpleRefTraits) {
+                    if (!targetAttr.appliedTraits.item(trait)) {
+                        targetAttr.appliedTraits.push(trait, true);
+                    }
+                }
+            }
+
+            const resTraitSet: ResolvedTraitSet = targetAttr.fetchResolvedTraits(projCtx.projectionDirective.resOpt);
+
+            // Create deep a copy of traits to avoid conflicts in case of parameters
+            if (resTraitSet) {
+                newResAttr.resolvedTraits = resTraitSet.deepCopy();
+            }            
+        } else {
+            newResAttr.resolvedTraits = target_attr_or_resolved_attr.resolvedTraits.deepCopy();
+
+            if (addedSimpleRefTraits) {
+                for (const trait of addedSimpleRefTraits) {
+                    const traitReference = new CdmTraitReference(targetAttr.ctx, trait, true, false);
+                    newResAttr.resolvedTraits = newResAttr.resolvedTraits.mergeSet(traitReference.fetchResolvedTraits());
                 }
             }
         }
 
-        const resTraitSet: ResolvedTraitSet = targetAttr.fetchResolvedTraits(projCtx.projectionDirective.resOpt);
-
-        // Create deep a copy of traits to avoid conflicts in case of parameters
-        if (resTraitSet) {
-            newResAttr.resolvedTraits = resTraitSet.deepCopy();
-        }
-
         return newResAttr;
     }
+
+
+    /**
+     * Replace the wildcard character. {a/A} will be replaced with the current attribute's original name. 
+     * {m/M} will be replaced with the attribute name of the projection owner. 
+     * {mo/Mo} will be replaced with the current attribute's resolved name.
+     * {o} will be replaced with the index of the attribute after an array expansion.
+     * @internal
+     */
+        public static replaceWildcardCharacters(
+            format: string,
+            projectionOwnerName: string,
+            currentPAS: ProjectionAttributeState
+        ): string {
+            if (!format) {
+                return ''
+            }
+
+            const ordinal: string = currentPAS.ordinal != null ? currentPAS.ordinal.toString() : "";
+            const originalMemberAttributeName: string = (currentPAS.currentResolvedAttribute.target as CdmAttribute)?.name ?? "";
+            const resolvedMemberAttributeName: string = currentPAS.currentResolvedAttribute.resolvedName ?? "";
+            
+            let value: string = StringUtils.replace(format, 'a', projectionOwnerName);
+            value = StringUtils.replace(value, 'o', ordinal);
+            value = StringUtils.replace(value, 'mo', originalMemberAttributeName);
+            value = StringUtils.replace(value, 'm', resolvedMemberAttributeName);
+
+            return value;
+        }
+
 }

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { AttributeReference } from 'Persistence/ModelJson/types';
 import {
     CdmAttributeGroupDefinition,
     CdmAttributeGroupReference,
@@ -14,17 +15,19 @@ import {
     cdmStatusLevel,
     CdmTraitCollection,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     CdmTypeAttributeDefinition,
+    copyOptions,
     importsLoadStrategy,
     resolveContext,
-    resolveOptions
+    resolveOptions,
+    EventCallback
 } from '../../../../internal';
 import { PersistenceLayer } from '../../../../Persistence';
 import { EntityPersistence } from '../../../../Persistence/CdmFolder/EntityPersistence';
 import { TypeAttributePersistence } from '../../../../Persistence/CdmFolder/TypeAttributePersistence';
 import { Argument, ConstantEntity, Entity, EntityReferenceDefinition, TraitReference, TypeAttribute } from '../../../../Persistence/CdmFolder/types';
 import { LocalAdapter } from '../../../../Storage';
-import { EventCallback } from '../../../../Utilities/EventCallback';
 import { testHelper } from '../../../testHelper';
 
 // tslint:disable-next-line: max-func-body-length
@@ -87,9 +90,9 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBeTruthy();
 
         // Check that the trait 'is.identifiedBy' is created with the correct argument.
-        const isIdentifiedBy1: CdmTraitReference = typeAttribute.appliedTraits.allItems[1];
+        const isIdentifiedBy1: CdmTraitReferenceBase = typeAttribute.appliedTraits.allItems[1];
         expect(isIdentifiedBy1.namedReference).toEqual('is.identifiedBy');
-        expect(isIdentifiedBy1.arguments.allItems[0].value).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
+        expect(((isIdentifiedBy1 as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference).namedReference).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
 
         // Read from a resolved entity schema.
         const resolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership_Resolved.cdm.json/TeamMembership', null, resOpt);
@@ -99,11 +102,11 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBeTruthy();
 
         // Check that the trait 'is.identifiedBy' is created with the correct argument.
-        const isIdentifiedBy2: CdmTraitReference = resolvedTypeAttribute.appliedTraits.allItems[6];
+        const isIdentifiedBy2: CdmTraitReferenceBase = resolvedTypeAttribute.appliedTraits.allItems[6];
         expect(isIdentifiedBy2.namedReference)
             .toEqual('is.identifiedBy');
 
-        const argumentValue: CdmAttributeReference = isIdentifiedBy2.arguments.allItems[0].value as CdmAttributeReference;
+        const argumentValue: CdmAttributeReference = (isIdentifiedBy2 as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference;
         expect(argumentValue.namedReference)
             .toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
 
@@ -235,7 +238,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         expect(functionParameter1)
             .toEqual(cdmStatusLevel.error);
         expect(functionParameter2)
-            .toContain('Default value missing languageTag or displayText.');
+            .toContain('A \'defaultValue\' property is empty or one of its entries is missing \'languageTag\' and \'displayText\' values.');
         expect(emptyDefaultValueAttribute.defaultValue)
             .toBeUndefined();
         // set the default value to an empty list for testing that it should be removed from the generated json.
@@ -338,19 +341,19 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         corpus.storage.mount('local', new LocalAdapter('C:\\Root\\Path'));
         corpus.storage.defaultNamespace = 'local';
 
-        const cdmTypeAttributeDefinition : CdmTypeAttributeDefinition =
+        const cdmTypeAttributeDefinition: CdmTypeAttributeDefinition =
             corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'TestSavingTraitAttribute', false);
 
-        const englishConstantsList : string[] = [ 'en', 'Some description in English language' ];
-        const serbianConstantsList : string[] = [ 'sr', 'Opis na srpskom jeziku' ];
-        const chineseConstantsList : string[] =  [ 'cn', '一些中文描述' ];
-        const listOfConstLists : string[][ ] = [ englishConstantsList, serbianConstantsList, chineseConstantsList ];
+        const englishConstantsList: string[] = ['en', 'Some description in English language'];
+        const serbianConstantsList: string[] = ['sr', 'Opis na srpskom jeziku'];
+        const chineseConstantsList: string[] = ['cn', '一些中文描述'];
+        const listOfConstLists: string[][] = [englishConstantsList, serbianConstantsList, chineseConstantsList];
 
-        const constEntDef : CdmConstantEntityDefinition =
+        const constEntDef: CdmConstantEntityDefinition =
             corpus.MakeObject<CdmConstantEntityDefinition>(cdmObjectType.constantEntityDef, 'localizedDescriptions', false);
         constEntDef.constantValues = listOfConstLists;
         constEntDef.entityShape = corpus.MakeRef<CdmEntityReference>(cdmObjectType.entityRef, 'localizedTable', true);
-        const traitReference2 : CdmTraitReference = 
+        const traitReference2: CdmTraitReference =
             corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, 'is.localized.describedAs', false);
         traitReference2.arguments.push(
             'localizedDisplayText', corpus.MakeRef<CdmEntityReference>(cdmObjectType.entityRef, constEntDef, true));
@@ -365,8 +368,8 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         expect(result)
             .toBeTruthy();
 
-        const argument : Argument = (result.appliedTraits[0] as TraitReference).arguments[0] as Argument;
-        const constantValues : string[][] =
+        const argument: Argument = (result.appliedTraits[0] as TraitReference).arguments[0] as Argument;
+        const constantValues: string[][] =
             (((argument.value as EntityReferenceDefinition).entityReference) as ConstantEntity).constantValues;
         expect(constantValues[0][0])
             .toBe('en');
@@ -521,7 +524,37 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         done();
     });
 
-    function fetchTraitNamedReferences(traits: CdmTraitCollection) : Set<string> {
+    /**
+     * Testing that cardinality settings are loaded and saved correctly
+     */
+    it('TestCardinalityPersistence', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCardinalityPersistence');
+
+        // test fromData
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/someEntity.cdm.json/someEntity');
+        const attribute: CdmTypeAttributeDefinition = entity.attributes.allItems[0] as CdmTypeAttributeDefinition;
+
+        expect(attribute.cardinality)
+            .not.toBeUndefined();
+        expect(attribute.cardinality.minimum)
+            .toEqual('0');
+        expect(attribute.cardinality.maximum)
+            .toEqual('1');
+
+        // test toData
+        const attributeData: TypeAttribute = TypeAttributePersistence.toData(attribute, new resolveOptions(entity.inDocument), new copyOptions());
+
+        expect(attributeData.cardinality)
+            .not.toBeUndefined();
+        expect(attributeData.cardinality.minimum)
+            .toBe('0');
+        expect(attributeData.cardinality.maximum)
+            .toBe('1');
+
+        done();
+    });
+
+    function fetchTraitNamedReferences(traits: CdmTraitCollection): Set<string> {
         const namedReferences: Set<string> = new Set<string>();
         traits.allItems.forEach((trait: CdmTraitReference) => {
             namedReferences.add(trait.namedReference);

@@ -10,6 +10,10 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated
+ * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+ */
 public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
 
   private Boolean removeAttribute;
@@ -411,7 +415,9 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
       copy.setRemovedDirectives(new ArrayList<>(this.getRemovedDirectives()));
     }
 
-    copy.setAddSupportingAttribute(this.getAddSupportingAttribute());
+    copy.setAddSupportingAttribute(
+            this.getAddSupportingAttribute() != null
+                    ? (CdmTypeAttributeDefinition) this.getAddSupportingAttribute() : null);
     copy.setCardinality(this.getCardinality());
     copy.setRenameFormat(this.getRenameFormat());
 

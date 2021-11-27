@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
@@ -27,6 +27,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         internal DepthInfo DepthInfo { get; set; }
         // Indicates whether we are resolving inside of a circular reference, resolution is different in that case
         internal bool InCircularReference { get; set; }
+        // Indicates if resolution guidance was used at any point during resolution
+        internal bool UsedResolutionGuidance { get; set; }
 
         internal ISet<CdmEntityDefinition> CurrentlyResolvingEntities { get; set; }
 
@@ -118,11 +120,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 MapOldCtxToNewCtx = this.MapOldCtxToNewCtx, // ok to share this map
                 ImportsLoadStrategy = this.ImportsLoadStrategy,
                 SaveResolutionsOnCopy = this.SaveResolutionsOnCopy,
-                CurrentlyResolvingEntities = new HashSet<CdmEntityDefinition>(this.CurrentlyResolvingEntities)
+                CurrentlyResolvingEntities = this.CurrentlyResolvingEntities, // ok to share this map
+                UsedResolutionGuidance = this.UsedResolutionGuidance
             };
 
             if (this.Directives != null)
+            {
                 resOptCopy.Directives = this.Directives.Copy();
+            }
 
             return resOptCopy;
         }

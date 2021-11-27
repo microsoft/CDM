@@ -10,11 +10,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
@@ -69,7 +69,6 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
       copy = new CdmDataPartitionDefinition(getCtx(), getName());
     } else {
       copy = (CdmDataPartitionDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 
@@ -78,7 +77,14 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     copy.setLastFileStatusCheckTime(getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(getLastFileModifiedTime());
     copy.setInferred(isInferred());
-    copy.setArguments(getArguments());
+    if (this.getArguments() != null)
+    {
+      // deep copy the content
+      copy.setArguments(new HashMap<>());
+      for (final String key : this.getArguments().keySet()) {
+        copy.getArguments().put(key, new ArrayList<>(this.getArguments().get(key)));
+      }
+    }
     copy.setSpecializedSchema(getSpecializedSchema());
 
     copyDef(resOpt, copy);
@@ -104,15 +110,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
       final String pathFrom,
       final VisitCallback preChildren,
       final VisitCallback postChildren) {
-    String path = "";
-    if (!this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-      if (path == null) {
-        String thisName = this.getName() == null ? "UNNAMED": this.getName();
-        path = pathFrom + thisName;
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -123,10 +121,15 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;
+  }
+
+  @Deprecated
+  public String fetchDeclaredPath(String pathFrom) {
+    return pathFrom + (this.getName() == null ? "UNNAMED": this.getName());
   }
 
   /**
@@ -264,21 +267,22 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
    */
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
-    final String nameSpace = getInDocument().getNamespace();
-    final String fullPath =
-        this.getCtx()
-            .getCorpus()
-            .getStorage()
-            .createAbsoluteCorpusPath(this.getLocation(), this.getInDocument());
+    try (Logger.LoggerScope logScope = Logger.enterScope(CdmDataPartitionDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
+      final String fullPath =
+              this.getCtx()
+                      .getCorpus()
+                      .getStorage()
+                      .createAbsoluteCorpusPath(this.getLocation(), this.getInDocument());
 
-    final OffsetDateTime modifiedTime =
-        this.getCtx().getCorpus().computeLastModifiedTimeFromPartitionPathAsync(fullPath).join();
+      final OffsetDateTime modifiedTime =
+              this.getCtx().getCorpus().getLastModifiedTimeFromPartitionPathAsync(fullPath).join();
 
-    // update modified times
-    setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
-    setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
+      // update modified times
+      setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+      setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
 
-    return reportMostRecentTimeAsync(getLastFileModifiedTime());
+      return reportMostRecentTimeAsync(getLastFileModifiedTime());
+    }
   }
 
   /**

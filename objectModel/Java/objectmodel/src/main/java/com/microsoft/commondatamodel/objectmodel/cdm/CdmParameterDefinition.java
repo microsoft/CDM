@@ -5,17 +5,21 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmParameterDefinition extends CdmObjectDefinitionBase {
+
+  private static final String TAG = CdmParameterDefinition.class.getSimpleName();
 
   private String name;
   private Boolean isRequired;
@@ -35,18 +39,7 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-
-      if (Strings.isNullOrEmpty(path)) {
-        path = pathFrom + this.getName();
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     //trackVisits(path);
 
@@ -118,7 +111,8 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.name)) {
-      Logger.error(CdmParameterDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("Name"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -169,5 +163,135 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
             (CdmDataTypeReference) (this.getDataTypeRef() != null ? this.getDataTypeRef().copy(resOpt)
             : null));
     return copy;
+  }
+
+  Object constTypeCheck(
+          final ResolveOptions resOpt,
+          final CdmDocumentDefinition wrtDoc,
+          final Object argumentValue) {
+    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    Object replacement = argumentValue;
+
+    // If parameter type is entity, then the value should be an entity or ref to one
+    // same is true of 'dataType' data type.
+    if (this.getDataTypeRef() == null) {
+      return replacement;
+    }
+
+    CdmDataTypeDefinition dt = this.getDataTypeRef().fetchObjectDefinition(resOpt);
+    if (null == dt) {
+      Logger.error(ctx, TAG, "constTypeCheck", wrtDoc.getFolderPath() + wrtDoc.getName(), CdmLogCode.ErrUnrecognizedDataType, this.getName());
+      return null;
+    }
+
+    // Compare with passed in value or default for parameter.
+    Object pValue = argumentValue;
+    if (null == pValue) {
+      pValue = this.getDefaultValue();
+      replacement = pValue;
+    }
+
+    if (null != pValue) {
+      if (dt.isDerivedFrom("cdmObject", resOpt)) {
+        final List<CdmObjectType> expectedTypes = new ArrayList<>();
+        String expected = null;
+        if (dt.isDerivedFrom("entity", resOpt)) {
+          expectedTypes.add(CdmObjectType.ConstantEntityDef);
+          expectedTypes.add(CdmObjectType.EntityRef);
+          expectedTypes.add(CdmObjectType.EntityDef);
+          expectedTypes.add(CdmObjectType.ProjectionDef);
+          expected = "entity";
+        } else if (dt.isDerivedFrom("attribute", resOpt)) {
+          expectedTypes.add(CdmObjectType.AttributeRef);
+          expectedTypes.add(CdmObjectType.TypeAttributeDef);
+          expectedTypes.add(CdmObjectType.EntityAttributeDef);
+          expected = "attribute";
+        } else if (dt.isDerivedFrom("dataType", resOpt)) {
+          expectedTypes.add(CdmObjectType.DataTypeRef);
+          expectedTypes.add(CdmObjectType.DataTypeDef);
+          expected = "dataType";
+        } else if (dt.isDerivedFrom("purpose", resOpt)) {
+          expectedTypes.add(CdmObjectType.PurposeRef);
+          expectedTypes.add(CdmObjectType.PurposeDef);
+          expected = "purpose";
+        } else if (dt.isDerivedFrom("traitGroup", resOpt)) {
+          expectedTypes.add(CdmObjectType.TraitGroupRef);
+          expectedTypes.add(CdmObjectType.TraitGroupDef);
+          expected = "traitGroup";
+        } else if (dt.isDerivedFrom("trait", resOpt)) {
+          expectedTypes.add(CdmObjectType.TraitRef);
+          expectedTypes.add(CdmObjectType.TraitDef);
+          expected = "trait";
+        } else if (dt.isDerivedFrom("attributeGroup", resOpt)) {
+          expectedTypes.add(CdmObjectType.AttributeGroupRef);
+          expectedTypes.add(CdmObjectType.AttributeGroupDef);
+          expected = "attributeGroup";
+        }
+
+        if (expectedTypes.size() == 0) {
+          Logger.error(ctx, TAG,"constTypeCheck", wrtDoc.getFolderPath() + wrtDoc.getName(), CdmLogCode.ErrUnexpectedDataType, this.getName());
+        }
+
+        // If a string constant, resolve to an object ref.
+        CdmObjectType foundType = CdmObjectType.Error;
+        final Class pValueType = pValue.getClass();
+
+        if (CdmObject.class.isAssignableFrom(pValueType)) {
+          foundType = ((CdmObject) pValue).getObjectType();
+        }
+
+        String foundDesc = ctx.getRelativePath();
+
+        String pValueAsString = "";
+        if (!(pValue instanceof CdmObject)) {
+          pValueAsString = (String) pValue;
+        }
+
+        if (!pValueAsString.isEmpty()) {
+          if (pValueAsString.equalsIgnoreCase("this.attribute")
+                  && expected.equalsIgnoreCase("attribute")) {
+            // Will get sorted out later when resolving traits.
+            foundType = CdmObjectType.AttributeRef;
+          } else {
+            foundDesc = pValueAsString;
+            final int seekResAtt = CdmObjectReferenceBase.offsetAttributePromise(pValueAsString);
+            if (seekResAtt >= 0) {
+              // Get an object there that will get resolved later after resolved attributes.
+              replacement = new CdmAttributeReference(ctx, pValueAsString, true);
+              ((CdmAttributeReference) replacement).setCtx(ctx);
+              ((CdmAttributeReference) replacement).setInDocument(wrtDoc);
+              foundType = CdmObjectType.AttributeRef;
+            } else {
+              final CdmObjectBase lu = ctx.getCorpus()
+                      .resolveSymbolReference(
+                              resOpt,
+                              wrtDoc,
+                              pValueAsString,
+                              CdmObjectType.Error,
+                              true);
+              if (null != lu) {
+                if (expected.equalsIgnoreCase("attribute")) {
+                  replacement = new CdmAttributeReference(ctx, pValueAsString, true);
+                  ((CdmAttributeReference) replacement).setCtx(ctx);
+                  ((CdmAttributeReference) replacement).setInDocument(wrtDoc);
+                  foundType = CdmObjectType.AttributeRef;
+                } else {
+                  replacement = lu;
+                  foundType = ((CdmObject) replacement).getObjectType();
+                }
+              }
+            }
+          }
+        }
+
+        if (expectedTypes.indexOf(foundType) == -1) {
+          Logger.error(ctx, TAG, "constTypeCheck", wrtDoc.getAtCorpusPath(), CdmLogCode.ErrResolutionFailure, this.getName(), expected, foundDesc, expected);
+        } else {
+          Logger.info(ctx, TAG, "constTypeCheck", wrtDoc.getAtCorpusPath(), Logger.format("Resolved '{0}'", foundDesc));
+        }
+      }
+    }
+
+    return replacement;
   }
 }

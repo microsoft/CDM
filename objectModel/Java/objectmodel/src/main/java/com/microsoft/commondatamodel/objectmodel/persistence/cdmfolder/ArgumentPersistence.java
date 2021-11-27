@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
@@ -13,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Arg
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 public class ArgumentPersistence {
     public static CdmArgumentDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
@@ -47,7 +47,7 @@ public class ArgumentPersistence {
         }
 
         // skip the argument if just a value
-        if (Strings.isNullOrEmpty(instance.getName()))
+        if (StringUtils.isNullOrEmpty(instance.getName()))
             return val;
 
         final Argument result = new Argument();

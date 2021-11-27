@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmAttribute, CdmCorpusContext, Logger, StringUtils } from '../../internal';
+import { CdmAttribute, CdmCorpusContext, Logger, StringUtils, cdmLogCode } from '../../internal';
 import { CdmTypeAttributeDefinition } from '../CdmTypeAttributeDefinition';
 
 /**
@@ -9,6 +9,8 @@ import { CdmTypeAttributeDefinition } from '../CdmTypeAttributeDefinition';
  */
 // tslint:disable:variable-name
 export class CardinalitySettings {
+    private TAG: string = CardinalitySettings.name;
+
     // By default all attributes in CDM are Not Nullable and hence setting the default value to be 1:1
     private static readonly defaultMinimum: number = 1;
     private static readonly defaultMaximum: number = 1;
@@ -45,8 +47,10 @@ export class CardinalitySettings {
     }
 
     public set minimum(value: string) {
-        if (!CardinalitySettings.isMinimumValid(value)) {
-            Logger.error(CardinalitySettings.name, this.ctx, `Invalid minimum cardinality ${value}.`);
+        if (StringUtils.isNullOrWhiteSpace(value)) {
+            Logger.error(this.ctx, this.TAG, 'minimum', this.owner.atCorpusPath, cdmLogCode.ErrPersistCardinalityPropMissing);
+        } else if (!CardinalitySettings.isMinimumValid(value)) {
+            Logger.error(this.ctx, this.TAG, 'minimum', this.owner.atCorpusPath, cdmLogCode.ErrValdnInvalidMinCardinality, value);
         } else {
             this._minimum = value;
             this._minimumNumber = this.getNumber(this._minimum, CardinalitySettings.defaultMinimum);
@@ -66,8 +70,10 @@ export class CardinalitySettings {
     }
 
     public set maximum(value: string) {
-        if (!CardinalitySettings.isMaximumValid(value)) {
-            Logger.error(CardinalitySettings.name, this.ctx, `Invalid maximum cardinality ${value}.`);
+        if (StringUtils.isNullOrWhiteSpace(value)) {
+            Logger.error(this.ctx, this.TAG, 'maximum', this.owner.atCorpusPath, cdmLogCode.ErrPersistCardinalityPropMissing);
+        } else if (!CardinalitySettings.isMaximumValid(value)) {
+            Logger.error(this.ctx, this.TAG, 'maximum', this.owner.atCorpusPath, cdmLogCode.ErrValdnInvalidMaxCardinality, value);
         } else {
             this._maximum = value;
             this._maximumNumber = this.getNumber(this._maximum, CardinalitySettings.defaultMaximum);
@@ -86,7 +92,7 @@ export class CardinalitySettings {
             return number;
         } else {
             // defaults to min:max DefaultMinimum:DefaultMaximum in the invalid values
-            Logger.error(CardinalitySettings.name, this.ctx, `Unable to get number for string '${value}'. Falling to default value ${defaultValue}.`);
+            Logger.error(this.ctx, this.TAG, this.getNumber.name, null, cdmLogCode.ErrProjStringError, value, defaultValue);
 
             return defaultValue;
         }

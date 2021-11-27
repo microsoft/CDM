@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -6,11 +6,14 @@ using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     public class CdmE2ERelationship : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmE2ERelationship);
+
         /// <summary>
         /// Gets or sets the relationship name.
         /// </summary>
@@ -36,6 +39,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public string ToEntityAttribute { get; set; }
 
+        private DateTimeOffset? lastFileModifiedTime;
+        /// <summary>
+        /// Gets or sets the last file modified time.
+        /// </summary>
+        public DateTimeOffset? LastFileModifiedTime
+        {
+            get { return lastFileModifiedTime; }
+            set { LastFileModifiedOldTime = lastFileModifiedTime; lastFileModifiedTime = value; }
+        }
+
+        internal DateTimeOffset? LastFileModifiedOldTime { get; private set; }
+
         /// <summary>
         /// Constructs a CdmE2ERelationship.
         /// </summary>
@@ -46,6 +61,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.Name = name;
             this.ObjectType = CdmObjectType.E2ERelationshipDef;
+            this.LastFileModifiedOldTime = null;
+            this.lastFileModifiedTime = null;
         }
 
         /// <inheritdoc />
@@ -76,7 +93,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmE2ERelationship;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
             }
 
@@ -105,7 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmE2ERelationship), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -126,16 +142,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                if (string.IsNullOrEmpty(this.DeclaredPath))
-                {
-                    this.DeclaredPath = pathFrom + this.Name;
-                }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
-                path = this.DeclaredPath;
-            }
             if (preChildren != null && preChildren.Invoke(this, path))
             {
                 return false;
@@ -150,6 +158,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Reset LastFileModifiedOldTime.
+        /// </summary>
+        internal void ResetLastFileModifiedOldTime()
+        {
+            this.LastFileModifiedOldTime = null;
+        }
+        
+        /// <summary>
+        /// Standardized way of turning a relationship object into a key for caching
+        /// without using the object itself as a key (could be duplicate relationship objects).
+        /// </summary>
+        /// <returns></returns>
+        internal string CreateCacheKey()
+        {
+            string nameAndPipe = string.Empty;
+            if (!string.IsNullOrWhiteSpace(this.Name))
+            {
+                nameAndPipe = $"{this.Name}|";
+            }
+            return $"{nameAndPipe}{this.ToEntity}|{this.ToEntityAttribute}|{this.FromEntity}|{this.FromEntityAttribute}";
         }
     }
 }

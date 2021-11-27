@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -10,10 +10,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
     using System;
-    using System.Collections.Generic;
 
     class LocalEntityDeclarationPersistence
     {
+        private static readonly string Tag = nameof(LocalEntityDeclarationPersistence);
+
         public static CdmLocalEntityDeclarationDefinition FromData(CdmCorpusContext ctx, string prefixPath, JToken obj)
         {
             var localDec = ctx.Corpus.MakeObject<CdmLocalEntityDeclarationDefinition>(
@@ -29,7 +30,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
                 if (entityPath == null)
                 {
-                    Logger.Error(nameof(LocalEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", nameof(FromData));
+                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound, (string)obj["entityName"]);
                 }
 
             }
@@ -56,8 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 localDec.Explanation = (string)obj["explanation"];
             }
 
-            if (obj["exhibitsTraits"] != null)
-                Utils.AddListToCdmCollection(localDec.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
+            Utils.AddListToCdmCollection(localDec.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
 
             if (obj["dataPartitions"] != null)
             {

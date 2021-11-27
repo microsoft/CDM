@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { DataPartition, DataPartitionPattern, TraitReference } from '.';
+import { DataPartition, DataPartitionPattern, TraitGroupReference, TraitReference } from '.';
 
 /**
  * The local entity declaration for CDM folders format.
@@ -16,7 +16,7 @@ export class EntityDeclarationDefinition {
 
     public explanation?: string;
 
-    public exhibitsTraits?: (string | TraitReference)[];
+    public exhibitsTraits?: (string | TraitReference | TraitGroupReference)[];
 
     public entitySchema?: string;
 

@@ -118,7 +118,7 @@ namespace configure_adapters
         {
             // Get the list of hosts from the user.
             Dictionary<string, string> hosts = new Dictionary<string, string>();
-            Console.WriteLine("The RemoteAdapter contains a dictionary of hosts. The mapping is from a key to a host. (Ex. { \"contoso\": \"http://contoso.com\" }");
+            Console.WriteLine("The RemoteAdapter contains a dictionary of hosts. The mapping is from a key to a host. (Ex. { \"contoso\": \"http://contoso.com\" })");
             // The RemoteAdapter can have multiple hosts, so keep asking for values until the user is done.
             while (true)
             {

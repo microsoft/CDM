@@ -118,7 +118,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
 
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest. "));
+            Assert.IsTrue(functionParameter2.Contains("Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest."));
 
 
             Assert.AreEqual(0, manifest.Entities.Count);

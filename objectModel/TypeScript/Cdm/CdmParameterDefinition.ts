@@ -3,18 +3,26 @@
 
 import {
     ArgumentValue,
+    CdmAttributeReference,
     CdmCorpusContext,
+    CdmDocumentDefinition,
+    CdmDataTypeDefinition,
     CdmDataTypeReference,
     CdmObject,
+    CdmObjectBase,
+    CdmObjectReferenceBase,
     cdmObjectSimple,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
+    resolveContext,
     resolveOptions,
     VisitCallback
 } from '../internal';
 
 export class CdmParameterDefinition extends cdmObjectSimple implements CdmParameterDefinition {
+    private TAG: string = CdmParameterDefinition.name;
+
     public explanation: string;
     public name: string;
     public defaultValue: ArgumentValue;
@@ -73,7 +81,7 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
             copy.explanation = this.explanation;
             copy.defaultValue = defVal;
             copy.required = this.required;
-            copy.dataTypeRef = (this.dataTypeRef ? this.dataTypeRef.copy(resOpt) : undefined) as CdmDataTypeReference;
+            copy.dataTypeRef = this.dataTypeRef ? this.dataTypeRef.copy(resOpt) as CdmDataTypeReference : undefined;
 
             return copy;
         }
@@ -84,13 +92,8 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
         // let bodyCode = () =>
         {
             if (!this.name) {
-                Logger.error(
-                    CdmParameterDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['name']),
-                    this.validate.name
-                );
-
+                let missingFields: string[] = ['name'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -134,29 +137,139 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
         }
         // return p.measure(bodyCode);
     }
-
+    
     /**
      * @internal
      */
-    public getDataTypeRef(): CdmDataTypeReference {
+     public constTypeCheck(
+        resOpt: resolveOptions,
+        wrtDoc: CdmDocumentDefinition,
+        argumentValue: ArgumentValue
+    ): ArgumentValue {
         // let bodyCode = () =>
         {
-            return this.dataTypeRef;
+            const ctx: resolveContext = this.ctx as resolveContext;
+            let replacement: ArgumentValue = argumentValue;
+            // if parameter type is entity, then the value should be an entity or ref to one
+            // same is true of 'dataType' dataType
+            if (!this.dataTypeRef) {
+                return replacement;
+            }
+
+            const dt: CdmDataTypeDefinition = this.dataTypeRef.fetchObjectDefinition(resOpt);
+            if (!dt) {
+                Logger.error(this.ctx, this.TAG, this.constTypeCheck.name, this.atCorpusPath, cdmLogCode.ErrUnrecognizedDataType, this.name);
+                return undefined;
+            }
+
+            // compare with passed in value or default for parameter
+            let pValue: ArgumentValue = argumentValue;
+            if (!pValue) {
+                pValue = this.getDefaultValue();
+                replacement = pValue;
+            }
+            if (pValue) {
+                if (dt.isDerivedFrom('cdmObject', resOpt)) {
+                    const expectedTypes: cdmObjectType[] = [];
+                    let expected: string;
+                    if (dt.isDerivedFrom('entity', resOpt)) {
+                        expectedTypes.push(cdmObjectType.constantEntityDef);
+                        expectedTypes.push(cdmObjectType.entityRef);
+                        expectedTypes.push(cdmObjectType.entityDef);
+                        expectedTypes.push(cdmObjectType.projectionDef);
+                        expected = 'entity';
+                    } else if (dt.isDerivedFrom('attribute', resOpt)) {
+                        expectedTypes.push(cdmObjectType.attributeRef);
+                        expectedTypes.push(cdmObjectType.typeAttributeDef);
+                        expectedTypes.push(cdmObjectType.entityAttributeDef);
+                        expected = 'attribute';
+                    } else if (dt.isDerivedFrom('dataType', resOpt)) {
+                        expectedTypes.push(cdmObjectType.dataTypeRef);
+                        expectedTypes.push(cdmObjectType.dataTypeDef);
+                        expected = 'dataType';
+                    } else if (dt.isDerivedFrom('purpose', resOpt)) {
+                        expectedTypes.push(cdmObjectType.purposeRef);
+                        expectedTypes.push(cdmObjectType.purposeDef);
+                        expected = 'purpose';
+                    } else if (dt.isDerivedFrom('trait', resOpt)) {
+                        expectedTypes.push(cdmObjectType.traitRef);
+                        expectedTypes.push(cdmObjectType.traitDef);
+                        expected = 'trait';
+                    } else if (dt.isDerivedFrom('traitGroup', resOpt)) {
+                        expectedTypes.push(cdmObjectType.traitGroupRef);
+                        expectedTypes.push(cdmObjectType.traitGroupDef);
+                        expected = 'traitGroup';
+                    } else if (dt.isDerivedFrom('attributeGroup', resOpt)) {
+                        expectedTypes.push(cdmObjectType.attributeGroupRef);
+                        expectedTypes.push(cdmObjectType.attributeGroupDef);
+                        expected = 'attributeGroup';
+                    }
+
+                    if (expectedTypes.length === 0) {
+                        Logger.error(this.ctx, this.TAG, this.constTypeCheck.name, wrtDoc.atCorpusPath, cdmLogCode.ErrUnexpectedDataType, this.getName());
+                    }
+
+                    // if a string constant, resolve to an object ref.
+                    let foundType: cdmObjectType = cdmObjectType.error;
+                    if (typeof pValue === 'object' && 'objectType' in pValue) {
+                        foundType = pValue.objectType;
+                    }
+                    let foundDesc: string = ctx.relativePath;
+                    if (!(pValue instanceof CdmObjectBase)) {
+                        // pValue is a string or object
+                        pValue = pValue as string;
+                        if (pValue === 'this.attribute' && expected === 'attribute') {
+                            // will get sorted out later when resolving traits
+                            foundType = cdmObjectType.attributeRef;
+                        } else {
+                            foundDesc = pValue;
+                            const seekResAtt: number = CdmObjectReferenceBase.offsetAttributePromise(pValue);
+                            if (seekResAtt >= 0) {
+                                // get an object there that will get resolved later after resolved attributes
+                                replacement = new CdmAttributeReference(this.ctx, pValue, true);
+                                (replacement as CdmAttributeReference).inDocument = wrtDoc;
+                                foundType = cdmObjectType.attributeRef;
+                            } else {
+                                const lu: CdmObjectBase = ctx.corpus.resolveSymbolReference(
+                                    resOpt,
+                                    wrtDoc,
+                                    pValue,
+                                    cdmObjectType.error,
+                                    true
+                                );
+                                if (lu) {
+                                    if (expected === 'attribute') {
+                                        replacement = new CdmAttributeReference(this.ctx, pValue, true);
+                                        (replacement as CdmAttributeReference).inDocument = wrtDoc;
+                                        foundType = cdmObjectType.attributeRef;
+                                    } else {
+                                        replacement = lu;
+                                        if (typeof replacement === 'object' && 'objectType' in replacement) {
+                                            foundType = replacement.objectType;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (expectedTypes.indexOf(foundType) === -1) {
+                        Logger.error(this.ctx, this.TAG, this.constTypeCheck.name, wrtDoc.atCorpusPath, cdmLogCode.ErrResolutionFailure, this.getName(), foundDesc, expected);
+                    } else {
+                        Logger.info(ctx, this.TAG, this.constTypeCheck.name, wrtDoc.atCorpusPath, `resolved '${foundDesc}'`);
+                    }
+                }
+            }
+
+            return replacement;
         }
         // return p.measure(bodyCode);
     }
 
+
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.name;
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
@@ -179,5 +292,13 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
             return false;
         }
         // return p.measure(bodyCode);
+    }
+
+    /**
+     * Given an initial path, returns this object's declared path
+     * @internal
+     */
+     public fetchDeclaredPath(pathFrom: string): string {
+        return pathFrom + this.getName() ?? '';
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     /// <summary>
     /// The object model implementation for Data Partition.
@@ -111,7 +112,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmDataPartitionDefinition;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
             }
 
@@ -120,7 +120,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
             copy.LastFileModifiedTime = this.LastFileModifiedTime;
             copy.Inferred = this.Inferred;
-            copy.Arguments = this.Arguments;
+            if (this.Arguments != null)
+            {
+                // deep copy the content
+                copy.Arguments = new Dictionary<string, List<string>>();
+                foreach (var key in this.Arguments.Keys)
+                {
+                    copy.Arguments.Add(key, new List<string>(this.Arguments[key]));
+                }
+            }
             copy.SpecializedSchema = this.SpecializedSchema;
 
             this.CopyDef(resOpt, copy);
@@ -143,30 +151,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (path == null)
-                {
-                    path = pathFrom + (this.GetName() ?? "UNNAMED");
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren != null && preChildren.Invoke(this, path))
-            {
                 return false;
-            }
 
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
-            {
-                return false;
-            }
+                return true;
             return false;
+        }
+
+        /// <inheritdoc />
+        internal override string UpdateDeclaredPath(string pathFrom)
+        {
+            return pathFrom + this.GetName() ?? "UNNAMED";
         }
 
         /// <inheritdoc />
@@ -178,14 +179,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
-            DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
+            using (Logger.EnterScope(nameof(CdmDataPartitionDefinition), Ctx, nameof(FileStatusCheckAsync)))
+            {
+                string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
+                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeFromPartitionPathAsync(fullPath);
 
-            // update modified times
-            this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-            this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
+                // update modified times
+                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+                this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
 
-            await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+                await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+            }
         }
 
         /// <inheritdoc />

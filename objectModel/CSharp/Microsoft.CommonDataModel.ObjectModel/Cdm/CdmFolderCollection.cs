@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -41,8 +41,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public new CdmFolderDefinition Add(CdmFolderDefinition childFolder)
         {
-            this.AddItemModifications(childFolder);
-            return base.Add(childFolder);
+            lock (this.AllItems)
+            {
+                this.AddItemModifications(childFolder);
+                return base.Add(childFolder);
+            }
         }
 
         /// <inheritdoc />
@@ -58,6 +61,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             foreach (var child in childFolderList)
             {
                 this.Add(child);
+            }
+        }
+
+        /// <summary>
+        /// Gets a folder by name or creates if it doesn't exist.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal CdmFolderDefinition GetOrCreate(string name) {
+            lock (this.AllItems)
+            {
+                CdmFolderDefinition result = null;
+                foreach (var folder in this.AllItems)
+                {
+                    if (name.ToLowerInvariant() == folder.Name.ToLowerInvariant())
+                    {
+                        // found our folder.
+                        result = folder;
+                        break;
+                    }
+                }
+
+                if (result == null)
+                {
+                    result = this.Add(name);
+                }
+
+                return result;
             }
         }
 

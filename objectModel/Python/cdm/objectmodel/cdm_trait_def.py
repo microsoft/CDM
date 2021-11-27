@@ -5,14 +5,15 @@ from typing import Optional, List, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.resolvedmodel import ParameterCollection
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
+from cdm.enums import CdmLogCode
 
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_collection import CdmCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmObject, CdmParameterDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmParameterDefinition
+    from cdm.utilities import VisitCallback
 
 
 class CdmTraitDefinition(CdmObjectDefinition):
@@ -20,6 +21,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_trait: Optional['CdmTraitReference'] = None) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmTraitDefinition.__name__
 
         # the trait associated properties.
         self.associated_properties = []  # type: List[str]
@@ -43,8 +46,6 @@ class CdmTraitDefinition(CdmObjectDefinition):
         self._has_set_flags = False
         self._all_parameters = None
         self._parameters = None
-
-        self._TAG = CdmTraitDefinition.__name__
 
     @property
     def parameters(self) -> 'CdmCollection[CdmParameterDefinition]':
@@ -72,7 +73,6 @@ class CdmTraitDefinition(CdmObjectDefinition):
             copy = CdmTraitDefinition(self.ctx, self.trait_name, None)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.trait_name = self.trait_name
 
         if self.extends_trait:
@@ -81,7 +81,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
         copy._all_parameters = None
         copy.elevated = self.elevated
         copy.ugly = self.ugly
-        copy.associated_properties = self.associated_properties
+        copy.associated_properties = list(self.associated_properties) if self.associated_properties else None
 
         self._copy_def(res_opt, copy)
         return copy
@@ -131,7 +131,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             cache_tag_extra = str(self.extends_trait.id)
 
         cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
-        rts_result = ctx._cache.get(cache_tag) if cache_tag else None
+        rts_result = ctx._trait_cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
         # children found from the _construct_resolved_traits call
@@ -153,23 +153,23 @@ class CdmTraitDefinition(CdmObjectDefinition):
                         self.associated_properties = base_trait.associated_properties
 
             self._has_set_flags = True
-            pc = self._fetch_all_parameters(res_opt)
-            av = []  # type: List[CdmArgumentValue]
+            parameter_collection = self._fetch_all_parameters(res_opt)
+            argument_values = []  # type: List[CdmArgumentValue]
             was_set = []  # type: List[bool]
 
-            self._this_is_known_to_have_parameters = bool(pc.sequence)
-            for i in range(len(pc.sequence)):
+            self._this_is_known_to_have_parameters = bool(parameter_collection.sequence)
+            for i in range(len(parameter_collection.sequence)):
                 # either use the default value or (higher precidence) the value taken from the base reference
-                value = pc.sequence[i].default_value
+                value = parameter_collection.sequence[i].default_value
                 if base_values and i < len(base_values):
                     base_value = base_values[i]
                     if base_value:
                         value = base_value
-                av.append(value)
+                argument_values.append(value)
                 was_set.append(False)
 
             # save it
-            res_trait = ResolvedTrait(self, pc, av, was_set)
+            res_trait = ResolvedTrait(self, parameter_collection, argument_values, was_set)
             rts_result = ResolvedTraitSet(res_opt)
             rts_result.merge(res_trait, False)
 
@@ -178,7 +178,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             # get the new cache tag now that we have the list of docs
             cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
             if cache_tag:
-                ctx._cache[cache_tag] = rts_result
+                ctx._trait_cache[cache_tag] = rts_result
         else:
             # cache found
             # get the SymbolSet for this cached object
@@ -199,17 +199,13 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def validate(self) -> bool:
         if not bool(self.trait_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['trait_name']))
+            missing_fields = ['trait_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.trait_name
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -238,7 +234,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
         self._all_parameters = ParameterCollection(prior)
         if self.parameters:
-            for element in self.parameters:
-                self._all_parameters.add(element)
+            for paramter in self.parameters:
+                self._all_parameters.add(paramter)
 
         return self._all_parameters

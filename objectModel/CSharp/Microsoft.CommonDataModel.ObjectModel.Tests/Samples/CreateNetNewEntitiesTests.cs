@@ -7,8 +7,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     [TestClass]
@@ -32,7 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         [TestInitialize]
         public void CheckSampleRunTestsFlag()
         {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("SAMPLE_RUNTESTS environment variable not set.");
@@ -48,7 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
             TestHelper.AssertFolderFilesEquality(
                 TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestCreateNetNewEntities)),
-                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestCreateNetNewEntities)));
+                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestCreateNetNewEntities)), true);
         }
 
         private CdmCorpusDefinition SetupCdmCorpus()
@@ -80,9 +80,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             // Create the entity definition instance
             var personEntity = cdmCorpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, CustomPersonEntityName, false);
             // Add type attributes to the entity instance
-            var personAttributeId = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomPersonEntityName}Id", "identifiedBy", "entityId");
+            // Both purpose "identifiedBy" and data type "entityId" are defined in public standards on the document /samples/example-public-standards/primitives.cdm.json
+            var personAttributeId = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomPersonEntityName}Id", "identifiedBy", "entityId");
             personEntity.Attributes.Add(personAttributeId);
-            var personAttributeName = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomPersonEntityName}Name", "hasA", "name");
+            // Both purpose "hasA" and data type "name" are defined in public standards
+            // The purpose "hasA" is from /samples/example-public-standards/primitives.cdm.json
+            // The data type "name" is from /samples/example-public-standards/meanings.identity.cdm.json
+            var personAttributeName = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomPersonEntityName}Name", "hasA", "name");
             personEntity.Attributes.Add(personAttributeName);
             // Add properties to the entity instance
             personEntity.DisplayName = CustomPersonEntityName;
@@ -103,9 +107,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             // Create the entity definition instance
             var accountEntity = cdmCorpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, CustomAccountEntityName, false);
             // Add type attributes to the entity instance
-            var accountAttributeId = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomAccountEntityName}Id", "identifiedBy", "entityId");
+            var accountAttributeId = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomAccountEntityName}Id", "identifiedBy", "entityId");
             accountEntity.Attributes.Add(accountAttributeId);
-            var accountAttributeName = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomAccountEntityName}Name", "hasA", "name");
+            var accountAttributeName = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomAccountEntityName}Name", "hasA", "name");
             accountEntity.Attributes.Add(accountAttributeName);
             // Add properties to the entity instance
             accountEntity.DisplayName = CustomAccountEntityName;
@@ -114,15 +118,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             // In this sample, every account has one person who owns the account
             // the relationship is actually an entity attribute
             var attributeExplanation = "The owner of the account, which is a person.";
-            // You can all CreateSimpleAttributeForRelationshipBetweenTwoEntities() instead, but CreateAttributeForRelationshipBetweenTwoEntities() can show 
+            // You can call CreateSimpleAttributeForRelationshipBetweenTwoEntities() instead, but CreateEntityAttributeForRelationshipBetweenTwoEntities() can show 
             // more details of how to use resolution guidance to customize your data
-            var accountOwnerAttribute = CreateAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CustomPersonEntityName, "accountOwner", attributeExplanation);
+            var accountOwnerAttribute = CreateEntityAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CustomPersonEntityName, "accountOwner", attributeExplanation);
             accountEntity.Attributes.Add(accountOwnerAttribute);
             // Create the document which contains the entity
             var accountEntityDoc = cdmCorpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"{CustomAccountEntityName}.cdm.json", false);
             // Add an import to the foundations doc so the traits about partitons will resolve nicely
             accountEntityDoc.Imports.Add(FoundationJsonPath);
-            // the CustomAccount entity has a relationship with the CustomPerson entity, this relationship is defined from its attribute with traits, 
+            // The CustomAccount entity has a relationship with the CustomPerson entity, this relationship is defined from its attribute with traits, 
             // the import to the entity reference CustomPerson's doc is required
             accountEntityDoc.Imports.Add($"{CustomPersonEntityName}.cdm.json");
             accountEntityDoc.Definitions.Add(accountEntity);
@@ -137,9 +141,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             extendedStandardAccountEntity.ExtendsEntity = cdmCorpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, "Account", true);
             var attrExplanation = "This is a simple custom account for this sample.";
             // Add a relationship from it to the CustomAccount entity, and name the foreign key to SimpleCustomAccount
-            // You can all CreateSimpleAttributeForRelationshipBetweenTwoEntities() instead, but CreateAttributeForRelationshipBetweenTwoEntities() can show 
-            // more details of how to use resolution guidance to customize your data
-            var simpleCustomAccountAttribute = CreateAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CustomAccountEntityName, "SimpleCustomAccount", attrExplanation);
+            // You can also call CreateEntityAttributeForRelationshipBetweenTwoEntities() instead like above 
+            var simpleCustomAccountAttribute = CreateSimpleEntityAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CustomAccountEntityName, "SimpleCustomAccount", attrExplanation);
             extendedStandardAccountEntity.Attributes.Add(simpleCustomAccountAttribute);
             var extendedStandardAccountEntityDoc = cdmCorpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"{ExtendedStandardAccount}.cdm.json", false);
             // Add an import to the foundations doc so the traits about partitons will resolve nicely
@@ -162,22 +165,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             manifestResolved.Imports.Add(FoundationJsonPath);
 
             Console.WriteLine("Save the documents");
-            foreach (CdmEntityDeclarationDefinition eDef in manifestResolved.Entities)
-            {
-                // Get the entity being pointed at
-                var localEDef = eDef;
-                var entDef = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(localEDef.EntityPath, manifestResolved);
-                // Make a fake partition, just to demo that
-                var part = cdmCorpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, $"{entDef.EntityName}-data-description");
-                localEDef.DataPartitions.Add(part);
-                part.Explanation = "not real data, just for demo";
-                // We have existing partition files for the custom entities, so we need to make the partition point to the file location
-                part.Location = $"local:/{entDef.EntityName}/partition-data.csv";
-                // Add trait to partition for csv params
-                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false);
-                csvTrait.Arguments.Add("columnHeaders", "true");
-                csvTrait.Arguments.Add("delimiter", ",");
-            }
 
             // We can save the documents as manifest.cdm.json format or model.json
             // Save as manifest.cdm.json
@@ -187,36 +174,60 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         }
 
         /// <summary>
-        /// Create an type attribute definition instance with provided data type.
+        /// Create an type attribute definition instance with provided purpose and data type.
         /// </summary>
         /// <param name="cdmCorpus"> The CDM corpus. </param>
         /// <param name="attributeName"> The directives to use while getting the resolved entities. </param>
-        /// <param name="purpose"> The manifest to be resolved. </param>
-        /// <param name="dataType"> The data type.</param>
+        /// <param name="purpose"> The purpose name that is defined in public standards. </param>
+        /// <param name="dataType"> The data type name that is defind in public standards.</param>
         /// <returns> The instance of type attribute definition. </returns>
-        private static CdmTypeAttributeDefinition CreateEntityAttributeWithPurposeAndDataType(CdmCorpusDefinition cdmCorpus, string attributeName, string purpose, string dataType)
+        private static CdmTypeAttributeDefinition CreateTypeAttributeWithPurposeAndDataType(CdmCorpusDefinition cdmCorpus, string attributeName, string purpose, string dataType)
         {
-            var entityAttribute = CreateEntityAttributeWithPurpose(cdmCorpus, attributeName, purpose);
-            entityAttribute.DataType = cdmCorpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, dataType, true);
-            return entityAttribute;
+            var typeAttribute = cdmCorpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, attributeName, false);
+            typeAttribute.Purpose = cdmCorpus.MakeRef<CdmPurposeReference>(CdmObjectType.PurposeRef, purpose, true);
+            typeAttribute.DataType = cdmCorpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, dataType, true);
+            return typeAttribute;
         }
 
         /// <summary>
-        /// Create an type attribute definition instance with provided purpose.
+        /// Create an purpose reference instance which points to `meaningOfRelationshipVerbPhrases` which is defined in public standards.
         /// </summary>
         /// <param name="cdmCorpus"> The CDM corpus. </param>
-        /// <param name="attributeName"> The directives to use while getting the resolved entities. </param>
-        /// <param name="purpose"> The manifest to be resolved. </param>
-        /// <returns> The instance of type attribute definition. </returns>
-        private static CdmTypeAttributeDefinition CreateEntityAttributeWithPurpose(CdmCorpusDefinition cdmCorpus, string attributeName, string purpose)
+        /// <returns> The instance of purpose reference. </returns>
+        private static CdmPurposeReference CreateRelationshipMeanings(CdmCorpusDefinition cdmCorpus, string customMessage)
         {
-            var entityAttribute = cdmCorpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, attributeName, false);
-            entityAttribute.Purpose = cdmCorpus.MakeRef<CdmPurposeReference>(CdmObjectType.PurposeRef, purpose, true);
-            return entityAttribute;
+            // The purpose "meaningOfRelationshipVerbPhrases" is from /samples/example-public-standards/foundations.cdm.json
+            // With the use of this purpose, two additional traits ("means.relationship.verbPhrase" and "means.relationship.inverseVerbPhrase") will be added by default
+            // as they are attached to the purpose definition.
+            CdmPurposeReference purposeRef = cdmCorpus.MakeRef<CdmPurposeReference>(CdmObjectType.PurposeRef, "meaningOfRelationshipVerbPhrases", false);
+
+            // You can add your own argument to the additional traits 
+            // The trait "means.relationship.verbPhrase" is also from /samples/example-public-standards/foundations.cdm.json
+            // This trait states that the data type it requires is an entity "localizedTable", which allow you to define phrases in different languages
+            CdmTraitReference forwardPurposeTraitReference = cdmCorpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "means.relationship.verbPhrase", false);
+
+            List<List<string>> forwardDescriptions = new List<List<string>> {
+                new List<string>() { "en", $"{customMessage} - Forwards" },
+                new List<string>() { "cn", "正向" }
+            };
+
+            var forwardConstEntDef = cdmCorpus.MakeObject<CdmConstantEntityDefinition>(CdmObjectType.ConstantEntityDef, null, false);
+            forwardConstEntDef.ConstantValues = forwardDescriptions;
+
+            // The entity "localizedTable" is from /samples/example-public-standards/foundations.cdm.json
+            forwardConstEntDef.EntityShape = cdmCorpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "localizedTable", true);
+            forwardPurposeTraitReference.Arguments.Add(null, cdmCorpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, forwardConstEntDef, true));
+
+            purposeRef.AppliedTraits.Add(forwardPurposeTraitReference);
+
+            // You can also use the same way above to decorate the second trait "means.relationship.inverseVerbPhrase" 
+            // it is also available in /samples/example-public-standards/foundations.cdm.json
+
+            return purposeRef;
         }
 
         /// <summary>
-        /// Create a relationship linking by creating an eneity attribute definition instance with a trait. 
+        /// Create a relationship linking by creating an entity attribute definition instance with a trait. 
         /// This allows you to add a resolution guidance to customize your data.
         /// </summary>
         /// <param name="cdmCorpus"> The CDM corpus. </param>
@@ -224,7 +235,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         /// <param name="foreignKeyName"> The name of the foreign key. </param>
         /// <param name="attributeExplanation"> The explanation of the attribute.</param>
         /// <returns> The instatnce of entity attribute definition. </returns>
-        private static CdmEntityAttributeDefinition CreateAttributeForRelationshipBetweenTwoEntities(
+        private static CdmEntityAttributeDefinition CreateEntityAttributeForRelationshipBetweenTwoEntities(
             CdmCorpusDefinition cdmCorpus,
             string associatedEntityName,
             string foreignKeyName,
@@ -243,13 +254,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             // Add the trait to the attribute's entity reference
             associatedEntityRef.AppliedTraits.Add(traitReference);
             entityAttributeDef.Entity = associatedEntityRef;
+            entityAttributeDef.Purpose = CreateRelationshipMeanings(cdmCorpus, "Non-simple resolution guidance sample");
 
             // Add resolution guidance
             var attributeResolution = cdmCorpus.MakeObject<CdmAttributeResolutionGuidance>(CdmObjectType.AttributeResolutionGuidanceDef);
             attributeResolution.entityByReference = attributeResolution.makeEntityByReference();
             attributeResolution.entityByReference.allowReference = true;
             attributeResolution.renameFormat = "{m}";
-            var entityAttribute = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{foreignKeyName}Id", "identifiedBy", "entityId");
+            var entityAttribute = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, $"{foreignKeyName}Id", "identifiedBy", "entityId");
             attributeResolution.entityByReference.foreignKeyAttribute = entityAttribute as CdmTypeAttributeDefinition;
             entityAttributeDef.ResolutionGuidance = attributeResolution;
 
@@ -257,14 +269,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         }
 
         /// <summary>
-        /// Create a relationship linking with an attribute an eneity attribute definition instance without a trait.
+        /// Create a relationship linking with an attribute an entity attribute definition instance without a trait.
         /// </summary>
         /// <param name="cdmCorpus"> The CDM corpus. </param>
         /// <param name="associatedEntityName"> The name of . </param>
         /// <param name="foreignKeyName"> The name of the foreign key. </param>
         /// <param name="attributeExplanation"> The explanation of the attribute.</param>
         /// <returns> The instatnce of entity attribute definition. </returns>
-        private static CdmEntityAttributeDefinition CreateSimpleAttributeForRelationshipBetweenTwoEntities(
+        private static CdmEntityAttributeDefinition CreateSimpleEntityAttributeForRelationshipBetweenTwoEntities(
             CdmCorpusDefinition cdmCorpus,
             string associatedEntityName,
             string foreignKeyName,
@@ -276,6 +288,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
             // Creating an entity reference for the associated entity - simple name reference
             entityAttributeDef.Entity = cdmCorpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, associatedEntityName, true);
+            entityAttributeDef.Purpose = CreateRelationshipMeanings(cdmCorpus, "Simple resolution guidance sample");
 
             // Add resolution guidance - enable reference
             var attributeResolution = cdmCorpus.MakeObject<CdmAttributeResolutionGuidance>(CdmObjectType.AttributeResolutionGuidanceDef);

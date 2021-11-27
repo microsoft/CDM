@@ -5,15 +5,20 @@ import { CdmFolder } from '..';
 import {
     CdmAttributeContext,
     cdmAttributeContextType,
+    CdmCollection,
     CdmCorpusContext,
     cdmObjectType,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
+import { AttributeContextReferencePersistence } from './AttributeContextReferencePersistence';
 import {
     AttributeContext,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -39,18 +44,20 @@ export class AttributeContextPersistence {
                 case cdmAttributeContextType.attributeGroup:
                     attributeContext.definition = CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object.definition);
                     break;
+                case cdmAttributeContextType.addedAttributeNewArtifact:
                 case cdmAttributeContextType.addedAttributeSupporting:
                 case cdmAttributeContextType.addedAttributeIdentity:
                 case cdmAttributeContextType.addedAttributeExpansionTotal:
                 case cdmAttributeContextType.addedAttributeSelectedType:
                 case cdmAttributeContextType.attributeDefinition:
+                case cdmAttributeContextType.attributeExcluded:
                     attributeContext.definition = CdmFolder.AttributeReferencePersistence.fromData(ctx, object.definition);
                     break;
                 default:
             }
         }
         // I know the trait collection names look wrong. but I wanted to use the def baseclass
-        utils.addArrayToCdmCollection<CdmTraitReference>(attributeContext.exhibitsTraits, utils.createTraitReferenceArray(ctx, object.appliedTraits));
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(attributeContext.exhibitsTraits, utils.createTraitReferenceArray(ctx, object.appliedTraits));
         if (object.contents && object.contents.length > 0) {
             const l: number = object.contents.length;
             for (let i: number = 0; i < l; i++) {
@@ -60,6 +67,13 @@ export class AttributeContextPersistence {
                 } else {
                     attributeContext.contents.push(AttributeContextPersistence.fromData(ctx, ct));
                 }
+            }
+        }
+
+        if (object.lineage) {
+            attributeContext.lineage = new CdmCollection(ctx, attributeContext, cdmObjectType.attributeContextRef);
+            for (const ct of object.lineage) {
+                attributeContext.lineage.push(AttributeContextReferencePersistence.fromData(ctx, ct));
             }
         }
 
@@ -73,11 +87,13 @@ export class AttributeContextPersistence {
             parent: instance.parent ? instance.parent.copyData(resOpt, options) as string : undefined,
             definition: instance.definition ? instance.definition.copyData(resOpt, options) as string : undefined,
             // i know the trait collection names look wrong. but I wanted to use the def baseclass
-            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(
                 resOpt,
-                instance.exhibitsTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty),
+                instance.exhibitsTraits.allItems.filter(
+                    (trait: CdmTraitReferenceBase) => trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty),
                 options),
-            contents: copyDataUtils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options)
+            contents: copyDataUtils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options),
+            lineage: copyDataUtils.arrayCopyData<AttributeContext>(resOpt, instance.lineage, options)
         };
     }
     public static mapTypeNameToEnum(typeName: string): cdmAttributeContextType {
@@ -90,6 +106,10 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.attributeGroup;
             case 'attributeDefinition':
                 return cdmAttributeContextType.attributeDefinition;
+            case 'attributeExcluded':
+                return cdmAttributeContextType.attributeExcluded;
+            case 'addedAttributeNewArtifact':
+                return cdmAttributeContextType.addedAttributeNewArtifact;
             case 'addedAttributeSupporting':
                 return cdmAttributeContextType.addedAttributeSupporting;
             case 'addedAttributeIdentity':
@@ -128,6 +148,10 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.operationIncludeAttributes;
             case 'operationAddAttributeGroup':
                 return cdmAttributeContextType.operationAddAttributeGroup;
+            case 'operationAlterTraits':
+                return cdmAttributeContextType.operationAlterTraits;
+            case 'operationAddArtifactAttribute':
+                return cdmAttributeContextType.operationAddArtifactAttribute;
             case 'unknown':
                 return cdmAttributeContextType.unknown;
 
@@ -145,6 +169,10 @@ export class AttributeContextPersistence {
                 return 'attributeGroup';
             case cdmAttributeContextType.attributeDefinition:
                 return 'attributeDefinition';
+            case cdmAttributeContextType.attributeExcluded:
+                return 'attributeExcluded';
+            case cdmAttributeContextType.addedAttributeNewArtifact:
+                return 'addedAttributeNewArtifact';
             case cdmAttributeContextType.addedAttributeSupporting:
                 return 'addedAttributeSupporting';
             case cdmAttributeContextType.addedAttributeIdentity:
@@ -183,6 +211,10 @@ export class AttributeContextPersistence {
                 return 'operationIncludeAttributes';
             case cdmAttributeContextType.operationAddAttributeGroup:
                 return 'operationAddAttributeGroup';
+            case cdmAttributeContextType.operationAlterTraits:
+                return 'operationAlterTraits';
+            case cdmAttributeContextType.operationAddArtifactAttribute:
+                return 'operationAddArtifactAttribute';
             default:
                 return 'unknown';
         }

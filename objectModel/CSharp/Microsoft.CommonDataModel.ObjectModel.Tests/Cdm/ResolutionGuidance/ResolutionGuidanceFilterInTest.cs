@@ -17,6 +17,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterInSome()
         {
+            bool updateResults = false;
             string testName = "TestFilterInSome";
             {
                 string entityName = "Employee";
@@ -59,7 +60,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -103,7 +105,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -114,7 +117,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterInSomeWithAttributeGroupRef()
         {
-            string testName = "TestFilterInSomeWithAttributeGroupRef";
+            bool updateResults = false;
+            string testName = nameof(TestFilterInSomeWithAttributeGroupRef);
             {
                 string entityName = "Employee";
 
@@ -156,7 +160,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -200,7 +205,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -211,7 +217,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterInAll()
         {
-            string testName = "TestFilterInAll";
+            bool updateResults = false;
+            string testName = nameof(TestFilterInAll);
             {
                 string entityName = "Employee";
 
@@ -253,7 +260,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -297,7 +305,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -308,7 +317,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterInAllWithAttributeGroupRef()
         {
-            string testName = "TestFilterInAllWithAttributeGroupRef";
+            bool updateResults = false;
+            string testName = nameof(TestFilterInAllWithAttributeGroupRef);
             {
                 string entityName = "Employee";
 
@@ -350,7 +360,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -394,7 +405,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }

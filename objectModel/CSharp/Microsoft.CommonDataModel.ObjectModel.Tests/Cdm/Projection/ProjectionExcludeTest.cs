@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -55,8 +55,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("id");
-            excludeAttrsOp.ExcludeAttributes.Add("date");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "id", "date" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection
@@ -97,8 +96,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("name");
-            excludeAttrsOp.ExcludeAttributes.Add("value");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "name", "value" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection
@@ -137,8 +135,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("id");
-            excludeAttrsOp.ExcludeAttributes.Add("date");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "id", "date" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection
@@ -151,7 +148,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp2 = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp2.ExcludeAttributes.Add("value");
+            excludeAttrsOp2.ExcludeAttributes = new List<string>() { "value" };
             projection2.Operations.Add(excludeAttrsOp2);
 
             // Create an entity reference to hold this projection
@@ -192,8 +189,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("id");
-            excludeAttrsOp.ExcludeAttributes.Add("date");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "id", "date" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection
@@ -241,7 +237,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExcludeAttributes";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -266,7 +262,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSSAN";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -291,7 +287,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSSANRename";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -316,7 +312,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSingleNestedProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -341,7 +337,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestNestedProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -365,7 +361,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestMultipleExclude";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -392,7 +388,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntityProj";
             string entityName = "Child";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -418,7 +414,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntity";
             string entityName = "Child";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -444,7 +440,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphicProj";
             string entityName = "BusinessPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -472,7 +468,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphic";
             string entityName = "BusinessPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -500,7 +496,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySourceProj";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -536,7 +532,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySource";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -573,7 +569,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySourceRename";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -609,7 +605,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestConditionalProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -645,7 +641,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestEmptyExclude";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -673,7 +669,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroupProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -698,7 +694,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroup";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -723,7 +719,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroupRename";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -750,7 +746,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestEANameProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -780,7 +776,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestTypeAttributeProj";
             string entityName = "Person";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {

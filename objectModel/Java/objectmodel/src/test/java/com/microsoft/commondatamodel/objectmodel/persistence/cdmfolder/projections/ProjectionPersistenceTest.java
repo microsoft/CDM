@@ -32,7 +32,7 @@ public class ProjectionPersistenceTest {
      */
     @Test
     public void testLoadProjection() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadProjection", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadProjection");
 
         CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
 
@@ -150,7 +150,7 @@ public class ProjectionPersistenceTest {
      */
     @Test
     public void testSaveProjection() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSaveProjection", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSaveProjection");
 
         CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
 

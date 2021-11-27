@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -10,13 +10,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle RenameAttributes operations
     /// </summary>
     public class CdmOperationRenameAttributes : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationRenameAttributes);
+        private static readonly string Tag = nameof(CdmOperationRenameAttributes);
 
         public string RenameFormat { get; set; }
 
@@ -31,19 +32,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            List<string> applyTo = null;
-            
-            if (this.ApplyTo != null)
+            if (resOpt == null)
             {
-                applyTo = new List<string>();
-                applyTo.AddRange(this.ApplyTo);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            CdmOperationRenameAttributes copy = new CdmOperationRenameAttributes(this.Ctx)
+            var copy = host == null ? new CdmOperationRenameAttributes(this.Ctx) : host as CdmOperationRenameAttributes;
+
+            if (this.ApplyTo != null)
             {
-                RenameFormat = this.RenameFormat,
-                ApplyTo = applyTo
-            };
+                copy.ApplyTo = new List<string>(this.ApplyTo);
+            }
+            copy.RenameFormat = this.RenameFormat;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -78,7 +80,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -88,16 +90,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + "operationRenameAttributes";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
@@ -142,8 +135,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // We use the top-level names because the rename list may contain a previous name our current resolved attributes had
             Dictionary<string, string> topLevelRenameAttributeNames = ProjectionResolutionCommonUtil.GetTopList(projCtx, renameAttributes);
 
-            string sourceAttributeName = projCtx.ProjectionDirective.OriginalSourceEntityAttributeName;
-
             // Initialize a projection attribute context tree builder with the created attribute context for the operation
             ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpRenameAttrs);
 
@@ -159,10 +150,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         // The current attribute should be renamed
 
-                        string newAttributeName = GetNewAttributeName(currentPAS, sourceAttributeName);
+                        string newAttributeName = GetNewAttributeName(projCtx.ProjectionDirective.OriginalSourceAttributeName, currentPAS);
 
                         // Create new resolved attribute with the new name, set the new attribute as target
-                        ResolvedAttribute resAttrNew = CreateNewResolvedAttribute(projCtx, null, currentPAS.CurrentResolvedAttribute.Target, newAttributeName);
+                        ResolvedAttribute resAttrNew = CreateNewResolvedAttribute(projCtx, null, currentPAS.CurrentResolvedAttribute, newAttributeName);
 
                         // Get the attribute name the way it appears in the applyTo list
                         string applyToName = topLevelRenameAttributeNames[currentPAS.CurrentResolvedAttribute.ResolvedName];
@@ -186,7 +177,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                     else
                     {
-                        Logger.Warning(TAG, this.Ctx, "RenameAttributes is not supported on an attribute group yet.");
+                        Logger.Warning(this.Ctx, Tag, nameof(AppendProjectionAttributeState), this.AtCorpusPath, CdmLogCode.WarnProjRenameAttrNotSupported);
                         // Add the attribute without changes
                         projOutputSet.Add(currentPAS);
                     }
@@ -205,28 +196,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Renames an attribute with the current renameFormat
+        /// Renames an attribute with the current renameFormat.
         /// </summary>
-        /// <param name="attributeState">The attribute state.</param>
-        /// <param name="sourceAttributeName">The parent attribute name (if any).</param>
+        /// <param name="projectionOwnerName">The attribute name of projection owner (only available when the owner is an entity attribute or type attribute).</param>
+        /// <param name="currentPAS">The attribute state.</param>
         /// <returns></returns>
-        private string GetNewAttributeName(ProjectionAttributeState attributeState, string sourceAttributeName)
+        private string GetNewAttributeName(string projectionOwnerName, ProjectionAttributeState currentPAS)
         {
-            string currentAttributeName = attributeState.CurrentResolvedAttribute.ResolvedName;
-            string ordinal = attributeState.Ordinal != null ? attributeState.Ordinal.ToString() : "";
-            string format = this.RenameFormat;
-
-            if (string.IsNullOrEmpty(format))
+            if (string.IsNullOrEmpty(this.RenameFormat))
             {
-                Logger.Error(TAG, this.Ctx, "RenameFormat should be set for this operation to work.");
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(GetNewAttributeName), this.AtCorpusPath, CdmLogCode.ErrProjRenameFormatIsNotSet);
                 return "";
             }
 
-            string attributeName = StringUtils.Replace(format, 'a', sourceAttributeName);
-            attributeName = StringUtils.Replace(attributeName, 'o', ordinal);
-            attributeName = StringUtils.Replace(attributeName, 'm', currentAttributeName);
-
-            return attributeName;
+            return ReplaceWildcardCharacters(this.RenameFormat, projectionOwnerName, currentPAS);
         }
     }
 }

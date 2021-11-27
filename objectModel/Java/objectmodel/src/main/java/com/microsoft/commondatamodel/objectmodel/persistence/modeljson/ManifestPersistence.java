@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
@@ -17,6 +16,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Entity;
@@ -25,10 +25,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Mod
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.ReferenceEntity;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.ReferenceModel;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.SingleKeyRelationship;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
@@ -43,6 +40,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class ManifestPersistence {
+  private static final String TAG = ManifestPersistence.class.getSimpleName();
+
   private static final String FOUNDATIONS = "cdm:/foundations.cdm.json";
 
   /**
@@ -162,11 +161,7 @@ public class ManifestPersistence {
         } else if ("ReferenceEntity".equals(type)) {
           final ReferenceEntity referenceEntity = (ReferenceEntity) element;
           if (!referenceModels.containsKey(referenceEntity.getModelId())) {
-            Logger.error(
-                ManifestPersistence.class.getSimpleName(),
-                ctx,
-                Logger.format("Model Id '{0}' from '{1}' not found in referenceModels.", referenceEntity.getModelId(), referenceEntity.getName())
-            );
+            Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelJsonModelIdNotFound, referenceEntity.getModelId(), referenceEntity.getName());
             return CompletableFuture.completedFuture(null);
           }
           entity = ReferencedEntityDeclarationPersistence
@@ -175,7 +170,7 @@ public class ManifestPersistence {
                   referenceEntity,
                   referenceModels.get(referenceEntity.getModelId())).join();
         } else {
-          Logger.error(ManifestPersistence.class.getSimpleName(), ctx, "There was an error while trying to parse entity type.");
+          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
         }
 
         if (entity != null) {
@@ -183,7 +178,7 @@ public class ManifestPersistence {
           manifest.getEntities().add(entity);
           entityPathByName.put(entity.getEntityName(), entity.getEntityPath());
         } else {
-          Logger.error(ManifestPersistence.class.getSimpleName(), ctx, "There was an error while trying to parse entity type.");
+          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
         }
       }
     }
@@ -195,7 +190,7 @@ public class ManifestPersistence {
         if (null != relationship) {
           manifest.getRelationships().add(relationship);
         } else {
-          Logger.error(ManifestPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert model.json local entity to cdm local entity declaration.");
+          Logger.warning(ctx, TAG, "fromObject", null, CdmLogCode.WarnPersistModelJsonRelReadFailed);
         }
       });
     }
@@ -236,11 +231,7 @@ public class ManifestPersistence {
         Model obj = JMapper.MAP.readValue(jsonData, Model.class);
         return fromObject(ctx, obj, folder).join();
       } catch (final Exception e) {
-        Logger.error(
-            ManifestPersistence.class.getSimpleName(),
-            ctx,
-            Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage())
-        );
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistConversionError, docName, e.getLocalizedMessage());
         return null;
       }
     });
@@ -267,7 +258,6 @@ public class ManifestPersistence {
           .map((CdmTraitDefinition cdmTraitDef) -> (CdmObjectDefinition) cdmTraitDef)
           .collect(Collectors.toList()).forEach(cdmObjectDef -> extensionDoc.getDefinitions().add(cdmObjectDef));
       extensionDoc.getImports().add("cdm:/extensions/base.extension.cdm.json");
-      extensionDoc.setJsonSchemaSemanticVersion("1.0.0");
       extensionDoc.setFolderPath(folder.getFolderPath());
       extensionDoc.setNamespace(folder.getNamespace());
 
@@ -291,18 +281,18 @@ public class ManifestPersistence {
 
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
-      final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
+      final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
       if (isHiddenTrait != null) {
         result.setHidden(true);
       }
 
-      final CdmTraitReference applicationTrait = t2pm.fetchTraitReferenceName("is.managedBy");
+      final CdmTraitReference applicationTrait = t2pm.fetchTraitReference("is.managedBy");
       if (applicationTrait != null) {
         result.setApplication(
             applicationTrait.getArguments().get(0).getValue().toString());
       }
 
-      final CdmTraitReference versionTrait = t2pm.fetchTraitReferenceName("is.modelConversion.modelVersion");
+      final CdmTraitReference versionTrait = t2pm.fetchTraitReference("is.modelConversion.modelVersion");
       if (versionTrait != null) {
         result.setVersion(versionTrait.getArguments().get(0).getValue().toString());
       } else {
@@ -310,7 +300,7 @@ public class ManifestPersistence {
         result.setVersion("1.0");
       }
 
-      final CdmTraitReference cultureTrait = t2pm.fetchTraitReferenceName("is.partition.culture");
+      final CdmTraitReference cultureTrait = t2pm.fetchTraitReference("is.partition.culture");
       if (cultureTrait != null) {
         result.setCulture(cultureTrait.getArguments().get(0).getValue().toString());
       }
@@ -318,7 +308,7 @@ public class ManifestPersistence {
       final Map<String, String> referenceEntityLocations = new LinkedHashMap<>();
       final Map<String, String> referenceModels = new LinkedHashMap<>();
 
-      final CdmTraitReference referenceModelsTrait = t2pm.fetchTraitReferenceName("is.modelConversion.referenceModelMap");
+      final CdmTraitReference referenceModelsTrait = t2pm.fetchTraitReference("is.modelConversion.referenceModelMap");
       if (referenceModelsTrait != null) {
         final JsonNode refModels = JMapper.MAP
             .valueToTree(referenceModelsTrait.getArguments().getAllItems().get(0).getValue());
@@ -361,19 +351,23 @@ public class ManifestPersistence {
                       entity.getEntityPath()
                   );
 
-              if (Strings.isNullOrEmpty(location)) {
-                Logger.error(ManifestPersistence.class.getSimpleName(), instance.getCtx(), Logger.format("Invalid entity path set in entity {0}.", entity.getEntityName()));
+              if (StringUtils.isNullOrEmpty(location)) {
+                Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
                 element = null;
               }
 
               if (element instanceof ReferenceEntity) {
+                // path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
                 final ReferenceEntity referenceEntity = (ReferenceEntity) element;
-                location = location.substring(0, location.lastIndexOf("/"));
+                int lastSlashLocation = location.lastIndexOf("/") > location.lastIndexOf("\\") ? location.lastIndexOf("/") : location.lastIndexOf("\\");
+                if (lastSlashLocation > 0) {
+                  location = location.substring(0, lastSlashLocation);
+                }
 
                 if (referenceEntity.getModelId() != null) {
                   final String savedLocation = referenceModels.get(referenceEntity.getModelId());
                   if (savedLocation != null && !Objects.equals(savedLocation, location)) {
-                    Logger.error(ManifestPersistence.class.getSimpleName(), instance.getCtx(), "Same ModelId pointing to different locations");
+                    Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonModelIdDuplication);
                     element = null;
                   } else if (savedLocation == null) {
                     referenceModels.put(referenceEntity.getModelId(), location);
@@ -392,11 +386,7 @@ public class ManifestPersistence {
             if (element != null) {
               obtainedEntities.add(element);
             } else {
-              Logger.error(
-                  ManifestPersistence.class.getSimpleName(),
-                  instance.getCtx(),
-                  Logger.format("There was an error while trying to convert {0} to model json format.", entity.getEntityName())
-              );
+              Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.getEntityName());
             }
           });
 
@@ -406,11 +396,7 @@ public class ManifestPersistence {
             createdPromise.get();
             promises.add(createdPromise);
           } catch (InterruptedException | ExecutionException e) {
-            Logger.error(
-                ManifestPersistence.class.getSimpleName(),
-                instance.getCtx(),
-                Logger.format("There was an error while trying to convert {0}'s entity declaration to model json format for reason {1}.", entity.getEntityName(), e.getMessage())
-            );
+            Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionFailure, entity.getEntityName(), e.getMessage());
           }
         }
         for (final CompletableFuture<Void> promise : promises) {
@@ -438,8 +424,6 @@ public class ManifestPersistence {
 
           if (null != relationship) {
             result.getRelationships().add(relationship);
-          } else {
-            Logger.error(ManifestPersistence.class.getSimpleName(), instance.getCtx(), "There was an error while trying to convert cdm relationship to model.json relationship.");
           }
         });
       }

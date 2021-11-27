@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.EntityDeclaration;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EntityPersistence {
+  private static final String TAG = EntityPersistence.class.getSimpleName();
+
   public static CompletableFuture<CdmEntityDefinition> fromData(
       final CdmCorpusContext ctx,
       final LocalEntity obj,
@@ -46,7 +49,7 @@ public class EntityPersistence {
           if (typeAttribute != null) {
             entity.getAttributes().add(typeAttribute);
           } else {
-            Logger.error(EntityPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert model.json attribute to cdm attribute.");
+            Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonToAttrConversionFailure);
             return null;
           }
         }
@@ -77,7 +80,7 @@ public class EntityPersistence {
       result.setAttributes(new ArrayList<>());
       for (final CdmAttributeItem element : instance.getAttributes()) {
         if (element.getObjectType() != CdmObjectType.TypeAttributeDef) {
-          Logger.error(EntityPersistence.class.getSimpleName(), ctx, "Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.");
+          Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityAttrError);
           return null;
         }
         // TODO-BQ: verify if the order of attribute being added is important.
@@ -88,7 +91,7 @@ public class EntityPersistence {
           if (attribute != null) {
             result.getAttributes().add(attribute);
           } else {
-            Logger.error(EntityPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert model.json attribute to cdm attribute.");
+            Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonFromAttrConversionFailure);
             return null;
           }
         }

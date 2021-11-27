@@ -1,3 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import {
+    AttributeResolutionContext,
+    AttributeResolutionDirectiveSet,
+    resolveOptions
+} from '../internal';
+
 
 export class DepthInfo {
     /**
@@ -48,4 +57,53 @@ export class DepthInfo {
 
         return copy;
     }
+
+    /**
+     * Updates this depth info to the next level.
+     * @internal
+     */
+    public updateToNextLevel(resOpt: resolveOptions, isPolymorphic: boolean, arc: AttributeResolutionContext = undefined) {
+            let directives: AttributeResolutionDirectiveSet = resOpt.directives;
+            let isByRef: boolean = false;
+
+            this.maxDepth = resOpt.maxDepth;
+
+            // if using resolution guidance
+            if (arc !== undefined) {
+                if (arc.resOpt !== undefined) {
+                    directives = arc.resOpt.directives;
+
+                    if (isPolymorphic === undefined) {
+                        isPolymorphic = directives?.has('selectOne') === true;
+                    }
+                }
+
+                if (arc.resGuide?.entityByReference !== undefined) {
+                    if (arc.resGuide.entityByReference.referenceOnlyAfterDepth !== undefined) {
+                        this.maxDepth = arc.resGuide.entityByReference.referenceOnlyAfterDepth;
+                    }
+
+                    if (arc.resGuide.entityByReference.allowReference === true) {
+                        isByRef = directives?.has('referenceOnly') === true;
+                    }
+                }
+            }
+
+            if (directives !== undefined) {
+                if (directives.has('noMaxDepth')) {
+                    // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system
+                    this.maxDepth = DepthInfo.maxDepthLimit;
+                }
+            }
+
+            // if this is a polymorphic, then skip counting this entity in the depth, else count it
+            // if it's already by reference, we won't go one more level down so don't increase current depth
+            if (isPolymorphic !== true && !isByRef) {
+                this.currentDepth++;
+
+                if (this.currentDepth > this.maxDepth) {
+                    this.maxDepthExceeded = true;
+                }
+            }
+        }
 }

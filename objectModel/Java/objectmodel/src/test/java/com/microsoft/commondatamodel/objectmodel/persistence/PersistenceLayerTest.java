@@ -10,15 +10,14 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.TestStorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.RemoteAdapter;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
@@ -136,7 +135,7 @@ public class PersistenceLayerTest {
    */
   @Test
   public void testModelJsonTypeAttributePersistence() throws InterruptedException, ExecutionException {
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestModelJsonTypeAttributePersistence", null);
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestModelJsonTypeAttributePersistence");
 
     // we need to create a second adapter to the output folder to fool the OM into thinking it's different
     // this is because there is a bug currently that prevents us from saving and then loading a model.json
@@ -178,8 +177,10 @@ public class PersistenceLayerTest {
    * Test that the persistence layer handles the case when the persistence format cannot be found.
    */
   @Test
-  public void testMissingPersistenceFormat() throws InterruptedException{
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestMissingPersistenceFormat", null);
+  public void testMissingPersistenceFormat() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrPersistClassMissing));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestMissingPersistenceFormat", null, false, expectedLogCodes);
+
     CdmFolderDefinition folder = corpus.getStorage().fetchRootFolder(corpus.getStorage().getDefaultNamespace());
 
     CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>makeObject(CdmObjectType.ManifestDef, "someManifest");

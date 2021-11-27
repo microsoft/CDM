@@ -6,7 +6,8 @@ from abc import abstractmethod
 from typing import cast, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import logger, ResolveOptions, Errors
+from cdm.utilities import logger, ResolveOptions
+from cdm.enums import CdmLogCode
 
 from .cdm_object import CdmObject
 from .cdm_trait_collection import CdmTraitCollection
@@ -26,6 +27,11 @@ class CdmObjectReference(CdmObject):
 
         self.explicit_reference = None  # type: Optional[CdmObjectDefinition]
         self.named_reference = None  # type: Optional[str]
+        self.optional = None  # type: Optional[bool]
+        """
+        Gets or sets the object's Optional property. This indicates the SDK to not error out 
+        in case the definition could not be resolved.
+        """
 
         if reference_to:
             if isinstance(reference_to, str):
@@ -38,6 +44,10 @@ class CdmObjectReference(CdmObject):
         # --- internal ---
         self._applied_traits = CdmTraitCollection(ctx, self)
         self._declared_path = None
+
+        # A portable explicit reference used to manipulate nodes in the attribute context.
+        # For more information, refer to the `create_portable_reference` method in CdmObjectDef and CdmObjectRef.
+        self._portable_reference = None  # type: Optional[CdmObjectDefinition]
         self._TAG = CdmObjectReference.__name__
 
     @property
@@ -94,8 +104,9 @@ class CdmObjectReference(CdmObject):
                 rasb.merge_attributes(res_atts)
                 rasb.remove_requested_atts()
         else:
-            def_name = self.fetch_object_definition_name()
-            logger.warning(self._TAG, self.ctx, 'unable to resolve an object from the reference \'{}\''.format(def_name))
+            logger.warning(self.ctx, self._TAG, CdmObjectReference._construct_resolved_traits.__name__,
+                           self.at_corpus_path, CdmLogCode.WARN_RESOLVE_OBJECT_FAILED,
+                           self.fetch_object_definition_name())
 
         return rasb
 
@@ -106,12 +117,15 @@ class CdmObjectReference(CdmObject):
             rts_inh = obj_def._fetch_resolved_traits(res_opt)
             if rts_inh:
                 rts_inh = rts_inh.deep_copy()
-
             rtsb.take_reference(rts_inh)
+        elif not self.optional:
+            logger.warning(self.ctx, self._TAG, CdmObjectReference._construct_resolved_traits.__name__,
+                           self.at_corpus_path, CdmLogCode.WARN_RESOLVE_OBJECT_FAILED,
+                           self.fetch_object_definition_name())
 
         if self.applied_traits:
-            for at in self.applied_traits:
-                rtsb.merge_traits(at._fetch_resolved_traits(res_opt))
+            for trait in self.applied_traits:
+                rtsb.merge_traits(trait._fetch_resolved_traits(res_opt))
 
     def _fetch_resolved_reference(self, res_opt: 'ResolveOptions') -> 'CdmObject':
         res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
@@ -132,7 +146,8 @@ class CdmObjectReference(CdmObject):
             ent = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, ent_name, CdmObjectType.ENTITY_DEF, True)
 
             if not ent:
-                logger.warning(self._TAG, self.ctx, 'Unable to resolve an entity named \'{}\' from the reference \'{}\''.format(ent_name, self.named_reference))
+                logger.warning(self.ctx, self._TAG, CdmObjectReference._fetch_resolved_reference.__name__, self.at_corpus_path,
+                               CdmLogCode.WARN_RESOLVE_ENTITY_FAILED ,ent_name, self.named_reference)
                 return None
 
             # get the resolved attribute
@@ -143,8 +158,8 @@ class CdmObjectReference(CdmObject):
             if ra:
                 res = ra.target
             else:
-                logger.warning(self._TAG, self.ctx, 'Could not resolve the attribute promise for \'{}\''.format(self.named_reference),
-                               res_opt.wrt_doc.at_corpus_path)
+                logger.warning(self.ctx, self._TAG, CdmObjectReference._fetch_resolved_reference.__name__,
+                               self.at_corpus_path, CdmLogCode.WARN_RESOLVE_ATTR_FAILED, self.named_reference)
         else:
             # normal symbolic reference, look up from the corpus, it knows where everything is
             res = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, self.named_reference, self.object_type, True)
@@ -166,24 +181,26 @@ class CdmObjectReference(CdmObject):
         until this reference is placed into some final document.
         """
         from .cdm_corpus_def import CdmCorpusDefinition
-        cdm_object_ref = self.ctx.corpus.make_object(
-            CdmCorpusDefinition._map_reference_type(self.object_type), 'portable', True)  # type: CdmObjectReference
         cdm_object_def = self.fetch_object_definition(res_opt)
+
         if not cdm_object_def or not self.in_document:
             return None  # not allowed
 
-        cdm_object_ref.explicit_reference = cdm_object_def.copy()
+        cdm_object_ref = self.ctx.corpus.make_object(
+            CdmCorpusDefinition._map_reference_type(self.object_type), 'portable', True)  # type: CdmObjectReference
+        cdm_object_ref._portable_reference = cdm_object_def
+        cdm_object_ref.optional = self.optional
         cdm_object_ref.in_document = self.in_document  # if the object has no document, take from the reference
         cdm_object_ref.owner = self.owner
 
         return cdm_object_ref
 
-    def _localize_portable_reference(self, res_opt: 'ResolveOptions', import_path: str) -> None:
+    def _localize_portable_reference(self, import_path: str) -> None:
         """
         Creates a 'portable' reference object to this object. portable means there is no symbolic name set
         until this reference is placed into some final document.
         """
-        new_declared_path = cast(CdmObject, self.explicit_reference)._declared_path
+        new_declared_path = self._portable_reference._declared_path
         new_declared_path = new_declared_path[0: (len(new_declared_path) - 6)] \
             if new_declared_path and new_declared_path.endswith('/(ref)') else new_declared_path
         self.named_reference = '{}{}'.format(import_path, new_declared_path)
@@ -194,6 +211,9 @@ class CdmObjectReference(CdmObject):
 
         copy = self._copy_ref_object(res_opt, self.named_reference if self.named_reference else self.explicit_reference, self.simple_named_reference, host)
 
+        copy.optional = self.optional
+        copy._portable_reference = self._portable_reference
+
         if res_opt._save_resolutions_on_copy:
             explicit_reference = self.explicit_reference.copy() if self.explicit_reference else None
             copy.explicit_reference = explicit_reference
@@ -201,7 +221,7 @@ class CdmObjectReference(CdmObject):
         copy.applied_traits.clear()
         if self.applied_traits:
             for trait in self.applied_traits:
-                copy.applied_traits.append(trait)
+                copy.applied_traits.append(trait.copy(res_opt))
 
         # Don't do anything else after this, as it may cause InDocument to become dirty
         copy.in_document = self.in_document
@@ -222,68 +242,15 @@ class CdmObjectReference(CdmObject):
             return self.explicit_reference.get_name()
         return None
 
-    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObjectDefinition':
         if res_opt is None:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         definition = self._fetch_resolved_reference(res_opt)
-        if definition is not None:
-            if isinstance(definition, CdmObjectReference):
-                definition = definition.fetch_resolved_reference()
+        if definition is not None and isinstance(definition, CdmObjectReference):
+            definition = definition.fetch_resolved_reference()
         if definition is not None and not isinstance(definition, CdmObjectReference):
             return definition
         return None
-
-    def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
-        was_previously_resolving = self.ctx.corpus._is_currently_resolving
-        self.ctx.corpus._is_currently_resolving = True
-        ret = self._fetch_resolved_traits_internal(res_opt)
-        self.ctx.corpus._is_currently_resolving = was_previously_resolving
-        return ret
-
-    def _fetch_resolved_traits_internal(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
-        from cdm.utilities import SymbolSet
-        from .cdm_corpus_def import CdmCorpusDefinition
-
-        kind = 'rts'
-        # TODO: check the applied traits comparison
-        if self.named_reference and self.applied_traits is None:
-            ctx = self.ctx
-            obj_def = self.fetch_object_definition(res_opt)
-            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path if obj_def else None)
-            rts_result = ctx._cache.get(cache_tag) if cache_tag else None
-
-            # store the previous reference symbol set, we will need to add it with
-            # children found from the _construct_resolved_traits call
-            curr_sym_ref_set = res_opt._symbol_ref_set or SymbolSet()
-            res_opt._symbol_ref_set = SymbolSet()
-
-            if rts_result is None:
-                if obj_def:
-                    rts_result = obj_def._fetch_resolved_traits(res_opt)
-                    if rts_result:
-                        rts_result = rts_result.deep_copy()
-
-                    # register set of possible docs
-                    ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt._symbol_ref_set)
-
-                    # get the new cache tag now that we have the list of docs
-                    cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path)
-                    if cache_tag:
-                        ctx._cache[cache_tag] = rts_result
-            else:
-                # cache was found
-                # get the SymbolSet for this cached object
-                key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
-                res_opt._symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
-
-            # merge child symbol references set with current
-            curr_sym_ref_set._merge(res_opt._symbol_ref_set)
-            res_opt._symbol_ref_set = curr_sym_ref_set
-
-            return rts_result
-
-        return super()._fetch_resolved_traits(res_opt)
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         definition = self.fetch_object_definition(res_opt)  # type: CdmObjectDefinition
@@ -293,45 +260,39 @@ class CdmObjectReference(CdmObject):
 
     def validate(self) -> bool:
         if not bool(self.named_reference or self.explicit_reference):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['named_reference', 'explicit_reference'], True))
+            missing_fields = ['named_reference', 'explicit_reference']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if self.named_reference:
-                path = path_from + self.named_reference
+        if self.named_reference:
+            path = path_from + self.named_reference
+        else:
+            # when an object is defined inline inside a reference, we need a path to the reference
+            # AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+            # defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+            # gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+            # entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+            # object at the same level, like anywhere there is a collection of references or the collection of attributes.
+            # so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+            # extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+            # the inline defined object.
+            # ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+            # the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+            # ANY reference, not just inline ones
+            if self.explicit_reference:
+                # ref path is name of defined object
+                path = self.explicit_reference._fetch_declared_path(path_from)
             else:
-                # when an object is defined inline inside a reference, we need a path to the reference
-                # AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
-                # defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
-                # gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
-                # entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
-                # object at the same level, like anywhere there is a collection of references or the collection of attributes.
-                # so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
-                # extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
-                # the inline defined object.
-                # ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
-                # the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
-                # ANY reference, not just inline ones
-                if self.explicit_reference:
-                    # ref path is name of defined object
-                    path = path_from + self.explicit_reference.get_name()
-                    # inline object path is a request for the defintion. setting the declaredPath
-                    # keeps the visit on the explcitReference from using the defined object name
-                    # as the path to that object
-                    self.explicit_reference._declared_path = path
-                else:
-                    path = path_from
-            self._declared_path = path + '/(ref)'
-        ref_path = self._declared_path
+                path = path_from
+        ref_path = path + '/(ref)'
 
         if pre_children and pre_children(self, ref_path):
             return False
 
-        if self.explicit_reference and not self.named_reference and self.explicit_reference.visit(path, pre_children, post_children):
+        if self.explicit_reference and not self.named_reference and self.explicit_reference.visit(path_from, pre_children, post_children):
             return True
 
         if self._visit_ref(path, pre_children, post_children):

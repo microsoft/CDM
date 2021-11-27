@@ -6,18 +6,18 @@ from datetime import timezone
 import time
 import json
 import unittest
-import unittest.mock as mock
 import os
-import dateutil.tz
 
 from tests.common import async_test, TestHelper
 from tests.adls_test_helper import AdlsTestHelper
+from cdm.enums import CdmStatusLevel
 from cdm.storage.adls import ADLSAdapter
+from cdm.enums import AzureCloudEndpoint
 from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
 
 def IfRunTestsFlagNotSet():
-    return (os.environ.get("ADLS_RUNTESTS") is None)
+    return os.environ.get('ADLS_RUNTESTS') is not '1'
 
 class FakeTokenProvider(TokenProvider):
     def get_token(self) -> str:
@@ -86,44 +86,103 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(manifest.entities[0].data_partitions[1].location, 'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv')
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_write_read_shared_key(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
     @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
-    async def test_adls_write_read__client_id(self):
+    async def test_adls_write_read_client_id(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
     @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    async def test_adls_write_read_with_blob_hostname(self):
+        await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key('', True))
+        await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id('', False, True))
+
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_check_filetime_shared_key(self):
         await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_check_filetime_client_id(self):
         await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_file_enum_shared_key(self):
         await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_file_enum_client_id(self):
         await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_special_characters(self):
         await self.run_special_characters_test(AdlsTestHelper.create_adapter_with_client_id('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'))
+
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    async def test_avoid_retry_codes(self):
+        """Tests if the adapter won't retry if a HttpStatusCode response with a code in AvoidRetryCodes is received."""
+        adls_adapter = AdlsTestHelper.create_adapter_with_shared_key()
+        adls_adapter.number_of_retries = 3
+
+        corpus = CdmCorpusDefinition()
+        corpus.storage.mount('adls', adls_adapter)
+        count = 0
+
+        def callback(status, message: str):
+            nonlocal count
+            if message.find('Response for request ') != -1:
+                count += 1
+
+        corpus.set_event_callback(callback, CdmStatusLevel.PROGRESS)
+
+        await corpus.fetch_object_async('adls:/inexistentFile.cdm.json')  # type: CdmDocumentDefinition
+
+        self.assertEqual(1, count)
+
+    def test_endpoint_missing_on_config(self):
+        """Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.
+        This is necessary to support old config files that do not include an "endpoint"."""
+
+        config = {
+            'hostname': 'hostname.dfs.core.windows.net',
+            'root': 'root',
+            'tenant': 'tenant',
+            'clientId': 'clientId'
+        }
+
+        adls_adapter = ADLSAdapter()
+        adls_adapter.update_config(json.dumps(config))
+        self.assertEqual(AzureCloudEndpoint.AZURE_PUBLIC, adls_adapter.endpoint)
+
+    def test_formatted_hostname_from_config(self):
+        """Test if formatted_hostname is properly set when loading from config."""
+
+        config = {
+            'hostname': 'hostname.dfs.core.windows.net',
+            'root': 'root',
+            'tenant': 'tenant',
+            'clientId': 'clientId'
+        }
+
+        adls_adapter = ADLSAdapter()
+        adls_adapter.update_config(json.dumps(config))
+
+        corpus_path = adls_adapter.create_corpus_path('https://hostname.dfs.core.windows.net/root/partitions/data.csv')
+        self.assertEqual('/partitions/data.csv', corpus_path)
 
     def test_create_corpus_and_adapter_path(self):
         host_1 = 'storageaccount.dfs.core.windows.net'
         root = '/fs'
-        adls_adapter = ADLSAdapter(root=root, hostname=host_1, tenant='dummyTenant', resource='dummyResource',
+        adls_adapter = ADLSAdapter(root=root, hostname=host_1, tenant='dummyTenant',
                                    client_id='dummyClientId', secret='dummySecret')
 
         adapter_path_1 = 'https://storageaccount.dfs.core.windows.net/fs/a/1.csv'
@@ -169,7 +228,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertIsNone(adls_adapter.create_adapter_path(None))
 
         host_2 = 'storageaccount.blob.core.windows.net:8888'
-        adls_adapter = ADLSAdapter(root=root, hostname=host_2, tenant='dummyTenant', resource='dummyResource',
+        adls_adapter = ADLSAdapter(root=root, hostname=host_2, tenant='11111111-1111-1111-1111-111111111111',
                                    client_id='dummyClientId', secret='dummySecret')
         adapter_path_5 = 'https://storageaccount.blob.core.windows.net:8888/fs/a/5.csv'
         adapter_path_6 = 'https://storageaccount.dfs.core.windows.net:8888/fs/a/6.csv'
@@ -178,119 +237,6 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(adls_adapter.create_corpus_path(adapter_path_5), '/a/5.csv')
         self.assertEqual(adls_adapter.create_corpus_path(adapter_path_6), '/a/6.csv')
         self.assertEqual(adls_adapter.create_corpus_path(adapter_path_7), None)
-
-    @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open, read_data=json.dumps({'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'}).encode())
-    @mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials')
-    @async_test
-    async def test_read(self, mock_credentials, mock_urlopen):
-
-        adapter = self.create_dummy_adapter()
-
-        mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-        raw_data = await adapter.read_async('/dir1/dir2/file.json')
-        data = json.loads(raw_data)
-
-        mock_credentials.assert_called_once_with('https://storage.azure.com', 'dummyClientId', 'dummySecret')
-
-        self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
-        self.assertEqual(mock_urlopen.call_args[0][0].full_url, 'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json')
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-        self.assertEqual(data, {'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'})  # Verify data.
-
-    @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open)
-    @mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials')
-    @async_test
-    async def test_write(self, mock_credentials, mock_urlopen):
-
-        adapter = self.create_dummy_adapter()
-
-        mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-        raw_data = json.dumps({'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'})
-        await adapter.write_async('/dir1/dir2/file.json', raw_data)
-
-        self.assertEqual(len(mock_urlopen.call_args_list), 3)
-
-        # Request 1.
-        self.assertEqual(mock_urlopen.call_args_list[0][0][0].method, 'PUT')
-        self.assertEqual(mock_urlopen.call_args_list[0][0][0].full_url, 'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json?resource=file')
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args_list[0][0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-
-        # Request 2.
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].method, 'PATCH')
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].full_url,
-                         'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json?action=append&position=0')
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].data, raw_data.encode('utf-8'))
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].headers, {'Authorization': 'Bearer dummyBearerToken', 'Content-type': 'application/json; charset=utf-8'})
-
-        # Request 3.
-        self.assertEqual(mock_urlopen.call_args_list[2][0][0].method, 'PATCH')
-        self.assertEqual(mock_urlopen.call_args_list[2][0][0].full_url,
-                         'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json?action=flush&position=68')
-        self.assertIsNone(mock_urlopen.call_args_list[2][0][0].data)
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args_list[2][0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-
-    @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open)
-    @mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials')
-    @async_test
-    async def test_fetch_last_modified_time(self, mock_credentials, mock_urlopen):
-
-        adapter = self.create_dummy_adapter()
-
-        mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-        mock_urlopen.return_value.status = 200
-        mock_urlopen.return_value.reason = 'OK'
-        mock_urlopen.return_value.getheaders = mock.MagicMock(side_effect=lambda: {'Last-Modified': 'Mon, 31 Dec 2018 23:59:59 GMT'})
-
-        time = await adapter.compute_last_modified_time_async('dir1/dir2/file.json')
-
-        self.assertEqual(mock_urlopen.call_args[0][0].method, 'HEAD')
-        self.assertEqual(mock_urlopen.call_args[0][0].full_url, 'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json')
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-        self.assertEqual(time, datetime.datetime(2018, 12, 31, 23, 59, 59, tzinfo=dateutil.tz.tzutc()))  # Verify modified time.
-
-    @async_test
-    async def test_fetch_all_files(self):
-
-        adapter = self.create_dummy_adapter()
-
-        with mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials') as mock_credentials:
-
-            mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-            list_response = json.dumps({
-                'paths': [
-                    {'name': 'dir1/dir2', 'isDirectory': 'true'},
-                    {'name': 'dir1/dir2/file1.json', 'isDirectory': 'false'},
-                    {'name': 'dir1/dir2/file2.json'}
-                ]}).encode()
-
-            # Folder path.
-            with mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', mock.mock_open(read_data=list_response)) as mock_urlopen:
-                mock_urlopen.return_value.status = 200
-                mock_urlopen.return_value.reason = 'OK'
-                all_files = await adapter.fetch_all_files_async('/dir1/dir2')
-
-                self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
-                self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=dir1/dir2&maxResults=5000&recursive=True&resource=filesystem')
-                #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-                self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-                self.assertEqual(all_files, ['/dir1/dir2/file1.json', '/dir1/dir2/file2.json'])  # Verify data.
-
-            # Root path.
-            with mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', mock.mock_open(read_data=list_response)) as mock_urlopen:
-                all_files = await adapter.fetch_all_files_async('/')
-
-                self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=&maxResults=5000&recursive=True&resource=filesystem')
 
     def test_config_and_update_config_without_secret(self):
         """
@@ -371,8 +317,65 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(corpus.storage.fetch_adapter('adlsadapter4').root, '/root-ends-with-slash/folder1/folder2')
         self.assertEqual(corpus.storage.fetch_adapter('adlsadapter5').root, '/root-with-slashes/folder1/folder2')
 
+    def test_hostname_with_leading_protocol(self):
+        """
+        Test hostname with leading protocol.
+        """
+        host1 = 'https://storageaccount.dfs.core.windows.net'
+        adlsAdapter1 = ADLSAdapter(hostname=host1, root='root-without-slash', shared_key='')
+        adapterPath = 'https://storageaccount.dfs.core.windows.net/root-without-slash/a/1.csv'
+        corpusPath1 = adlsAdapter1.create_corpus_path(adapterPath)
+        self.assertEqual(adlsAdapter1.hostname, 'https://storageaccount.dfs.core.windows.net')
+        self.assertEqual(adlsAdapter1.root, '/root-without-slash')
+        self.assertEqual(corpusPath1, '/a/1.csv')
+        self.assertEqual(adlsAdapter1.create_adapter_path(corpusPath1), adapterPath)
 
+        host2 = 'Https://storageaccount.dfs.core.windows.net'
+        adlsAdapter2 = ADLSAdapter(hostname=host2, root='root-without-slash', shared_key='')
+        corpusPath2 = adlsAdapter2.create_corpus_path(adapterPath)
+        self.assertEqual(adlsAdapter2.hostname, 'Https://storageaccount.dfs.core.windows.net')
+        self.assertEqual(adlsAdapter2.root, '/root-without-slash')
+        self.assertEqual(corpusPath2, '/a/1.csv')
+        self.assertEqual(adlsAdapter2.create_adapter_path(corpusPath2), adapterPath)
 
+        try:
+            host3 = 'http://storageaccount.dfs.core.windows.net'
+            adlsAdapter3 = ADLSAdapter(hostname=host3, root='root-without-slash', shared_key='')
+            self.fail('Expected Exception for using a http:// hostname.')
+        except Exception as ex:
+            self.assertTrue(isinstance(ex, ValueError))
+
+        try:
+            host4 = 'https://bar:baz::]/foo/'
+            adlsAdapter4 = ADLSAdapter(hostname=host4, root='root-without-slash', shared_key='')
+            self.fail('Expected Exception for using an invalid hostname.')
+        except Exception as ex:
+            self.assertTrue(isinstance(ex, ValueError))
+
+    def test_loading_and_saving_endpoint_in_config(self):
+        """
+        Test azure cloud endpoint in config.
+        """
+        # Mount from config
+        config = TestHelper.get_input_file_content(self.test_subpath, 'test_loading_and_saving_endpoint_in_config',
+                                                   'config.json')
+        corpus = CdmCorpusDefinition()
+        corpus.storage.mount_from_config(config)
+        self.assertFalse(hasattr(corpus.storage.fetch_adapter('adlsadapter1'), 'endpoint'))
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter2').endpoint, AzureCloudEndpoint.AZURE_PUBLIC)
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter3').endpoint, AzureCloudEndpoint.AZURE_CHINA)
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter4').endpoint, AzureCloudEndpoint.AZURE_GERMANY)
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter5').endpoint, AzureCloudEndpoint.AZURE_US_GOVERNMENT)
+
+        try:
+            config_snake_case = TestHelper.get_input_file_content(self.test_subpath, 'test_loading_and_saving_endpoint_in_config',
+                                                       'config-SnakeCase.json')
+            corpus_snake_case = CdmCorpusDefinition()
+            corpus_snake_case.storage.mount_from_config(config_snake_case)
+            self.fail('Expected RuntimeException for config.json using endpoint value in snake case.')
+        except Exception as ex:
+            message = 'Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.'
+            self.assertEqual(ex.args[0], message)
 
 if __name__ == '__main__':
     unittest.main()

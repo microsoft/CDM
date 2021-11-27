@@ -161,9 +161,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task ModelJsonExtensibilityManifestDocumentsTest()
+        public async Task TestModelJsonExtensibilityManifestDocs()
         {
-            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "ModelJsonExtensibilityManifestDocuments");
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestModelJsonExtensibilityManifestDocs));
             var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json", cdmCorpus.Storage.FetchRootFolder("local"));
             var folderObject = cdmCorpus.Storage.FetchRootFolder("default");
 
@@ -182,10 +182,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
 
                     var serializedDocument = Serialize(docContent);
 
-                    TestHelper.WriteActualOutputFileContent(testsSubpath, "ModelJsonExtensibilityManifestDocuments", doc.Name, serializedDocument);
+                    TestHelper.WriteActualOutputFileContent(testsSubpath, nameof(TestModelJsonExtensibilityManifestDocs), doc.Name, serializedDocument);
                 }
 
-                TestHelper.WriteActualOutputFileContent(testsSubpath, "ModelJsonExtensibilityManifestDocuments", manifest.Name, serializedManifest);
+                TestHelper.WriteActualOutputFileContent(testsSubpath, nameof(TestModelJsonExtensibilityManifestDocs), manifest.Name, serializedManifest);
             }
 
             foreach (var doc in folderObject.Documents)
@@ -198,12 +198,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
 
                 string serializedDocument = Serialize(cdmDocument.ToData(doc, null, null));
 
-                var expectedOutputDocument = TestHelper.GetExpectedOutputFileContent(testsSubpath, "ModelJsonExtensibilityManifestDocuments", doc.Name);
+                var expectedOutputDocument = TestHelper.GetExpectedOutputFileContent(testsSubpath, nameof(TestModelJsonExtensibilityManifestDocs), doc.Name);
 
                 TestHelper.AssertSameObjectWasSerialized(expectedOutputDocument, serializedDocument);
             }
 
-            var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, "ModelJsonExtensibilityManifestDocuments", manifest.Name);
+            var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, nameof(TestModelJsonExtensibilityManifestDocs), manifest.Name);
             TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
         }
 

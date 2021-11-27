@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmCorpusContext, Logger, ProjectionAttributeState } from '../../internal';
+import { CdmCorpusContext, Logger, ProjectionAttributeState, cdmLogCode } from '../../internal';
 
 /**
  * A collection of ProjectionAttributeState objects
  * @internal
  */
 export class ProjectionAttributeStateSet {
+    private TAG: string = ProjectionAttributeStateSet.name;
+
     /**
      * A list containing all the ProjectionAttributeStates
      * @internal
@@ -33,25 +35,22 @@ export class ProjectionAttributeStateSet {
      */
     public add(pas: ProjectionAttributeState): void {
         if (!pas || !pas.currentResolvedAttribute || !pas.currentResolvedAttribute.resolvedName) {
-            Logger.error(ProjectionAttributeStateSet.name, this.ctx, 'Invalid ProjectionAttributeState provided for addition to the Set. Add operation failed.', this.add.name);
+            Logger.error(this.ctx, this.TAG, this.add.name, null, cdmLogCode.ErrProjInvalidAttrState);
         } else {
             this.states.push(pas);
         }
     }
 
     /**
-     * Remove from collection
-     * @internal
+     * Creates a copy of this projection attribute state set
      */
-    public remove(pas: ProjectionAttributeState): boolean {
-        if (pas && this.contains(pas)) {
-            const index: number = this.states.indexOf(pas);
-            this.states.splice(index, 1);
-            return true;
-        } else {
-            Logger.warning(ProjectionAttributeStateSet.name, this.ctx, 'Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.', this.remove.name);
-            return false;
+    public copy(): ProjectionAttributeStateSet {
+        const copy: ProjectionAttributeStateSet = new ProjectionAttributeStateSet(this.ctx);
+        for (const state of this.states) {
+            copy.states.push(state);
         }
+
+        return copy;
     }
 
     /**

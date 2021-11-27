@@ -3,10 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.utilities.ApplierState;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -33,6 +30,8 @@ public class ResolvedAttribute {
   // we need this instead of checking the size of the set because there may be attributes
   // nested in an attribute group and we need each of those attributes counted here as well
   private int resolvedAttributeCount;
+
+  private CdmEntityDefinition owner;
 
   public ResolvedAttribute(final ResolveOptions resOpt, final Object target, final String defaultName,
                            final CdmAttributeContext attCtx) {
@@ -63,10 +62,11 @@ public class ResolvedAttribute {
     copy.insertOrder = insertOrder;
     copy.arc = arc;
     copy.attCtx = attCtx; // set here instead of constructor to avoid setting lineage for this copy
+    copy.owner = owner;
 
     if (copy.getTarget() instanceof ResolvedAttributeSet) {
-        // deep copy when set contains sets. this copies the resolved att set and the context, etc.
-        copy.setTarget( ((ResolvedAttributeSet)copy.getTarget()).copy() );
+      // deep copy when set contains sets. this copies the resolved att set and the context, etc.
+      copy.setTarget(((ResolvedAttributeSet)copy.getTarget()).copy() );
     }
 
     if (applierState != null) {
@@ -144,6 +144,14 @@ public class ResolvedAttribute {
 
   public Object defaultValue() {
     return getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DEFAULT);
+  }
+
+  public CdmEntityDefinition getOwner() {
+    return owner;
+  }
+
+  public void setOwner(CdmEntityDefinition owner) {
+    this.owner = owner;
   }
 
   public int creationSequence() {

@@ -16,7 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         /// <summary>
         /// The path between TestDataPath and TestName.
         /// </summary>
-        private string testsSubpath = Path.Combine("Cdm", "Resolution", "Cache");
+        private string testsSubpath = Path.Combine("Cdm", "Resolution", "CacheTest");
 
         /// <summary>
         /// The TestName for all tests here
@@ -52,10 +52,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             CdmAttributeGroupDefinition bAttInA = ((CdmAttributeGroupDefinition)((CdmAttributeGroupReference)resA.Attributes[1]).ExplicitReference);
             CdmAttributeGroupDefinition cAttInA = ((CdmAttributeGroupDefinition)((CdmAttributeGroupReference)(bAttInA.Members[1])).ExplicitReference);
             CdmAttributeGroupDefinition dAttInA = ((CdmAttributeGroupDefinition)((CdmAttributeGroupReference)(cAttInA.Members[1])).ExplicitReference);
-            Assert.AreEqual(dAttInA.Members.Count, 1);
+            Assert.AreEqual(1, dAttInA.Members.Count);
             // check that the attribute in D is a foreign key attribute
             CdmTypeAttributeDefinition dIdAttFromA = (CdmTypeAttributeDefinition)(dAttInA.Members[0]);
-            Assert.AreEqual(dIdAttFromA.Name, "dId");
+            Assert.AreEqual("dId", dIdAttFromA.Name);
             Assert.IsNotNull(dIdAttFromA.AppliedTraits.Item("is.linkedEntity.identifier"));
 
             // check the attributes found in D from resolving B
@@ -64,7 +64,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             Assert.AreEqual(dAttInB.Members.Count, 2);
             // check that the attribute in D is not a foreign key attribute
             CdmTypeAttributeDefinition dIdAttFromB = (CdmTypeAttributeDefinition)(dAttInB.Members[0]);
-            Assert.AreEqual(dIdAttFromB.Name, "dId");
+            Assert.AreEqual("dId", dIdAttFromB.Name);
             Assert.IsNull(dIdAttFromB.AppliedTraits.Item("is.linkedEntity.identifier"));
         }
 
@@ -97,10 +97,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             CdmAttributeGroupDefinition bAttInA = ((CdmAttributeGroupDefinition)((CdmAttributeGroupReference)resA.Attributes[1]).ExplicitReference);
             CdmAttributeGroupDefinition cAttInA = ((CdmAttributeGroupDefinition)((CdmAttributeGroupReference)(bAttInA.Members[1])).ExplicitReference);
             CdmAttributeGroupDefinition dAttInA = ((CdmAttributeGroupDefinition)((CdmAttributeGroupReference)(cAttInA.Members[1])).ExplicitReference);
-            Assert.AreEqual(dAttInA.Members.Count, 1);
+            Assert.AreEqual(1, dAttInA.Members.Count);
             // check that the attribute in D is a foreign key attribute
             CdmTypeAttributeDefinition dIdAttFromA = (CdmTypeAttributeDefinition)(dAttInA.Members[0]);
-            Assert.AreEqual(dIdAttFromA.Name, "dId");
+            Assert.AreEqual("dId", dIdAttFromA.Name);
             Assert.IsNotNull(dIdAttFromA.AppliedTraits.Item("is.linkedEntity.identifier"));
 
             // check the attributes found in D from resolving B
@@ -109,7 +109,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             Assert.AreEqual(dAttInB.Members.Count, 2);
             // check that the attribute in D is not a foreign key attribute
             CdmTypeAttributeDefinition dIdAttFromB = (CdmTypeAttributeDefinition)(dAttInB.Members[0]);
-            Assert.AreEqual(dIdAttFromB.Name, "dId");
+            Assert.AreEqual("dId", dIdAttFromB.Name);
             Assert.IsNull(dIdAttFromB.AppliedTraits.Item("is.linkedEntity.identifier"));
         }
     }

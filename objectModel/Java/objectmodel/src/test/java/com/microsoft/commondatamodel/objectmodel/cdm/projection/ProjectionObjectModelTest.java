@@ -9,6 +9,8 @@ import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -21,18 +23,14 @@ public class ProjectionObjectModelTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-            new File(new File(
-                    "cdm"),
-                    "projection")
-                    .toString();
+    private static final String TESTS_SUBPATH = new File(new File("Cdm"), "Projection").toString();
 
     /**
      * Basic test to save projection based entities and then try to reload them and validate that the projections were persisted correctly
      */
     @Test
     public void testProjectionUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testProjectionUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testProjectionUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testProjectionUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
         CdmManifestDefinition manifestDefault = createDefaultManifest(corpus, localRoot);

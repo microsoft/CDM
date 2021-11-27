@@ -12,7 +12,9 @@ import {
     CdmTraitReference,
     copyOptions,
     Logger,
-    resolveOptions
+    cdmLogCode,
+    resolveOptions,
+    CdmTraitReferenceBase
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
@@ -27,6 +29,8 @@ import {
 } from './types';
 
 export class DocumentPersistence {
+    private static TAG: string = DocumentPersistence.name;
+
     /**
      * Whether this persistence class has async methods.
      */
@@ -70,6 +74,8 @@ export class DocumentPersistence {
                         document.definitions.push(CdmFolder.AttributeGroupPersistence.fromData(ctx, definition));
                     } else if ('traitName' in definition) {
                         document.definitions.push(CdmFolder.TraitPersistence.fromData(ctx, definition));
+                    } else if ('traitGroupName' in definition) {
+                        document.definitions.push(CdmFolder.TraitGroupPersistence.fromData(ctx, definition));
                     } else if ('entityShape' in definition) {
                         document.definitions.push(CdmFolder.ConstantEntityPersistence.fromData(ctx, definition));
                     } else if ('entityName' in definition) {
@@ -82,26 +88,24 @@ export class DocumentPersistence {
         let isResolvedDoc: boolean = false;
         if (document.definitions.length === 1 && document.definitions.allItems[0].objectType == cdmObjectType.entityDef) {
             const entity: CdmEntityDefinition = document.definitions.allItems[0] as CdmEntityDefinition;
-            const resolvedTrait: CdmTraitReference = entity.exhibitsTraits.item('has.entitySchemaAbstractionLevel');
+            const resolvedTrait: CdmTraitReferenceBase = entity.exhibitsTraits.item('has.entitySchemaAbstractionLevel');
             // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
             // or the presence of the attribute context.
-            isResolvedDoc = resolvedTrait != null && resolvedTrait.arguments.allItems[0].value == 'resolved';
+            isResolvedDoc = resolvedTrait != null && (resolvedTrait as CdmTraitReference).arguments.allItems[0].value == 'resolved';
             isResolvedDoc = isResolvedDoc || !!entity.attributeContext;
         }
 
         if (object.jsonSchemaSemanticVersion) {
             document.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
             if (DocumentPersistence.compareJsonSemanticVersion(ctx, document.jsonSchemaSemanticVersion) > 0) {
-                let message: string = 'This ObjectModel version supports json semantic version ' + CdmDocumentDefinition.currentJsonSchemaSemanticVersion + ' at maximum.';
-                message += ' Trying to load a document with version ' + document.jsonSchemaSemanticVersion;
                 if (isResolvedDoc) {
-                    Logger.warning(DocumentPersistence.name, ctx, message, 'fromData');
+                    Logger.warning(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.WarnPersistUnsupportedJsonSemVer, CdmDocumentDefinition.currentJsonSchemaSemanticVersion, document.jsonSchemaSemanticVersion);
                 } else {
-                    Logger.error(DocumentPersistence.name, ctx, message, 'fromData');
+                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistUnsupportedJsonSemVer, CdmDocumentDefinition.currentJsonSchemaSemanticVersion);
                 }
             }
         } else {
-            Logger.warning(DocumentPersistence.name, ctx, 'jsonSemanticVersion is a required property of a document.', 'fromData');
+            Logger.warning(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.WarnPersistJsonSemVerMandatory);
         }
 
         return document;
@@ -134,10 +138,8 @@ export class DocumentPersistence {
         const docSemanticVersionSplit: number[] = documentSemanticVersion.split(".").map(x => Number(x));
         const currSemanticVersionSplit: number[] = CdmDocumentDefinition.currentJsonSchemaSemanticVersion.split(".").map(x => Number(x));
 
-        const errorMessage: string = 'jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.';
-
         if (docSemanticVersionSplit.length !== 3 || docSemanticVersionSplit.includes(NaN)) {
-            Logger.warning(DocumentPersistence.name, ctx, errorMessage, 'compareJsonSemanticVersion');
+            Logger.warning(ctx, this.TAG, this.compareJsonSemanticVersion.name, null, cdmLogCode.WarnPersistJsonSemVerInvalidFormat);
             return 0;
         }
 

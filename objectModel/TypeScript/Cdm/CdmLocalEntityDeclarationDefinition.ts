@@ -12,18 +12,21 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmTraitCollection,
-    Errors,
+    cdmLogCode,
     Logger,
     resolveOptions,
+    StorageAdapterBase,
+    StorageAdapterCacheContext,
     VisitCallback
 } from '../internal';
-import {StorageAdapterBase , StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 
 /**
  * The object model implementation for local entity declaration.
  */
 export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase implements CdmFileStatus, CdmEntityDeclarationDefinition {
+    private TAG: string = CdmLocalEntityDeclarationDefinition.name;
+
     /**
      * @inheritdoc
      */
@@ -36,6 +39,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
     /**
      * @inheritdoc
+     * Note: Use setLastFileModifiedTime() for setting the value.
      */
     public lastFileStatusCheckTime: Date;
 
@@ -48,6 +52,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public lastChildFileModifiedTime: Date;
+
+    private lastFileModifiedOldTime: Date;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.localEntityDeclarationDef;
@@ -68,6 +74,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         this.entityName = entityName;
         this.dataPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.ctx, this, cdmObjectType.dataPartitionDef);
         this.dataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.ctx, this, cdmObjectType.dataPartitionDef);
+        this.lastFileModifiedTime = null;
+        this.lastFileModifiedOldTime = null;
     }
 
     /**
@@ -82,13 +90,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public validate(): boolean {
         if (!this.entityName) {
-            Logger.error(
-                CdmLocalEntityDeclarationDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, ['entityName']),
-                this.validate.name
-            );
-
+            let missingFields: string[] = ['entityName'];
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
             return false;
         }
 
@@ -108,7 +111,6 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             copy = new CdmLocalEntityDeclarationDefinition(this.ctx, this.entityName);
         } else {
             copy = host as CdmLocalEntityDeclarationDefinition;
-            copy.ctx = this.ctx;
             copy.entityName = this.entityName;
             copy.dataPartitionPatterns.clear();
             copy.dataPartitions.clear();
@@ -119,11 +121,11 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         copy.lastChildFileModifiedTime = this.lastChildFileModifiedTime;
 
         for (const partition of this.dataPartitions) {
-            copy.dataPartitions.push(partition);
+            copy.dataPartitions.push(partition.copy(resOpt) as CdmDataPartitionDefinition);
         }
 
         for (const pattern of this.dataPartitionPatterns) {
-            copy.dataPartitionPatterns.push(pattern);
+            copy.dataPartitionPatterns.push(pattern.copy(resOpt) as CdmDataPartitionPatternDefinition);
         }
         this.copyDef(resOpt, copy);
 
@@ -141,14 +143,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = `${pathFrom}${this.entityName}`;
-                this.declaredPath = path;
-            }
-        }
+        const path: string = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -171,7 +166,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         }
 
         if (postChildren && postChildren(this, path)) {
-            return false;
+            return true;
         }
 
         return false;
@@ -189,7 +184,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public async fileStatusCheckAsync(): Promise<void> {
 
-        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
         let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
         try {
             const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
@@ -204,7 +199,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             }
 
             this.lastFileStatusCheckTime = new Date();
-            this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
+            this.setLastFileModifiedTime(timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime));
 
             await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
         }
@@ -256,5 +251,26 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
             this.dataPartitions.push(newPartition);
         }
+    }
+
+    public setLastFileModifiedTime(value : Date): void {
+        this.setLastFileModifiedOldTime(this.lastFileModifiedTime);
+        this.lastFileModifiedTime = value;
+    }
+    
+    public getlastFileModifiedTime(): Date {
+        return this.lastFileModifiedTime;
+    }
+    
+    private setLastFileModifiedOldTime(value: Date): void {
+        this.lastFileModifiedOldTime = value;
+    }
+
+    public getlastFileModifiedOldTime(): Date {
+        return this.lastFileModifiedOldTime;
+    }
+
+    public resetLastFileModifiedOldTime(): void {
+       this.setLastFileModifiedOldTime(null);
     }
 }

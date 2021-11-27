@@ -6,7 +6,7 @@ import os
 import time
 import unittest
 
-from cdm.enums import CdmStatusLevel
+from cdm.enums import CdmStatusLevel, CdmLogCode
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition
 from cdm.persistence.cdmfolder import ManifestPersistence
 from cdm.persistence.cdmfolder.types import ManifestContent
@@ -14,6 +14,7 @@ from cdm.storage import LocalAdapter
 from cdm.utilities import time_utils
 
 from tests.common import async_test, TestHelper
+
 
 class ManifestImplTest(unittest.TestCase):
     tests_subpath = os.path.join('Persistence', 'CdmFolder', 'Manifest')
@@ -50,11 +51,11 @@ class ManifestImplTest(unittest.TestCase):
         self.assertEqual(2, len(cdm_manifest.entities))
         self.assertEqual('cdmTest', cdm_manifest.manifest_name)
 
-        content = TestHelper.get_input_file_content(self.tests_subpath, test_name, 'complete.manifest.cdm.json')
+        content = TestHelper.get_input_file_content(self.tests_subpath, test_name, 'noname.manifest.cdm.json')
         cdm_manifest = ManifestPersistence.from_object(corpus.ctx, 'docName.manifest.cdm.json', 'someNamespace', '/', ManifestContent().decode(content))
         self.assertEqual(1, len(cdm_manifest.sub_manifests))
         self.assertEqual(2, len(cdm_manifest.entities))
-        self.assertEqual('cdmTest', cdm_manifest.manifest_name)
+        self.assertEqual('docName', cdm_manifest.manifest_name)
 
     def test_folio_with_everything(self):
         """Testing for back-comp folio loading."""
@@ -101,11 +102,14 @@ class ManifestImplTest(unittest.TestCase):
         input_path = TestHelper.get_input_folder_path(self.tests_subpath, 'test_loads_and_sets_times_correctly')
         time_before_load = datetime.now(timezone.utc)
 
-        cdm_corpus = self.get_corpus()
+        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_loads_and_sets_times_correctly')
+
+        def callback(level: CdmStatusLevel, message: str):
+            self.fail('Unexpected log: ' + message)
+        cdm_corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
         cdm_corpus.storage.mount('someNamespace', LocalAdapter(input_path))
-        cdm_corpus.storage.mount('local', LocalAdapter(input_path))
-        cdm_corpus.storage.unmount('cdm')
-        cdm_corpus.storage.default_namespace = 'local'
+
         cdm_manifest = await cdm_corpus.fetch_object_async('someNamespace:/default.manifest.cdm.json')
         status_time_at_load = cdm_manifest.last_file_status_check_time
         # hard coded because the time comes from inside the file
@@ -142,18 +146,18 @@ class ManifestImplTest(unittest.TestCase):
         self.assertEqual('cdm:/Abc/Def', absolute_path)
         manifest = CdmManifestDefinition(None, None)
 
-        manifest.namespace = ''
-        manifest.folder_path = 'Mnp/Qrs/'
+        manifest._namespace = ''
+        manifest._folder_path = 'Mnp/Qrs/'
         absolute_path = corpus.storage.create_absolute_corpus_path('Abc/Def', manifest)
         self.assertEqual('Mnp/Qrs/Abc/Def', absolute_path)
 
-        manifest.namespace = 'cdm'
-        manifest.folder_path = 'Mnp/Qrs/'
+        manifest._namespace = 'cdm'
+        manifest._folder_path = 'Mnp/Qrs/'
         absolute_path = corpus.storage.create_absolute_corpus_path('/Abc/Def', manifest)
         self.assertEqual('cdm:/Abc/Def', absolute_path)
 
-        manifest.namespace = 'cdm'
-        manifest.folder_path = 'Mnp/Qrs/'
+        manifest._namespace = 'cdm'
+        manifest._folder_path = 'Mnp/Qrs/'
         absolute_path = corpus.storage.create_absolute_corpus_path('Abc/Def', manifest)
         self.assertEqual('cdm:Mnp/Qrs/Abc/Def', absolute_path)
 
@@ -162,127 +166,70 @@ class ManifestImplTest(unittest.TestCase):
         This checks the behavior if FolderPath does not end with a /
         ('/' should be appended and a warning be sent through callback function)"""
 
-        corpus = CdmCorpusDefinition()
-        function_was_called = False
-        function_parameter1 = CdmStatusLevel.INFO
-        function_parameter2 = None
+        expected_log_codes = { CdmLogCode.WARN_STORAGE_EXPECTED_PATH_PREFIX }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_path_that_does_not_end_in_slash', expected_codes=expected_log_codes, no_input_and_output_folder=True)
 
-        def callback(status_level: CdmStatusLevel, message1: str):
-            nonlocal function_was_called, function_parameter1, function_parameter2
-            function_was_called = True
-            function_parameter1 = status_level
-            function_parameter2 = message1
-
-        corpus.set_event_callback(callback)
         manifest = CdmManifestDefinition(None, None)
-        manifest.namespace = 'cdm'
-        manifest.folder_path = 'Mnp'
+        manifest._namespace = 'cdm'
+        manifest._folder_path = 'Mnp'
         absolute_path = corpus.storage.create_absolute_corpus_path('Abc', manifest)
         self.assertEqual('cdm:Mnp/Abc', absolute_path)
-        self.assertEqual(function_was_called, True)
-        self.assertEqual(function_parameter1, CdmStatusLevel.WARNING)
-        self.assertTrue(function_parameter2.find('Expected path prefix to end in /, but it didn\'t. Appended the /') != -1)
+
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_STORAGE_EXPECTED_PATH_PREFIX, True, self)
 
     def test_path_root_invalid_object_path(self):
         """Tests absolute paths cannot be created with wrong parameters.
         Checks behavior if objectPath is invalid."""
-        corpus = CdmCorpusDefinition()
-        function_was_called = False
-        function_parameter1 = CdmStatusLevel.INFO
-        function_parameter2 = None
-
-        def callback(status_level: CdmStatusLevel, message1: str):
-            nonlocal function_was_called, function_parameter1, function_parameter2
-            function_was_called = True
-            function_parameter1 = status_level
-            function_parameter2 = message1
-
-        corpus.set_event_callback(callback)
+        expected_log_codes = { CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_path_root_invalid_object_path', expected_codes=expected_log_codes, no_input_and_output_folder=True)
 
         corpus.storage.create_absolute_corpus_path('./Abc')
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not start with ./') != -1)
-        function_was_called = False
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
         corpus.storage.create_absolute_corpus_path('/./Abc')
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
-        function_was_called = False
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
         corpus.storage.create_absolute_corpus_path('../Abc')
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
-        function_was_called = False
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
         corpus.storage.create_absolute_corpus_path('Abc/./Def')
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
-        function_was_called = False
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
         corpus.storage.create_absolute_corpus_path('Abc/../Def')
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
     def test_path_root_invalid_folder_path(self):
         """"Tests absolute paths cannot be created with wrong parameters.
         Checks behavior if FolderPath is invalid."""
-        corpus = CdmCorpusDefinition()
-        function_was_called = False
-        function_parameter1 = CdmStatusLevel.INFO
-        function_parameter2 = None
+        expected_log_codes = { CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_path_root_invalid_folder_path', expected_codes=expected_log_codes, no_input_and_output_folder=True)
 
-        def callback(status_level: CdmStatusLevel, message1: str):
-            nonlocal function_was_called, function_parameter1, function_parameter2
-            function_was_called = True
-            function_parameter1 = status_level
-            function_parameter2 = message1
-
-        corpus.set_event_callback(callback)
         manifest = CdmManifestDefinition(None, None)
-
-        manifest.namespace = 'cdm'
-        manifest.folder_path = './Mnp'
+        manifest._namespace = 'cdm'
+        manifest._folder_path = './Mnp'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not start with ./') != -1)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
-        function_was_called = False
-        manifest.namespace = 'cdm'
-        manifest.folder_path = '/./Mnp'
+        manifest = CdmManifestDefinition(None, None)
+        manifest._namespace = 'cdm'
+        manifest._folder_path = '/./Mnp'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
-        function_was_called = False
-        manifest.namespace = 'cdm'
-        manifest.folder_path = '../Mnp'
+        manifest = CdmManifestDefinition(None, None)
+        manifest._namespace = 'cdm'
+        manifest._folder_path = '../Mnp'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        function_parameter2 = function_parameter2.split('|')[1].strip()
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
-        function_was_called = False
-        manifest.namespace = 'cdm'
-        manifest.folder_path = 'Mnp/./Qrs'
+        manifest = CdmManifestDefinition(None, None)
+        manifest._namespace = 'cdm'
+        manifest._folder_path = 'Mnp/./Qrs'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        function_parameter2 = function_parameter2.split('|')[1].strip()
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
 
-        function_was_called = False
-        manifest.namespace = 'cdm'
-        manifest.folder_path = 'Mnp/../Qrs'
+        manifest = CdmManifestDefinition(None, None)
+        manifest._namespace = 'cdm'
+        manifest._folder_path = 'Mnp/../Qrs'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        function_parameter2 = function_parameter2.split('|')[1].strip()
-        self.assertTrue(function_was_called)
-        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)

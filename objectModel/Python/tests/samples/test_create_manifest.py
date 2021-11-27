@@ -6,25 +6,30 @@ import unittest
 from typing import cast
 
 from cdm.enums import CdmStatusLevel, CdmObjectType
-from cdm.objectmodel import CdmCorpusDefinition, CdmEntityDefinition, CdmLocalEntityDeclarationDefinition, CdmManifestDefinition
+from cdm.objectmodel import CdmCorpusDefinition, CdmEntityDefinition, CdmLocalEntityDeclarationDefinition, \
+    CdmManifestDefinition
 from cdm.storage import LocalAdapter
 
 from tests.common import async_test, TestHelper
 
 
 def IfRunTestsFlagNotSet():
-    return (os.environ.get("SAMPLE_RUNTESTS") is None)
+    return os.environ.get('SAMPLE_RUNTESTS') is not '1'
+
 
 class CreateManifestTest(unittest.TestCase):
     tests_subpath = 'Samples'
-    test_name = 'TestCreateManifest'
+    test_name = 'test_create_manifest'
 
     @async_test
     @unittest.skipIf(IfRunTestsFlagNotSet(), "SAMPLE_RUNTESTS environment variable not set.")
     async def test_create_manifest(self):
-        TestHelper.delete_files_from_actual_output(TestHelper.get_actual_output_folder_path(self.tests_subpath, self.test_name))
+        TestHelper.delete_files_from_actual_output(
+            TestHelper.get_actual_output_folder_path(self.tests_subpath, self.test_name))
         await self.create_manifest(self.setup_cdm_corpus())
-        error_log = TestHelper.compare_folder_files_equality(TestHelper.get_expected_output_folder_path(self.tests_subpath, self.test_name), TestHelper.get_actual_output_folder_path(self.tests_subpath, self.test_name))
+        error_log = TestHelper.compare_folder_files_equality(
+            TestHelper.get_expected_output_folder_path(self.tests_subpath, self.test_name),
+            TestHelper.get_actual_output_folder_path(self.tests_subpath, self.test_name), True)
         self.assertEqual('', error_log)
 
     def setup_cdm_corpus(self):
@@ -34,7 +39,8 @@ class CreateManifestTest(unittest.TestCase):
         cdm_corpus.ctx.report_at_level = CdmStatusLevel.ERROR
 
         print('Configure storage adapters')
-        cdm_corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, self.test_name)))
+        cdm_corpus.storage.mount('local', LocalAdapter(
+            TestHelper.get_actual_output_folder_path(self.tests_subpath, self.test_name)))
 
         # Local is our default. So any paths that start out navigating without a device tag will assume local.
         cdm_corpus.storage.default_namespace = 'local'
@@ -47,19 +53,30 @@ class CreateManifestTest(unittest.TestCase):
         print('Make placeholder manifest')
 
         # Make the temp manifest and add it to the root of the local documents in the corpus.
-        manifest_abstract = cdm_corpus.make_object(CdmObjectType.MANIFEST_DEF, 'temp_abstract')  # type: CdmManifestDefinition
+        manifest_abstract = cdm_corpus.make_object(CdmObjectType.MANIFEST_DEF,
+                                                   'temp_abstract')  # type: CdmManifestDefinition
 
         # Add each declaration, this example is about medical appointments and care plans
-        manifest_abstract.entities.append('Account', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Account.cdm.json/Account')
-        manifest_abstract.entities.append('Address', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Address.cdm.json/Address')
-        manifest_abstract.entities.append('CarePlan', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/CarePlan.cdm.json/CarePlan')
-        manifest_abstract.entities.append('CodeableConcept', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/CodeableConcept.cdm.json/CodeableConcept')
-        manifest_abstract.entities.append('Contact', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Contact.cdm.json/Contact')
-        manifest_abstract.entities.append('Device', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Device.cdm.json/Device')
-        manifest_abstract.entities.append('EmrAppointment', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/EmrAppointment.cdm.json/EmrAppointment')
-        manifest_abstract.entities.append('Encounter', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Encounter.cdm.json/Encounter')
-        manifest_abstract.entities.append('EpisodeOfCare', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/EpisodeOfCare.cdm.json/EpisodeOfCare')
-        manifest_abstract.entities.append('Location', 'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Location.cdm.json/Location')
+        manifest_abstract.entities.append('Account',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Account.cdm.json/Account')
+        manifest_abstract.entities.append('Address',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Address.cdm.json/Address')
+        manifest_abstract.entities.append('CarePlan',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/CarePlan.cdm.json/CarePlan')
+        manifest_abstract.entities.append('CodeableConcept',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/CodeableConcept.cdm.json/CodeableConcept')
+        manifest_abstract.entities.append('Contact',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Contact.cdm.json/Contact')
+        manifest_abstract.entities.append('Device',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Device.cdm.json/Device')
+        manifest_abstract.entities.append('EmrAppointment',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/EmrAppointment.cdm.json/EmrAppointment')
+        manifest_abstract.entities.append('Encounter',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Encounter.cdm.json/Encounter')
+        manifest_abstract.entities.append('EpisodeOfCare',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/EpisodeOfCare.cdm.json/EpisodeOfCare')
+        manifest_abstract.entities.append('Location',
+                                          'cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Location.cdm.json/Location')
 
         # Add the temp manifest to the root of the local documents in the corpus.
         local_root = cdm_corpus.storage.fetch_root_folder('local')
@@ -77,9 +94,11 @@ class CreateManifestTest(unittest.TestCase):
             # Get the entity being pointed at.
             local_e_def = cast(CdmLocalEntityDeclarationDefinition, e_def)
             # Turns a relative path from manifest_resolved into an absolute path.
-            ent_def = cast(CdmEntityDefinition, await cdm_corpus.fetch_object_async(local_e_def.entity_path, manifest_resolved))
+            ent_def = cast(CdmEntityDefinition,
+                           await cdm_corpus.fetch_object_async(local_e_def.entity_path, manifest_resolved))
             # Make a fake partition, just to demo that.
-            part = cdm_corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, '{}-data-description'.format(ent_def.entity_name))  # type: CdmDataPartitionDefinition
+            part = cdm_corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, '{}-data-description'.format(
+                ent_def.entity_name))  # type: CdmDataPartitionDefinition
             local_e_def.data_partitions.append(part)
             part.explanation = 'not real data, just for demo'
             # Define the location of the partition, relative to the manifest
@@ -96,7 +115,8 @@ class CreateManifestTest(unittest.TestCase):
             # Make a fake file with nothing but header for columns.
             header = ','.join([att.name for att in ent_def.attributes])
 
-            os.makedirs(cdm_corpus.storage.corpus_path_to_adapter_path('local:/{}'.format(ent_def.entity_name)), exist_ok=True)
+            os.makedirs(cdm_corpus.storage.corpus_path_to_adapter_path('local:/{}'.format(ent_def.entity_name)),
+                        exist_ok=True)
             with open(part_path, 'w') as file:
                 file.write(header)
 

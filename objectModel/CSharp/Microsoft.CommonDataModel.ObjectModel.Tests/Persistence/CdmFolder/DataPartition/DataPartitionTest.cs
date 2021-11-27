@@ -6,13 +6,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Threading.Tasks;
 
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
-    using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -26,6 +25,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// The path between TestDataPath and TestName.
         /// </summary>
         private string testsSubpath = Path.Combine("Persistence", "CdmFolder", "DataPartition");
+
+        private readonly bool doesWriteTestDebuggingFiles = false;
 
         /// <summary>
         /// Testing for Manifest with local entity declaration having data partitions.
@@ -60,6 +61,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 
             var absolutePartition = entity.DataPartitions[1];
             Assert.AreEqual(absolutePartition.Location, "local:/some/test/location");
+        }
+
+        /// <summary>
+        /// Manifest.DataPartitions.Arguments can be read in multiple forms,
+        /// but should always be serialized as {name: 'theName', value: 'theValue'}.
+        /// </summary>
+        [TestMethod]
+        public void TestDataPartitionArgumentsAreSerializedAppropriately()
+        {
+            var readFile = TestHelper.GetInputFileContent(testsSubpath, nameof(TestDataPartitionArgumentsAreSerializedAppropriately), "entities.manifest.cdm.json");
+            var cdmManifest = ManifestPersistence.FromObject(
+                new ResolveContext(new CdmCorpusDefinition(), null), "entities", "testNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(readFile));
+            var obtainedCdmFolder = ManifestPersistence.ToData(cdmManifest, null, null);
+            if (doesWriteTestDebuggingFiles)
+            {
+                TestHelper.WriteActualOutputFileContent(testsSubpath, nameof(TestDataPartitionArgumentsAreSerializedAppropriately),
+                    "savedManifest.manifest.cdm.json", ModelJsonTestsBase.Serialize(obtainedCdmFolder));
+            }
+            var expectedOutput = TestHelper.GetExpectedOutputFileContent(testsSubpath, nameof(TestDataPartitionArgumentsAreSerializedAppropriately), "savedManifest.manifest.cdm.json");
+            TestHelper.AssertSameObjectWasSerialized(expectedOutput, ModelJsonTestsBase.Serialize(obtainedCdmFolder));
         }
 
         /// <summary>

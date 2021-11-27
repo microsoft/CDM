@@ -13,14 +13,12 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class CdmObjectBase implements CdmObject {
 
@@ -249,8 +247,6 @@ public abstract class CdmObjectBase implements CdmObject {
   }
 
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
-    // intentionally NOP
-    return;
   }
 
   /**
@@ -355,10 +351,6 @@ public abstract class CdmObjectBase implements CdmObject {
     return rtsbAll.getResolvedTraitSet();
   }
 
-  @Deprecated
-  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt) {
-    return this.fetchObjectFromCache(resOpt, null);
-  }
   /**
    * @param resOpt Resolve Options
    * @param acpInContext Attribute Context Parameters
@@ -372,11 +364,11 @@ public abstract class CdmObjectBase implements CdmObject {
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     String cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
 
-    Object rasbCache = null;
+    ResolvedAttributeSetBuilder rasbCache = null;
     if (cacheTag != null) {
-      rasbCache = ctx.getCache().get(cacheTag);
+      rasbCache = ctx.getAttributeCache().get(cacheTag);
     }
-    return (ResolvedAttributeSetBuilder)rasbCache;
+    return rasbCache;
   }
 
   /**
@@ -425,13 +417,13 @@ public abstract class CdmObjectBase implements CdmObject {
         //}
     }
 
+    int currentDepth = resOpt.depthInfo.getCurrentDepth();
+
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     ResolvedAttributeSetBuilder rasbResult = null;
     ResolvedAttributeSetBuilder rasbCache = this.fetchObjectFromCache(resOpt, acpInContext);
     CdmAttributeContext underCtx = null;
-
-    int currentDepth = resOpt.depthInfo.getCurrentDepth();
 
     // store the previous document set, we will need to add it with
     // children found from the constructResolvedTraits call
@@ -463,20 +455,32 @@ public abstract class CdmObjectBase implements CdmObject {
           ctx.getCorpus()
                   .registerDefinitionReferenceSymbols(oDef, kind, resOpt.getSymbolRefSet());
 
+          if (this.objectType == CdmObjectType.EntityDef) {
+            // if we just got attributes for an entity, take the time now to clean up this cached tree and prune out
+            // things that don't help explain where the final set of attributes came from
+            if (underCtx != null) {
+              HashSet<CdmAttributeContext> scopesForAttributes = new HashSet<CdmAttributeContext>();
+              underCtx.collectContextFromAtts(rasbCache.getResolvedAttributeSet(), scopesForAttributes); // the context node for every final attribute
+              if (!underCtx.pruneToScope(scopesForAttributes)) { 
+                return null;
+              }
+            }
+          }
+
           // get the new cache tag now that we have the list of docs
           String cacheTag = ctx.getCorpus()
                   .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
 
           // save this as the cached version
           if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
-            ctx.getCache().put(cacheTag, rasbCache);
+            ctx.getAttributeCache().put(cacheTag, rasbCache);
           }
-          // get the 'underCtx' of the attribute set from the acp that is wired into
-          // the target tree
-          underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
-                  ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
-                  : null;
         }
+        // get the 'underCtx' of the attribute set from the acp that is wired into
+        // the target tree
+        underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
+                ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
+                : null;
       }
     }
     else {
@@ -501,7 +505,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
       // 2. deep copy the tree and map the context references.
       if (underCtx != null) { // null context? means there is no tree, probably 0 attributes came out
-        if (underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.getResolvedAttributeSet()) == false) {
+        if (!underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.getResolvedAttributeSet())) {
           return null;
         }
       }

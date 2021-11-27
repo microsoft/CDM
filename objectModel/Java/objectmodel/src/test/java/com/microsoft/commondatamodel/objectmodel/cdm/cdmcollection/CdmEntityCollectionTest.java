@@ -14,15 +14,11 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
-import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
-import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
-import org.apache.logging.log4j.Level;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -135,7 +131,7 @@ public class CdmEntityCollectionTest {
 
     Assert.assertEquals(1, logCapture.get("count"));
     Assert.assertEquals(CdmStatusLevel.Error, logCapture.get("level"));
-    Assert.assertEquals("CdmEntityCollection | Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest. | add", logCapture.get("message"));
+    Assert.assertTrue(logCapture.get("message").toString().contains("CdmEntityCollection | Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest. | add"));
     Assert.assertEquals(0, manifest.getEntities().getCount());
   }
 

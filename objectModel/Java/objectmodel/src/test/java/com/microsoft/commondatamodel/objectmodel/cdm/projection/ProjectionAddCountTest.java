@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddCountAttribute;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAlterTraits;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
@@ -17,6 +18,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -44,19 +46,14 @@ public class ProjectionAddCountTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionAddCount")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAddCountTest").toString();
 
     /**
      * Test for creating a projection with an AddCountAttribute operation on an entity attribute using the object model
      */
     @Test
     public void testEntityAttributeProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityAttributeProjUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityAttributeProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testEntityAttributeProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -93,7 +90,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "testCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 
     /**
@@ -101,7 +98,7 @@ public class ProjectionAddCountTest {
      */
     @Test
     public void testEntityProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityProjUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testEntityProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -136,7 +133,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "testCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 
     /**
@@ -144,7 +141,7 @@ public class ProjectionAddCountTest {
      */
     @Test
     public void testConditionalProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testConditionalProjUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testConditionalProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testConditionalProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -186,7 +183,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(4)).getName(), "testCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntityWithReferenceOnly.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
 
         // Now resolve the entity with the 'structured' directive
         resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<String>(Arrays.asList("structured"))));
@@ -209,14 +206,14 @@ public class ProjectionAddCountTest {
     public void testAddCountAttribute() throws InterruptedException {
         String testName = "testAddCountAttribute";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Collections.emptyList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Count attribute: "someCount"
@@ -227,17 +224,17 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 
     /**
-     * CountAttribute on an entity attribute
+     * CountAttribute on an entity attribute  using resolution guidance
      */
     @Test
     public void testCountAttribute() throws InterruptedException {
         String testName = "testCountAttribute";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -251,7 +248,7 @@ public class ProjectionAddCountTest {
         // For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
         Assert.assertEquals(resolvedEntity.getAttributes().size(), 6);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "name1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "age1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "address1");
@@ -266,7 +263,7 @@ public class ProjectionAddCountTest {
     public void testExtendsEntityProj() throws InterruptedException {
         String testName = "testExtendsEntityProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -284,17 +281,17 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 
     /**
-     * CountAttribute on an entity definition
+     * CountAttribute on an entity definition using resolution guidance
      */
     @Test
     public void testExtendsEntity() throws InterruptedException {
         String testName = "testExtendsEntity";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -309,7 +306,7 @@ public class ProjectionAddCountTest {
         // ExtendsEntityResolutionGuidance doesn't support doing expansions, so we only get the Count attribute
         Assert.assertEquals(resolvedEntity.getAttributes().size(), 1);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 
     /**
@@ -319,7 +316,7 @@ public class ProjectionAddCountTest {
     public void testWithNestedArrayExpansion() throws InterruptedException {
         String testName = "testWithNestedArrayExpansion";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -342,47 +339,8 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(8)).getName(), "phoneNumber2");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(9)).getName(), "email2");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(10)).getName(), "personCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(10)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
-    }
-
-    /**
-     * AddCountAttribute with ArrayExpansion in the same projection (and then RenameAttributes)
-     */
-    @Test
-    public void testWithArrayExpansion() throws InterruptedException {
-        String testName = "testWithArrayExpansion";
-        String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
-
-        for (List<String> resOpt : resOptsCombinations) {
-            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
-        }
-
-        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
-
-        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        // Expand 1...2, count attribute: "personCount" (first projection)
-        // The first projection will give us the expanded attributes as well as the pass-through input attributes
-        // Then do renameFormat = {m}{o} in the second projection
-        Assert.assertEquals(resolvedEntity.getAttributes().size(), 16);
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "name1");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "age1");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "address1");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber1");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email1");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "name2");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "age2");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "address2");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(8)).getName(), "phoneNumber2");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(9)).getName(), "email2");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(10)).getName(), "name");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(11)).getName(), "age");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(12)).getName(), "address");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(13)).getName(), "phoneNumber");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(14)).getName(), "email");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(15)).getName(), "personCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(15)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(10)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(10)).getAppliedTraits().get(2).getNamedReference(), "indicates.expansionInfo.count");
     }
 
     /**
@@ -392,7 +350,7 @@ public class ProjectionAddCountTest {
     public void testCombineOps() throws InterruptedException {
         String testName = "testCombineOps";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -410,9 +368,9 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "anotherCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(6)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "firstName");
     }
 
@@ -423,7 +381,7 @@ public class ProjectionAddCountTest {
     public void testCombineOpsNestedProj() throws InterruptedException {
         String testName = "testCombineOpsNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -438,7 +396,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "new_name");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "new_age");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "new_someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(2)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 
     /**
@@ -448,7 +406,7 @@ public class ProjectionAddCountTest {
     public void testConditionalProj() throws InterruptedException {
         String testName = "testConditionalProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -475,7 +433,7 @@ public class ProjectionAddCountTest {
     public void testGroupProj() throws InterruptedException {
         String testName = "testGroupProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -493,17 +451,17 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 
     /**
-     * CountAttribute on an entity with an attribute group
+     * CountAttribute on an entity with an attribute group using resolution guidance
      */
     @Test
     public void testGroup() throws InterruptedException {
         String testName = "testGroup";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -517,7 +475,7 @@ public class ProjectionAddCountTest {
         // For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
         Assert.assertEquals(resolvedEntity.getAttributes().size(), 6);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "name1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "age1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "address1");
@@ -532,7 +490,7 @@ public class ProjectionAddCountTest {
     public void testDuplicate() throws InterruptedException {
         String testName = "testDuplicate";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -551,6 +509,6 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
     }
 }

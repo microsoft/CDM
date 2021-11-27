@@ -12,6 +12,7 @@ enum CdmTraitName {
   IS_IDENTIFIED_BY("is.identifiedBy"),
   IS_NULLABLE("is.nullable"),
   IS_READ_ONLY("is.readOnly"),
+  IS_RESOLVED("has.entitySchemaAbstractionLevel"),
   SOURCE_NAME("is.CDS.sourceNamed"),
   SOURCE_ORDERING("is.CDS.ordered"),
   VALUE_CONSTRAINED_TO_LIST("is.constrainedList"),

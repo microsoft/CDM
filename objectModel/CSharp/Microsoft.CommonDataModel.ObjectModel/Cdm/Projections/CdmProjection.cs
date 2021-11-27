@@ -9,21 +9,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class for projection
     /// </summary>
     public class CdmProjection : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmProjection);
         /// <summary>
         /// Property of a projection that holds the condition expression string
         /// </summary>
         public string Condition { get; set; }
-
-        /// <summary>
-        /// Condition expression tree that is built out of a condition expression string
-        /// </summary>
-        internal Node ConditionExpressionTreeRoot { get; set; }
 
         /// <summary>
         /// Property of a projection that holds a collection of operations
@@ -78,11 +75,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             copy.Condition = this.Condition;
-            copy.Source = this.Source?.Copy() as CdmEntityReference;
+            copy.Source = this.Source?.Copy(resOpt) as CdmEntityReference;
 
             foreach (CdmOperationBase operation in this.Operations)
             {
-                copy.Operations.Add(operation.Copy() as CdmOperationBase);
+                copy.Operations.Add(operation.Copy(resOpt) as CdmOperationBase);
             }
 
             // Don't do anything else after this, as it may cause InDocument to become dirty
@@ -139,13 +136,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (rootOwner.ObjectType == CdmObjectType.TypeAttributeDef)
                 {
                     // If the projection is used in a type attribute
-                    Logger.Error(nameof(CdmProjection), this.Ctx, "Source can only be another projection in a type attribute.", nameof(Validate));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrProjSourceError);
                 }
             }
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmProjection), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -155,16 +152,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + "projection";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
@@ -226,18 +214,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
             }
 
-            if (this.RunSequentially != null)
-            {
-                Logger.Error(nameof(CdmProjection), this.Ctx, "RunSequentially is not supported by this Object Model version.");
-            }
-
             ProjectionContext projContext;
-
-            string condition = string.IsNullOrWhiteSpace(this.Condition) ? "(true)" : this.Condition;
-
-            // Create an expression tree based on the condition
-            ExpressionTree tree = new ExpressionTree();
-            this.ConditionExpressionTreeRoot = tree.ConstructExpressionTree(condition);
 
             // Add projection to context tree
             AttributeContextParameters acpProj = new AttributeContextParameters
@@ -292,7 +269,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Dictionary<string, List<ProjectionAttributeState>> polySourceSet = null;
                     if (projDirective.IsSourcePolymorphic)
                     {
-                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras, acpSourceProjection);
+                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras);
                     }
 
                     // Now initialize projection attribute state
@@ -325,29 +302,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 };
             }
 
-            bool isConditionValid = false;
-            if (this.ConditionExpressionTreeRoot != null)
-            {
-                InputValues input = new InputValues()
-                {
-                    noMaxDepth = projDirective.HasNoMaximumDepth,
-                    isArray = projDirective.IsArray,
-
-                    referenceOnly = projDirective.IsReferenceOnly,
-                    normalized = projDirective.IsNormalized,
-                    structured = projDirective.IsStructured,
-                    isVirtual = projDirective.IsVirtual,
-
-                    nextDepth = projDirective.ResOpt.DepthInfo.CurrentDepth,
-                    maxDepth = projDirective.MaximumDepth,
-
-                    minCardinality = projDirective.Cardinality?._MinimumNumber,
-                    maxCardinality = projDirective.Cardinality?._MaximumNumber
-                };
-
-                isConditionValid = ExpressionTree.EvaluateExpressionTree(this.ConditionExpressionTreeRoot, input);
-            }
-
+            InputValues inputValues = new InputValues(projDirective);
+            bool isConditionValid = ExpressionTree.EvaluateCondition(this.Condition, inputValues);
             if (isConditionValid && this.Operations != null && this.Operations.Count > 0)
             {
                 // Just in case new operations were added programmatically, reindex operations
@@ -368,30 +324,59 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 // Start with an empty list for each projection
                 ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.CurrentAttributeStateSet.Ctx);
+
+                // The attribute set that the operation will execute on
+                ProjectionAttributeStateSet operationWorkingAttributeSet;
+
+                // The attribute set containing the attributes from the source
+                ProjectionAttributeStateSet sourceAttributeSet = projContext.CurrentAttributeStateSet;
+
+                // Specifies if the operation is the first on the list to run
+                bool firstOperationToRun = true;
                 foreach (CdmOperationBase operation in this.Operations)
                 {
-                    if (operation.Condition != null)
+                    bool operationCondition = ExpressionTree.EvaluateCondition(operation.Condition, inputValues);
+
+                    if (!operationCondition)
                     {
-                        Logger.Error(nameof(CdmProjection), this.Ctx, "Condition on the operation level is not supported by this Object Model version.");
+                        // Skip this operation if the condition does not evaluate to true
+                        continue;
                     }
 
-                    if (operation.SourceInput != null)
+                    // If RunSequentially is not true then all the operations will receive the source input
+                    // Unless the operation overwrites this behavior using the SourceInput property
+                    bool sourceInput = operation.SourceInput != null ? (bool) operation.SourceInput : this.RunSequentially != true;
+
+                    // If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
+                    if (sourceInput || firstOperationToRun)
                     {
-                        Logger.Error(nameof(CdmProjection), this.Ctx, "SourceInput on the projection operation is not supported by this Object Model version.");
+                        projContext.CurrentAttributeStateSet = sourceAttributeSet;
+                        operationWorkingAttributeSet = pasOperations;
+                    }
+                    else
+                    {
+                        // Needs to create a copy since this set can be modified by the operation
+                        projContext.CurrentAttributeStateSet = pasOperations.Copy();
+                        operationWorkingAttributeSet = new ProjectionAttributeStateSet(projContext.CurrentAttributeStateSet.Ctx);
                     }
 
                     // Evaluate projections and apply to empty state
-                    ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
+                    ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, operationWorkingAttributeSet, acGenAttrSet);
 
                     // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
                     if (newPasOperations != null)
                     {
+                        firstOperationToRun = false;
                         pasOperations = newPasOperations;
                     }
                 }
 
-                // Finally update the current state to the projection context
-                projContext.CurrentAttributeStateSet = pasOperations;
+                // If no operation ran successfully pasOperations will be empty
+                if (!firstOperationToRun)
+                {
+                    // Finally update the current state to the projection context
+                    projContext.CurrentAttributeStateSet = pasOperations;
+                }
             }
             else
             {
@@ -412,6 +397,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 AttributeContext = attCtxUnder
             };
+
+            if (projCtx == null)
+            {
+                Logger.Error(this.Ctx, nameof(CdmEntityAttributeDefinition), "ExtractResolvedAttributes", this.AtCorpusPath, CdmLogCode.ErrProjFailedToResolve);
+                return resolvedAttributeSet;
+            }
 
             foreach (var pas in projCtx.CurrentAttributeStateSet.States)
             {

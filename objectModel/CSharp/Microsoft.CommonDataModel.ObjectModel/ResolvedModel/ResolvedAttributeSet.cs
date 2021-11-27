@@ -1,11 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -174,15 +173,50 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         this.AttributeOwnershipMap[newPair.Key] = newPair.Value;
                     }
                 }
-
             }
             return rasResult;
+        }
+
+        /// <summary>
+        /// Recursively sets the target owner's to be the provided entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        public void SetTargetOwner(CdmEntityDefinition entity)
+        {
+            foreach (ResolvedAttribute ra in this.Set)
+            {
+                ra.Owner = entity;
+                
+                if (ra.Target is ResolvedAttributeSet ras)
+                {
+                    ras.SetTargetOwner(entity);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Apply a set of resolved traits to this resolved attribute set.
+        /// </summary>
+        /// <param name="traits"></param>
+        internal void ApplyTraits(ResolvedTraitSet traits)
+        {
+            foreach (var resAtt in this.Set)
+            {
+                if (resAtt.Target is ResolvedAttributeSet resAttSet)
+                {
+                    resAttSet.ApplyTraits(traits);
+                }
+                else
+                {
+                    resAtt.ResolvedTraits = resAtt.ResolvedTraits.MergeSet(traits);
+                }
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         //  traits that change attributes
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        internal ResolvedAttributeSet ApplyTraits(ResolvedTraitSet traits, ResolveOptions resOpt, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
+        internal ResolvedAttributeSet ApplyTraitsResolutionGuidance(ResolvedTraitSet traits, ResolveOptions resOpt, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
         {
             ResolvedAttributeSet rasResult = this;
             ResolvedAttributeSet rasApplied;
@@ -261,7 +295,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 {
                     under = appliedAttSet.AttributeContext,
                     type = Enums.CdmAttributeContextType.GeneratedSet,
-                    Name = "_generatedAttributeSet"
+                    Name = "_generatedAttributeSet_template"
                 };
                 appliedAttSet.AttributeContext = CdmAttributeContext.CreateChildUnder(traits.ResOpt, acp);
                 acp = new AttributeContextParameters
@@ -480,11 +514,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ResolvedAttributeSet copy = new ResolvedAttributeSet();
             copy.AttributeContext = this.AttributeContext;
             int l = this.Set.Count;
-
-            // save the mappings to overwrite
-            // maps from merge may not be correct
-            IDictionary<ResolvedAttribute, HashSet<CdmAttributeContext>> newRa2attCtxSet = new Dictionary<ResolvedAttribute, HashSet<CdmAttributeContext>>();
-            IDictionary<CdmAttributeContext, ResolvedAttribute> newAttCtx2ra = new Dictionary<CdmAttributeContext, ResolvedAttribute>();
 
             for (int i = 0; i < l; i++)
             {

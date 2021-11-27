@@ -28,9 +28,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// Creates Manifest using empty string as namespace.
         /// </summary>
         [TestMethod]
-        public void TestLoadLocalEntityNoPartition()
+        public void TestLoadNoPartition()
         {
-            var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartition", "entities.manifest.cdm.json");
+            var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadNoPartition", "entities.manifest.cdm.json");
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "", "", "", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(1, cdmManifest.Entities.Count);
             Assert.AreEqual(cdmManifest.Entities[0].ObjectType, CdmObjectType.LocalEntityDeclarationDef);
@@ -49,9 +49,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public void TestLoadLocalEntityNoPartitionNamespaceSet()
+        public void TestLoadNoPartitionNamespaceSet()
         {
-            var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartitionNamespaceSet", "entities.manifest.cdm.json");
+            var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadNoPartitionNamespaceSet", "entities.manifest.cdm.json");
             ManifestContent manifestContent = JsonConvert.DeserializeObject<ManifestContent>(content);
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", manifestContent);
             Assert.AreEqual(cdmManifest.Entities.Count, 1);
@@ -74,9 +74,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public void TestLoadLocalEntityNoPartitionAbsoluteNamespaceSet()
+        public void TestLoadNoPartitionAbsoluteNamespaceSet()
         {
-            var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartitionAbsoluteNamespaceSet", "entitiesWithNamespace.manifest.cdm.json");
+            var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadNoPartitionAbsoluteNamespaceSet", "entities.manifest.cdm.json");
             ManifestContent manifestContent = JsonConvert.DeserializeObject<ManifestContent>(content);
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "testEntity", "testNamespace", "/", manifestContent);
             Assert.AreEqual(cdmManifest.Entities.Count, 1);

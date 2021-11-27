@@ -1,0 +1,83 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Sales",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "SaleEAKey",
+                    "purpose": {
+                        "purposeReference": "hasA",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "means.forward",
+                                "arguments": [
+                                    "Description for the forward direction in the relationship."
+                                ]
+                            },
+                            {
+                                "traitReference": "means.backward",
+                                "arguments": [
+                                    "Description for the backward direction in the relationship."
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "source": "Product",
+                        "operations": [
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "ProductId1",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "FKId1"
+                                }
+                            },
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "ProductId2",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "FKId2"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "version": "1.0"
+        },
+        {
+            "traitName": "means.backward",
+            "explanation": "the attribute represents B->A.",
+            "hasParameters": [
+              {
+                  "name": "test",
+                  "dataType": "string",
+                  "explanation": "The description of the relationship B->A",
+                  "required": false
+              }
+            ]
+          },
+          {
+            "traitName": "means.forward",
+            "explanation": "the attribute represents A->B.",
+            "hasParameters": [
+              {
+                  "name": "test",
+                  "dataType": "string",
+                  "explanation": "The description of the relationship A->B",
+                  "required": false
+              }
+            ]
+          }
+    ]
+}

@@ -6,11 +6,16 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import static org.testng.Assert.assertNotNull;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -19,14 +24,13 @@ public class ImportsTest {
   /**
    * The path between TestDataPath and TestName.
    */
-  private static final String TESTS_SUBPATH = new File("cdm", "imports").toString();
+  private static final String TESTS_SUBPATH = new File("Cdm", "Imports").toString();
 
   @Test
   public void testEntityWithMissingImport() throws InterruptedException {
-    final StorageAdapter localAdapter =
-            this.createStorageAdapterForTest("testEntityWithMissingImport");
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Arrays.asList(CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded));
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityWithMissingImport", null, false, expectedLogCodes);
 
-    final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
@@ -45,11 +49,10 @@ public class ImportsTest {
   }
 
   @Test
-  public void testEntityWithMissingNestedImports() throws InterruptedException {
-    final StorageAdapter localAdapter =
-            this.createStorageAdapterForTest("testEntityWithMissingNestedImports");
+  public void testEntityWithMissingNestedImportsAsync() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Arrays.asList(CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded));
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityWithMissingNestedImportsAsync", null, false, expectedLogCodes);
 
-    final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
@@ -70,10 +73,10 @@ public class ImportsTest {
   }
 
   @Test
-  public void testEntityWithSameImports() throws InterruptedException {
-    final StorageAdapter localAdapter = this.createStorageAdapterForTest("testEntityWithSameImports");
+  public void testEntityWithSameImportsAsync() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Arrays.asList(CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded));
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityWithSameImportsAsync", null, false, expectedLogCodes);
 
-    final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
@@ -93,12 +96,11 @@ public class ImportsTest {
    */
   @Test
   public void testNonExistingAdapterNamespace() throws InterruptedException {
-    final StorageAdapter localAdapter = this.createStorageAdapterForTest("testNonExistingAdapterNamespace");
-
-    final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrPersistFileReadFailure));
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testNonExistingAdapterNamespace", null, false, expectedLogCodes);
 
     // Register it as a 'local' adapter.
-    cdmCorpus.getStorage().mount("erp", localAdapter);
+    cdmCorpus.getStorage().mount("erp", new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, "testNonExistingAdapterNamespace")));
 
     // Set local as our default.
     cdmCorpus.getStorage().setDefaultNamespace("erp");
@@ -113,9 +115,8 @@ public class ImportsTest {
    * Testing docs that load the same import.
    */
   @Test
-  public void testLoadingSameImports() throws InterruptedException {
-    final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingSameImportsAsync");
-    final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+  public void testLoadingSameImportsAsync() throws InterruptedException {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingSameImportsAsync");
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
@@ -139,9 +140,10 @@ public class ImportsTest {
    * Testing docs that load the same import.
    */
   @Test
-  public void testLoadingSameMissingImports() throws InterruptedException {
-    final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingSameMissingImportsAsync");
-    final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+  public void testLoadingSameMissingImportsAsync() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Arrays.asList(CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded));
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingSameMissingImportsAsync", null, false, expectedLogCodes);
+
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
@@ -164,9 +166,8 @@ public class ImportsTest {
    * Testing docs that load the same import.
    */
   @Test
-  public void testLoadingAlreadyPresentImports() throws InterruptedException {
-    final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingAlreadyPresentImportsAsync");
-    final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+  public void testLoadingAlreadyPresentImportsAsync() throws InterruptedException {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingAlreadyPresentImportsAsync");
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
@@ -190,21 +191,24 @@ public class ImportsTest {
     Assert.assertEquals(importDoc, secondImportDoc);
   }
 
-  private CdmCorpusDefinition createTestCorpus(final StorageAdapter adapter) {
-    final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
-    cdmCorpus.getStorage().mount("local", adapter);
-    cdmCorpus.getStorage().setDefaultNamespace("local");
-
-    return cdmCorpus;
-  }
-
   /**
-   * Creates a storage adapter used to retrieve input files associated with test.
-   *
-   * @param testName The name of the test we should retrieve input files for.
-   * @return The storage adapter to be used by the named test method.
+   * Testing that import priorities update correctly when imports are changed
    */
-  private StorageAdapter createStorageAdapterForTest(String testName) throws InterruptedException {
-    return new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, testName));
+  @Test
+  public void testPrioritizingImportsAfterEdit() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPrioritizingImportsAfterEdit");
+
+    final CdmDocumentDefinition document = corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/mainDoc.cdm.json").join();
+    document.refreshAsync(new ResolveOptions(document)).join();
+
+    Assert.assertEquals(document.getImports().size(), 0);
+    // the current doc itself is added to the list of priorities
+    Assert.assertEquals(document.getImportPriorities().getImportPriority().size(), 1);
+
+    document.getImports().add("importDoc.cdm.json", true);
+    document.refreshAsync(new ResolveOptions(document)).join();
+
+    Assert.assertEquals(document.getImports().size(), 1);
+    Assert.assertEquals(document.getImportPriorities().getImportPriority().size(), 2);
   }
 }

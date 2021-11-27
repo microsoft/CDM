@@ -1,0 +1,50 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "Person.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "NewPerson",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "PersonInfo",
+                    "entity": {
+                        "source": "Person",
+                        "runSequentially": true,
+                        "operations": [
+                            {
+                                "$type": "renameAttributes",
+                                "renameFormat": "yearsOld",
+                                "applyTo": [
+                                    "age"
+                                ]
+                            },
+                            {
+                                "$type": "renameAttributes",
+                                "renameFormat": "contactNumber",
+                                "applyTo": [
+                                    "phoneNumber"
+                                ]
+                            },
+                            {
+                                "$type": "addCountAttribute",
+                                "countAttribute": {
+                                    "name": "countAttribute",
+                                    "dataType": "integer"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

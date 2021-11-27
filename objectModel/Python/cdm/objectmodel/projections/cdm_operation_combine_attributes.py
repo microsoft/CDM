@@ -5,7 +5,9 @@ from typing import Optional, TYPE_CHECKING, List
 
 from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
 from cdm.objectmodel import CdmAttributeContext
-from cdm.utilities import logger, Errors, AttributeContextParameters
+from cdm.utilities import logger, AttributeContextParameters
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 from ...resolvedmodel import ResolvedAttribute, ResolvedTrait
@@ -26,19 +28,22 @@ class CdmOperationCombineAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationCombineAttributes.__name__
         self.select = []  # type: List[str]
         self.merge_into = None
         self.type = CdmOperationType.COMBINE_ATTRIBUTES  # type: CdmOperationType
 
-        # --- internal ---
-        self._TAG = CdmOperationCombineAttributes.__name__
-
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationCombineAttributes'] = None) -> 'CdmOperationCombineAttributes':
-        copy = CdmOperationCombineAttributes(self.ctx)
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationCombineAttributes(self.ctx) if not host else host
+
         if self.select is not None:
-            copy.select = self.select[:]
-        if self.merge_into is not None:
-            copy.merge_into = self.merge_into.copy(res_opt, host)   # type: CdmTypeAttributeDefinition
+            copy.select = self.select.copy()
+        copy.merge_into = self.merge_into.copy(res_opt) if self.merge_into else None
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:
@@ -58,18 +63,12 @@ class CdmOperationCombineAttributes(CdmOperationBase):
             missing_fields.append('merge_into')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + 'operationCombineAttributes'
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -102,15 +101,15 @@ class CdmOperationCombineAttributes(CdmOperationBase):
 
                 leaf_level_merge_pas_list.extend(leaf_level_list_for_current_select)
 
-        # Create a List of top-level PAS objects that will be get merged based on the selected attributes
+        # Create a list of top-level PAS objects that will be get merged based on the selected attributes
         pas_merge_list = []  # type: List[ProjectionAttributeState]
 
         # Run through the top-level PAS objects 
         for current_pas in proj_ctx._current_attribute_state_set._states:
-            if (proj_ctx._projection_directive._owner_type is CdmObjectType.ENTITY_DEF or proj_ctx._projection_directive._is_source_polymorphic) and (current_pas._current_resolved_attribute._resolved_name in leaf_level_combine_attribute_names):
+            if current_pas._current_resolved_attribute._resolved_name in leaf_level_combine_attribute_names:
                 # Attribute to Merge
 
-                if not(pas_merge_list.__contains__(current_pas)):
+                if current_pas not in pas_merge_list:
                     pas_merge_list.append(current_pas)
             else:
                 # Attribute to Pass Through
@@ -140,16 +139,22 @@ class CdmOperationCombineAttributes(CdmOperationBase):
             new_merge_into_pas._current_resolved_attribute = ra_new_merge_into
             new_merge_into_pas._previous_state_list = pas_merge_list
 
+            attributes_added_to_context = set()
+
             # Create the attribute context parameters and just store it in the builder for now
             # We will create the attribute contexts at the end
             for select in leaf_level_combine_attribute_names.keys():
                 if select in leaf_level_combine_attribute_names and leaf_level_combine_attribute_names[select] is not None and len(leaf_level_combine_attribute_names[select]) > 0:
                     for leaf_level_for_select in leaf_level_combine_attribute_names[select]:
-                        attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
-                            select, leaf_level_for_select, new_merge_into_pas._current_resolved_attribute,
-                            CdmAttributeContextType.ATTRIBUTE_DEFINITION,
-                            leaf_level_for_select._current_resolved_attribute.att_ctx,  # lineage is the source att
-                            new_merge_into_pas._current_resolved_attribute.att_ctx)  # merge into points back here
+                        # When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                        # Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                        if leaf_level_for_select._current_resolved_attribute._resolved_name not in attributes_added_to_context:
+                            attributes_added_to_context.add(leaf_level_for_select._current_resolved_attribute._resolved_name)
+                            attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                                select, leaf_level_for_select, new_merge_into_pas._current_resolved_attribute,
+                                CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                                leaf_level_for_select._current_resolved_attribute.att_ctx,  # lineage is the source att
+                                new_merge_into_pas._current_resolved_attribute.att_ctx)  # merge into points back here
 
             proj_attr_state_set._add(new_merge_into_pas)
 

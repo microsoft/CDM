@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationRenameAttributes;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationRenameAttributes;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -21,6 +22,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
  * Operation RenameAttributes persistence
  */
 public class OperationRenameAttributesPersistence {
+    private static final String TAG = OperationRenameAttributesPersistence.class.getSimpleName();
+
     public static CdmOperationRenameAttributes fromData(final CdmCorpusContext ctx, final JsonNode obj) {
         if (obj == null) {
             return null;
@@ -40,7 +43,7 @@ public class OperationRenameAttributesPersistence {
                 renameAttributesOp.setApplyTo(JMapper.MAP.convertValue(obj.get("applyTo"), new TypeReference<ArrayList<String>>() {
                 }));
             } else {
-                Logger.error(OperationRenameAttributesPersistence.class.getSimpleName(), ctx, "Unsupported: applyTo property type should be string or List<string>.");
+                Logger.error(ctx, TAG, "fromData", renameAttributesOp.getAtCorpusPath(), CdmLogCode.ErrPersistProjUnsupportedProp, "applyTo", "string or list of strings");
             }
         }
 

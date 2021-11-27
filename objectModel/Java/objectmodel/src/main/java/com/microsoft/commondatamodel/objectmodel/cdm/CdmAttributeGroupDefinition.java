@@ -5,8 +5,10 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
@@ -15,7 +17,6 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -23,6 +24,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
 
+  private static final String TAG = CdmAttributeGroupDefinition.class.getSimpleName();
+  
   private CdmAttributeContextReference attributeContext;
   private String attributeGroupName;
   private CdmCollection<CdmAttributeItem> members;
@@ -66,18 +69,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
    */
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-
-      if (StringUtils.isNullOrTrimEmpty(path)) {
-        path = pathFrom + this.attributeGroupName;
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -145,7 +137,8 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   }
 
   
-  /** 
+  /**
+   * @deprecated for internal use only.
    * @param resOpt Resolved options
    * @return ResolvedEntityReferenceSet
    */
@@ -171,7 +164,8 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.attributeGroupName)) {
-      Logger.error(CdmAttributeGroupDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("attributeGroupName"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("attributeGroupName"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -208,7 +202,6 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
       copy = new CdmAttributeGroupDefinition(this.getCtx(), this.getAttributeGroupName());
     } else {
       copy = (CdmAttributeGroupDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setAttributeGroupName(this.getAttributeGroupName());
       copy.getMembers().clear();
     }
@@ -218,7 +211,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
       copy.setAttributeContext((CdmAttributeContextReference) this.getAttributeContext().copy(resOpt));
     }
     for (final CdmAttributeItem newMember : this.getMembers()) {
-      copy.getMembers().add(newMember);
+      copy.getMembers().add((CdmAttributeItem) newMember.copy(resOpt));
     }
     this.copyDef(resOpt, copy);
     return copy;

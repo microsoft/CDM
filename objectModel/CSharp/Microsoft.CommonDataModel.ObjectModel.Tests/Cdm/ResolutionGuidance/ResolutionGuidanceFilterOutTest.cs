@@ -17,6 +17,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterOutSome()
         {
+            bool updateResults = false;
             string testName = "TestFilterOutSome";
             {
                 string entityName = "Employee";
@@ -59,7 +60,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -103,7 +105,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -114,6 +117,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterOutSomeWithAttributeGroupRef()
         {
+            bool updateResults = false;
             string testName = "TestFilterOutSomeWithAttributeGroupRef";
             {
                 string entityName = "Employee";
@@ -156,7 +160,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -200,7 +205,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -211,6 +217,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterOutAll()
         {
+            bool updateResults = false;
             string testName = "TestFilterOutAll";
             {
                 string entityName = "Employee";
@@ -253,7 +260,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -297,7 +305,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -308,6 +317,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestFilterOutAllWithAttributeGroupRef()
         {
+            bool updateResults = false;
             string testName = "TestFilterOutAllWithAttributeGroupRef";
             {
                 string entityName = "Employee";
@@ -350,7 +360,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -394,7 +405,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }

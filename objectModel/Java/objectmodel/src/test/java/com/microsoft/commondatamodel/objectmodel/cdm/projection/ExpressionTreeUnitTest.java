@@ -21,9 +21,9 @@ public class ExpressionTreeUnitTest {
      */
     private static final String TESTS_SUBPATH =
         new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testExpressionTree")
+            "Cdm"),
+            "Projection"),
+            "ExpressionTreeUnitTest")
             .toString();
 
     /**
@@ -31,21 +31,21 @@ public class ExpressionTreeUnitTest {
      */
     @Test
     public void testEvaluateExpression() {
-        InputValues input = new InputValues();
-        input.setMaxCardinality(1);
-        input.setMinCardinality(0);
-        input.setMaxDepth(32);
-        input.setNextDepth(1);
-        input.setNoMaxDepth(true);
-        input.setIsArray(true);
-        input.setNormalized(false);
-        input.setReferenceOnly(true);
-        input.setStructured(true);
+        InputValues inputValues = new InputValues();
+        inputValues.setMaxCardinality(1);
+        inputValues.setMinCardinality(0);
+        inputValues.setMaxDepth(32);
+        inputValues.setNextDepth(1);
+        inputValues.setNoMaxDepth(true);
+        inputValues.setIsArray(true);
+        inputValues.setNormalized(false);
+        inputValues.setReferenceOnly(true);
+        inputValues.setStructured(true);
 
         List<List<String>> exprAndExpectedResultList = new ArrayList<>();
         exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("(cardinality.maximum > 1) && (!referenceOnly)", "false")));
-        exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("", "false")));
-        exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("  ", "false")));
+        exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("", "true")));
+        exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("  ", "true")));
         exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("always", "true")));
         exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("!structured", "false")));
         exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("referenceOnly || (depth > 5)", "true")));
@@ -56,11 +56,8 @@ public class ExpressionTreeUnitTest {
         exprAndExpectedResultList.add(new ArrayList<>(Arrays.asList("!(normalized && isArray) || noMaxDepth", "false")));
 
         for (List<String> item : exprAndExpectedResultList) {
-            ExpressionTree tree = new ExpressionTree();
-            Node treeTop = tree.constructExpressionTree(item.get(0));
+            String actual = String.valueOf(ExpressionTree.evaluateCondition(item.get(0), inputValues));
             String expected = item.get(1);
-            Object foo = ExpressionTree.evaluateExpressionTree(treeTop, input);
-            String actual = foo.toString();
 
             Assert.assertEquals(actual, expected);
         }

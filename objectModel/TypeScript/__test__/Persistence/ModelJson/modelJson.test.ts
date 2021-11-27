@@ -10,12 +10,13 @@ import {
     CdmEntityDeclarationDefinition,
     CdmEntityDefinition,
     CdmFolderDefinition,
+    cdmLogCode,
     CdmManifestDefinition,
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
     cdmStatusLevel,
     CdmTraitReference,
-    CdmTypeAttributeDefinition
+    CdmTypeAttributeDefinition,
 } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import {
@@ -71,11 +72,9 @@ describe('Persistence.ModelJson.ModelJson', () => {
      */
     it('TestLoadingCdmFolderAndModelJsonToData', async () => {
         const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingCdmFolderAndModelJsonToData');
-        const absPath: string =
-            cdmCorpus.storage.createAbsoluteCorpusPath(`default${manifestExtension}`, cdmCorpus.storage.fetchRootFolder('local'));
         const stopwatch: Stopwatch = new Stopwatch();
         stopwatch.start();
-        const cdmManifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(absPath);
+        const cdmManifest: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>(`default${manifestExtension}`, cdmCorpus.storage.fetchRootFolder('local'));
         stopwatch.stop();
 
         expect(stopwatch.getTime())
@@ -86,7 +85,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson);
+        HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson, false, true);
 
         expect(stopwatch.getTime())
             .toBeLessThan(8500);
@@ -142,7 +141,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         // the corpus path in the imports are relative to the document where it was defined.
         // when saving in model.json the documents are flattened to the manifest level
         // so it is necessary to recalculate the path to be relative to the manifest.
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('notImportant', 'notImportantLocation');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestImportsRelativePath');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const manifest: CdmManifestDefinition = new CdmManifestDefinition(corpus.ctx, 'manifest');
@@ -277,7 +276,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const referenceEntity1: CdmReferencedEntityDeclarationDefinition =
             new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity1');
         referenceEntity1.entityPath = 'remote:/contoso/entity1.model.json/Entity1';
-        const modelIdTrait1: CdmTraitReference = referenceEntity1.exhibitsTraits.push('is.propertyContent.multiTrait');
+        const modelIdTrait1: CdmTraitReference = referenceEntity1.exhibitsTraits.push('is.propertyContent.multiTrait') as CdmTraitReference;
         modelIdTrait1.isFromProperty = true;
         modelIdTrait1.arguments.push('modelId', 'f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612');
         manifest.entities.push(referenceEntity1);
@@ -292,7 +291,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const referenceEntity3: CdmReferencedEntityDeclarationDefinition =
             new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity3');
         referenceEntity3.entityPath = 'remote:/contoso/entity3.model.json/Entity3';
-        const modelIdTrait3: CdmTraitReference = referenceEntity3.exhibitsTraits.push('is.propertyContent.multiTrait');
+        const modelIdTrait3: CdmTraitReference = referenceEntity3.exhibitsTraits.push('is.propertyContent.multiTrait') as CdmTraitReference;
         modelIdTrait3.isFromProperty = true;
         modelIdTrait3.arguments.push('modelId', '3b2e040a-c8c5-4508-bb42-09952eb04a50');
         manifest.entities.push(referenceEntity3);
@@ -301,7 +300,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const referenceEntity4: CdmReferencedEntityDeclarationDefinition =
             new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity4');
         referenceEntity4.entityPath = 'remote:/contoso/entity.model.json/Entity4';
-        const modelIdTrait4: CdmTraitReference = referenceEntity4.exhibitsTraits.push('is.propertyContent.multiTrait');
+        const modelIdTrait4: CdmTraitReference = referenceEntity4.exhibitsTraits.push('is.propertyContent.multiTrait') as CdmTraitReference;
         modelIdTrait4.isFromProperty = true;
         modelIdTrait4.arguments.push('modelId', 'f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612');
         manifest.entities.push(referenceEntity4);
@@ -369,20 +368,35 @@ describe('Persistence.ModelJson.ModelJson', () => {
     });
 
     /**
+     * Test model.json is correctly created without an entity when the location is not recognized
+     */
+    it('TestIncorrectModelLocation', async () => {
+        const expectedLogs = new Set<cdmLogCode>([cdmLogCode.ErrStorageInvalidAdapterPath, cdmLogCode.ErrPersistModelJsonEntityParsingError, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestIncorrectModelLocation', undefined, false, expectedLogs);
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('model.json');
+        expect(manifest)
+            .not.toBeUndefined();
+        expect(manifest.entities.length)
+            .toBe(0);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, true);
+    });
+
+    /**
      * Handles the obtained output.
      * If needed, writes the output to a test debugging file.
      * It reads expected output and compares it to the actual output.
      * @param testName The name of the test.
      * @param outputFileName The name of the output file. Used both for expected and actual output.
      * @param actualOutput The output obtained through operations, that is to be compared with the expected output.
+     * @param isLanguageSpecific There is subfolder called Typescript.
      */
-    function HandleOutput(testName: string, outputFileName: string, actualOutput: object, doesWriteTestDebuggingFiles?: boolean): void {
+    function HandleOutput(testName: string, outputFileName: string, actualOutput: object, doesWriteTestDebuggingFiles?: boolean, isLanguageSpecific?: boolean): void {
         const actualOutputSerialized: string = JSON.stringify(actualOutput);
         if (doesWriteTestDebuggingFiles) {
             testHelper.writeActualOutputFileContent(testsSubpath, testName, outputFileName, actualOutputSerialized);
         }
 
-        const expectedOutputSerialized: string = testHelper.getExpectedOutputFileContent(testsSubpath, testName, outputFileName);
+        const expectedOutputSerialized: string = testHelper.getExpectedOutputFileContent(testsSubpath, testName, outputFileName, isLanguageSpecific);
         const expectedOutput: object = JSON.parse(expectedOutputSerialized) as object;
 
         testHelper.assertObjectContentEquality(expectedOutput, actualOutput);

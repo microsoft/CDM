@@ -11,7 +11,7 @@ import {
     CdmOperationBase,
     cdmOperationType,
     CdmTypeAttributeDefinition,
-    Errors,
+    cdmLogCode,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
@@ -20,7 +20,8 @@ import {
     ResolvedAttribute,
     ResolvedTrait,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    StringUtils
 } from '../../internal';
 import { AttributeContextParameters } from '../../Utilities/AttributeContextParameters';
 
@@ -41,11 +42,17 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationReplaceAsForeignKey = new CdmOperationReplaceAsForeignKey(this.ctx);
-        copy.reference = this.reference;
-        copy.replaceWith = this.replaceWith.copy() as CdmTypeAttributeDefinition;
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
 
+        const copy: CdmOperationReplaceAsForeignKey = !host ? new CdmOperationReplaceAsForeignKey(this.ctx) : host as CdmOperationReplaceAsForeignKey;
+
+        copy.replaceWith = this.replaceWith ? this.replaceWith.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        copy.reference = this.reference;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -78,13 +85,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -95,14 +96,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationReplaceAsForeignKey';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -147,7 +141,6 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         const attrCtxFK: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxFKParam);
 
         // get the added attribute and applied trait
-        // the name here will be {m} and not {A}{o}{M} - should this map to the not projections approach and default to {A}{o}{M} - ???
         const subFK: CdmTypeAttributeDefinition = this.replaceWith;
         const addTrait: string[] = ['is.linkedEntity.identifier'];
 
@@ -166,11 +159,16 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         refAttrName: string
     ): ProjectionAttributeStateSet {
         const pasList: ProjectionAttributeState[] = ProjectionResolutionCommonUtil.getLeafList(projCtx, refAttrName);
+        const sourceEntity = projCtx.projectionDirective.originalSourceAttributeName;
+
+        if (!sourceEntity) {
+            Logger.warning(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, null, cdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);
+        }
 
         if (pasList) {
             // update the new foreign key resolved attribute with trait param with reference details
             const reqdTrait: ResolvedTrait = newResAttrFK.resolvedTraits.find(projCtx.projectionDirective.resOpt, 'is.linkedEntity.identifier');
-            if (reqdTrait) {
+            if (reqdTrait && sourceEntity) {
                 const traitParamEntRef: CdmEntityReference = ProjectionResolutionCommonUtil.createForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.projectionDirective, projOutputSet.ctx.corpus, pasList);
                 reqdTrait.parameterValues.setParameterValue(projCtx.projectionDirective.resOpt, 'entityReferences', traitParamEntRef);
             }
@@ -183,7 +181,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
             projOutputSet.add(newProjAttrStateFK);
         } else {
             // Log error & return projOutputSet without any change
-            Logger.error(CdmOperationReplaceAsForeignKey.name, projOutputSet.ctx, `Unable to locate state for reference attribute \"${refAttrName}\".`, this.createNewProjectionAttributeStateSet.name);
+            Logger.error(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, null, cdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
         }
 
         return projOutputSet;

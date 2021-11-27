@@ -16,7 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         /// <summary>
         /// The path between TestDataPath and TestName.
         /// </summary>
-        private string testsSubpath = Path.Combine("Cdm", "Resolution", "CircularResolution");
+        private string testsSubpath = Path.Combine("Cdm", "Resolution", "CircularResolutionTest");
 
         /// <summary>
         /// Test proper behavior for entities that contain circular references

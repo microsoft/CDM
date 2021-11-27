@@ -17,6 +17,8 @@ public enum CdmOperationType {
     RenameAttributes,
     ReplaceAsForeignKey,
     IncludeAttributes,
-    AddAttributeGroup
+    AddAttributeGroup,
+    AlterTraits,
+    AddArtifactAttribute
 }
 

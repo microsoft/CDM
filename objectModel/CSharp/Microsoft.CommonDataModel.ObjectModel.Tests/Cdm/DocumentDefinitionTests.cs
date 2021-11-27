@@ -24,7 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestCircularImportWithMoniker()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestCircularImportWithMoniker));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
@@ -60,7 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestDeeperCircularImportWithMoniker()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestDeeperCircularImportWithMoniker));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
@@ -114,7 +114,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestReadingCachedImportPriority()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestReadingCachedImportPriority));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
@@ -155,7 +155,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestMonikeredImportIsAddedToEnd()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestMonikeredImportIsAddedToEnd));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
@@ -202,6 +202,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // if the reloaded doc is not indexed correctly, the entity will not be able to be found
             Assert.IsNotNull(reloadedEntity);
+        }
+
+        /// <summary>
+        /// Tests if the DocumentVersion is set on the resolved document
+        /// </summary>
+        [TestMethod]
+        public async Task TestDocumentVersionSetOnResolution()
+        {
+            var testName = "TestDocumentVersionSetOnResolution";
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+            var document = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/Person.cdm.json");
+
+            Assert.AreEqual("2.1.3", manifest.DocumentVersion);
+            Assert.AreEqual("1.5", document.DocumentVersion);
+
+            var resManifest = await manifest.CreateResolvedManifestAsync($"res-{manifest.Name}", null);
+            var resEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>(resManifest.Entities[0].EntityPath, resManifest);
+            var resDocument = resEntity.InDocument;
+
+            Assert.AreEqual("2.1.3", resManifest.DocumentVersion);
+            Assert.AreEqual("1.5", resDocument.DocumentVersion);
         }
 
         /// <summary>

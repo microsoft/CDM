@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
@@ -15,8 +15,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     [Obsolete("Please use the CdmStandardsAdapter instead.")]
     public class GithubAdapter : NetworkAdapter
     {
-        private static string ghHost = "raw.githubusercontent.com";
-        private static string ghPath = "/Microsoft/CDM/master/schemaDocuments";
+        private static readonly string ghHost = "raw.githubusercontent.com";
+        private static readonly string ghPath = "/Microsoft/CDM/master/schemaDocuments";
 
         internal const string Type = "github";
 

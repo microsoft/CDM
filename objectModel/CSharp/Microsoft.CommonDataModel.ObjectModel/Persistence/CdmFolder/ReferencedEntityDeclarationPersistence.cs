@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -12,8 +12,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using System;
     using System.Globalization;
 
-    class ReferencedEntityDeclarationPersistence
+    public class ReferencedEntityDeclarationPersistence
     {
+        private static readonly string Tag = nameof(ReferencedEntityDeclarationPersistence);
+
         public static CdmReferencedEntityDeclarationDefinition FromData(CdmCorpusContext ctx, string prefixPath, JToken obj)
         {
             var newRef = ctx.Corpus.MakeObject<CdmReferencedEntityDeclarationDefinition>(
@@ -24,7 +26,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (entityPath == null)
             {
-                Logger.Error(nameof(ReferencedEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", "FromData");
+                Logger.Error(ctx as ResolveContext, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound, (string)obj["entityName"]);
             }
 
             // The entity path has to be absolute.
@@ -51,10 +53,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 newRef.Explanation = (string)obj["explanation"];
             }
 
-            if (obj["exhibitsTraits"] != null)
-            {
-                Utils.AddListToCdmCollection(newRef.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
-            }
+            Utils.AddListToCdmCollection(newRef.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
 
             return newRef;
         }

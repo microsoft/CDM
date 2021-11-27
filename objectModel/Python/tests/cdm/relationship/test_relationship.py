@@ -4,16 +4,17 @@
 import unittest
 import os
 
-from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
+from cdm.enums import CdmLogCode, CdmObjectType, CdmRelationshipDiscoveryStyle
 from cdm.storage import LocalAdapter
+from cdm.objectmodel import CdmAttributeItem, CdmCorpusDefinition, CdmEntityDefinition, CdmManifestDefinition
+from cdm.utilities import CopyOptions
 
 from tests.common import async_test, TestHelper
 
 
 def match_relationship(rel1, rel2):
     return rel1.get('fromEntity') == rel2.from_entity and rel1.get('fromEntityAttribute') == rel2.from_entity_attribute \
-        and rel1.get('toEntity') == rel2.to_entity and rel1.get('toEntityAttribute') == rel2.to_entity_attribute \
-        and ('name' in rel1 and (rel1.get('name') == rel2.relationship_name) or (not rel1.get('name') and not rel2.relationship_name))
+        and rel1.get('toEntity') == rel2.to_entity and rel1.get('toEntityAttribute') == rel2.to_entity_attribute
 
 
 class RelationshipTest(unittest.TestCase):
@@ -174,6 +175,24 @@ class RelationshipTest(unittest.TestCase):
         self.verify_relationships(manifest, expected_rels)
 
     @async_test
+    async def test_extends_entity_and_replace_as_foreign_key(self):
+        """Test the relationship calculation when using a replace as foreign key operation while extending an entity."""
+
+        test_name = 'test_extends_entity_and_replace_as_foreign_key'
+        expected_log_codes = { CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, expected_codes=expected_log_codes)
+
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type: CdmManifestDefinition
+
+        await corpus.calculate_entity_graph_async(manifest)
+        # Check if the warning was logged.
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY, True, self)
+
+        await manifest.populate_manifest_relationships_async()
+
+        self.assertEqual(0, len(manifest.relationships))
+
+    @async_test
     async def test_relationships_entity_and_document_name_different(self):
         test_name = 'test_relationships_entity_and_document_name_different'
         expected_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedRels.json')
@@ -202,6 +221,91 @@ class RelationshipTest(unittest.TestCase):
 
         # check that each relationship has been created correctly
         self.verify_relationships(manifest, expected_rels)
+
+    @async_test
+    async def test_relationship_to_different_namespace(self):
+        test_name = 'test_relationship_to_different_namespace'
+        expected_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedRels.json')
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        # entity B will be in a different namespace
+        corpus.storage.mount("differentNamespace", LocalAdapter(os.path.join(TestHelper.get_input_folder_path(
+            self.tests_subpath, 'TestRelationshipToDifferentNamespace'), 'differentNamespace')))
+        manifest = await corpus.fetch_object_async('local:/main.manifest.cdm.json')  # type: CdmManifestDefinition
+
+        await corpus.calculate_entity_graph_async(manifest)
+        await manifest.populate_manifest_relationships_async()
+
+        # check that each relationship has been created correctly
+        self.verify_relationships(manifest, expected_rels)
+
+    @async_test
+    async def test_update_relationships(self):
+        test_name = 'test_update_relationships'
+        expected_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedRels.json')
+        temp_from_file_path = 'fromEntTemp.cdm.json'
+        temp_from_entity_path = 'local:/fromEntTemp.cdm.json/fromEnt'
+        temp_to_entity_path = 'local:/toEnt.cdm.json/toEnt'
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        manifest = await corpus.fetch_object_async('local:/main.manifest.cdm.json')  # type: CdmManifestDefinition
+        manifest_no_to_ent = await corpus.fetch_object_async('local:/mainNoToEnt.manifest.cdm.json')  # type: CdmManifestDefinition
+        from_ent = await corpus.fetch_object_async('local:/fromEnt.cdm.json/fromEnt')  # type: CdmEntityDefinition
+        co = CopyOptions()
+        co._is_top_level_document = False
+        await from_ent.in_document.save_as_async(temp_from_file_path, options=co)
+
+        async def reload_from_entity():
+            await from_ent.in_document.save_as_async(temp_from_file_path, options=co)
+            # fetch again to reset the cache
+            await corpus.fetch_object_async(temp_from_entity_path, None, shallow_validation=False, force_reload=True)
+
+        try:
+            # 1. test when entity attribute is removed
+            await corpus.calculate_entity_graph_async(manifest)
+            await manifest.populate_manifest_relationships_async()
+
+            # check that the relationship has been created correctly
+            self.verify_relationships(manifest, expected_rels)
+
+            # now remove the entity attribute, which removes the relationship
+            removed_attribute = from_ent.attributes[0]  # type: CdmAttributeItem
+            from_ent.attributes.pop(0)
+            await reload_from_entity()
+
+            await corpus.calculate_entity_graph_async(manifest)
+            await manifest.populate_manifest_relationships_async()
+
+            # check that the relationship has been removed
+            self.verify_relationships(manifest, [])
+
+            # 2. test when the to entity is removed
+            # restore the entity to the original state
+            from_ent.attributes.append(removed_attribute)
+            await reload_from_entity()
+
+            await corpus.calculate_entity_graph_async(manifest)
+            await manifest.populate_manifest_relationships_async()
+
+            # check that the relationship has been created correctly
+            self.verify_relationships(manifest, expected_rels)
+
+            # remove the to entity
+            from_ent.attributes.pop(0)
+            await reload_from_entity()
+            # fetch again to reset the cache
+            await corpus.fetch_object_async(temp_to_entity_path, None, False, True)
+
+            await corpus.calculate_entity_graph_async(manifest_no_to_ent)
+            await manifest_no_to_ent.populate_manifest_relationships_async()
+
+            # check that the relationship has been removed
+            self.verify_relationships(manifest_no_to_ent, [])
+        finally:
+            # clean up the file created
+            from_path = corpus.storage.corpus_path_to_adapter_path('local:/' + temp_from_file_path)
+            if os.path.exists(from_path):
+                os.remove(from_path)
 
     def verify_relationships(self, manifest: 'CdmManifestDefinition', expected_relationships):
         self.assertEqual(len(manifest.relationships), len(expected_relationships))

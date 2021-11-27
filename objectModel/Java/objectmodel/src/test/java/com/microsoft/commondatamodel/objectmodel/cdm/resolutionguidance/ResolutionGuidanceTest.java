@@ -12,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.EntityByReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.Expansion;
 import com.microsoft.commondatamodel.objectmodel.cdm.SelectsSubAttribute;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.storage.GithubAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
@@ -44,8 +45,7 @@ public class ResolutionGuidanceTest {
     /**
      * The test's data path.
      */
-    private static final String TESTS_SUBPATH =
-            new File("cdm", "resolutionguidance").toString();
+    private static final String TESTS_SUBPATH = new File("Cdm", "ResolutionGuidance").toString();
 
     private static CompletableFuture<Void> runTest(final String testName, final String sourceEntityName) {
         return CompletableFuture.runAsync(() -> {
@@ -285,6 +285,29 @@ public class ResolutionGuidanceTest {
         }
     }
 
+    /**
+     * Tests if a warning is logged if resolution guidance is used
+     */
+    @Test
+    public void testResolutionGuidanceDeprecation() throws InterruptedException {
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolutionGuidanceDeprecation");
+
+        // Tests warning log when resolution guidance is used on a data typed attribute.
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TypeAttribute.cdm.json/Entity").join();
+        entity.createResolvedEntityAsync("res-entity").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
+
+        // Tests warning log when resolution guidance is used on a entity typed attribute.
+        entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/EntityAttribute.cdm.json/Entity").join();
+        entity.createResolvedEntityAsync("res-entity").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
+
+        // Tests warning log when resolution guidance is used when extending an entity.
+        entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/ExtendsEntity.cdm.json/Entity").join();
+        entity.createResolvedEntityAsync("res-entity").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
+    }
+
     @Test
     public void testResolutionGuidanceCopy() {
         final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
@@ -402,7 +425,7 @@ public class ResolutionGuidanceTest {
      */
     @Test
     public void testSelectsSubAttributeTakeNames() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeTakeNames", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeTakeNames");
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Sales.cdm.json/Sales").join();
         ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), null);
         CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync("resolved", resOpt).join();
@@ -420,7 +443,7 @@ public class ResolutionGuidanceTest {
      */
     @Test
     public void testSelectsSubAttributeAvoidNames() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeAvoidNames", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeAvoidNames");
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Sales.cdm.json/Sales").join();
         ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), null);
         CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync("resolved", resOpt).join();
@@ -445,7 +468,7 @@ public class ResolutionGuidanceTest {
         final String testActualOutputPath =
                 TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, testName);
 
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
         corpus.getStorage().mount("localActualOutput", new LocalAdapter(testActualOutputPath));
         final CdmFolderDefinition actualOutputFolder =
                 corpus.<CdmFolderDefinition>fetchObjectAsync("localActualOutput:/").join();

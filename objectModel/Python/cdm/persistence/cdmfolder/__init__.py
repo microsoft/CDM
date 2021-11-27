@@ -12,7 +12,10 @@ from .constant_entity_persistence import ConstantEntityPersistence
 from .document_persistence import DocumentPersistence
 from .import_persistence import ImportPersistence
 from .manifest_persistence import ManifestPersistence
+from .trait_persistence import TraitPersistence
 from .trait_reference_persistence import TraitReferencePersistence
+from .trait_group_persistence import TraitGroupPersistence
+from .trait_group_reference_persistence import TraitGroupReferencePersistence
 from .type_attribute_persistence import TypeAttributePersistence
 
 __all__ = [
@@ -27,6 +30,9 @@ __all__ = [
     'DocumentPersistence',
     'ImportPersistence',
     'ManifestPersistence',
+    'TraitPersistence',
     'TraitReferencePersistence',
+    'TraitGroupPersistence',
+    'TraitGroupReferencePersistence',
     'TypeAttributePersistence'
 ]

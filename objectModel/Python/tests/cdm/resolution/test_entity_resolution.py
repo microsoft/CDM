@@ -2,39 +2,38 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import os
+from typing import TYPE_CHECKING
 import unittest
-from typing import Optional
+from cdm.objectmodel.cdm_document_def import CdmDocumentDefinition
+from cdm.objectmodel.cdm_entity_attribute_def import CdmEntityAttributeDefinition
+from cdm.objectmodel.cdm_entity_ref import CdmEntityReference
 
-from cdm.enums import CdmStatusLevel, ImportsLoadStrategy
-from cdm.objectmodel import CdmCorpusDefinition, CdmReferencedEntityDeclarationDefinition, CdmManifestDefinition
-from cdm.resolvedmodel import ResolvedEntity
+from tests.cdm.projection.attribute_context_util import AttributeContextUtil
+
+from tests.utilities.projection_test_utils import ProjectionTestUtils
+
+from cdm.enums import CdmStatusLevel, CdmLogCode
+from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmEntityDefinition
 from cdm.storage import LocalAdapter
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
+from .resolution_test_utils import StringSpewCatcher, list_all_resolved, resolve_save_debugging_file_and_assert
 
 from tests.common import async_test, TestHelper
 
-
-class StringSpewCatcher:
-    def __init__(self):
-        self.content_lines = []
-
-    def spew_line(self, spew: str):
-        self.content_lines.append(spew + '\n')
-
-    def get_content(self):
-        return ''.join(self.content_lines)
+if TYPE_CHECKING:
+    from cdm.objectmodel import CdmFolderDefinition
 
 
 class EntityResolution(unittest.TestCase):
-    tests_subpath = os.path.join('Cdm', 'Resolution', 'EntityResolution')
+    tests_sub_path = os.path.join('Cdm', 'Resolution', 'EntityResolutionTest')
 
     @async_test
     async def test_owner_not_changed(self):
         """Tests if the owner of the entity is not changed when calling created_resolved_entity_async"""
 
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestOwnerNotChanged')
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'TestOwnerNotChanged')
 
-        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')
+        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')  # type: CdmEntityDefinition
         document = await corpus.fetch_object_async('local:/Entity.cdm.json')
 
         self.assertEqual(document, entity.owner)
@@ -42,6 +41,40 @@ class EntityResolution(unittest.TestCase):
         await entity.create_resolved_entity_async('res-Entity')
 
         self.assertEqual(document, entity.owner)
+        self.assertEqual(entity, entity.attributes[0].owner,
+                         'Entity\'s attribute\'s owner should have remained unchanged (same as the owning entity)')
+
+    @async_test
+    async def test_ent_ref_nonexistent(self):
+        """Test that entity references that do not point to valid entities are reported as an error instead of triggering an exception"""
+
+        expected_log_codes = {CdmLogCode.WARN_RESOLVE_OBJECT_FAILED, CdmLogCode.ERR_RESOLVE_REFERENCE_FAILURE}
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'TestEntRefNonexistent', expected_codes=expected_log_codes)
+        folder = corpus.storage._namespace_folders['local']  # type: CdmFolderDefinition
+        doc = CdmDocumentDefinition(corpus.ctx, 'someDoc.cdm.json')
+        folder.documents.append(doc)
+        entity = CdmEntityDefinition(corpus.ctx, 'someEntity')
+        ent_att = CdmEntityAttributeDefinition(corpus.ctx, 'entityAtt')
+        ent_att.entity = CdmEntityReference(corpus.ctx, 'nonExistingEntity', True)
+        entity.attributes.append(ent_att)
+        doc.definitions.append(entity)
+
+        resolvedEnt = await entity.create_resolved_entity_async('resolvedSomeEntity')
+        self.assertIsNotNone(resolvedEnt)
+
+    @async_test
+    async def test_resolving_resolved_entity(self):
+        """Tests that resolution runs correctly when resolving a resolved entity"""
+
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'TestResolvingResolvedEntity')
+        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')  # type: CdmEntityDefinition
+        res_entity = await entity.create_resolved_entity_async('resEntity')
+        res_res_entity = await res_entity.create_resolved_entity_async('resResEntity')
+        self.assertIsNotNone(res_res_entity)  # type: CdmEntityDefinition
+        self.assertEqual(1, len(res_res_entity.exhibits_traits))
+        self.assertEqual("has.entitySchemaAbstractionLevel", res_res_entity.exhibits_traits[0].named_reference)
+        self.assertEqual(1, len(res_res_entity.exhibits_traits[0].arguments))
+        self.assertEqual("resolved", res_res_entity.exhibits_traits[0].arguments[0].value)
 
     @async_test
     async def test_resolve_test_corpus(self):
@@ -52,20 +85,22 @@ class EntityResolution(unittest.TestCase):
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_schema_docs_root()))
         manifest = await corpus.fetch_object_async(TestHelper.cdm_standards_schema_path)  # type: CdmManifestDefinition
         directives = AttributeResolutionDirectiveSet({'referenceOnly', 'normalized'})
-        all_resolved = await self.list_all_resolved(corpus, directives, manifest, StringSpewCatcher())
+        all_resolved = await list_all_resolved(corpus, directives, manifest, StringSpewCatcher())
         self.assertNotEqual(all_resolved, '')
 
     @async_test
     async def test_resolved_composites(self):
-        await self.resolve_save_debugging_file_and_assert('test_resolved_composites', 'composites')
+        await resolve_save_debugging_file_and_assert(self, self.tests_sub_path,
+                                                     'test_resolved_composites', 'composites')
 
     @async_test
     async def test_resolved_e2e(self):
-        await self.resolve_save_debugging_file_and_assert('test_resolved_e2e', 'E2EResolution')
+        await resolve_save_debugging_file_and_assert(self, self.tests_sub_path, 'test_resolved_e2e', 'E2EResolution')
 
     @async_test
     async def test_resolved_knowledge_graph(self):
-        await self.resolve_save_debugging_file_and_assert('test_resolved_knowledge_graph', 'KnowledgeGraph')
+        await resolve_save_debugging_file_and_assert(self, self.tests_sub_path,
+                                                     'test_resolved_knowledge_graph', 'KnowledgeGraph')
 
     # @async_test
     # async def test_resolved_mini_dyn(self):
@@ -73,19 +108,20 @@ class EntityResolution(unittest.TestCase):
 
     @async_test
     async def test_resolved_overrides(self):
-        await self.resolve_save_debugging_file_and_assert('test_resolved_overrides', 'overrides')
+        await resolve_save_debugging_file_and_assert(self, self.tests_sub_path, 'test_resolved_overrides', 'overrides')
 
     @async_test
     async def test_resolved_pov_resolution(self):
-        await self.resolve_save_debugging_file_and_assert('test_resolved_pov_resolution', 'POVResolution')
+        await resolve_save_debugging_file_and_assert(self, self.tests_sub_path,
+                                                     'test_resolved_pov_resolution', 'POVResolution')
 
     @async_test
     async def test_resolved_web_clicks(self):
-        await self.resolve_save_debugging_file_and_assert('test_resolved_web_clicks', 'webClicks')
+        await resolve_save_debugging_file_and_assert(self, self.tests_sub_path, 'test_resolved_web_clicks', 'webClicks')
 
     @async_test
     async def test_resolve_with_extended(self):
-        cdmCorpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolve_with_extended')
+        cdmCorpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_resolve_with_extended')
 
         def callback(status_level: 'CdmStatusLevel', message: str):
             self.assertTrue('unable to resolve the reference' not in message)
@@ -97,8 +133,7 @@ class EntityResolution(unittest.TestCase):
 
     @async_test
     async def test_attributes_that_are_replaced(self):
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_attributes_that_are_replaced')
-        corpus.storage.mount('cdm', LocalAdapter(TestHelper.get_schema_docs_root()))
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_attributes_that_are_replaced')
 
         extended_entity = await corpus.fetch_object_async('local:/extended.cdm.json/extended')  # type: CdmEntityDefinition
         res_extended_ent = await extended_entity.create_resolved_entity_async('resExtended')
@@ -123,7 +158,8 @@ class EntityResolution(unittest.TestCase):
 
     @async_test
     async def test_resolved_attribute_limit(self):
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolved_attribute_limit')  # type: CdmCorpusDefinition
+        expected_log_codes = { CdmLogCode.ERR_REL_MAX_RESOLVED_ATTR_REACHED }
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_resolved_attribute_limit', expected_codes=expected_log_codes)  # type: CdmCorpusDefinition
 
         main_entity = await corpus.fetch_object_async('local:/mainEntity.cdm.json/mainEntity')  # type: CdmEntityDefinition
         res_opt = ResolveOptions(wrt_doc=main_entity.in_document)
@@ -174,11 +210,11 @@ class EntityResolution(unittest.TestCase):
 
     @async_test
     async def test_setting_traits_for_resolution_guidance_attributes(self):
-        '''
+        """
         Test that "is.linkedEntity.name" and "is.linkedEntity.identifier" traits are set when "selectedTypeAttribute" and "foreignKeyAttribute"
         are present in the entity's resolution guidance.
-        '''
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_setting_traits_for_resolution_guidance_attributes')  # type: CdmCorpusDefinition
+        """
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_setting_traits_for_resolution_guidance_attributes')  # type: CdmCorpusDefinition
         entity = await corpus.fetch_object_async('local:/Customer.cdm.json/Customer')  # type: CdmEntityDefinition
 
         # Resolve with default directives to get "is.linkedEntity.name" trait.
@@ -194,62 +230,14 @@ class EntityResolution(unittest.TestCase):
 
         self.assertIsNotNone(resolved_entity.attributes[0].applied_traits.item('is.linkedEntity.identifier'))
 
-    async def resolve_environment(self, test_name: str, environment: str) -> str:
-        test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, test_name)
+    @async_test
+    async def test_applied_traits_in_attributes(self):
+        """
+        Test that traits(including the ones inside of dataTypeRefence and PurposeReference) are applied to an entity attribute and type attribute.
+        """
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_applied_traits_in_attributes')  # type: CdmCorpusDefinition
+        expected_output_folder = TestHelper.get_expected_output_folder_path(self.tests_sub_path, 'test_applied_traits_in_attributes')
+        entity = await corpus.fetch_object_async('local:/Sales.cdm.json/Sales')  # type: CdmEntityDefinition
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
 
-        corpus = CdmCorpusDefinition()
-        corpus.ctx.report_at_level = CdmStatusLevel.WARNING
-        corpus.storage.mount('local', LocalAdapter(test_input_path))
-        corpus.storage.default_namespace = 'local'
-
-        print('reading source files')
-
-        manifest = await corpus.fetch_object_async('local:/{}.manifest.cdm.json'.format(environment))
-        directives = AttributeResolutionDirectiveSet(set(['normalized', 'referenceOnly']))
-        return await self.list_all_resolved(corpus, directives, manifest, StringSpewCatcher())
-
-    async def resolve_save_debugging_file_and_assert(self, test_name: str, manifest_name: str, should_save: Optional[bool] = False):
-        self.assertIsNotNone(test_name)
-        result = (await self.resolve_environment(test_name, manifest_name))
-
-        if should_save:
-            TestHelper.write_actual_output_file_content(self.tests_subpath, test_name, '{}.txt'.format(manifest_name), result)
-
-        original = TestHelper.get_output_file_content(self.tests_subpath, test_name, '{}.txt'.format(manifest_name))
-
-        self.assertTrue(TestHelper.is_file_content_equality(result, original))
-
-    async def list_all_resolved(self, corpus, directives, manifest, spew):
-        # make sure the corpus has a set of default artifact attributes
-        await corpus._prepare_artifact_attributes_async()
-
-        async def seek_entities(f: 'CdmManifestDefinition'):
-            if f.entities is not None:
-                spew.spew_line(f.folder_path)
-
-                for entity in f.entities:
-                    ent = entity
-                    current_file = f
-                    while isinstance(ent, CdmReferencedEntityDeclarationDefinition):
-                        corpus_path = corpus.storage.create_absolute_corpus_path(ent.entity_path, current_file)
-                        ent = await corpus.fetch_object_async(corpus_path)
-                        current_file = ent
-
-                    corpus_path = corpus.storage.create_absolute_corpus_path(ent.entity_path, current_file)
-                    res_opt = ResolveOptions()
-                    res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
-                    new_ent = await corpus.fetch_object_async(corpus_path, res_opt=res_opt)
-                    res_opt.wrt_doc = new_ent.in_document
-                    res_opt.directives = directives
-                    res_ent = ResolvedEntity(res_opt, new_ent)
-
-                    res_ent.spew(res_opt, spew, ' ', True)
-
-            if f.sub_manifests:
-                for sub_manifest in f.sub_manifests:
-                    corpus_path = corpus.storage.create_absolute_corpus_path(sub_manifest.definition, f)
-                    await seek_entities(await corpus.fetch_object_async(corpus_path))
-
-        await seek_entities(manifest)
-
-        return spew.get_content()
+        await AttributeContextUtil.validate_attribute_context(self, expected_output_folder, 'Sales', resolved_entity)

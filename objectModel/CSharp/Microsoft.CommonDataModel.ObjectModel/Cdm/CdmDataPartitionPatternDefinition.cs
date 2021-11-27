@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -6,6 +6,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -18,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmDataPartitionPatternDefinition : CdmObjectDefinitionBase, CdmFileStatus
     {
+        private static readonly string Tag = nameof(CdmDataPartitionPatternDefinition);
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmDataPartitionPatternDefinition"/> class.
         /// </summary>
@@ -87,7 +89,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.RootLocation))
             {
-                Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string>() { "RootLocation" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string>() { "RootLocation" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -109,14 +112,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmDataPartitionPatternDefinition;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
             }
 
             copy.RootLocation = this.RootLocation;
             copy.GlobPattern = this.GlobPattern;
             copy.RegularExpression = this.RegularExpression;
-            copy.Parameters = this.Parameters;
+            copy.Parameters = this.Parameters != null ? new List<String>(this.Parameters) : null;
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
             copy.LastFileModifiedTime = this.LastFileModifiedTime;
 
@@ -145,33 +147,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (path == null)
-                {
-                    string thisName = this.GetName();
-                    if (thisName == null)
-                        thisName = "UNNAMED";
-                    path = pathFrom + thisName;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren != null && preChildren.Invoke(this, path))
-            {
                 return false;
-            }
 
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
-            {
-                return false;
-            }
+                return true;
             return false;
+        }
+
+        /// <inheritdoc />
+        internal override string UpdateDeclaredPath(string pathFrom)
+        {
+            return pathFrom + this.GetName() ?? "UNNAMED";
         }
 
         /// <inheritdoc />
@@ -183,136 +175,145 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            string nameSpace = this.InDocument.Namespace;
-            StorageAdapter adapter = this.Ctx.Corpus.Storage.FetchAdapter(nameSpace);
-
-            if (adapter == null)
+            using (Logger.EnterScope(nameof(CdmDataPartitionPatternDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
-                Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Adapter not found for the document '{this.InDocument.Name}'", nameof(FileStatusCheckAsync));
-                return;
-            }
+                string nameSpace = null;
+                StorageAdapterBase adapter = null;
 
-            // make sure the root is a good full corpus path
-            string rootCleaned = this.RootLocation?.EndsWith("/") == true ? this.RootLocation.Substring(0, this.RootLocation.Length - 1) : this.RootLocation;
-            if (rootCleaned == null)
-            {
-                rootCleaned = "";
-            }
-            string rootCorpus = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(rootCleaned, this.InDocument);
-
-            List<string> fileInfoList = null;
-            try
-            {
-                // Remove namespace from path
-                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(rootCorpus);
-                if (pathTuple == null)
+                // make sure the root is a good full corpus path
+                string rootCleaned = this.RootLocation?.EndsWith("/") == true ? this.RootLocation.Substring(0, this.RootLocation.Length - 1) : this.RootLocation;
+                if (rootCleaned == null)
                 {
-                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, "The root corpus path should not be null or empty.", nameof(FileStatusCheckAsync));
-                    return;
+                    rootCleaned = "";
                 }
-                // get a list of all corpusPaths under the root
-                fileInfoList = await adapter.FetchAllFilesAsync(pathTuple.Item2);
-            }
-            catch (Exception e)
-            {
-                Logger.Warning(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Failed to fetch all files in the folder location '{rootCorpus}' described by a partition pattern. Exception: {e.Message}", nameof(FileStatusCheckAsync));
-            }
+                string rootCorpus = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(rootCleaned, this.InDocument);
 
-            if (fileInfoList != null)
-            {
-                // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-                for (int i = 0; i < fileInfoList.Count; i++)
+                List<string> fileInfoList = null;
+                try
                 {
-                    fileInfoList[i] = $"{nameSpace}:{fileInfoList[i]}";
-                    fileInfoList[i] = fileInfoList[i].Slice(rootCorpus.Length);
+                    // Remove namespace from path
+                    Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(rootCorpus);
+                    if (pathTuple == null)
+                    {
+                        Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);
+                        return;
+                    }
+
+                    nameSpace = pathTuple.Item1;
+                    adapter = this.Ctx.Corpus.Storage.FetchAdapter(nameSpace);
+
+                    if (adapter == null)
+                    {
+                        Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrDocAdapterNotFound, this.InDocument.Name);
+                        return;
+                    }
+
+                    // get a list of all corpusPaths under the root
+                    fileInfoList = await adapter.FetchAllFilesAsync(pathTuple.Item2);
+                }
+                catch (Exception e)
+                {
+                    Logger.Warning(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
                 }
 
-                if (this.Owner is CdmLocalEntityDeclarationDefinition)
+                if (fileInfoList != null && nameSpace != null)
                 {
-                    // if both are present log warning and use glob pattern, otherwise use regularExpression
-                    if (!String.IsNullOrWhiteSpace(this.GlobPattern) && !String.IsNullOrWhiteSpace(this.RegularExpression))
+                    // remove root of the search from the beginning of all paths so anything in the root is not found by regex
+                    for (int i = 0; i < fileInfoList.Count; i++)
                     {
-                        Logger.Warning(
-                            nameof(CdmDataPartitionPatternDefinition),
-                            this.Ctx,
-                            $"The Data Partition Pattern contains both a glob pattern ({this.GlobPattern}) and a regular expression ({this.RegularExpression}) set, the glob pattern will be used.",
-                            nameof(FileStatusCheckAsync));
-                    }
-                    string regularExpression = !String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPatternToRegex(this.GlobPattern) : this.RegularExpression;
-                    Regex regexPattern = null;
-
-                    try
-                    {
-                        regexPattern = new Regex(regularExpression);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(
-                            nameof(CdmDataPartitionPatternDefinition),
-                            this.Ctx,
-                            $"The {(!String.IsNullOrWhiteSpace(this.GlobPattern) ? "glob pattern" : "regular expression")} '{(!String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPattern : this.RegularExpression)}' could not form a valid regular expression. Reason: ${e.Message}",
-                            nameof(FileStatusCheckAsync));
+                        fileInfoList[i] = $"{nameSpace}:{fileInfoList[i]}";
+                        fileInfoList[i] = fileInfoList[i].Slice(rootCorpus.Length);
                     }
 
-                    if (regexPattern != null)
+                    if (this.Owner is CdmLocalEntityDeclarationDefinition)
                     {
-                        foreach (var fi in fileInfoList)
+                        // if both are present log warning and use glob pattern, otherwise use regularExpression
+                        if (!String.IsNullOrWhiteSpace(this.GlobPattern) && !String.IsNullOrWhiteSpace(this.RegularExpression))
                         {
-                            Match m = regexPattern.Match(fi);
-                            if (m.Success && m.Length > 1 && m.Value == fi)
+                            Logger.Warning(this.Ctx,
+                                Tag,
+                                nameof(FileStatusCheckAsync),
+                                this.AtCorpusPath,
+                                CdmLogCode.WarnPartitionGlobAndRegexPresent,
+                                this.GlobPattern,
+                                this.RegularExpression);
+                        }
+                        string regularExpression = !String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPatternToRegex(this.GlobPattern) : this.RegularExpression;
+                        Regex regexPattern = null;
+
+                        try
+                        {
+                            regexPattern = new Regex(regularExpression);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(this.Ctx, Tag,
+                                nameof(FileStatusCheckAsync),
+                                this.AtCorpusPath,
+                                CdmLogCode.ErrValdnInvalidExpression, !String.IsNullOrWhiteSpace(this.GlobPattern) ? "glob pattern" : "regular expression",
+                                !String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPattern : this.RegularExpression, e.Message);
+                        }
+
+                        if (regexPattern != null)
+                        {
+                            foreach (var fi in fileInfoList)
                             {
-                                // create a map of arguments out of capture groups
-                                Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
-                                int iParam = 0;
-                                // captures start after the string match at m.Groups[0]
-                                for (int i = 1; i < m.Groups.Count; i++)
+                                Match m = regexPattern.Match(fi);
+                                if (m.Success && m.Length > 1 && m.Value == fi)
                                 {
-                                    CaptureCollection captures = m.Groups[i].Captures;
-                                    if (captures.Count > 0 && iParam < this.Parameters?.Count)
+                                    // create a map of arguments out of capture groups
+                                    Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
+                                    int iParam = 0;
+                                    // captures start after the string match at m.Groups[0]
+                                    for (int i = 1; i < m.Groups.Count; i++)
                                     {
-                                        // to be consistent with other languages, if a capture group captures
-                                        // multiple things, only use the last thing that was captured
-                                        var singleCapture = captures[captures.Count - 1];
+                                        CaptureCollection captures = m.Groups[i].Captures;
+                                        if (captures.Count > 0 && iParam < this.Parameters?.Count)
+                                        {
+                                            // to be consistent with other languages, if a capture group captures
+                                            // multiple things, only use the last thing that was captured
+                                            var singleCapture = captures[captures.Count - 1];
 
-                                        string currentParam = this.Parameters[iParam];
-                                        if (!args.ContainsKey(currentParam))
-                                            args[currentParam] = new List<string>();
-                                        args[currentParam].Add(singleCapture.ToString());
-                                        iParam++;
+                                            string currentParam = this.Parameters[iParam];
+                                            if (!args.ContainsKey(currentParam))
+                                                args[currentParam] = new List<string>();
+                                            args[currentParam].Add(singleCapture.ToString());
+                                            iParam++;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
                                     }
-                                    else
+                                    // put the original but cleaned up root back onto the matched doc as the location stored in the partition
+                                    string locationCorpusPath = $"{rootCleaned}{fi}";
+                                    string fullPath = $"{rootCorpus}{fi}";
+                                    // Remove namespace from path
+                                    Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(fullPath);
+                                    if (pathTuple == null)
                                     {
-                                        break;
+                                        Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath, this.AtCorpusPath);
+                                        return;
                                     }
-                                }
-                                // put the original but cleaned up root back onto the matched doc as the location stored in the partition
-                                string locationCorpusPath = $"{rootCleaned}{fi}";
-                                string fullPath = $"{rootCorpus}{fi}";
-                                // Remove namespace from path
-                                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(fullPath);
-                                if (pathTuple == null)
-                                {
-                                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, "The corpus path should not be null or empty.", nameof(FileStatusCheckAsync));
-                                    return;
-                                }
 
-                                try
-                                {
-                                    DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
-                                    (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
-                                }
-                                catch (Exception e)
-                                {
-                                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Failed to compute last modified time for partition file {pathTuple.Item2}. Exception: {e.Message}", nameof(FileStatusCheckAsync));
+                                    try
+                                    {
+                                        DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                                        (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // update modified times
-            this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+                // update modified times
+                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+            }
         }
 
         /// <inheritdoc />

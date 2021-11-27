@@ -10,13 +10,16 @@ import {
     cdmObjectSimple,
     cdmObjectType,
     CdmParameterDefinition,
-    Errors,
+    cdmLogCode,
     Logger,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    StringUtils
 } from '../internal';
 
 export class CdmArgumentDefinition extends cdmObjectSimple {
+    private TAG: string = CdmArgumentDefinition.name;
+
     public explanation: string;
     public name: string;
     public value: ArgumentValue;
@@ -87,13 +90,8 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
         // let bodyCode = () =>
         {
             if (!this.value) {
-                Logger.error(
-                    CdmArgumentDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['value']),
-                    this.validate.name
-                );
-
+                let missingFields: string[] = ['value'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -158,14 +156,7 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
 
             if (preChildren && preChildren(this, path)) {
                 return false;
@@ -182,29 +173,6 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
             }
 
             return false;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public cacheTag(): string {
-        // let bodyCode = () =>
-        {
-            let tag: string;
-            const val: ArgumentValue = this.value;
-            if (val) {
-                if (this.value instanceof CdmObjectBase) {
-                    if (this.value.ID) {
-                        tag = this.value.ID.toString();
-                    }
-                } else {
-                    tag = JSON.stringify(val);
-                }
-            }
-
-            return tag;
         }
         // return p.measure(bodyCode);
     }

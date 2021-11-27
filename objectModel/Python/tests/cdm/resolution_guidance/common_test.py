@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition, CdmFolderDefinition, CdmEntityDefinition
 from cdm.storage import LocalAdapter
-from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
+from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet, CopyOptions
 from tests.common import TestHelper
 
 if TYPE_CHECKING:
@@ -147,13 +147,21 @@ class CommonTest(unittest.TestCase):
         except Exception as e:
             self.fail(e)
 
-    async def save_actual_entity_and_validate_with_expected(self, expected_path: str, actual_resolved_entity_def: CdmEntityDefinition) -> None:
+    async def save_actual_entity_and_validate_with_expected(self, expected_path: str, actual_resolved_entity_def: CdmEntityDefinition, update_expected_output: bool = False) -> None:
         """Runs validation to test actual output vs expected output for attributes collection vs attribute context."""
-        await actual_resolved_entity_def.in_document.save_as_async(actual_resolved_entity_def.in_document.name)
+        co = CopyOptions()
+        co._is_top_level_document = False
+        await actual_resolved_entity_def.in_document.save_as_async(actual_resolved_entity_def.in_document.name, options=co)
         actual_path = actual_resolved_entity_def.ctx.corpus.storage.corpus_path_to_adapter_path(actual_resolved_entity_def.in_document.at_corpus_path)
+
+        with open(actual_path, 'r', encoding='utf-8') as actual_file:
+            actual_ctx = actual_file.read()
+
+        if update_expected_output:
+            with open(expected_path, 'w', encoding='utf-8') as expected_file:
+                expected_file.write(actual_ctx)
 
         with open(expected_path, 'r', encoding='utf-8') as expected_file:
             expected_ctx = expected_file.read()
-        with open(actual_path, 'r', encoding='utf-8') as actual_file:
-            actual_ctx = actual_file.read()
+
         self.assertEqual(expected_ctx, actual_ctx)

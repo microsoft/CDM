@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,6 +9,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmEntityReference : CdmObjectReferenceBase
     {
+        /// <summary>
+        /// Returns true if this entity reference points to a projection.
+        /// </summary>
+        internal bool IsProjection { get => this.ExplicitReference?.ObjectType == CdmObjectType.ProjectionDef; }
+
         /// <summary>
         /// Constructs a CdmEntityReference.
         /// </summary>

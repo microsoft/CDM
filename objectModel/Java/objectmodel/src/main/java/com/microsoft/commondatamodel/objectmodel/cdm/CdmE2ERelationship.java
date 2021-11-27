@@ -3,12 +3,13 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -16,11 +17,15 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
+  private static final String TAG = CdmE2ERelationship.class.getSimpleName();
+  
   private String name;
   private String fromEntity;
   private String fromEntityAttribute;
   private String toEntity;
   private String toEntityAttribute;
+  private OffsetDateTime lastFileModifiedTime;
+  private OffsetDateTime lastFileModifiedOldTime;
 
   public CdmE2ERelationship(
       final CdmCorpusContext ctx,
@@ -32,21 +37,13 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     this.toEntity = null;
     this.toEntityAttribute = null;
     this.setObjectType(CdmObjectType.E2ERelationshipDef);
+    this.lastFileModifiedTime = null;
+    this.lastFileModifiedOldTime = null;
   }
 
   @Override
-  public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      if (Strings.isNullOrEmpty(this.getDeclaredPath())) {
-        this.setDeclaredPath(pathRoot + this.getName());
-      }
-
-      path = this.getDeclaredPath();
-    }
+  public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -104,6 +101,23 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     this.toEntityAttribute = value;
   }
 
+  public OffsetDateTime getlastFileModifiedOldTime() {
+    return this.lastFileModifiedOldTime;
+  }
+
+  private void setlastFileModifiedOldTime(OffsetDateTime lastFileModifiedOldTime) {
+    this.lastFileModifiedOldTime = lastFileModifiedOldTime;
+  }
+
+  public OffsetDateTime getlastFileModifiedTime() {
+    return this.lastFileModifiedTime;
+  }
+
+  public void setlastFileModifiedTime(OffsetDateTime lastFileModifiedTime) {
+    this.setlastFileModifiedOldTime(lastFileModifiedTime);
+    this.lastFileModifiedTime = lastFileModifiedTime;
+  }
+
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
@@ -126,7 +140,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(CdmE2ERelationship.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -158,7 +172,6 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
       copy = new CdmE2ERelationship(this.getCtx(), this.getName());
     } else {
       copy = (CdmE2ERelationship) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 
@@ -170,5 +183,26 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     this.copyDef(resOpt, copy);
 
     return copy;
+  }
+
+  /**
+   * Reset LastFileModifiedOldTime.
+   */
+  public void resetLastFileModifiedOldTime()
+  {
+      this.setlastFileModifiedOldTime(null);
+  }
+
+  /**
+   * standardized way of turning a relationship object into a key for caching
+   * without using the object itself as a key (could be duplicate relationship objects)
+   * @return String
+   */
+  public String createCacheKey() {
+    String nameAndPipe = "";
+    if (!StringUtils.isNullOrTrimEmpty(this.getName())) {
+      nameAndPipe = this.getName() + "|";
+    }
+    return nameAndPipe + this.getToEntity() + "|" + this.getToEntityAttribute() + "|" + this.getFromEntity() + "|" + this.getFromEntityAttribute();
   }
 }

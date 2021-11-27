@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
@@ -33,11 +34,11 @@ public class DataPartitionPatternTest {
    * Tests refreshing files that match the regular expression
    */
   @Test
-  public void TestRefreshesDataPartitionPatterns() throws InterruptedException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshDataPartitionPatterns", null);
+  public void testRefreshesDataPartitionPatterns() throws InterruptedException {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshDataPartitionPatterns");
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
 
-    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)cdmManifest.getEntities().get(0);
+    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)cdmManifest.getEntities().get(1);
     Assert.assertEquals(partitionEntity.getDataPartitions().size(), 1);
 
     final OffsetDateTime timeBeforeLoad = OffsetDateTime.now();
@@ -114,13 +115,39 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testPatternWithNonExistingFolder() throws IOException, InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternWithNonExistingFolder", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternWithNonExistingFolder");
     final String content = TestHelper.getInputFileContent(TESTS_SUBPATH, "testPatternWithNonExistingFolder", "entities.manifest.cdm.json");
     final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(new ResolveContext(corpus), "entities", "local", "/", JMapper.MAP.readValue(content, ManifestContent.class));
+
+    AtomicInteger errorLogged = new AtomicInteger();
+    corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      if (message.contains("Failed to fetch all files in the folder location 'local:/testLocation' described by a partition pattern. Exception:")) {
+        errorLogged.getAndIncrement();
+      }
+    }, CdmStatusLevel.Warning);
+
     cdmManifest.fileStatusCheckAsync().join();
+    Assert.assertEquals(errorLogged.get(), 1);
     Assert.assertEquals(cdmManifest.getEntities().get(0).getDataPartitions().size(), 0);
     // make sure the last check time is still being set
     AssertJUnit.assertNotNull(cdmManifest.getEntities().get(0).getDataPartitionPatterns().get(0).getLastFileStatusCheckTime());
+  }
+
+  /**
+   * Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
+   */
+  @Test
+  public void TestPatternWithDifferentNamespace() throws IOException, InterruptedException {
+    final String testName = "TestPatternWithDifferentNamespace";
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+    LocalAdapter localAdapter = (LocalAdapter)cdmCorpus.getStorage().fetchAdapter("local");
+    final String localPath = localAdapter.getFullRoot();
+    cdmCorpus.getStorage().mount("other", new LocalAdapter(new File(localPath, "other").toString()));
+    final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
+
+    cdmManifest.fileStatusCheckAsync().join();
+
+    Assert.assertEquals(1, cdmManifest.getEntities().get(0).getDataPartitions().size());
   }
 
   /**
@@ -128,7 +155,7 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testVariationsInRootLocation() throws IOException, InterruptedException {
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestVariationsInRootLocation", null);
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestVariationsInRootLocation");
     CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
     manifest.fileStatusCheckAsync().join();
 
@@ -153,11 +180,11 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testPartitionPatternWithGlob() throws InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionPatternWithGlob", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionPatternWithGlob");
 
     HashMap<String, String> patternWithGlobAndRegex = new HashMap<>();
     corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-      if (message.equals("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used.")) {
+      if (message.contains("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used.")) {
         patternWithGlobAndRegex.put("Warning Logged", "true");
       }
     }, CdmStatusLevel.Warning);
@@ -322,7 +349,7 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testGlobPathVariation() throws InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testGlobPathVariation", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testGlobPathVariation");
 
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
     manifest.fileStatusCheckAsync().join();
@@ -384,7 +411,7 @@ public class DataPartitionPatternTest {
       Assert.assertEquals(level, CdmStatusLevel.Error, "Error level message should have been reported");
       Assert.assertTrue(
               message.equals("StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath") ||
-                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | computeLastModifiedTimeFromPartitionPathAsync"),
+                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPathAsync"),
               "Unexpected error message received");
     }, CdmStatusLevel.Warning);
 

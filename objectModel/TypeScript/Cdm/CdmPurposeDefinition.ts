@@ -8,15 +8,17 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmPurposeReference,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
-
 export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmPurposeDefinition.name;
+
     public purposeName: string;
     public extendsPurpose?: CdmPurposeReference;
 
@@ -55,7 +57,6 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmPurposeDefinition(this.ctx, this.purposeName, undefined);
             } else {
                 copy = host as CdmPurposeDefinition;
-                copy.ctx = this.ctx;
                 copy.purposeName = this.purposeName;
             }
             copy.extendsPurpose = this.extendsPurpose
@@ -69,13 +70,8 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
     }
     public validate(): boolean {
         if (!this.purposeName) {
-            Logger.error(
-                CdmPurposeDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, ['purposeName']),
-                this.validate.name
-            );
-
+            let missingFields: string[] = ['purposeName'];
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
             return false;
         }
 
@@ -102,19 +98,13 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.purposeName;
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
             }
             if (this.extendsPurpose) {
+                this.extendsPurpose.owner = this;
                 if (this.extendsPurpose.visit(`${path}/extendsPurpose/`, preChildren, postChildren)) {
                     return true;
                 }

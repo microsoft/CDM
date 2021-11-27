@@ -8,6 +8,7 @@ namespace customize_manifest
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------
@@ -26,6 +27,14 @@ namespace customize_manifest
         {
             // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
             var cdmCorpus = new CdmCorpusDefinition();
+            // set callback to receive error and warning logs.
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Console.WriteLine(message);
+                }
+            }, CdmStatusLevel.Warning);
 
             Console.WriteLine("Configure storage adapters");
             
@@ -83,7 +92,7 @@ namespace customize_manifest
             CdmTypeAttributeDefinition attNew = cdmCorpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "currentCity");
             // The attribute is a type is 'City" this is one of the predefined semantic types in meanings.cdm.json
             attNew.DataType = cdmCorpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "city", true);
-            attNew.Description = "The current city where the mobile care team is working";
+            attNew.Description = "The current city where the mobile care team is working.";
 
             // also apply our fancy new 'temporary' trait. they stay in a city for 90 days on average
             CdmTraitReference tr = cdmCorpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "means.temporary");

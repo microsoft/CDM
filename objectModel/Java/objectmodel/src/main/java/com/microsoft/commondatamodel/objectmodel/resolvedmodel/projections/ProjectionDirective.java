@@ -25,8 +25,6 @@ public final class ProjectionDirective {
     private ResolveOptions resOpt;
     private CdmObjectDefinitionBase owner;
     private CdmObjectReference ownerRef;
-    private CdmObjectType ownerType;
-    private String originalSourceEntityAttributeName;
     private CardinalitySettings cardinality;
     private boolean isSourcePolymorphic;
     private boolean hasNoMaximumDepth;
@@ -47,7 +45,6 @@ public final class ProjectionDirective {
         // Owner information
         this.owner = owner;
         this.ownerRef = ownerRef;
-        this.ownerType = (owner != null) ? owner.getObjectType() : CdmObjectType.Error;
 
         if (owner != null && owner.getObjectType() == CdmObjectType.EntityAttributeDef) {
             // Entity Attribute
@@ -56,7 +53,7 @@ public final class ProjectionDirective {
             this.cardinality = _owner.getCardinality() != null ? _owner.getCardinality() : new CardinalitySettings(_owner);
             this.isSourcePolymorphic = (_owner.getIsPolymorphicSource() != null && _owner.getIsPolymorphicSource() == true);
         } else {
-            // Entity Def
+            // Entity Def or Type Attribute
 
             this.cardinality = null;
             this.isSourcePolymorphic = false;
@@ -90,7 +87,7 @@ public final class ProjectionDirective {
     }
 
     /**
-     * The calling referencing EntityDef or the EntityAttributeDef that contains this projection
+     * The calling referencing EntityDef, the EntityAttributeDef, or the TypeAttributeDef that contains this projection
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
@@ -102,7 +99,7 @@ public final class ProjectionDirective {
     }
 
     /**
-     * The EntityRef to the owning EntityDef or EntityAttributeDef
+     * The EntityRef to the owning EntityDef, EntityAttributeDef, or TypeAttributeDef
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
@@ -114,19 +111,7 @@ public final class ProjectionDirective {
     }
 
     /**
-     * Is Owner EntityDef or EntityAttributeDef
-     *
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @return CdmObjectType
-     */
-    @Deprecated
-    public CdmObjectType getOwnerType() {
-        return ownerType;
-    }
-
-    /**
-     * The entity attribute name or "{a/A}"
+     * The entity/type attribute name or "{a/A}"
      * This may pass through at each operation action/transformation
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
@@ -134,8 +119,10 @@ public final class ProjectionDirective {
      * @return String
      */
     @Deprecated
-    public String getOriginalSourceEntityAttributeName() {
-        return (owner != null && owner.getObjectType() == CdmObjectType.EntityAttributeDef) ? owner.getName() : null;
+    public String getOriginalSourceAttributeName() {
+        return (owner != null &&
+                (owner.getObjectType() == CdmObjectType.EntityAttributeDef ||
+                        owner.getObjectType() == CdmObjectType.TypeAttributeDef)) ? owner.getName() : null;
     }
 
     /**

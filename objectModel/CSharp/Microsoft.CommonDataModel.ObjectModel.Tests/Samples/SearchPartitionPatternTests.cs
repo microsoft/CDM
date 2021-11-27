@@ -24,7 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         [TestInitialize]
         public void CheckSampleRunTestsFlag()
         {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("SAMPLE_RUNTESTS environment variable not set.");
@@ -52,7 +52,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
             TestHelper.AssertFolderFilesEquality(
                 TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestSearchPartitionPattern)),
-                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestSearchPartitionPattern)));
+                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestSearchPartitionPattern)), true);
         }
 
         private CdmCorpusDefinition SetupCdmCorpus()

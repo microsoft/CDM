@@ -76,9 +76,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.IsTrue((bool)typeAttribute.IsPrimaryKey);
 
             // Check that the trait "is.identifiedBy" is created with the correct argument.
-            CdmTraitReference isIdentifiedBy1 = typeAttribute.AppliedTraits[1];
+            var isIdentifiedBy1 = typeAttribute.AppliedTraits[1];
             Assert.AreEqual("is.identifiedBy", isIdentifiedBy1.NamedReference);
-            Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", isIdentifiedBy1.Arguments[0].Value);
+            Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", (isIdentifiedBy1 as CdmTraitReference).Arguments[0].Value.NamedReference);
 
             // Read from a resolved entity schema.
             CdmEntityDefinition resolvedEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership_Resolved.cdm.json/TeamMembership", null, resOpt);
@@ -87,10 +87,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.IsTrue((bool)resolvedTypeAttribute.IsPrimaryKey);
 
             // Check that the trait "is.identifiedBy" is created with the correct argument.
-            CdmTraitReference isIdentifiedBy2 = resolvedTypeAttribute.AppliedTraits[6];
+            var isIdentifiedBy2 = resolvedTypeAttribute.AppliedTraits[6];
             Assert.AreEqual("is.identifiedBy", isIdentifiedBy2.NamedReference);
 
-            CdmAttributeReference argumentValue = isIdentifiedBy2.Arguments[0].Value;
+            CdmAttributeReference argumentValue = (isIdentifiedBy2 as CdmTraitReference).Arguments[0].Value;
             Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", argumentValue.NamedReference);
         }
 
@@ -189,7 +189,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             // test log error "Default value missing languageTag or displayText."
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("Default value missing languageTag or displayText."));
+            Assert.IsTrue(functionParameter2.Contains("A 'defaultValue' property is empty or one of its entries is missing 'languageTag' and 'displayText' values."));
             Assert.IsNull(emptyDefaultValueAttribute.DefaultValue);
             // set the default value to an empty list for testing that it should be removed from the generated json.
             emptyDefaultValueAttribute.DefaultValue = new List<object>();
@@ -395,13 +395,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.IsTrue(qTraitNamedReferences.Contains("means.content.text.JSON"));
         }
 
+        /// <summary>
+        /// Testing that cardinality settings are loaded and saved correctly
+        /// </summary>
+        [TestMethod]
+        public async Task TestCardinalityPersistence()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCardinalityPersistence", null);
+
+            // test FromData
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/someEntity.cdm.json/someEntity");
+            var attribute = (CdmTypeAttributeDefinition)entity.Attributes[0];
+
+            Assert.IsNotNull(attribute.Cardinality);
+            Assert.AreEqual(attribute.Cardinality.Minimum, "0");
+            Assert.AreEqual(attribute.Cardinality.Maximum, "1");
+
+            // test ToData
+            var attributeData = TypeAttributePersistence.ToData(attribute, new ResolveOptions(entity.InDocument), new CopyOptions());
+            Assert.IsNotNull(attributeData.Cardinality);
+            Assert.IsNotNull(attributeData.Cardinality.Minimum, "0");
+            Assert.IsNotNull(attributeData.Cardinality.Maximum, "1");
+        }
+
         private static HashSet<string> FetchTraitNamedReferences(CdmTraitCollection traits)
         {
             HashSet<string> namedReferences = new HashSet<string>();
-            foreach (var trait in traits)
-            {
-                namedReferences.Add(trait.NamedReference);
-            }
+
+            traits.AllItems.ForEach(trait => namedReferences.Add(trait.NamedReference));
+
             return namedReferences;
         }
     }

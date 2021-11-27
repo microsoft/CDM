@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import path = require('path');
+import { LocalAdapter } from '../../../Storage';
 import { CdmCorpusDefinition } from '../../../Cdm/CdmCorpusDefinition';
 import { CdmDataPartitionDefinition } from '../../../Cdm/CdmDataPartitionDefinition';
 import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntityDeclarationDefinition';
@@ -29,7 +31,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
 
         const partitionEntity: CdmLocalEntityDeclarationDefinition =
-            cdmManifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+            cdmManifest.entities.allItems[1] as CdmLocalEntityDeclarationDefinition;
         expect(partitionEntity.dataPartitions.length)
             .toBe(1);
 
@@ -127,7 +129,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             JSON.parse(content));
         let errorLogged: number = 0;
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            if (message.indexOf('Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception:') !== -1) {
+            if (message.indexOf('Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception') !== -1) {
                 errorLogged++;
             }
         }, cdmStatusLevel.warning);
@@ -140,6 +142,24 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         expect(cdmManifest.entities.allItems[0].dataPartitionPatterns.allItems[0].lastFileStatusCheckTime)
             .not
             .toBeUndefined();
+        done();
+    });
+
+    /**
+     * Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
+     */
+    it('TestPatternWithDifferentNamespace', async (done) => {
+        const testName: string = 'TestPatternWithDifferentNamespace';
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+        const localAdapter: LocalAdapter = cdmCorpus.storage.fetchAdapter('local') as LocalAdapter;
+        const localPath: string = localAdapter.fullRoot;
+        cdmCorpus.storage.mount('other', new LocalAdapter(path.join(localPath, 'other')));
+        var cdmManifest = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
+
+        await cdmManifest.fileStatusCheckAsync();
+
+        expect(cdmManifest.entities.allItems[0].dataPartitions.length)
+            .toBe(1);
         done();
     });
 
@@ -186,7 +206,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         let patternsWithGlobAndRegex: number = 0;
         corpus.setEventCallback(
             (level, msg) => {
-                if (msg === 'CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | fileStatusCheckAsync') {
+                if (msg.indexOf('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | fileStatusCheckAsync') != -1) {
                     patternsWithGlobAndRegex++;
                 }
             },
@@ -485,7 +505,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             }
 
             if (message.indexOf('StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath') == -1 &&
-                message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPath') == -1) {
+                message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPathAsync') == -1) {
                 fail(new Error('Unexpected error message received'));
             }
         }, cdmStatusLevel.warning);

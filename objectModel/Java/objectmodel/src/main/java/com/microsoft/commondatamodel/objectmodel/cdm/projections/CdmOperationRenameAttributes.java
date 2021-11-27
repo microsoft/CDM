@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
@@ -19,12 +20,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle RenameAttributes operations
  */
 public class CdmOperationRenameAttributes extends CdmOperationBase {
-    private String TAG = CdmOperationRenameAttributes.class.getSimpleName();
+    private static final String TAG = CdmOperationRenameAttributes.class.getSimpleName();
     private String renameFormat;
     private List<String> applyTo;
 
@@ -36,14 +38,18 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        List<String> applyTo = null;
-        if (this.applyTo != null) {
-            applyTo = new ArrayList<String>(this.applyTo);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
         }
 
-        CdmOperationRenameAttributes copy = new CdmOperationRenameAttributes(this.getCtx());
+        CdmOperationRenameAttributes copy = host == null ? new CdmOperationRenameAttributes(this.getCtx()) : (CdmOperationRenameAttributes)host;
+
+        if (this.applyTo != null) {
+            copy.setApplyTo(new ArrayList<String>(this.applyTo));
+        }
         copy.renameFormat = this.renameFormat;
-        copy.applyTo = applyTo;
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -96,7 +102,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
             missingFields.add(this.renameFormat.toString());
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -104,14 +110,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationRenameAttributes";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -134,7 +133,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
         // Create a new attribute context for the operation
         AttributeContextParameters attrCtxOpRenameAttrsParam = new AttributeContextParameters();
         attrCtxOpRenameAttrsParam.setUnder(attrCtx);
-        attrCtxOpRenameAttrsParam.setType(CdmAttributeContextType.OperationExcludeAttributes);
+        attrCtxOpRenameAttrsParam.setType(CdmAttributeContextType.OperationRenameAttributes);
         attrCtxOpRenameAttrsParam.setName("operation/index" + this.getIndex() + "/operationRenameAttributes");
 
         CdmAttributeContext attrCtxOpRenameAttrs = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxOpRenameAttrsParam);
@@ -154,8 +153,6 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
         // We use the top-level names because the rename list may contain a previous name our current resolved attributes had
         Map<String, String> topLevelRenameAttributeNames = ProjectionResolutionCommonUtil.getTopList(projCtx, renameAttributes);
 
-        String sourceAttributeName = projCtx.getProjectionDirective().getOriginalSourceEntityAttributeName();
-
         // Initialize a projection attribute context tree builder with the created attribute context for the operation
         ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpRenameAttrs);
 
@@ -168,10 +165,10 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
                 if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof CdmAttribute) {
                     // The current attribute should be renamed
 
-                    String newAttributeName = this.getNewAttributeName(currentPAS, sourceAttributeName);
+                    String newAttributeName = this.getNewAttributeName(projCtx.getProjectionDirective().getOriginalSourceAttributeName(), currentPAS);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
-                    ResolvedAttribute resAttrNew = createNewResolvedAttribute(projCtx, null, (CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget(), newAttributeName, null);
+                    ResolvedAttribute resAttrNew = createNewResolvedAttribute(projCtx, null, currentPAS.getCurrentResolvedAttribute(), newAttributeName, null);
 
                     // Get the attribute name the way it appears in the applyTo list
                     String applyToName = topLevelRenameAttributeNames.get(currentPAS.getCurrentResolvedAttribute().getResolvedName());
@@ -193,7 +190,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     projOutputSet.add(newPAS);
                 } else {
-                    Logger.warning(TAG, this.getCtx(), "RenameAttributes is not supported on an attribute group yet.");
+                    Logger.warning(this.getCtx(), TAG, "appendProjectionAttributeState", this.getAtCorpusPath(), CdmLogCode.WarnProjRenameAttrNotSupported);
                     // Add the attribute without changes
                     projOutputSet.add(currentPAS);
                 }
@@ -211,24 +208,16 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
     /**
      * Renames an attribute with the current renameFormat
-     * @param attributeState The attribute state
-     * @param sourceAttributeName The parent attribute name (if any
+     * @param projectionOwnerName The attribute name of projection owner (only available when the owner is an entity attribute or type attribute).
+     * @param currentPAS The attribute state.
      */
-    private String getNewAttributeName(ProjectionAttributeState attributeState, String sourceAttributeName) {
-        String currentAttributeName = attributeState.getCurrentResolvedAttribute().getResolvedName();
-        String ordinal = attributeState.getOrdinal() != null ? attributeState.getOrdinal().toString() : "";
-        String format = this.renameFormat;
-
-        if (StringUtils.isNullOrTrimEmpty(format))
+    private String getNewAttributeName(final String projectionOwnerName, final ProjectionAttributeState currentPAS) {
+        if (StringUtils.isNullOrTrimEmpty(this.renameFormat))
         {
-            Logger.error(TAG, this.getCtx(), "RenameFormat should be set for this operation to work.");
+            Logger.error(this.getCtx(), TAG, "getNewAttributeName", this.getAtCorpusPath(), CdmLogCode.ErrProjRenameFormatIsNotSet);
             return "";
         }
 
-        String attributeName = StringUtils.replace(format, 'a', sourceAttributeName);
-        attributeName = StringUtils.replace(attributeName, 'o', ordinal);
-        attributeName = StringUtils.replace(attributeName, 'm', currentAttributeName);
-
-        return attributeName;
+        return replaceWildcardCharacters(this.renameFormat, projectionOwnerName, currentPAS);
     }
 }

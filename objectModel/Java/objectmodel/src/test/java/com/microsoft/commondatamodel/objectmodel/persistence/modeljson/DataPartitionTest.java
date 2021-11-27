@@ -31,9 +31,9 @@ public class DataPartitionTest extends ModelJsonTestBase {
    * 1. Manifest is read directly.
    * 2. Manifest is obtained by converting a model.json.
    */
-  // @Test
+  @Test
   public void testModelJsonDataPartitionLocationConsistency() throws ExecutionException, InterruptedException, IOException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonDataPartitionLocationConsistency", null);
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonDataPartitionLocationConsistency");
     final CdmManifestDefinition manifestRead =
         cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
             "default.manifest.cdm.json",
@@ -52,9 +52,9 @@ public class DataPartitionTest extends ModelJsonTestBase {
     Assert.assertTrue(
         StringUtils.containsIgnoreCase(
             location,
-            "\\TestData\\Persistence\\ModelJson\\DataPartition\\TestModelJsonDataPartitionLocationConsistency\\Input\\EpisodeOfCare\\partition-data.csv"));
+            "\\testData\\Persistence\\ModelJson\\DataPartition\\TestModelJsonDataPartitionLocationConsistency\\Input\\EpisodeOfCare\\partition-data.csv"));
 
-    final CdmCorpusDefinition cdmCorpus2 = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonDataPartitionLocationConsistency", null);
+    final CdmCorpusDefinition cdmCorpus2 = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonDataPartitionLocationConsistency");
     final CdmManifestDefinition manifestAfterConversion =
         ManifestPersistence.fromObject
             (cdmCorpus2.getCtx(),
@@ -65,7 +65,7 @@ public class DataPartitionTest extends ModelJsonTestBase {
         "EpisodeOfCare/partition-data.csv",
         manifestAfterConversion.getEntities().get(0).getDataPartitions().get(0).getLocation());
 
-    final CdmCorpusDefinition cdmCorpus3 = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonDataPartitionLocationConsistency", null);
+    final CdmCorpusDefinition cdmCorpus3 = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonDataPartitionLocationConsistency");
     final String readFile =
         TestHelper.getInputFileContent(
             TESTS_SUBPATH,
@@ -73,8 +73,8 @@ public class DataPartitionTest extends ModelJsonTestBase {
             "model.json");
     final CdmFolderDefinition namespaceFolder = cdmCorpus3.getStorage().fetchRootFolder("local");
     final String modelJsonAsString =
-        readFile.replace("C:\\\\cdm\\\\CDM.ObjectModel.CSharp\\\\Microsoft.CommonDataModel\\\\Microsoft.CommonDataModel.ObjectModel.Tests\\\\TestData\\\\Persistence\\\\ModelJson\\\\DataPartition\\\\TestModelJsonDataPartitionLocationConsistency\\\\Input\\\\EpisodeOfCare\\\\partition-data.csv",
-            location.replace("\\", "\\\\"));
+        readFile.replace("C:\\\\cdm\\\\testData\\\\Persistence\\\\ModelJson\\\\DataPartition\\\\TestModelJsonDataPartitionLocationConsistency\\\\Input\\\\EpisodeOfCare\\\\partition-data.csv",
+            location.replace("\\", "\\\\")).replace("\uFEFF", "");
 
     final CdmManifestDefinition manifestReadFromModelJson =
         ManifestPersistence.fromObject(

@@ -1,0 +1,75 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "PersonPolymorphicSourceFK",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "personId"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "personName"
+                },
+                {
+                    "name": "contactAt",
+                    "isPolymorphicSource": true,
+                    "entity": {
+                        "operations": [
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "isPrimary",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "PolyFK_isPrimary"
+                                }
+                            },
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "userId",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "PolyFK_userId"
+                                }
+                            }
+                        ],
+                        "source": {
+                            "entityReference": {
+                                "entityName": "ContactKinds",
+                                "hasAttributes": [
+                                    {
+                                        "name": "emailKind",
+                                        "entity": {
+                                            "source": "Email"
+                                        }
+                                    },
+                                    {
+                                        "name": "phoneKind",
+                                        "entity": {
+                                            "source": "Phone"
+                                        }
+                                    },
+                                    {
+                                        "name": "socialKind",
+                                        "entity": {
+                                            "source": "Social"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

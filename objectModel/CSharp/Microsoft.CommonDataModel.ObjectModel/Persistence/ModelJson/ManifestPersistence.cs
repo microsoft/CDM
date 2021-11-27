@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -24,6 +24,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     public class ManifestPersistence
     {
+        private static readonly string Tag = nameof(ManifestPersistence);
+
         /// <summary>
         /// Whether this persistence class has async methods.
         /// </summary>
@@ -32,7 +34,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// <summary>
         /// The file format/extension types this persistence class supports.
         /// </summary>
-        public static readonly string[] Formats = { PersistenceLayer.ModelJsonExtension};
+        public static readonly string[] Formats = { PersistenceLayer.ModelJsonExtension };
 
         public static async Task<CdmManifestDefinition> FromObject(CdmCorpusContext ctx, Model obj, CdmFolderDefinition folder)
         {
@@ -145,15 +147,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         var referenceEntity = element.ToObject<ReferenceEntity>();
                         if (!referenceModels.ContainsKey(referenceEntity.ModelId))
                         {
-                            Logger.Error(nameof(ManifestPersistence), ctx, $"Model Id {referenceEntity.ModelId} from {referenceEntity.Name} not found in referenceModels.");
-
+                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistModelJsonModelIdNotFound, referenceEntity.ModelId, referenceEntity.Name);
                             return null;
                         }
                         entity = await ReferencedEntityDeclarationPersistence.FromData(ctx, referenceEntity, referenceModels[referenceEntity.ModelId]);
                     }
                     else
                     {
-                        Logger.Error(nameof(ManifestPersistence), ctx, "There was an error while trying to parse entity type.");
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
                     }
 
                     if (entity != null)
@@ -163,9 +164,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error(nameof(ManifestPersistence), ctx, "There was an error while trying to parse entity type.");
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
                     }
-
                 }
             }
 
@@ -180,7 +180,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Warning(nameof(ManifestPersistence), ctx, "There was an issue while trying to read relationships from the model.json file.");
+                        Logger.Warning(ctx, Tag, nameof(FromObject), null, CdmLogCode.WarnPersistModelJsonRelReadFailed);
                     }
                 }
             }
@@ -230,7 +230,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
                 // import the cdm extensions into this new document that has the custom extensions
                 extensionDoc.Imports.Add("cdm:/extensions/base.extension.cdm.json");
-                extensionDoc.JsonSchemaSemanticVersion = "1.0.0";
 
                 // add the extension doc to the folder, will wire everything together as needed
                 folder.Documents.Add(extensionDoc);
@@ -330,19 +329,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                             var location = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(entity.EntityPath);
                             if (string.IsNullOrEmpty(location))
                             {
-                                Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"Invalid entity path set in entity {entity.EntityName}");
+                                Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
                                 element = null;
                             }
 
                             if (element is ReferenceEntity referenceEntity)
                             {
-                                location = location.Slice(0, location.LastIndexOf("/"));
+                                // path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
+                                int lastSlashLocation = location.LastIndexOf("/") > location.LastIndexOf("\\") ? location.LastIndexOf("/") : location.LastIndexOf("\\");
+                                if (lastSlashLocation > 0)
+                                    location = location.Slice(0, lastSlashLocation);
 
                                 if (referenceEntity.ModelId != null)
                                 {
                                     if (referenceModels.TryGetValue(referenceEntity.ModelId, out var savedLocation) && savedLocation != location)
                                     {
-                                        Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"Same ModelId pointing to different locations");
+                                        Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonModelIdDuplication);
                                         element = null;
                                     }
                                     else if (savedLocation == null)
@@ -370,7 +372,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         }
                         else
                         {
-                            Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"There was an error while trying to convert {entity.EntityName}'s entity declaration to model json format.");
+                            Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.EntityName);
                         }
                     });
                     try
@@ -382,7 +384,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error(nameof(ManifestPersistence), instance.Ctx, $"There was an error while trying to convert {entity.EntityName}'s entity declaration to model json format for reason {ex.Message}.");
+                        Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionFailure, entity.EntityName, ex.Message);
                     }
                 }
                 await Task.WhenAll(promises);
@@ -413,10 +415,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     if (relationship != null)
                     {
                         result.Relationships.Add(relationship);
-                    }
-                    else
-                    {
-                        Logger.Error(nameof(ManifestPersistence), instance.Ctx, "There was an error while trying to convert cdm relationship to model.json relationship.");
                     }
                 }
             }

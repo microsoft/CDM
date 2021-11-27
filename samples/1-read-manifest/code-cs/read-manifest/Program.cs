@@ -8,6 +8,7 @@ namespace read_manifest
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
     /**
      * --------------------------------------------------------------------------------------------------------------------
@@ -26,6 +27,15 @@ namespace read_manifest
             // while navigating objects and paths.
 
             var cdmCorpus = new CdmCorpusDefinition();
+
+            // set callback to receive error and warning logs.
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Console.WriteLine(message);
+                }
+            }, CdmStatusLevel.Warning);
 
             // ------------------------------------------------------------------------------------------------------------
             // Configure storage adapters and mount them to the corpus. 
@@ -333,27 +343,31 @@ namespace read_manifest
             }
         }
 
-        static void PrintTrait(CdmTraitReference trait)
+        static void PrintTrait(CdmTraitReferenceBase trait)
         {
             if (!string.IsNullOrEmpty(trait.FetchObjectDefinitionName()))
             {
                 Console.WriteLine("      " + trait.FetchObjectDefinitionName());
-                foreach (var argDef in trait.Arguments)
+
+                if (trait is CdmTraitReference)
                 {
-                    if (argDef.Value is CdmEntityReference)
+                    foreach (var argDef in (trait as CdmTraitReference).Arguments)
                     {
-                        Console.WriteLine("         Constant: [");
-                        var contEntDef = argDef.Value.FetchObjectDefinition<CdmConstantEntityDefinition>();
-                        foreach (List<string> constantValueList in contEntDef.ConstantValues)
+                        if (argDef.Value is CdmEntityReference)
                         {
-                            Console.WriteLine($"             [{String.Join(", ", constantValueList.ToArray())}]");
+                            Console.WriteLine("         Constant: [");
+                            var contEntDef = argDef.Value.FetchObjectDefinition<CdmConstantEntityDefinition>();
+                            foreach (List<string> constantValueList in contEntDef.ConstantValues)
+                            {
+                                Console.WriteLine($"             [{String.Join(", ", constantValueList.ToArray())}]");
+                            }
+                            Console.WriteLine("         ]");
                         }
-                        Console.WriteLine("         ]");
-                    }
-                    else
-                    {
-                        // Default output, nothing fancy for now
-                        Console.WriteLine("         " + argDef.Value);
+                        else
+                        {
+                            // Default output, nothing fancy for now
+                            Console.WriteLine("         " + argDef.Value);
+                        }
                     }
                 }
             }

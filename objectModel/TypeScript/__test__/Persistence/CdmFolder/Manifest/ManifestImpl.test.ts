@@ -7,12 +7,13 @@ import {
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     cdmStatusLevel,
+    cdmLogCode,
     resolveContext
 } from '../../../../internal';
 import { CdmFolder } from '../../../../Persistence';
 import { ManifestContent } from '../../../../Persistence/CdmFolder/types';
+import { ManifestPersistence } from '../../../../Persistence/CdmFolder/ManifestPersistence';
 import { LocalAdapter } from '../../../../Storage';
-import { EventCallback } from '../../../../Utilities/EventCallback';
 import * as timeUtils from '../../../../Utilities/timeUtils';
 import { testHelper } from '../../../testHelper';
 
@@ -63,11 +64,9 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * Tests for manifests with everything.
      */
     it('TestManifestWithEverything', () => {
-        const content: string = testHelper.getInputFileContent(testsSubpath, 'TestManifestWithEverything', 'complete.manifest.cdm.json');
-        const jsonContent = JSON.parse(content);
-
+        let content: string = testHelper.getInputFileContent(testsSubpath, 'TestManifestWithEverything', 'complete.manifest.cdm.json');
         let cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
-            new resolveContext(new CdmCorpusDefinition(), undefined), 'docName', 'someNamespace', '', jsonContent);
+            new resolveContext(new CdmCorpusDefinition(), undefined), 'docName', 'someNamespace', '', JSON.parse(content));
 
         expect(cdmManifest.subManifests.length)
             .toBe(1);
@@ -76,14 +75,16 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(cdmManifest.manifestName)
             .toBe('cdmTest');
 
+        content = testHelper.getInputFileContent(testsSubpath, 'TestManifestWithEverything', 'noname.manifest.cdm.json');
         cdmManifest = CdmFolder.ManifestPersistence.fromObject(
-            new resolveContext(new CdmCorpusDefinition(), undefined), 'docName.manifest.cdm.json', 'someNamespace', '/', jsonContent);
+            new resolveContext(new CdmCorpusDefinition(), undefined), 'docName.manifest.cdm.json', 'someNamespace', '/', JSON.parse(content));
+
         expect(cdmManifest.subManifests.length)
             .toBe(1);
         expect(cdmManifest.entities.length)
             .toBe(2);
         expect(cdmManifest.manifestName)
-            .toBe('cdmTest');
+            .toBe('docName');
     });
 
     /**
@@ -91,7 +92,6 @@ describe('Persistence.CdmFolder.Manifest', () => {
      */
     it('TestFolioWithEverything', () => {
         let content: string = testHelper.getInputFileContent(testsSubpath, 'TestFolioWithEverything', 'complete.folio.cdm.json');
-
         let cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'docName', 'someNamespace', '', JSON.parse(content));
 
@@ -105,6 +105,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         content = testHelper.getInputFileContent(testsSubpath, 'TestFolioWithEverything', 'noname.folio.cdm.json');
         cdmManifest = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'docName.folio.cdm.json', 'someNamespace', '/', JSON.parse(content));
+
         expect(cdmManifest.subManifests.length)
             .toBe(1);
         expect(cdmManifest.entities.length)
@@ -120,7 +121,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         const content: string = testHelper.getInputFileContent(testsSubpath, 'TestManifestForCopyData', 'complete.manifest.cdm.json');
         const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
             new resolveContext(new CdmCorpusDefinition(), undefined), 'cdmTest', 'someNamespace', '/', JSON.parse(content));
-        const manifestObject: ManifestContent = cdmManifest.copyData(undefined, undefined) as ManifestContent;
+        const manifestObject: ManifestContent = ManifestPersistence.toData(cdmManifest, undefined, undefined);
         expect(manifestObject.$schema)
             .toBe('CdmManifestDefinition.cdm.json');
         expect(manifestObject.jsonSchemaSemanticVersion)
@@ -157,8 +158,10 @@ describe('Persistence.CdmFolder.Manifest', () => {
         const timeBeforeLoad: Date = new Date();
 
         const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadsAndSetsTimesCorrectly');
-        const cdmCorpus: CdmCorpusDefinition = testHelper.createCorpusForTest(testsSubpath, 'TestLoadsAndSetsTimesCorrectly');
-        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadsAndSetsTimesCorrectly');
+        cdmCorpus.setEventCallback((level, msg) => {
+            done.fail(new Error('Unexpected log: ' + msg));
+        }, cdmStatusLevel.warning)
         cdmCorpus.storage.mount('someNamespace', new LocalAdapter(inputPath));
         cdmCorpus.storage.unMount('cdm');
 
@@ -251,22 +254,17 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * ( '/' should be appended and a warning be sent through callback function)
      */
     it('TestPathThatDoesNotEndInSlash', () => {
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnStorageExpectedPathPrefix]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPathThatDoesNotEndInSlash', undefined, false, expectedLogCodes, true);
         const obj: CdmManifestDefinition = new CdmManifestDefinition(undefined, undefined);
         obj.folderPath = 'Mnp';
         obj.namespace = 'cdm';
-
-        const callback: EventCallback & { mock: { calls: object[][] } } = jest.fn();
-        corpus.setEventCallback(callback);
 
         const absolutePath: string = corpus.storage.createAbsoluteCorpusPath('Abc', obj);
         expect(absolutePath)
             .toEqual('cdm:Mnp/Abc');
 
-        expect(callback.mock.calls[0][0])
-            .toEqual(cdmStatusLevel.warning);
-        expect(callback.mock.calls[0][1])
-            .toContain('Expected path prefix to end in /, but it didn\'t. Appended the /');
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnStorageExpectedPathPrefix, true);
     });
 
     /**
@@ -274,41 +272,20 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * Checks behavior if objectPath is invalid.
      */
     it('TestPathRootInvalidObjectPath', () => {
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
-        const callback: EventCallback & { mock: { calls: object[][] } } = jest.fn();
-        corpus.setEventCallback(callback);
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrStorageInvalidPathFormat]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPathRootInvalidObjectPath', undefined, false, expectedLogCodes, true);
 
-        let absolutePath: string = corpus.storage.createAbsoluteCorpusPath('./Abc');
-        expect(callback.mock.calls.length)
-            .toEqual(1);
-        expect(callback.mock.calls[0][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[0][1])
-            .toContain('The path should not start with ./');
+        corpus.storage.createAbsoluteCorpusPath('./Abc');
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
 
-        absolutePath = corpus.storage.createAbsoluteCorpusPath('/./Abc');
-        expect(callback.mock.calls.length)
-            .toEqual(2);
-        expect(callback.mock.calls[1][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[1][1])
-            .toContain('The path should not contain /./');
+        corpus.storage.createAbsoluteCorpusPath('/./Abc');
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
 
-        absolutePath = corpus.storage.createAbsoluteCorpusPath('../Abc');
-        expect(callback.mock.calls.length)
-            .toEqual(3);
-        expect(callback.mock.calls[2][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[2][1])
-            .toContain('The path should not contain ../');
+        corpus.storage.createAbsoluteCorpusPath('../Abc');
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
 
-        absolutePath = corpus.storage.createAbsoluteCorpusPath('Abc/../Def');
-        expect(callback.mock.calls.length)
-            .toEqual(4);
-        expect(callback.mock.calls[3][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[3][1])
-            .toContain('The path should not contain ../');
+        corpus.storage.createAbsoluteCorpusPath('Abc/../Def');
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
     });
 
     /**
@@ -316,59 +293,37 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * Checks behavior if FolderPath is invalid.
      */
     it('TestPathRootInvalidFolderPath', () => {
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
-        const callback: EventCallback & { mock: { calls: object[][] } } = jest.fn();
-        corpus.setEventCallback(callback);
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrStorageInvalidPathFormat]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPathRootInvalidFolderPath', undefined, false, expectedLogCodes, true);
 
-        const obj: CdmManifestDefinition = new CdmManifestDefinition(undefined, undefined);
+        let obj: CdmManifestDefinition = new CdmManifestDefinition(undefined, undefined);
         obj.namespace = 'cdm';
         obj.folderPath = './Mnp';
-        let absolutePath: string = corpus.storage.createAbsoluteCorpusPath('Abc', obj);
-        expect(callback.mock.calls.length)
-            .toEqual(1);
-        expect(callback.mock.calls[0][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[0][1])
-            .toContain('The path should not start with ./');
+        corpus.storage.createAbsoluteCorpusPath('Abc', obj);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
 
+        obj = new CdmManifestDefinition(undefined, undefined);
         obj.namespace = 'cdm';
         obj.folderPath = '/./Mnp';
-        absolutePath = corpus.storage.createAbsoluteCorpusPath('Abc', obj);
-        expect(callback.mock.calls.length)
-            .toEqual(2);
-        expect(callback.mock.calls[1][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[1][1])
-            .toContain('The path should not contain /./');
+        corpus.storage.createAbsoluteCorpusPath('Abc', obj);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
 
+        obj = new CdmManifestDefinition(undefined, undefined);
         obj.namespace = 'cdm';
         obj.folderPath = '../Mnp';
-        absolutePath = corpus.storage.createAbsoluteCorpusPath('Abc', obj);
-        expect(callback.mock.calls.length)
-            .toEqual(3);
-        expect(callback.mock.calls[2][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[2][1])
-            .toContain('The path should not contain ../');
+        corpus.storage.createAbsoluteCorpusPath('Abc', obj);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
 
+        obj = new CdmManifestDefinition(undefined, undefined);
         obj.namespace = 'cdm';
         obj.folderPath = 'Mnp/./Qrs';
-        absolutePath = corpus.storage.createAbsoluteCorpusPath('Abc', obj);
-        expect(callback.mock.calls.length)
-            .toEqual(4);
-        expect(callback.mock.calls[3][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[3][1])
-            .toContain('The path should not contain /./');
+        corpus.storage.createAbsoluteCorpusPath('Abc', obj);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
 
+        obj = new CdmManifestDefinition(undefined, undefined);
         obj.namespace = 'cdm';
         obj.folderPath = 'Mnp/../Qrs';
-        absolutePath = corpus.storage.createAbsoluteCorpusPath('Abc', obj);
-        expect(callback.mock.calls.length)
-            .toEqual(5);
-        expect(callback.mock.calls[4][0])
-            .toEqual(cdmStatusLevel.error);
-        expect(callback.mock.calls[4][1])
-            .toContain('The path should not contain ../');
+        corpus.storage.createAbsoluteCorpusPath('Abc', obj);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
     });
 });

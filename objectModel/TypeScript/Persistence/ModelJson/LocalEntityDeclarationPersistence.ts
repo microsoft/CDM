@@ -11,6 +11,7 @@ import {
     CdmLocalEntityDeclarationDefinition,
     CdmManifestDefinition,
     cdmObjectType,
+    cdmLogCode,
     CdmTraitDefinition,
     CdmTraitReference,
     copyOptions,
@@ -23,6 +24,8 @@ import * as extensionHelper from './ExtensionHelper';
 import { Entity, LocalEntity, Partition } from './types';
 
 export class LocalEntityDeclarationPersistence {
+    private static TAG: string = LocalEntityDeclarationPersistence.name;
+
     public static async fromData(
         ctx: CdmCorpusContext,
         documentFolder: CdmFolderDefinition,
@@ -40,16 +43,6 @@ export class LocalEntityDeclarationPersistence {
             extensionTraitDefList,
             localExtensionTraitDefList
         );
-
-        if (entityDoc === undefined) {
-            Logger.error(
-                LocalEntityDeclarationPersistence.name,
-                ctx,
-                'There was an error while trying to fetch the entity doc from local entity declaration persistence.'
-            );
-
-            return undefined;
-        }
 
         documentFolder.documents.push(entityDoc);
 
@@ -97,12 +90,7 @@ export class LocalEntityDeclarationPersistence {
                 if (cdmPartition !== undefined) {
                     localEntityDec.dataPartitions.push(cdmPartition);
                 } else {
-                    Logger.error(
-                        LocalEntityDeclarationPersistence.name,
-                        ctx,
-                        'There was an error while trying to convert model.json partition to cdm local data partition.'
-                    );
-
+                    Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonDocConversionError);
                     return undefined;
                 }
             }
@@ -154,14 +142,6 @@ export class LocalEntityDeclarationPersistence {
                     const partition: Partition = await ModelJson.DataPartitionPersistence.toData(element, resOpt, options);
                     if (partition !== undefined) {
                         localEntity.partitions.push(partition);
-                    } else {
-                        Logger.error(
-                            LocalEntityDeclarationPersistence.name,
-                            instance.ctx,
-                            'There was an error while trying to convert cdm data partition to model.json partition.'
-                        );
-
-                        return undefined;
                     }
                 }
             }

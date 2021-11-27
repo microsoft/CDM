@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -6,6 +6,7 @@ using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
 using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,10 +15,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     static class ExtensionHelper
     {
+        private static readonly string Tag = nameof(ExtensionHelper);
+
         /// <summary>
         /// Dictionary used to cache documents with trait definitions by file name.
         /// </summary>
-        private static Dictionary<string, CdmDocumentDefinition> CachedDefDocs = new Dictionary<string, CdmDocumentDefinition>();
+        private static Dictionary<Tuple<CdmCorpusContext, string>, CdmDocumentDefinition> CachedDefDocs = new Dictionary<Tuple<CdmCorpusContext, string>, CdmDocumentDefinition>();
 
         /// <summary>
         /// Set of extensions that are officially supported and have their definitions in the extensions folder.
@@ -71,8 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList[traitIndex];
                 if (!TraitDefIsExtension(extensionTraitDef))
                 {
-                    Logger.Error(nameof(ExtensionHelper), ctx, $"Invalid extension trait name {extensionTraitDef.TraitName}, expected prefix {ExtensionTraitNamePrefix}.");
-
+                    Logger.Error(ctx, Tag, nameof(StandardImportDetection), extensionTraitDef.AtCorpusPath, CdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.TraitName, ExtensionTraitNamePrefix);
                     return null;
                 }
 
@@ -319,11 +321,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         }
 
         /// <summary>
-        /// Checks whether a <see cref="CdmTraitReference"/> is an extension.
+        /// Checks whether a <see cref="CdmTraitReferenceBase"/> is an extension.
         /// </summary>
         /// <param name="trait">The trait to be checked whether it is an extension.</param>
         /// <returns>Whether the trait is an extension.</returns>
-        public static bool TraitRefIsExtension(CdmTraitReference trait)
+        public static bool TraitRefIsExtension(CdmTraitReferenceBase trait)
         {
             return TraitNameHasExtensionMark(trait.NamedReference);
         }
@@ -347,9 +349,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// <returns>The content of the definition file with the expected fileName, or null if no such file was found.</returns>
         private static async Task<CdmDocumentDefinition> FetchDefDoc(CdmCorpusContext ctx, string fileName)
         {
-            if (CachedDefDocs.ContainsKey(fileName))
+            // Since the CachedDefDocs is a static property and there might be multiple corpus running,
+            // we need to make sure that each corpus will have its own cached def document.
+            // This is achieved by adding the context as part of the key to the document.
+            var key = Tuple.Create(ctx, fileName);
+            if (CachedDefDocs.ContainsKey(key))
             {
-                return CachedDefDocs[fileName];
+                return CachedDefDocs[key];
             }
 
             string path = $"/extensions/{fileName}";
@@ -359,7 +365,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 CdmDocumentDefinition extensionDoc = document as CdmDocumentDefinition;
 
-                CachedDefDocs.Add(fileName, extensionDoc);
+                // Needs to lock the dictionary since it is a static property and there might be multiple corpus running on the same environment.
+                lock (CachedDefDocs)
+                {
+                    CachedDefDocs.Add(key, extensionDoc);
+                }
                 return extensionDoc;
             }
             return null;

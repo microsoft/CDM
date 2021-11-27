@@ -6,17 +6,13 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class ProjectionFKTest {
     private static List<List<String>> resOptsCombinations = new ArrayList<>(
@@ -35,244 +31,182 @@ public class ProjectionFKTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionFK")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionFKTest").toString();
 
     @Test
-    public void testEntityAttribute() {
+    public void testEntityAttribute() throws InterruptedException {
         String testName = "testEntityAttribute";
         String entityName = "SalesEntityAttribute";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-
-    @Test
-    public void testEntityAttributeProj() {
-        String testName = "testEntityAttributeProj";
-        String entityName = "SalesEntityAttribute";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testSourceWithEA() {
-        String testName = "testSourceWithEA";
-        String entityName = "SalesSourceWithEA";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testSourceWithEAProj() {
-        String testName = "testSourceWithEAProj";
-        String entityName = "SalesSourceWithEA";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testGroupFK() {
-        String testName = "testGroupFK";
-        String entityName = "SalesGroupFK";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testGroupFKProj() {
-        String testName = "testGroupFKProj";
-        String entityName = "SalesGroupFK";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testNestedFKProj() {
-        String testName = "testNestedFKProj";
-        String entityName = "SalesNestedFK";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testPolymorphic() {
-        String testName = "testPolymorphic";
-        String entityName = "PersonPolymorphicSource";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testPolymorphicProj() {
-        String testName = "testPolymorphicProj";
-        String entityName = "PersonPolymorphicSource";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testPolymorphicFKProj() {
-        String testName = "testPolymorphicFKProj";
-        String entityName = "PersonPolymorphicSourceFK";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testArraySource() {
-        String testName = "testArraySource";
-        String entityName = "SalesArraySource";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testArraySourceProj() {
-        String testName = "testArraySourceProj";
-        String entityName = "SalesArraySource";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testForeignKey() {
-        String testName = "testForeignKey";
-        String entityName = "SalesForeignKey";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testForeignKeyProj() {
-        String testName = "testForeignKeyProj";
-        String entityName = "SalesForeignKey";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testForeignKeyAlways() {
-        String testName = "testForeignKeyAlways";
-        String entityName = "SalesForeignKeyAlways";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    @Test
-    public void testCompositeKeyProj() {
-        String testName = "testCompositeKeyProj";
-        String entityName = "SalesCompositeKey";
-
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
-        }
-    }
-
-    /**
-     * Test resolving a type attribute with a replace as foreign key operation
-     */
-    @Test
-    public void testTypeAttributeProj() throws InterruptedException {
-        String testName = "testTypeAttributeProj";
-        String entityName = "Person";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
-
-        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList("referenceOnly"))).join();
-
-        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        // Replace as foreign key applied to "address", replace with "addressId"
-        Assert.assertEquals(resolvedEntity.getAttributes().size(), 5);
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "name");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "age");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "addressId");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
     }
 
-    private CompletableFuture<Void> loadEntityForResolutionOptionAndSave(String testName, String entityName, List<String> resOpts) {
-        return CompletableFuture.runAsync(() -> {
-            CdmCorpusDefinition corpus = null;
-            try {
-                corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
 
-            String expectedOutputPath = null;
-            try {
-                expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            String fileNameSuffix = ProjectionTestUtils.getResolutionOptionNameSuffix(resOpts);
+    @Test
+    public void testEntityAttributeProj() throws InterruptedException {
+        String testName = "testEntityAttributeProj";
+        String entityName = "SalesEntityAttribute";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-            CdmEntityDefinition entSalesForeignKeyProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-            Assert.assertNotNull(entSalesForeignKeyProjection);
-            CdmEntityDefinition resolvedSalesForeignKeyProjection = saveResolved(corpus, manifest, testName, entSalesForeignKeyProjection, resOpts).join();
-            Assert.assertNotNull(resolvedSalesForeignKeyProjection);
-            AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName + fileNameSuffix, resolvedSalesForeignKeyProjection);
-        });
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
     }
 
-    private CompletableFuture<CdmEntityDefinition> saveResolved(CdmCorpusDefinition corpus, CdmManifestDefinition manifest, String testName, CdmEntityDefinition inputEntity, List<String> resolutionOptions) {
-        return CompletableFuture.supplyAsync(() -> {
-            HashSet<String> roHashSet = new HashSet<String>();
-            for (int i = 0; i < resolutionOptions.size(); i++) {
-                roHashSet.add(resolutionOptions.get(i));
-            }
+    @Test
+    public void testSourceWithEA() throws InterruptedException {
+        String testName = "testSourceWithEA";
+        String entityName = "SalesSourceWithEA";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-            String fileNameSuffix = ProjectionTestUtils.getResolutionOptionNameSuffix(resolutionOptions);
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
 
-            String resolvedEntityName = "Resolved_" + inputEntity.getEntityName() + fileNameSuffix + ".cdm.json";
+    @Test
+    public void testSourceWithEAProj() throws InterruptedException {
+        String testName = "testSourceWithEAProj";
+        String entityName = "SalesSourceWithEA";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-            ResolveOptions ro = new ResolveOptions(inputEntity.getInDocument());
-            ro.setDirectives(new AttributeResolutionDirectiveSet(roHashSet));
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
 
-            CdmFolderDefinition resolvedFolder = corpus.getStorage().fetchRootFolder("output");
-            CdmEntityDefinition resolvedEntity = inputEntity.createResolvedEntityAsync(resolvedEntityName, ro, resolvedFolder).join();
+    @Test
+    public void testGroupFK() throws InterruptedException {
+        String testName = "testGroupFK";
+        String entityName = "SalesGroupFK";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-            return resolvedEntity;
-        });
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testGroupFKProj() throws InterruptedException {
+        String testName = "testGroupFKProj";
+        String entityName = "SalesGroupFK";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testNestedFKProj() throws InterruptedException {
+        String testName = "testNestedFKProj";
+        String entityName = "SalesNestedFK";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testPolymorphic() throws InterruptedException {
+        String testName = "testPolymorphic";
+        String entityName = "PersonPolymorphicSource";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testPolymorphicProj() throws InterruptedException {
+        String testName = "testPolymorphicProj";
+        String entityName = "PersonPolymorphicSource";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testPolymorphicFKProj() throws InterruptedException {
+        String testName = "testPolymorphicFKProj";
+        String entityName = "PersonPolymorphicSourceFK";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testArraySource() throws InterruptedException {
+        String testName = "testArraySource";
+        String entityName = "SalesArraySource";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testArraySourceProj() throws InterruptedException {
+        String testName = "testArraySourceProj";
+        String entityName = "SalesArraySource";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testForeignKey() throws InterruptedException {
+        String testName = "testForeignKey";
+        String entityName = "SalesForeignKey";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testForeignKeyProj() throws InterruptedException {
+        String testName = "testForeignKeyProj";
+        String entityName = "SalesForeignKey";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testForeignKeyAlways() throws InterruptedException {
+        String testName = "testForeignKeyAlways";
+        String entityName = "SalesForeignKeyAlways";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+    }
+
+    @Test
+    public void testCompositeKeyProj() throws InterruptedException {
+        String testName = "testCompositeKeyProj";
+        String entityName = "SalesCompositeKey";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
     }
 }

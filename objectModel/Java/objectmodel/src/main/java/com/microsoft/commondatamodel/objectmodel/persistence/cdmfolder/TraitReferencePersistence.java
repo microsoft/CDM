@@ -17,6 +17,7 @@ public class TraitReferencePersistence {
     }
 
     boolean simpleReference = true;
+    Boolean optional = null;
     final Object trait;
     JsonNode args = null;
 
@@ -25,6 +26,9 @@ public class TraitReferencePersistence {
     } else {
       simpleReference = false;
       args = obj.get("arguments");
+
+      optional = Utils.propertyFromDataToBoolean(obj.get("optional"));
+
       if (obj.get("traitReference").isValueNode()) {
         trait = obj.get("traitReference").asText();
       } else {
@@ -33,9 +37,15 @@ public class TraitReferencePersistence {
     }
 
     final CdmTraitReference traitReference = ctx.getCorpus().makeRef(CdmObjectType.TraitRef, trait, simpleReference);
+
+    if (optional != null) {
+      traitReference.setOptional(optional);
+    }
+
     if (args != null) {
       args.forEach(a -> traitReference.getArguments().add(ArgumentPersistence.fromData(ctx, a)));
     }
+
     return traitReference;
   }
 

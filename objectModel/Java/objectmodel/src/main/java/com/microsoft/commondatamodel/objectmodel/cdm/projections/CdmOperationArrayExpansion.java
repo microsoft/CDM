@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
@@ -16,14 +17,15 @@ import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle ArrayExpansion operations
  */
 public class CdmOperationArrayExpansion extends CdmOperationBase {
-    private String TAG = CdmOperationArrayExpansion.class.getSimpleName();
+    private static final String TAG = CdmOperationArrayExpansion.class.getSimpleName();
     private Integer startOrdinal;
     private Integer endOrdinal;
 
@@ -51,9 +53,16 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationArrayExpansion copy = new CdmOperationArrayExpansion(this.getCtx());
-        copy.startOrdinal = this.startOrdinal;
-        copy.endOrdinal = this.endOrdinal;
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationArrayExpansion copy = host == null ? new CdmOperationArrayExpansion(this.getCtx()) : (CdmOperationArrayExpansion)host;
+
+        copy.setStartOrdinal(this.getStartOrdinal());
+        copy.setEndOrdinal(this.getEndOrdinal());
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -93,7 +102,7 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
             missingFields.add("endOrdinal");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -101,14 +110,7 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationArrayExpansion";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -141,7 +143,12 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
 
         // Ordinal validation
         if (this.startOrdinal > this.endOrdinal) {
-            Logger.warning(TAG, this.getCtx(), "startOrdinal " + this.startOrdinal + " should not be greater than endOrdinal " + this.endOrdinal, "appendProjectionAttributeState");
+            Logger.warning(this.getCtx(), TAG,
+                    "appendProjectionAttributeState",
+                    this.getAtCorpusPath(),
+                    CdmLogCode.WarnValdnOrdinalStartEndOrder,
+                    this.startOrdinal.toString(),
+                    this.endOrdinal.toString());
         } else {
             // Ordinals should start at startOrdinal or 0, whichever is larger.
             int startingOrdinal = Math.max(0, this.startOrdinal);
@@ -149,11 +156,14 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
             // Ordinals should end at endOrdinal or the maximum ordinal allowed (set in resolve options), whichever is smaller.
             if (this.endOrdinal > projCtx.getProjectionDirective().getResOpt().getMaxOrdinalForArrayExpansion()) {
                 Logger.warning(
-                    TAG,
-                    this.getCtx(),
-                    "endOrdinal " + this.endOrdinal + " is greater than the maximum allowed ordinal of " + projCtx.getProjectionDirective().getResOpt().getMaxOrdinalForArrayExpansion() + ". Using the maximum allowed ordinal instead.",
-                    "appendProjectionAttributeState"
-                );
+                        this.getCtx(),
+                        TAG,
+                        "appendProjectionAttributeState",
+                        this.getAtCorpusPath(),
+                        CdmLogCode.WarnValdnMaxOrdinalTooHigh,
+                        this.endOrdinal.toString(),
+                        String.valueOf(projCtx.getProjectionDirective().getResOpt().getMaxOrdinalForArrayExpansion()));
+
             }
             int endingOrdinal = Math.min(projCtx.getProjectionDirective().getResOpt().getMaxOrdinalForArrayExpansion(), this.endOrdinal);
 
@@ -177,22 +187,18 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
                     CdmAttributeContext attrCtxExpandedAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxExpandedAttrParam);
 
                     if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof ResolvedAttributeSet) {
-                        Logger.error(
-                            TAG,
-                            this.getCtx(), 
-                            "Array expansion operation does not support attribute groups.");
+                        Logger.error(this.getCtx(), TAG, "appendProjectionAttributeState", this.getAtCorpusPath(), CdmLogCode.ErrProjUnsupportedAttrGroups);
                         projAttrStatesFromRounds.clear();
                         break;
                     }
 
                     // Create a new resolved attribute for the expanded attribute
-                    ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, (CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget(), currentPAS.getCurrentResolvedAttribute().getResolvedName());
-                    newResAttr.getAttCtx().addLineage(currentPAS.getCurrentResolvedAttribute().getAttCtx());
+                    ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.getCurrentResolvedAttribute(), currentPAS.getCurrentResolvedAttribute().getResolvedName());
 
                     // Create a projection attribute state for the expanded attribute
                     ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.getCtx());
                     newPAS.setCurrentResolvedAttribute(newResAttr);
-                    newPAS.setPreviousStateList(new ArrayList<>(Arrays.asList(currentPAS)));
+                    newPAS.setPreviousStateList(new ArrayList<>(Collections.singletonList(currentPAS)));
                     newPAS.setOrdinal(i);
 
                     projAttrStatesFromRounds.add(newPAS);

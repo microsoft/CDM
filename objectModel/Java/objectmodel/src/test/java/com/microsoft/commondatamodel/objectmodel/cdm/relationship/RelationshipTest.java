@@ -6,26 +6,24 @@ package com.microsoft.commondatamodel.objectmodel.cdm.relationship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmE2ERelationship;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.E2ERelationship;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,7 +37,7 @@ public class RelationshipTest {
    */
   @Test
   public void testCalculateRelationshipsAndPopulateManifests() throws IOException, InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests");
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
     final CdmManifestDefinition subManifest = corpus
@@ -71,7 +69,7 @@ public class RelationshipTest {
   @Test
   public void TestCalculateRelationshipsAndPopulateManifestsWithExclusiveFlag()
       throws InterruptedException, ExecutionException, IOException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests");
 
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").get();
@@ -104,7 +102,7 @@ public class RelationshipTest {
   @Test
   public void testCalculateRelationshipsAndPopulateManifestsWithNoneFlag()
       throws ExecutionException, InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests");
 
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").get();
@@ -247,7 +245,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsForSelectsOneAttribute", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsForSelectsOneAttribute");
         corpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
 
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/selectsOne.manifest.cdm.json").join();
@@ -260,19 +258,38 @@ public class RelationshipTest {
   }
 
   /**
+   * Test the relationship calculation when using a replace as foreign key operation while extending an entity.
+   */
+  @Test
+  public void testExtendsEntityAndReplaceAsForeignKey() throws InterruptedException {
+      String testName = "testExtendsEntityAndReplaceAsForeignKey";
+      final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.WarnProjFKWithoutSourceEntity));
+      CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null, false, expectedLogCodes);
+
+      CdmManifestDefinition manifest =  corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
+
+      corpus.calculateEntityGraphAsync(manifest).join();
+      // Check if the warning was logged.
+      TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnProjFKWithoutSourceEntity, true);
+
+      manifest.populateManifestRelationshipsAsync().join();
+      Assert.assertEquals(manifest.getRelationships().size(), 0);
+  }
+
+  /**
    * Test relationships are generated correctly when the document name and entity name do not match
    */
   @Test
   public void testRelationshipsEntityAndDocumentNameDifferent()
       throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
-        final List<E2ERelationship> expectedRels = 
+        final List<E2ERelationship> expectedRels =
           JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
           TESTS_SUBPATH,
-          "testRelationshipsEntityAndDocumentNameDifferent", 
+          "testRelationshipsEntityAndDocumentNameDifferent",
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipsEntityAndDocumentNameDifferent", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipsEntityAndDocumentNameDifferent");
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
 
         corpus.calculateEntityGraphAsync(manifest).get();
@@ -295,7 +312,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToMultipleEntities", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToMultipleEntities");
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
 
         corpus.calculateEntityGraphAsync(manifest).get();
@@ -318,7 +335,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToDifferentNamespace", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToDifferentNamespace");
         // entity B will be in a different namespace
         corpus.getStorage().mount("differentNamespace", new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, "TestRelationshipToDifferentNamespace") + "/differentNamespace"));
 
@@ -330,6 +347,15 @@ public class RelationshipTest {
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
   }
+
+  private CompletableFuture<Void> reloadFromEntity(CdmCorpusDefinition corpus, CdmEntityDefinition fromEnt, String tempFromFilePath, String tempFromEntityPath) {
+      final CopyOptions options = new CopyOptions();
+      options.setTopLevelDocument(false);
+      fromEnt.getInDocument().saveAsAsync(tempFromFilePath, false, options).join();
+      // fetch gain to reset the cache
+      corpus.<CdmEntityDefinition>fetchObjectAsync(tempFromEntityPath, null, null, true).join();
+      return CompletableFuture.completedFuture(null);
+  };
 
   /**
    * Test that relationships pointing from a manifest to an entity in a submanifest create correct paths
@@ -344,7 +370,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipPointingToSubManifest", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipPointingToSubManifest");
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
 
         corpus.calculateEntityGraphAsync(manifest).get();
@@ -353,6 +379,82 @@ public class RelationshipTest {
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
   }
+
+    /**
+     * Test that ensures relationships are updated correctly after entities are changed
+     */
+    @Test
+    public void testUpdateRelationships()
+            throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels =
+                JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+                                TESTS_SUBPATH,
+                                "testUpdateRelationships",
+                                "expectedRels.json"),
+                        new TypeReference<List<E2ERelationship>>() {
+                        });
+        final String tempFromFilePath = "fromEntTemp.cdm.json";
+        final String tempFromEntityPath = "local:/fromEntTemp.cdm.json/fromEnt";
+        final String tempToEntityPath = "local:/toEnt.cdm.json/toEnt";
+
+        // Initialize corpus and entity files
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testUpdateRelationships");
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+        final CdmManifestDefinition manifestNoToEnt = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/mainNoToEnt.manifest.cdm.json").join();
+        final CdmEntityDefinition fromEnt = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/fromEnt.cdm.json/fromEnt").join();
+
+        final CopyOptions options = new CopyOptions();
+        options.setTopLevelDocument(false);
+        fromEnt.getInDocument().saveAsAsync(tempFromFilePath, false, options).join();
+
+        try {
+            // 1. test when entity attribute is removed
+            corpus.calculateEntityGraphAsync(manifest).join();
+            manifest.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been created correctly
+            verifyRelationships(manifest, expectedRels);
+
+            // now remove the entity attribute, which removes the relationship
+            CdmAttributeItem removedAttribute = fromEnt.getAttributes().get(0);
+            fromEnt.getAttributes().removeAt(0);
+            reloadFromEntity(corpus, fromEnt, tempFromFilePath, tempFromEntityPath).join();
+
+            corpus.calculateEntityGraphAsync(manifest).join();
+            manifest.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been removed
+            verifyRelationships(manifest, new ArrayList<E2ERelationship>());
+
+            // 2. test when the to entity is removed
+            // restore the entity to the original state
+            fromEnt.getAttributes().add(removedAttribute);
+            reloadFromEntity(corpus, fromEnt, tempFromFilePath, tempFromEntityPath).join();
+
+            corpus.calculateEntityGraphAsync(manifest).join();
+            manifest.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been created correctly
+            verifyRelationships(manifest, expectedRels);
+
+            // remove the to entity
+            fromEnt.getAttributes().removeAt(0);
+            reloadFromEntity(corpus, fromEnt, tempFromFilePath, tempFromEntityPath).join();
+            // fetch again to reset the cache
+            corpus.<CdmEntityDefinition>fetchObjectAsync(tempToEntityPath, null, null, true).join();
+
+            corpus.calculateEntityGraphAsync(manifestNoToEnt).join();
+            manifestNoToEnt.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been removed
+            verifyRelationships(manifestNoToEnt, new ArrayList<E2ERelationship>());
+        } finally {
+            // clean up created file created
+            final String fromFilePath = corpus.getStorage().corpusPathToAdapterPath("local:/" + tempFromFilePath);
+            final File fromFile = new File(fromFilePath);
+            fromFile.delete();
+        }
+    }
 
   private static void verifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships) {
     Assert.assertEquals(manifest.getRelationships().size(), expectedRelationships.size());
@@ -364,9 +466,7 @@ public class RelationshipTest {
           Objects.equals(expectedRel.getFromEntity(), x.getFromEntity())
           && Objects.equals(expectedRel.getFromEntityAttribute(), x.getFromEntityAttribute())
           && Objects.equals(expectedRel.getToEntity(), x.getToEntity())
-          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute())
-          && ((StringUtils.isNullOrTrimEmpty(expectedRel.getName()) && StringUtils.isNullOrTrimEmpty(x.getName()))
-          || (expectedRel.getName().equals(x.getName()))))
+          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute()))
         .collect(Collectors.toList());
       Assert.assertEquals(found.size(), 1);
    }

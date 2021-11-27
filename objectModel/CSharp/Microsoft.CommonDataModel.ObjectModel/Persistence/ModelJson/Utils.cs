@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -17,12 +18,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     public static class Utils
     {
-        private static readonly Dictionary<string, string> annotationToTraitMap = new Dictionary<string, string>
+        private static readonly string Tag = nameof(Utils);
+
+        private static IReadOnlyDictionary<string, string> annotationToTraitMap => new Dictionary<string, string>
         {
             { "version", "is.CDM.entityVersion" }
         };
 
-        internal static readonly HashSet<string> ignoredTraits = new HashSet<string>
+        internal static ReadOnlySet<string> ignoredTraits = new ReadOnlySet<string>(new HashSet<string>
         {
             "is.propertyContent.multiTrait",
             "is.modelConversion.referenceModelMap",
@@ -33,15 +36,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             "is.partition.culture",
             "is.managedBy",
             "is.hidden"
-        };
+        });
 
         // Traits to ignore if they come from properties.
         // These traits become properties on the model.json. To avoid persisting both a trait
         // and a property on the model.json, we filter these traits out.
-        internal static readonly HashSet<string> modelJsonPropertyTraits = new HashSet<string>
-        {
+        internal static ReadOnlySet<string> modelJsonPropertyTraits = new ReadOnlySet<string>(new HashSet<string> {
+
             "is.localized.describedAs"
-        };
+        });
+
 
         internal static async Task ProcessAnnotationsFromData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
@@ -85,8 +89,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 foreach (var trait in obj.Traits)
                 {
-                    var traitInstance = CdmFolder.TraitReferencePersistence.FromData(ctx, JToken.FromObject(trait));
-                    traits.Add(traitInstance);
+                    var trToken = JToken.FromObject(trait);
+
+                    if (!(trToken is JValue) && trToken["traitGroupReference"] != null)
+                    {
+                        traits.Add(CdmFolder.TraitGroupReferencePersistence.FromData(ctx, trToken));
+                    }
+                    else
+                    {
+                        traits.Add(CdmFolder.TraitReferencePersistence.FromData(ctx, trToken));
+                    }
                 }
             }
         }
@@ -105,13 +117,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 if (ExtensionHelper.TraitRefIsExtension(trait))
                 {
-                    ExtensionHelper.ProcessExtensionTraitToObject(trait, obj);
-
+                    // Safe to cast since extensions can only be trait refs, not trait group refs
+                    ExtensionHelper.ProcessExtensionTraitToObject(trait as CdmTraitReference, obj);
                     continue;
                 }
+
                 if (trait.NamedReference == "is.modelConversion.otherAnnotations")
                 {
-                    foreach (var annotation in trait.Arguments[0].Value)
+                    // Safe to cast since "is.modelConversion.otherAnnotations" is a trait, not trait group
+                    foreach (var annotation in (trait as CdmTraitReference).Arguments[0].Value)
                     {
 
                         if (annotation is JObject jAnnotation)
@@ -129,7 +143,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         }
                         else
                         {
-                            Logger.Warning(nameof(Utils), ctx, "Unsupported annotation type.");
+                            Logger.Warning(ctx, Tag, nameof(ProcessTraitsAndAnnotationsToData), null, CdmLogCode.WarnAnnotationTypeNotSupported);
                         }
 
                     }
@@ -137,9 +151,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 else if (
                     !ignoredTraits.Contains(trait.NamedReference)
                     && !trait.NamedReference.StartsWith("is.dataFormat")
-                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait.IsFromProperty))
+                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait is CdmTraitReference && (trait as CdmTraitReference).IsFromProperty))
                 {
-                    var extension = CdmFolder.TraitReferencePersistence.ToData(trait, null, null);
+                    var extension = trait is CdmTraitGroupReference ?
+                        CdmFolder.TraitGroupReferencePersistence.ToData(trait as CdmTraitGroupReference, null, null) :
+                        CdmFolder.TraitReferencePersistence.ToData(trait as CdmTraitReference, null, null);
                     extensions.Add(JToken.FromObject(extension, JsonSerializationUtil.JsonSerializer));
                 }
             }

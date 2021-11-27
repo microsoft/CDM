@@ -3,14 +3,18 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.concurrent.ConcurrentSemaphore;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,24 +26,26 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Deprecated
 public class DocumentLibrary {
-    List<Pair<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
-    Map<String, Pair<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
-    Map<String, Short> docsNotLoaded;
-    Map<String, Short> docsCurrentlyLoading;
-    Map<CdmDocumentDefinition, Short> docsNotIndexed;
-    Map<String, Short> docsNotFound;
-    Lock documentLibraryLock;
-    public ConcurrentSemaphore concurrentReadLock;
+    private static String TAG = DocumentLibrary.class.getSimpleName();
 
-    DocumentLibrary() {
+    List<Pair<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
+    public ConcurrentSemaphore concurrentReadLock;
+    CdmCorpusDefinition corpus;
+    Set<String> docsCurrentlyLoading;
+    Set<CdmDocumentDefinition> docsCurrentlyIndexing;
+    Set<String> docsNotFound;
+    Lock documentLibraryLock;
+    Map<String, Pair<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
+
+    DocumentLibrary(CdmCorpusDefinition corpus) {
         this.allDocuments = new ArrayList<>();
-        this.pathLookup = new LinkedHashMap<>();
-        this.docsNotLoaded = new LinkedHashMap<>();
-        this.docsCurrentlyLoading = new LinkedHashMap<>();
-        this.docsNotFound = new LinkedHashMap<>();
-        this.docsNotIndexed = new LinkedHashMap<>();
-        this.documentLibraryLock = new ReentrantLock();
         this.concurrentReadLock = new ConcurrentSemaphore();
+        this.corpus = corpus;
+        this.docsCurrentlyLoading = new HashSet<>();
+        this.docsCurrentlyIndexing = new HashSet<>();
+        this.docsNotFound = new HashSet<>();
+        this.documentLibraryLock = new ReentrantLock();
+        this.pathLookup = new LinkedHashMap<>();
     }
 
     /**
@@ -55,6 +61,7 @@ public class DocumentLibrary {
         if (!this.pathLookup.containsKey(path)) {
             this.allDocuments.add(new ImmutablePair<>(folder, doc));
             this.pathLookup.put(path, new ImmutablePair<>(folder, doc));
+            folder.getDocumentLookup().put(doc.getName(), doc);
         }
 
         this.documentLibraryLock.unlock();
@@ -80,36 +87,31 @@ public class DocumentLibrary {
     }
 
     /**
-     * Returns a list of all the documents that are not loaded.
-     */
-    List<String> listDocsNotLoaded() {
-        this.documentLibraryLock.lock();
-
-        List<String> list = new ArrayList<>();
-        for (Map.Entry<String, Short> entry : this.docsNotLoaded.entrySet()) {
-            list.add(entry.getKey());
-        }
-
-        this.documentLibraryLock.unlock();
-        return list;
-    }
-
-    /**
      * Returns a list of all the documents that are not indexed.
      */
-    List<CdmDocumentDefinition> listDocsNotIndexed() {
+    List<CdmDocumentDefinition> listDocsNotIndexed(CdmDocumentDefinition rootDoc, Set<String> docsLoaded) {
         this.documentLibraryLock.lock();
 
-        List<CdmDocumentDefinition> list = new ArrayList<>();
+        List<CdmDocumentDefinition> docsNotIndexed = new ArrayList<>();
         // gets all the documents that needs indexing and set the currentlyIndexing flag to true.
-        for (Map.Entry<CdmDocumentDefinition, Short> entry : this.docsNotIndexed.entrySet()) {
-            CdmDocumentDefinition doc = entry.getKey();
-            doc.setCurrentlyIndexing(true);
-            list.add(doc);
+        for (String docPath : docsLoaded) {
+            CdmDocumentDefinition doc = this.fetchDocument(docPath);
+            if (doc == null) {
+                continue;
+            }
+
+            // The root document that started this indexing process is already masked for indexing, don't mark it again.
+            if (doc != rootDoc) {
+                if (this.markDocumentForIndexing(doc)) {
+                    docsNotIndexed.add(doc);
+                }
+            } else {
+                docsNotIndexed.add(rootDoc);
+            }
         }
 
         this.documentLibraryLock.unlock();
-        return list;
+        return docsNotIndexed;
     }
 
     /**
@@ -133,24 +135,6 @@ public class DocumentLibrary {
     }
 
     /**
-     * Adds a document to the list of documents that are not loaded if its path does not exist in the path lookup.
-     * @param path The document path.
-     */
-    void addToDocsNotLoaded(String path) {
-        this.documentLibraryLock.lock();
-
-        if (!this.docsNotFound.containsKey(path)) {
-            Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path.toLowerCase());
-            // If the imports were not indexed yet there might be documents imported that weren't loaded.
-            if (lookup == null || (!lookup.getRight().isImportsIndexed() && !lookup.getRight().isCurrentlyIndexing())) {
-                this.docsNotLoaded.put(path, (short) 1);
-            }
-        }
-
-        this.documentLibraryLock.unlock();
-    }
-
-    /**
      * Fetches a document from the path lookup.
      * @param path The document path.
      * @return The document with the given path.
@@ -159,8 +143,8 @@ public class DocumentLibrary {
         this.documentLibraryLock.lock();
 
         CdmDocumentDefinition doc = null;
-        if (!this.docsNotFound.containsKey(path)) {
-            final Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path.toLowerCase());
+        if (!this.docsNotFound.contains(path)) {
+            final Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path);
 
             if (lookup != null) {
                 doc = lookup.getRight();
@@ -173,33 +157,24 @@ public class DocumentLibrary {
 
     /**
      * Sets a document's status to loading if the document needs to be loaded.
-     * @param docName The document name.
+     * @param docPath The document name.
      * @return Whether a document needs to be loaded.
      */
-    boolean needToLoadDocument(String docName, Map<CdmDocumentDefinition, Short> docsNowLoaded) {
+    boolean needToLoadDocument(String docPath, Set<String> docsLoaded) {
         this.documentLibraryLock.lock();
 
-        boolean needToLoad = false;
-        CdmDocumentDefinition doc = null;
-        if (this.docsNotLoaded.containsKey(docName) && !this.docsNotFound.containsKey(docName) && !this.docsCurrentlyLoading.containsKey(docName)) {
-            // Set status to loading.
-            this.docsNotLoaded.remove(docName);
+        CdmDocumentDefinition document = this.pathLookup.containsKey(docPath) ? this.pathLookup.get(docPath).getValue() : null;
 
-            // The document was loaded already, skip it.
-            if (this.pathLookup.containsKey(docName.toLowerCase())) {
-                Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(docName.toLowerCase());
-                doc = lookup.getRight();
-            } else {
-                this.docsCurrentlyLoading.put(docName, (short) 1);
-                needToLoad = true;
-            }
+        // first check if the document was not found or is currently loading.
+        // if the document was loaded previously, check if its imports were not indexed and it's not being indexed currently.
+        boolean needToLoad = !this.docsNotFound.contains(docPath) && !docsLoaded.contains(docPath)
+                && (document == null || (!document.isImportsIndexed() && !document.isCurrentlyIndexing()));
+
+        if (needToLoad) {
+            docsLoaded.add(docPath);
         }
+
         this.documentLibraryLock.unlock();
-
-        if (doc != null) {
-            // markDocumentAsLoadedOrFailed needs to because it also requires the lock.
-            this.markDocumentAsLoadedOrFailed(doc, docName, docsNowLoaded);
-        }
 
         return needToLoad;
     }
@@ -207,32 +182,22 @@ public class DocumentLibrary {
     /**
      * Marks a document for indexing if it has loaded successfully, or adds it to the list of documents not found if it
      * failed to load.
+     * @param docPath The document name.
      * @param doc The document that was loaded.
-     * @param docName The document name.
-     * @param docsNowLoaded The dictionary of documents that are now loaded.
      * @return Returns true if the document has loaded, false if it failed to load.
      */
-    boolean markDocumentAsLoadedOrFailed(CdmDocumentDefinition doc, String docName, Map<CdmDocumentDefinition, Short> docsNowLoaded) {
+    void markAsLoadedOrFailed(String docPath, CdmContainerDefinition doc) {
         this.documentLibraryLock.lock();
 
-        boolean hasLoaded = false;
         // Doc is no longer loading.
-        this.docsCurrentlyLoading.remove(docName);
+        this.docsCurrentlyLoading.remove(docPath);
 
-        if (doc != null) {
-            // Doc is now loaded.
-            docsNowLoaded.put(doc, (short) 1);
-            // Doc needs to be indexed.
-            this.docsNotIndexed.put(doc, (short) 1);
-            doc.setCurrentlyIndexing(true);
-            hasLoaded = true;
-        } else {
+        if (doc == null) {
             // The doc failed to load, so set doc as not found.
-            this.docsNotFound.put(docName, (short) 1);
+            this.docsNotFound.add(docPath);
         }
 
         this.documentLibraryLock.unlock();
-        return hasLoaded;
     }
 
     /**
@@ -241,7 +206,8 @@ public class DocumentLibrary {
      */
     void markDocumentAsIndexed(CdmDocumentDefinition doc) {
         this.documentLibraryLock.lock();
-        this.docsNotIndexed.remove(doc);
+        doc.setCurrentlyIndexing(false);
+        this.docsCurrentlyIndexing.remove(doc);
         this.documentLibraryLock.unlock();
     }
 
@@ -249,10 +215,18 @@ public class DocumentLibrary {
      * Adds a document to the list of documents that are not indexed to mark it for indexing.
      * @param doc The document.
      */
-    void markDocumentForIndexing(CdmDocumentDefinition doc) {
+    boolean markDocumentForIndexing(CdmDocumentDefinition doc) {
         this.documentLibraryLock.lock();
-        this.docsNotIndexed.put(doc, (short) 1);
+
+        if (doc.getNeedsIndexing() && !doc.isCurrentlyIndexing()) {
+            // If the document was not indexed before and it's not currently being indexed.
+            this.docsCurrentlyIndexing.add(doc);
+            doc.setCurrentlyIndexing(true);
+        }
+
         this.documentLibraryLock.unlock();
+
+        return doc.getNeedsIndexing();
     }
 
     /**
@@ -265,5 +239,93 @@ public class DocumentLibrary {
     @Deprecated
     public boolean contains(Pair<CdmFolderDefinition, CdmDocumentDefinition> fd) {
         return this.allDocuments.contains(fd);
+    }
+
+    CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(final String objectPath) {
+        return loadFolderOrDocumentAsync(objectPath, false);
+    }
+
+    CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
+                                                                                          final boolean forceReload) {
+        return loadFolderOrDocumentAsync(objectPath, forceReload, null);
+    }
+
+    CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
+                                                                                  final boolean forceReload,
+                                                                                  final ResolveOptions resOpt) {
+        this.documentLibraryLock.lock();
+
+        // If the document is already loaded and the user do not want to force a reload, return the document previously loaded.
+        if (!forceReload && this.pathLookup.containsKey(objectPath))
+        {
+            CdmContainerDefinition doc = this.pathLookup.get(objectPath).getRight();
+            this.documentLibraryLock.unlock();
+            return CompletableFuture.completedFuture(doc);
+        }
+
+        // Mark as loading.
+        this.docsCurrentlyLoading.add(objectPath);
+
+        this.documentLibraryLock.unlock();
+
+        // The document needs to be loaded. Create a task to load it and add to the list of documents currently loading.
+        return CompletableFuture.supplyAsync(() -> {
+            CdmContainerDefinition result = this._loadFolderOrDocumentAsync(objectPath, forceReload, resOpt);
+            this.markAsLoadedOrFailed(objectPath, result);
+            return result;
+        });
+    }
+
+    private CdmContainerDefinition _loadFolderOrDocumentAsync(String objectPath,
+                                                                                          final boolean forceReload,
+                                                                                          final ResolveOptions resOpt) {
+        if (StringUtils.isNullOrTrimEmpty(objectPath)) {
+            return null;
+        }
+        // first check for namespace
+        final Map.Entry<String, String> pathTuple = StorageUtils.splitNamespacePath(objectPath);
+        if (pathTuple == null) {
+            Logger.error(this.corpus.getCtx(), TAG, "loadFolderOrDocumentAsync", objectPath, CdmLogCode.ErrPathNullObjectPath);
+            return null;
+        }
+        final String nameSpace = !StringUtils.isNullOrTrimEmpty(pathTuple.getKey()) ? pathTuple.getKey()
+                : this.corpus.getStorage().getDefaultNamespace();
+        objectPath = pathTuple.getValue();
+
+        if (objectPath.startsWith("/")) {
+            final CdmFolderDefinition namespaceFolder = this.corpus.getStorage().fetchRootFolder(nameSpace);
+            final StorageAdapterBase namespaceAdapter = this.corpus.getStorage().fetchAdapter(nameSpace);
+
+            if (namespaceFolder == null || namespaceAdapter == null) {
+                Logger.error(this.corpus.getCtx(), TAG, "loadFolderOrDocumentAsync", objectPath, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);
+                return null;
+            }
+
+            final CdmFolderDefinition lastFolder = namespaceFolder
+                    .fetchChildFolderFromPath(objectPath, false);
+
+            // don't create new folders, just go as far as possible
+            if (lastFolder != null) {
+                // maybe the search is for a folder?
+                final String lastPath = lastFolder.getFolderPath();
+                if (lastPath.equals(objectPath)) {
+                    return lastFolder;
+                }
+
+                // remove path to folder and then look in the folder
+                final String newObjectPath = StringUtils.slice(objectPath, lastPath.length());
+
+                this.concurrentReadLock.acquire().join();
+
+                // // During this step the document will be added to the pathLookup when it is added to a folder.
+                CdmDocumentDefinition doc = lastFolder.fetchDocumentFromFolderPathAsync(newObjectPath, forceReload, resOpt).join();
+
+                this.concurrentReadLock.release();
+
+                return doc;
+            }
+        }
+
+        return null;
     }
 }

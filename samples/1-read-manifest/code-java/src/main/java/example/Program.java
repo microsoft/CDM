@@ -3,7 +3,6 @@
 
 package example;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
@@ -16,7 +15,9 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 
 import java.util.List;
@@ -41,6 +42,11 @@ public class Program {
     // or discovered while navigating objects and paths.
 
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+
+     // set callback to receive error and warning logs.
+    cdmCorpus.setEventCallback((level, message) -> {
+      System.out.println(message);
+    }, CdmStatusLevel.Warning);
 
     // ---------------------------------------------------------------------------------------------
     // Configure storage adapters and mount them to the corpus.
@@ -131,10 +137,10 @@ public class Program {
         break;
       }
 
-      System.out.print("Show details for Entity or Sub-manifest number (press [enter] to exit): ");
+      System.out.println("Enter a number to show details for that Entity or Sub-manifest (press [enter] to exit): ");
       // Get the user's choice.
       String input = SCANNER.nextLine();
-      if (Strings.isNullOrEmpty(input)) {
+      if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(input)) {
         break;
       }
 
@@ -158,7 +164,7 @@ public class Program {
       index = 1;
       for (final CdmEntityDeclarationDefinition entityDeclaration : manifest.getEntities()) {
         if (index == num) {
-          System.out.print(
+          System.out.println(
               "Reading the entity schema and resolving with the standard docs, "
                   + "first one may take a second ...");
 
@@ -171,8 +177,8 @@ public class Program {
                   .join(); // Gets the entity object from the doc.
 
           while (true) {
-            System.out.println("\nMetadata properties for the entity: "
-              + entityDeclaration.getEntityName());
+            System.out.println("\nMetadata properties for the entity "
+                    + entityDeclaration.getEntityName() + ":");
             System.out.println("  1: Attributes");
             System.out.println("  2: Traits");
             System.out.println("  3: Properties");
@@ -180,11 +186,11 @@ public class Program {
             System.out.println("  5: Relationships");
 
             System.out.println("Enter a number to show details for that metadata "
-              +"property (press [enter] to explore other entities):");
+              + "property (press [enter] to explore other entities):");
 
             // Get the user's choice.
             input = SCANNER.nextLine();
-            if (Strings.isNullOrEmpty(input)) {
+            if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(input)) {
               break;
             }
 
@@ -252,7 +258,7 @@ public class Program {
         // Attribute's data format.
         printProperty("DataFormat", typeAttributeDefinition.fetchDataFormat().name());
         // And all the traits of this attribute.
-        System.out.println("  AppliedTraits:");
+        System.out.println("AppliedTraits:");
         typeAttributeDefinition.getAppliedTraits().forEach(Program::printTrait);
         System.out.println();
       }
@@ -310,7 +316,7 @@ public class Program {
       // The data partition location.
       System.out.println("  " + dataPartition.getLocation());
 
-      if (!Strings.isNullOrEmpty(dataPartition.getLocation())) {
+      if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(dataPartition.getLocation())) {
         System.out.println("  " + cdmCorpus.getStorage().corpusPathToAdapterPath(dataPartition.getLocation()));
       }
     }
@@ -345,33 +351,35 @@ public class Program {
     }
   }
 
-  static void printTrait(CdmTraitReference trait) {
-    if (!Strings.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
+  static void printTrait(CdmTraitReferenceBase trait) {
+    if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
       System.out.println("      " + trait.fetchObjectDefinitionName());
 
-      for (CdmArgumentDefinition argDef : trait.getArguments()) {
-        if (argDef.getValue() instanceof CdmEntityReference) {
-          System.out.println("         Constant: [");
+      if (trait instanceof CdmTraitReference) {
+        for (CdmArgumentDefinition argDef : ((CdmTraitReference) trait).getArguments()) {
+          if (argDef.getValue() instanceof CdmEntityReference) {
+            System.out.println("         Constant: [");
 
-          CdmConstantEntityDefinition contEntDef = 
-            ((CdmEntityReference)argDef.getValue()).fetchObjectDefinition();
+            CdmConstantEntityDefinition contEntDef = 
+              ((CdmEntityReference)argDef.getValue()).fetchObjectDefinition();
 
-          for (List<String> constantValueList : contEntDef.getConstantValues()) {
-              System.out.println("             " + constantValueList);
+            for (List<String> constantValueList : contEntDef.getConstantValues()) {
+                System.out.println("             " + constantValueList);
+            }
+            System.out.println("         ]");
           }
-          System.out.println("         ]");
-        }
-        else
-        {
-          // Default output, nothing fancy for now
-          System.out.println("         " + argDef.getValue());
+          else
+          {
+            // Default output, nothing fancy for now
+            System.out.println("         " + argDef.getValue());
+          }
         }
       }
     }
   }
 
   static void printProperty(final String propertyName, final String propertyValue) {
-    if (!Strings.isNullOrEmpty(propertyValue)) {
+    if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(propertyValue)) {
       System.out.println("  " + propertyName + ":" + " " + propertyValue);
     }
   }

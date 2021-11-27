@@ -18,7 +18,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_circular_import_with_moniker(self):
         """Test when A -> M/B -> C -> B.
         In this case, although A imports B with a moniker, B should be in the priorityimports because it is imported by C."""        
-        corpus = TestHelper.get_local_corpus('', '')  # type: CdmCorpusDefinition
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_circular_import_with_moniker')  # type: CdmCorpusDefinition
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition
@@ -50,7 +50,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_deeper_circular_import_with_moniker(self):
         """Test when A -> B -> C/M -> D -> C.
         In this case, although B imports C with a moniker, C should be in the A's priorityimports because it is imported by D."""
-        corpus = TestHelper.get_local_corpus('', '')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_deeper_circular_import_with_moniker')
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition
@@ -101,7 +101,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_reading_cached_import_priority(self):
         """Test when A -> B -> C/M -> D.
         Index doc_b first then doc_a. Make sure that C does not appear in doc_a priority list."""
-        corpus = TestHelper.get_local_corpus('', '')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_reading_cached_import_priority')
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition
@@ -138,7 +138,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_monikered_import_is_added_to_end(self):
         """Test if monikered imports are added to the end of the priority list.
         A -> B/M -> C"""
-        corpus = TestHelper.get_local_corpus('', '')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_monikered_import_is_added_to_end')
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition
@@ -170,16 +170,35 @@ class DocumentDefinitionTests(unittest.TestCase):
 
     @async_test
     async def test_document_forcereload(self):
-        testName = 'testDocumentForceReload'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, testName)  # type: CdmCorpusDefinition
+        test_name = 'test_document_force_reload'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         # load the document and entity the first time
         await corpus.fetch_object_async('doc.cdm.json/entity')
         # reload the same doc and make sure it is reloaded correctly
-        reloadedEntity = await corpus.fetch_object_async('doc.cdm.json/entity', None, None, True)  # type: CdmEntityDefinition
+        reloadedEntity = await corpus.fetch_object_async('doc.cdm.json/entity', None, None, force_reload=True)  # type: CdmEntityDefinition
 
         # if the reloaded doc is not indexed correctly, the entity will not be able to be found
         self.assertIsNotNone(reloadedEntity)
+
+    @async_test
+    async def test_document_version_set_on_resolution(self):
+        """Tests if the document_version is set on the resolved document"""
+        test_name = "test_document_version_set_on_resolution"
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type: CdmManifestDefinition
+        document = await corpus.fetch_object_async('local:/Person.cdm.json')  # type: CdmDocumentDefinition
+
+        self.assertEqual('2.1.3', manifest.document_version)
+        self.assertEqual('1.5', document.document_version)
+
+        res_manifest = await manifest.create_resolved_manifest_async('res-{}'.format(manifest.name), None)  # type: CdmManifestDefinition
+        res_entity = await corpus.fetch_object_async(res_manifest.entities[0].entity_path, res_manifest)  # type: CdmEntityDefinition
+        res_document = res_entity.in_document
+
+        self.assertEqual('2.1.3', res_manifest.document_version)
+        self.assertEqual('1.5', res_document.document_version)
 
     def _mark_documents_to_index(self, documents: CdmDocumentCollection):
         """Sets the document's is_dirty flag to True and reset the import_priority."""

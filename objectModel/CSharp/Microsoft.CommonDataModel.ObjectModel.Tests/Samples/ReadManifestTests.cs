@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         [TestInitialize]
         public void CheckSampleRunTestsFlag()
         {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("SAMPLE_RUNTESTS environment variable not set.");
@@ -38,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
             var testInputPath = Path.Combine(TestHelper.GetInputFolderPath(testsSubpath, nameof(TestReadManifest)), "input.txt");
             var testActualOutputPath = Path.Combine(TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestReadManifest)), "output.txt");
-            
+
             using (var reader = new StreamReader(testInputPath, Encoding.UTF8))
             {
                 using (var writer = new StreamWriter(testActualOutputPath, false, Encoding.UTF8))
@@ -56,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             File.WriteAllText(testActualOutputPath, actualOutputContent);
 
             TestHelper.AssertFileContentEquality(
-                File.ReadAllText(Path.Combine(TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestReadManifest)), "output.txt")),
+                File.ReadAllText(Path.Combine(TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestReadManifest)), "output-CSharp.txt")),
                 actualOutputContent
             );
         }
@@ -64,6 +65,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         private CdmCorpusDefinition SetupCdmCorpus()
         {
             var cdmCorpus = new CdmCorpusDefinition();
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Assert.Fail(message);
+                }
+            }, CdmStatusLevel.Warning);
+
             cdmCorpus.Storage.Mount("local", new LocalAdapter(TestHelper.GetInputFolderPath(testsSubpath, nameof(TestReadManifest))));
             cdmCorpus.Storage.DefaultNamespace = "local";
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(TestHelper.SampleSchemaFolderPath));
@@ -126,7 +135,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
                     break;
                 }
 
-                Console.Write("Enter a number to show details for that Entity or Sub-manifest (press [enter] to exit): ");
+                Console.WriteLine("Enter a number to show details for that Entity or Sub-manifest (press [enter] to exit): ");
 
                 // Get the user's choice.
                 string input = Console.ReadLine();
@@ -172,13 +181,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
                             Console.WriteLine("  4: Data partition locations");
                             Console.WriteLine("  5: Relationships");
 
-                            Console.Write("Enter a number to show details for that metadata property (press [enter] to explore other entities): ");
+                            Console.WriteLine("Enter a number to show details for that metadata property (press [enter] to explore other entities):");
 
                             // Get the user's choice. 
                             input = Console.ReadLine();
                             if (string.IsNullOrEmpty(input))
                             {
-                                Console.WriteLine();
                                 break;
                             }
 
@@ -342,27 +350,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             }
         }
 
-        static void PrintTrait(CdmTraitReference trait)
+        static void PrintTrait(CdmTraitReferenceBase trait)
         {
             if (!string.IsNullOrEmpty(trait.FetchObjectDefinitionName()))
             {
                 Console.WriteLine("      " + trait.FetchObjectDefinitionName());
-                foreach (var argDef in trait.Arguments)
+
+                if (trait is CdmTraitReference)
                 {
-                    if (argDef.Value is CdmEntityReference)
+                    foreach (var argDef in (trait as CdmTraitReference).Arguments)
                     {
-                        Console.WriteLine("         Constant: [");
-                        var contEntDef = argDef.Value.FetchObjectDefinition<CdmConstantEntityDefinition>();
-                        foreach (List<string> constantValueList in contEntDef.ConstantValues)
+                        if (argDef.Value is CdmEntityReference)
                         {
-                            Console.WriteLine($"             [{String.Join(", ", constantValueList.ToArray())}]");
+                            Console.WriteLine("         Constant: [");
+                            var contEntDef = argDef.Value.FetchObjectDefinition<CdmConstantEntityDefinition>();
+                            foreach (List<string> constantValueList in contEntDef.ConstantValues)
+                            {
+                                Console.WriteLine($"             [{string.Join(", ", constantValueList.ToArray())}]");
+                            }
+                            Console.WriteLine("         ]");
                         }
-                        Console.WriteLine("         ]");
-                    }
-                    else
-                    {
-                        // Default output, nothing fancy for now
-                        Console.WriteLine("         " + argDef.Value);
+                        else
+                        {
+                            // Default output, nothing fancy for now
+                            Console.WriteLine("         " + argDef.Value);
+                        }
                     }
                 }
             }

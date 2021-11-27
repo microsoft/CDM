@@ -27,12 +27,12 @@ class ProjectionAddCountTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAddCount')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAddCountTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):
         """Test for creating a projection with an AddCountAttribute operation on an entity attribute using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -74,7 +74,7 @@ class ProjectionAddCountTest(unittest.TestCase):
     @async_test
     async def test_entity_proj_using_object_model(self):
         """Test for creating a projection with an AddCountAttribute operation on an entity definition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -114,7 +114,7 @@ class ProjectionAddCountTest(unittest.TestCase):
     @async_test
     async def test_conditional_proj_using_object_model(self):
         """Test for creating a projection with an AddCountAttribute operation and a condition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_conditional_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -176,7 +176,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """AddCountAttribute on an entity attribute"""
         test_name = 'test_add_count_attribute'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -200,7 +200,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """CountAttribute on an entity attribute"""
         test_name = 'test_count_attribute'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -225,7 +225,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """AddCountAttribute on an entity definition"""
         test_name = 'test_extends_entity_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -249,7 +249,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """CountAttribute on an entity definition"""
         test_name = 'test_extends_entity'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -270,7 +270,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """Nested projections with ArrayExpansion, then AddCountAttribute, and then RenameAttributes"""
         test_name = 'test_with_nested_array_expansion'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -293,49 +293,14 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('email2', resolved_entity.attributes[9].name)
         self.assertEqual('personCount', resolved_entity.attributes[10].name)
         self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[10].applied_traits[1].named_reference)
-
-    @async_test
-    async def test_with_array_expansion(self):
-        """AddCountAttribute with ArrayExpansion in the same projection (and then RenameAttributes)"""
-        test_name = 'test_with_array_expansion'
-        entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
-
-        for res_opt in self.res_opts_combinations:
-            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
-
-        entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
-
-        # Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        # Expand 1...2, count attribute: "personCount" (first projection)
-        # The first projection will give us the expanded attributes as well as the pass-through input attributes
-        # Then do renameFormat = {m}{o} in the second projection
-        self.assertEqual(16, len(resolved_entity.attributes))
-        self.assertEqual('name1', resolved_entity.attributes[0].name)
-        self.assertEqual('age1', resolved_entity.attributes[1].name)
-        self.assertEqual('address1', resolved_entity.attributes[2].name)
-        self.assertEqual('phoneNumber1', resolved_entity.attributes[3].name)
-        self.assertEqual('email1', resolved_entity.attributes[4].name)
-        self.assertEqual('name2', resolved_entity.attributes[5].name)
-        self.assertEqual('age2', resolved_entity.attributes[6].name)
-        self.assertEqual('address2', resolved_entity.attributes[7].name)
-        self.assertEqual('phoneNumber2', resolved_entity.attributes[8].name)
-        self.assertEqual('email2', resolved_entity.attributes[9].name)
-        self.assertEqual('name', resolved_entity.attributes[10].name)
-        self.assertEqual('age', resolved_entity.attributes[11].name)
-        self.assertEqual('address', resolved_entity.attributes[12].name)
-        self.assertEqual('phoneNumber', resolved_entity.attributes[13].name)
-        self.assertEqual('email', resolved_entity.attributes[14].name)
-        self.assertEqual('personCount', resolved_entity.attributes[15].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[15].applied_traits[1].named_reference)
+        self.assertEqual('indicates.expansionInfo.count', resolved_entity.attributes[10].applied_traits[2].named_reference)
 
     @async_test
     async def test_combine_ops(self):
         """AddCountAttribute with other operations in the same projection"""
         test_name = 'test_combine_ops'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -362,7 +327,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """Nested projections with AddCountAttribute and other operations"""
         test_name = 'test_combine_ops_nested_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -383,7 +348,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """AddCountAttribute with a conditionn"""
         test_name = 'test_conditional_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -406,7 +371,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """AddCountAttribute on an entity with an attribute group"""
         test_name = 'test_group_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -430,7 +395,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """CountAttribute on an entity with an attribute group"""
         test_name = 'test_group'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -455,7 +420,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         """Two AddCountAttribute operations in a single projection using the same Count attribute"""
         test_name = 'test_duplicate'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)

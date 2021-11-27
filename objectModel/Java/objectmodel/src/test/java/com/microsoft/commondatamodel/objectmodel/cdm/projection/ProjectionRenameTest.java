@@ -41,13 +41,11 @@ public class ProjectionRenameTest {
     /**
      * The path between TestDataPath and TestName
      */
-    private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-            "testProjectionRename").toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionRenameTest").toString();
 
     @Test
     public void testEntityAttributeProjUsingObjectModel() throws InterruptedException, ExecutionException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEntityAttributeProjUsingObjectModel",
-                null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEntityAttributeProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(
                 TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "TestEntityAttributeProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
@@ -98,7 +96,7 @@ public class ProjectionRenameTest {
      */
     @Test
     public void testEntityProjUsingObjectModel() throws InterruptedException, ExecutionException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEntityProjUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEntityProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "TestEntityProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -138,7 +136,7 @@ public class ProjectionRenameTest {
      */
     @Test
     public void testNestedProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestNestedProjUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestNestedProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "TestNestedProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -196,7 +194,7 @@ public class ProjectionRenameTest {
      */
     @Test
     public void testRepeatedPatternProj() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEntityAttributeProjUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEntityAttributeProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "TestEntityAttributeProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -239,7 +237,7 @@ public class ProjectionRenameTest {
      */
     @Test
     public void testConditionalProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestConditionalProjUsingObjectModel", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestConditionalProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "TestConditionalProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -301,7 +299,7 @@ public class ProjectionRenameTest {
     public void testRenameFormatAsStringProj() throws InterruptedException {
         String testName = "TestRenameFormatAsStringProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -328,7 +326,7 @@ public class ProjectionRenameTest {
     public void testRenameFormat() throws InterruptedException {
         String testName = "TestRenameFormat";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -355,7 +353,7 @@ public class ProjectionRenameTest {
     public void testRenameFormatProj() throws InterruptedException {
         String testName = "TestRenameFormatProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -382,7 +380,7 @@ public class ProjectionRenameTest {
     public void testSingleNestedProj() throws InterruptedException {
         String testName = "TestSingleNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -409,7 +407,7 @@ public class ProjectionRenameTest {
     public void testNestedProj() throws InterruptedException {
         String testName = "TestNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -419,13 +417,13 @@ public class ProjectionRenameTest {
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        // Rename all attributes attributes with format {A}.{o}.{M}, then rename "age" with format "{a}-{o}-{m}"
+        // Rename all attributes attributes with format {A}.{o}.{M}, then rename "age" with format "{a}-{o}-{m}, finally rename "email" with format "{a}-{o}-{mo}"
         Assert.assertEquals(5, resolvedEntity.getAttributes().getCount());
         Assert.assertEquals("PersonInfo..Name", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
         Assert.assertEquals("PersonInfo--PersonInfo..Age", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName());
         Assert.assertEquals("PersonInfo..Address", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName());
         Assert.assertEquals("PersonInfo..PhoneNumber", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName());
-        Assert.assertEquals("PersonInfo..Email", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName());
+        Assert.assertEquals("PersonInfo--email", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName());
     }
 
     
@@ -436,7 +434,7 @@ public class ProjectionRenameTest {
     public void testMultipleRename() throws InterruptedException {
         String testName = "TestMultipleRename";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -465,7 +463,7 @@ public class ProjectionRenameTest {
     public void testExtendsEntityProj() throws InterruptedException {
         String testName = "TestExtendsEntityProj";
         String entityName = "Child";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -493,7 +491,7 @@ public class ProjectionRenameTest {
     public void testExtendsEntity() throws InterruptedException {
         String testName = "TestExtendsEntity";
         String entityName = "Child";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -520,9 +518,13 @@ public class ProjectionRenameTest {
     public void testPolymorphicProj() throws InterruptedException {
         String testName = "TestPolymorphicProj";
         String entityName = "BusinessPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
+            if (resOpt.contains("structured")) {
+                // Rename attributes is not supported on an attribute group yet.
+                continue;
+            }
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
@@ -549,7 +551,7 @@ public class ProjectionRenameTest {
     public void testPolymorphicApplyToProj() throws InterruptedException {
         String testName = "TestPolymorphicApplyToProj";
         String entityName = "BusinessPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -578,7 +580,7 @@ public class ProjectionRenameTest {
     public void testPolymorphic() throws InterruptedException {
         String testName = "TestPolymorphic";
         String entityName = "BusinessPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -607,7 +609,7 @@ public class ProjectionRenameTest {
     public void testArraySourceProj() throws InterruptedException {
         String testName = "TestArraySourceProj";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -645,7 +647,7 @@ public class ProjectionRenameTest {
     public void testArraySource() throws InterruptedException {
         String testName = "TestArraySource";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -684,7 +686,7 @@ public class ProjectionRenameTest {
     public void testArraySourceRenameApplyToProj() throws InterruptedException {
         String testName = "TestArraySourceRenameApplyToProj";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -721,7 +723,7 @@ public class ProjectionRenameTest {
     public void testConditionalProj() throws InterruptedException {
         String testName = "TestConditionalProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -758,7 +760,7 @@ public class ProjectionRenameTest {
     public void testEmptyApplyTo() throws InterruptedException {
         String testName = "TestEmptyApplyTo";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -784,7 +786,7 @@ public class ProjectionRenameTest {
     public void testGroupProj() throws InterruptedException {
         String testName = "TestGroupProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -810,7 +812,7 @@ public class ProjectionRenameTest {
     public void testGroupRename() throws InterruptedException {
         String testName = "TestGroupRename";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -836,7 +838,7 @@ public class ProjectionRenameTest {
     public void testRenameAndExcludeProj()  throws InterruptedException {
         String testName = "TestRenameAndExcludeProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -862,7 +864,7 @@ public class ProjectionRenameTest {
     public void testEANameProj() throws InterruptedException {
         String testName = "TestEANameProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -899,7 +901,7 @@ public class ProjectionRenameTest {
     public void testTypeAttributeProj() throws InterruptedException {
         String testName = "testTypeAttributeProj";
         String entityName = "Person";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -910,11 +912,13 @@ public class ProjectionRenameTest {
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Rename with format "n{a}e{o}w{M}" attributes ["address"]
-        Assert.assertEquals(resolvedEntity.getAttributes().size(), 5);
+        // Add new attribute realNewAddress with rename format "n{a}e{o}w{M}"
+        Assert.assertEquals(resolvedEntity.getAttributes().size(), 6);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "name");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "age");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "newAddress");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "naddressewAddress");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "naddressewRealNewAddress");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "phoneNumber");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "email");
     }
 }

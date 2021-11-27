@@ -8,15 +8,18 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 
 export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmDataTypeDefinition.name;
+
     public dataTypeName: string;
     public extendsDataType?: CdmDataTypeReference;
 
@@ -24,7 +27,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         return cdmObjectType.dataTypeDef;
     }
 
-    constructor(ctx: CdmCorpusContext, dataTypeName: string, extendsDataType: CdmDataTypeReference) {
+    constructor(ctx: CdmCorpusContext, dataTypeName: string, extendsDataType?: CdmDataTypeReference) {
         super(ctx);
         // let bodyCode = () =>
         {
@@ -55,10 +58,9 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmDataTypeDefinition(this.ctx, this.dataTypeName, undefined);
             } else {
                 copy = host as CdmDataTypeDefinition;
-                copy.ctx = this.ctx;
                 copy.dataTypeName = this.dataTypeName;
             }
-            copy.extendsDataType = this.extendsDataType ? <CdmDataTypeReference>this.extendsDataType.copy(resOpt) : undefined;
+            copy.extendsDataType = this.extendsDataType ? this.extendsDataType.copy(resOpt) as CdmDataTypeReference: undefined;
             this.copyDef(resOpt, copy);
 
             return copy;
@@ -70,12 +72,8 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!this.dataTypeName) {
-                Logger.error(
-                    CdmDataTypeDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['dataTypeName']),
-                    this.validate.name);
-
+                let missingFields: string[] = ['dataTypeName'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -106,19 +104,13 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.dataTypeName;
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
             }
             if (this.extendsDataType) {
+                this.extendsDataType.owner = this;
                 if (this.extendsDataType.visit(`${path}/extendsDataType/`, preChildren, postChildren)) {
                     return true;
                 }

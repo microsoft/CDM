@@ -5,7 +5,7 @@ import json
 import random
 import urllib
 
-from typing import Dict, TYPE_CHECKING, Optional
+from typing import Dict, Set, TYPE_CHECKING, Optional
 
 from cdm.utilities.network.cdm_http_request import CdmHttpRequest
 
@@ -59,6 +59,8 @@ class NetworkAdapter:
         self.maximum_timeout = self.DEFAULT_MAXIMUM_TIMEOUT  # type: int
         self.number_of_retries = self.DEFAULT_NUMBER_OF_RETRIES  # type: int
         self.wait_time_callback = self._default_get_wait_time
+        # A set of HttpStatusCodes that will stop the retry logic if the HTTP response has one of these types.
+        self.avoid_retry_codes = set([404])  # type: Set[int]
 
     def _set_up_cdm_request(self, path: str, headers: Optional[Dict], method: str) -> 'CdmHttpRequest':
         request = CdmHttpRequest(path)
@@ -90,10 +92,10 @@ class NetworkAdapter:
         :param retry_number: The current retry number (starts from 1) up to the number of retries specified by CDM request
         :return: The time in milliseconds.
         """
-        if response and response.is_successful and not has_failed:
+        if response and ((response.is_successful and not has_failed) or response.status_code in self.avoid_retry_codes):
             return None
 
-        return random.randint(0, 2**retry_number) * self.DEFAULT_SHORTEST_WAIT_TIME
+        return random.randint(0, 2**retry_number - 1) * self.DEFAULT_SHORTEST_WAIT_TIME
 
     def update_network_config(self, config: str) -> None:
         configs_json = json.loads(config)

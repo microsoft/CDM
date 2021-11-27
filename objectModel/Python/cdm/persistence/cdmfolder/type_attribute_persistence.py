@@ -3,10 +3,10 @@
 
 from typing import Optional
 
-from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition
-from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
+from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition, CdmTraitGroupReference
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.utilities import logger, ResolveOptions, CopyOptions, TraitToPropertyMap, copy_data_utils
+from cdm.enums import CdmLogCode
 
 from . import utils
 from .attribute_context_reference_persistence import AttributeContextReferencePersistence
@@ -26,39 +26,19 @@ class TypeAttributePersistence:
         type_attribute.purpose = PurposeReferencePersistence.from_data(ctx, data.get('purpose'))
         type_attribute.data_type = DataTypeReferencePersistence.from_data(ctx, data.get('dataType'))
 
-        if data.get('cardinality'):
-            min_cardinality = None
-            if data.get('cardinality').get('minimum'):
-                min_cardinality = data.get('cardinality').get('minimum')
-
-            max_cardinality = None
-            if data.get('cardinality').get('maximum'):
-                max_cardinality = data.get('cardinality').get('maximum')
-
-            if not min_cardinality or not max_cardinality:
-                logger.error(_TAG, ctx, 'Both minimum and maximum are required for the Cardinality property.')
-
-            if not CardinalitySettings._is_minimum_valid(min_cardinality):
-                logger.error(_TAG, ctx, 'Invalid minimum cardinality {}.'.format(min_cardinality))
-
-            if not CardinalitySettings._is_maximum_valid(max_cardinality):
-                logger.error(_TAG, ctx, 'Invalid maximum cardinality {}.'.format(max_cardinality))
-
-            if min_cardinality and max_cardinality and CardinalitySettings._is_minimum_valid(min_cardinality) and CardinalitySettings._is_maximum_valid(max_cardinality):
-                type_attribute.cardinality = CardinalitySettings(type_attribute)
-                type_attribute.cardinality.minimum = min_cardinality
-                type_attribute.cardinality.maximum = max_cardinality
+        cardinality = utils.cardinality_settings_from_data(data.get('cardinality'), type_attribute)
+        if cardinality is not None:
+            type_attribute.cardinality = cardinality
 
         type_attribute.attribute_context = AttributeContextReferencePersistence.from_data(ctx, data.get('attributeContext'))
+        utils.add_list_to_cdm_collection(type_attribute.applied_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('appliedTraits')))
         type_attribute.resolution_guidance = AttributeResolutionGuidancePersistence.from_data(ctx, data.get('resolutionGuidance'))
-
-        applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-        type_attribute.applied_traits.extend(applied_traits)
 
         if data.get('isPrimaryKey') and entity_name:
             t2p_map = TraitToPropertyMap(type_attribute)
             t2p_map._update_property_value('isPrimaryKey', entity_name + '/(resolvedAttributes)/' + type_attribute.name)
-        
+
         type_attribute.explanation = data.explanation
         type_attribute.is_read_only = utils._property_from_data_to_bool(data.isReadOnly)
         type_attribute.is_nullable = utils._property_from_data_to_bool(data.isNullable)
@@ -77,8 +57,8 @@ class TypeAttributePersistence:
             try:
                 type_attribute.data_format = TypeAttributePersistence._data_type_from_data(data.dataFormat)
             except ValueError:
-                logger.warning(TypeAttributePersistence.__name__, ctx, 'Couldn\'t find an enum value for {}.'.format(
-                    data.dataFormat), TypeAttributePersistence.from_data.__name__)
+                logger.warning(ctx, _TAG, TypeAttributePersistence.from_data.__name__, None,
+                               CdmLogCode.WARN_PERSIST_ENUM_NOT_FOUND, data.dataFormat)
 
         return type_attribute
 
@@ -88,7 +68,8 @@ class TypeAttributePersistence:
             return None
 
         applied_traits = \
-            [trait for trait in instance.applied_traits if not trait.is_from_property] \
+            [trait for trait in instance.applied_traits
+             if isinstance(trait, CdmTraitGroupReference) or not trait.is_from_property] \
             if instance.applied_traits else None
 
         data = TypeAttribute()
@@ -102,6 +83,9 @@ class TypeAttributePersistence:
         data.projection = ProjectionPersistence.to_data(instance.projection, res_opt, options)
         data.attributeContext = AttributeContextReferencePersistence.to_data(
             instance.attribute_context, res_opt, options) if instance.attribute_context else None
+
+        if instance.cardinality is not None:
+            data.cardinality = utils.cardinality_settings_to_data(instance.cardinality)
 
         is_read_only = instance._get_property('isReadOnly')
         if is_read_only:

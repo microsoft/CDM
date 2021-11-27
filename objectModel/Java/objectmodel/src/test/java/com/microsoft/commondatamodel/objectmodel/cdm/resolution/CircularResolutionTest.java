@@ -19,14 +19,14 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class CircularResolutionTest {
-    private static final String TESTS_SUBPATH = new File(new File("cdm", "resolution"), "circularresolution").toString();
+    private static final String TESTS_SUBPATH = new File(new File("Cdm", "Resolution"), "CircularResolutionTest").toString();
 
     /**
      * Test proper behavior for entities that contain circular references
      */
     @Test
     public void testCircularReference() throws InterruptedException {
-        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestCircularReference", null);
+        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestCircularReference");
         CdmEntityDefinition customer = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Customer.cdm.json/Customer").join();
         CdmEntityDefinition resCustomerStructured = customer.createResolvedEntityAsync("resCustomer", new ResolveOptions(
             customer.getInDocument(),
@@ -45,7 +45,7 @@ public class CircularResolutionTest {
      */
     @Test
     public void testSelfReference() throws InterruptedException {
-        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestSelfReference", null);
+        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestSelfReference");
         CdmManifestDefinition manifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/SelfReference.manifest.cdm.json").join();
         cdmCorpus.calculateEntityGraphAsync(manifest).join();
         manifest.populateManifestRelationshipsAsync().join();

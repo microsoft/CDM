@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class DataTypeReferenceDefinition {
     private JsonNode dataTypeReference;
     private ArrayNode appliedTraits;
+    private Boolean optional;
 
     public JsonNode getDataTypeReference() {
         return this.dataTypeReference;
@@ -24,5 +25,13 @@ public class DataTypeReferenceDefinition {
 
     public void setAppliedTraits(final ArrayNode appliedTraits) {
         this.appliedTraits = appliedTraits;
+    }
+
+    public Boolean getOptional() {
+        return optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        this.optional = optional;
     }
 }

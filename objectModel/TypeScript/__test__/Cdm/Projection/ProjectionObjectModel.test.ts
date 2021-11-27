@@ -27,6 +27,7 @@ import {
     CdmPurposeReference,
     CdmTypeAttributeDefinition
 } from '../../../internal';
+import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
 
 describe('Cdm/Projection/ProjectionObjectModel', () => {
@@ -41,6 +42,7 @@ describe('Cdm/Projection/ProjectionObjectModel', () => {
      */
     it('TestProjectionUsingObjectModel', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestProjectionUsingObjectModel');
+        corpus.storage.mount('local', new LocalAdapter(testHelper.getActualOutputFolderPath(testsSubpath, 'TestProjectionUsingObjectModel')));
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
         const manifestDefault: CdmManifestDefinition = createDefaultManifest(corpus, localRoot);
 

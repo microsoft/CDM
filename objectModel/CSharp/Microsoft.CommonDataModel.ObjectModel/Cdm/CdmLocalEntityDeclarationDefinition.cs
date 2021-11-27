@@ -1,10 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -16,6 +17,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmLocalEntityDeclarationDefinition : CdmObjectDefinitionBase, CdmEntityDeclarationDefinition
     {
+        private static readonly string Tag = nameof(CdmLocalEntityDeclarationDefinition);
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmLocalEntityDeclarationDefinition"/> class.
         /// </summary>
@@ -27,6 +29,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.EntityName = entityName;
             this.DataPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.Ctx, this, CdmObjectType.DataPartitionDef);
             this.DataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.Ctx, this, CdmObjectType.DataPartitionPatternDef);
+            this.LastFileModifiedTime = null;
+            this.LastFileModifiedOldTime = null;
         }
 
         /// <summary>
@@ -44,10 +48,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public DateTimeOffset? LastFileStatusCheckTime { get; set; }
 
+        private DateTimeOffset? lastFileModifiedTime;
         /// <summary>
         /// Gets or sets the last file modified time.
         /// </summary>
-        public DateTimeOffset? LastFileModifiedTime { get; set; }
+        public DateTimeOffset? LastFileModifiedTime { get { return lastFileModifiedTime; } 
+            set { LastFileModifiedOldTime = lastFileModifiedTime; lastFileModifiedTime = value; } }
+
+        internal DateTimeOffset? LastFileModifiedOldTime { get; private set; }
 
         /// <summary>
         /// Gets or sets the last child file modified time.
@@ -76,7 +84,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.EntityName))
             {
-                Logger.Error(nameof(CdmLocalEntityDeclarationDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityName" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "EntityName" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             return true;
@@ -98,7 +107,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmLocalEntityDeclarationDefinition;
-                copy.Ctx = this.Ctx;
                 copy.EntityName = this.EntityName;
                 copy.DataPartitionPatterns.Clear();
                 copy.DataPartitions.Clear();
@@ -110,9 +118,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.LastChildFileModifiedTime = this.LastChildFileModifiedTime;
 
             foreach (var partition in this.DataPartitions)
-                copy.DataPartitions.Add(partition);
+                copy.DataPartitions.Add(partition.Copy(resOpt) as CdmDataPartitionDefinition);
             foreach (var pattern in this.DataPartitionPatterns)
-                copy.DataPartitionPatterns.Add(pattern);
+                copy.DataPartitionPatterns.Add(pattern.Copy(resOpt) as CdmDataPartitionPatternDefinition);
             this.CopyDef(resOpt, copy);
 
             return copy;
@@ -133,41 +141,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (path == null)
-                {
-                    path = pathFrom + this.EntityName;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren != null && preChildren.Invoke(this, path))
-            {
                 return false;
-            }
 
             if (this.DataPartitions != null)
-            {
                 if (this.DataPartitions.VisitList(path + "/dataPartitions/", preChildren, postChildren))
                     return true;
-            }
 
             if (this.DataPartitionPatterns != null)
-            {
                 if (this.DataPartitionPatterns.VisitList(path + "/dataPartitionPatterns/", preChildren, postChildren))
                     return true;
-            }
 
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
-            {
-                return false;
-            }
+                return true;
             return false;
         }
 
@@ -180,7 +171,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
+            using (this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace)?.CreateFileQueryCacheContext())
             {
                 string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
                 DateTimeOffset? modifiedTime = await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
@@ -240,6 +231,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 this.DataPartitions.Add(newPartition);
             }
+        }
+
+        /// <summary>
+        /// Reset LastFileModifiedOldTime.
+        /// </summary>
+        internal void ResetLastFileModifiedOldTime()
+        {
+            this.LastFileModifiedOldTime = null;
         }
     }
 }

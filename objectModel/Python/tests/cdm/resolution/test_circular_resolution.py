@@ -8,7 +8,7 @@ from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 
 
 class CircularResolution(unittest.TestCase):
-    tests_subpath = os.path.join('Cdm', 'Resolution', 'CircularResolution')
+    tests_subpath = os.path.join('Cdm', 'Resolution', 'CircularResolutionTest')
 
     @async_test
     async def test_circular_reference(self):

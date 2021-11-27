@@ -20,7 +20,7 @@ public class E2ERelationshipPersistenceTest {
     instance.setFromEntity("FROM_ENTITY");
     instance.setFromEntityAttribute("FROM_ENTITY_ATTRIBUTE");
 
-    E2ERelationship result = E2ERelationshipPersistence.toData(instance);
+    E2ERelationship result = E2ERelationshipPersistence.toData(instance, null, null);
     AssertJUnit.assertEquals(result.getToEntity(), "TO_ENTITY");
     AssertJUnit.assertEquals(result.getToEntityAttribute(), "TO_ENTITY_ATTRIBUTE");
     AssertJUnit.assertEquals(result.getFromEntity(), "FROM_ENTITY");

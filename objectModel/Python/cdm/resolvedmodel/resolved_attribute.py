@@ -22,6 +22,7 @@ class ResolvedAttribute():
         self.insert_order = 0  # type: int
         self.previous_resolved_name = default_name  # type: str
         self.resolved_traits = ResolvedTraitSet(res_opt)  # type: ResolvedTraitSet
+        self.owner = None  # type: Optional[CdmEntityDefinition]
 
         # Internal
         self._resolved_attribute_count = 0  # type: int
@@ -139,6 +140,7 @@ class ResolvedAttribute():
         copy.insert_order = self.insert_order
         copy.arc = self.arc
         copy.att_ctx = self.att_ctx  # set here instead of constructor to avoid setting lineage for this copy
+        copy.owner = self.owner
 
         if isinstance(copy.target, ResolvedAttributeSet):
             # deep copy when set contains sets. this copies the resolved att set and the context, etc.
@@ -162,4 +164,4 @@ class ResolvedAttribute():
                 self.att_ctx.at_corpus_path = str(self.att_ctx.parent.fetch_object_definition(res_opt).at_corpus_path) + '/' + self._resolved_name
 
             if self.att_ctx.definition is None and isinstance(self.target, CdmAttribute):
-                self.att_ctx.definition = self.target.create_simple_reference(res_opt)
+                self.att_ctx.definition = self.target._create_portable_reference(res_opt)

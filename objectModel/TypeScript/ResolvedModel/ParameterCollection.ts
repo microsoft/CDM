@@ -39,10 +39,14 @@ export class ParameterCollection {
         {
             // if there is already a named parameter that matches, this is trouble
             const name: string = element.getName();
-            if (name && this.lookup.has(name)) {
-                throw new Error(`duplicate parameter named '${name}'`);
-            }
             if (name) {
+                if (this.lookup.has(name)) {
+                    // why not just replace the old one?
+                    this.lookup.set(name, element);
+                    this.sequence[this.sequence.indexOf(this.sequence.find((e) => e.getName() === name))] = element;
+                    this.ordinals.set(element, this.sequence.length);
+                    return;
+                }
                 this.lookup.set(name, element);
             }
 
@@ -51,6 +55,7 @@ export class ParameterCollection {
         }
         // return p.measure(bodyCode);
     }
+
     public resolveParameter(ordinal: number, name: string): CdmParameterDefinition {
         // let bodyCode = () =>
         {
@@ -68,6 +73,7 @@ export class ParameterCollection {
         }
         // return p.measure(bodyCode);
     }
+
     public fetchParameterIndex(pName: string): number {
         // let bodyCode = () =>
         {

@@ -7,17 +7,26 @@ import {
     CdmEntityDefinition,
     CdmObjectReferenceBase,
     cdmObjectType,
+    CdmProjection,
     resolveOptions,
     VisitCallback
 } from '../internal';
 
 export class CdmEntityReference extends CdmObjectReferenceBase {
+    /**
+     * Returns true if this entity reference points to a projection.
+     * @internal
+     */
+    public get isProjection(): boolean {
+        return this.explicitReference?.objectType == cdmObjectType.projectionDef;
+    }
+
     public static get objectType(): cdmObjectType {
         return cdmObjectType.entityRef;
     }
 
     constructor(
-        ctx: CdmCorpusContext, entityRef: string | CdmEntityDefinition | CdmConstantEntityDefinition, simpleReference: boolean) {
+        ctx: CdmCorpusContext, entityRef: string | CdmEntityDefinition | CdmConstantEntityDefinition | CdmProjection, simpleReference: boolean) {
         super(ctx, entityRef, simpleReference);
         // let bodyCode = () =>
         {

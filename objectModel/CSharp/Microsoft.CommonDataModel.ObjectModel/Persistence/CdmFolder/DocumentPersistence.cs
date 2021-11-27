@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -13,6 +13,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     public class DocumentPersistence
     {
+        private static readonly string Tag = nameof(DocumentPersistence);
+
         /// <summary>
         /// Whether this persistence class has async methods.
         /// </summary>
@@ -73,6 +75,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     {
                         doc.Definitions.Add(TraitPersistence.FromData(ctx, d));
                     }
+                    else if (d["traitGroupName"] != null)
+                    {
+                        doc.Definitions.Add(TraitGroupPersistence.FromData(ctx, d));
+                    }
                     else if (d["entityShape"] != null)
                     {
                         doc.Definitions.Add(ConstantEntityPersistence.FromData(ctx, d));
@@ -90,7 +96,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 var resolvedTrait = entity.ExhibitsTraits.Item("has.entitySchemaAbstractionLevel");
                 // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
                 // or the presence of the attribute context.
-                isResolvedDoc = resolvedTrait != null && string.Equals(resolvedTrait.Arguments[0].Value, "resolved");
+                isResolvedDoc = resolvedTrait != null && string.Equals((resolvedTrait as CdmTraitReference).Arguments[0].Value, "resolved");
                 isResolvedDoc = isResolvedDoc || entity.AttributeContext != null;
             }
 
@@ -99,20 +105,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 doc.JsonSchemaSemanticVersion = obj.JsonSchemaSemanticVersion;
                 if (CompareJsonSemanticVersion(ctx, doc.JsonSchemaSemanticVersion) > 0)
                 {
-                    var message = $"This ObjectModel version supports json semantic version {JsonSemanticVersion} at maximum. Trying to load a document with version {doc.JsonSchemaSemanticVersion}.";
                     if (isResolvedDoc)
                     {
-                        Logger.Warning(nameof(DocumentPersistence), ctx, message, nameof(FromData));
+                        Logger.Warning(ctx, Tag, nameof(FromObject), null, CdmLogCode.WarnPersistUnsupportedJsonSemVer, JsonSemanticVersion, doc.JsonSchemaSemanticVersion);
                     }
                     else
                     {
-                        Logger.Error(nameof(DocumentPersistence), ctx, message, nameof(FromData));
+                        Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistUnsupportedJsonSemVer, JsonSemanticVersion, doc.JsonSchemaSemanticVersion);
                     }
                 }
             }
             else
             {
-                Logger.Warning(nameof(DocumentPersistence), ctx, "jsonSemanticVersion is a required property of a document.", nameof(FromData));
+                Logger.Warning(ctx, Tag, nameof(FromObject), null, CdmLogCode.WarnPersistJsonSemVerMandatory);
             }
 
             return doc;
@@ -150,11 +155,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             var docSemanticVersionSplit = documentSemanticVersion.Split('.');
             var currSemanticVersionSplit = JsonSemanticVersion.Split('.').Select(value => int.Parse(value)).ToList();
 
-            var errorMessage = "jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.";
-
             if (docSemanticVersionSplit.Length != 3)
             {
-                Logger.Warning(nameof(DocumentPersistence), ctx, errorMessage, nameof(CompareJsonSemanticVersion));
+                Logger.Warning(ctx, Tag, nameof(CompareJsonSemanticVersion), null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
                 return 0;
             }
 
@@ -162,7 +165,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 if (!int.TryParse(docSemanticVersionSplit[i], out int version))
                 {
-                    Logger.Warning(nameof(DocumentPersistence), ctx, errorMessage, nameof(CompareJsonSemanticVersion));
+                    Logger.Warning(ctx, Tag, nameof(CompareJsonSemanticVersion), null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
                     return 0;
                 }
 

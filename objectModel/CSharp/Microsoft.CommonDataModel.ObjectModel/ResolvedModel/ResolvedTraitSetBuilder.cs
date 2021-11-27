@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     internal class ResolvedTraitSetBuilder
     {
         internal ResolvedTraitSet ResolvedTraitSet { get; set; }
-        // public ResolveOptions ResOpt { get; set; }
 
         public void Clear()
         {

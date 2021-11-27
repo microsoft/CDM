@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -17,13 +17,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     class ReferencedEntityDeclarationPersistence
     {
+        private static readonly string Tag = nameof(ReferencedEntityDeclarationPersistence);
+
         public static async Task<CdmReferencedEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, ReferenceEntity obj, string location)
         {
             var referencedEntity = ctx.Corpus.MakeObject<CdmReferencedEntityDeclarationDefinition>(CdmObjectType.ReferencedEntityDeclarationDef, obj.Name);
+            referencedEntity.EntityName = obj.Name;
 
             var corpusPath = ctx.Corpus.Storage.AdapterPathToCorpusPath(location);
 
-            referencedEntity.EntityName = obj.Name;
+            if (corpusPath == null)
+            {
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, location, referencedEntity.EntityName);
+                return null;
+            }
+
             referencedEntity.EntityPath = $"{corpusPath}/{obj.Source}";
             referencedEntity.Explanation = obj.Description;
             referencedEntity.LastFileModifiedTime = obj.LastFileModifiedTime;
@@ -31,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             await Utils.ProcessAnnotationsFromData(ctx, obj, referencedEntity.ExhibitsTraits);
 
-            if(obj.IsHidden == true)
+            if (obj.IsHidden == true)
             {
                 var isHiddenTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.hidden", true);
                 isHiddenTrait.IsFromProperty = true;
@@ -51,7 +59,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (extensionTraitDefList.Count > 0)
             {
-                Logger.Warning(nameof(ReferencedEntityDeclarationPersistence), ctx, "Custom extensions are not supported in referenced entity.");
+                Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistCustomExtNotSupported, referencedEntity.EntityName);
             }
 
             return referencedEntity;
@@ -63,7 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (sourceIndex == -1)
             {
-                Logger.Error(nameof(ReferencedEntityDeclarationPersistence), instance.Ctx, "There was an error while trying to convert cdm data partition to model.json partition.");
+                Logger.Error(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityRefConversionError, instance.EntityName);
 
                 return null;
             }
@@ -81,7 +89,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, referenceEntity, instance.ExhibitsTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
-            
+
             var isHiddenTrait = t2pm.FetchTraitReference("is.hidden");
             if (isHiddenTrait != null)
             {

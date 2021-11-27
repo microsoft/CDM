@@ -3,7 +3,7 @@
 
 from typing import TYPE_CHECKING, Union
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.enums.cdm_operation_type import CdmOperationType, OperationTypeConvertor
 from cdm.objectmodel import CdmOperationBase, CdmEntityReference
 from cdm.persistence.cdmfolder.projections.operation_add_attribute_group_persistence import \
@@ -19,6 +19,8 @@ from cdm.persistence.cdmfolder.projections.operation_rename_attributes_persisten
 from cdm.persistence.cdmfolder.projections.operation_replace_as_foreign_key_persistence import \
     OperationReplaceAsForeignKeyPersistence
 from cdm.persistence.cdmfolder.projections.operation_include_attributes_persistence import OperationIncludeAttributesPersistence
+from cdm.persistence.cdmfolder.projections.operation_alter_traits_persistence import OperationAlterTraitsPersistence
+from cdm.persistence.cdmfolder.projections.operation_add_artifact_attribute_persistence import OperationAddArtifactAttributePersistence
 
 from cdm.persistence.cdmfolder.types import Projection, EntityReference
 from cdm.persistence.cdmfolder.types.projections.operation_base import OperationBase
@@ -88,8 +90,14 @@ class ProjectionPersistence:
                 elif type == 'addAttributeGroup':
                     add_attribute_group_op = OperationAddAttributeGroupPersistence.from_data(ctx, operation_json)
                     projection.operations.append(add_attribute_group_op)
+                elif type == 'alterTraits':
+                    alter_traits_op = OperationAlterTraitsPersistence.from_data(ctx, operation_json)
+                    projection.operations.append(alter_traits_op)
+                elif type == 'addArtifactAttribute':
+                    add_artifact_attribute_op = OperationAddArtifactAttributePersistence.from_data(ctx, operation_json)
+                    projection.operations.append(add_artifact_attribute_op)
                 else:
-                    logger.error(_TAG, ctx, 'Invalid operation type \'{}\'.'.format(type), ProjectionPersistence.from_data.__name__)
+                    logger.error(ctx, _TAG, ProjectionPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_INVALID_OPS_TYPE, type)
 
         projection.source = source
 
@@ -106,7 +114,7 @@ class ProjectionPersistence:
             source = instance.source
         elif instance.source and instance.source.named_reference and instance.source.explicit_reference == None:
             source = instance.source.named_reference
-        elif instance.source and isinstance(instance.source, CdmEntityReference):
+        elif instance.source and instance.source.object_type == CdmObjectType.ENTITY_REF:
             source = EntityReferencePersistence.to_data(instance.source, res_opt, options)
 
         operations = None
@@ -143,6 +151,12 @@ class ProjectionPersistence:
                 elif operation.object_type == CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF:
                     add_attribute_group_op = OperationAddAttributeGroupPersistence.to_data(operation, res_opt, options)
                     operations.append(add_attribute_group_op)
+                elif operation.object_type == CdmObjectType.OPERATION_ALTER_TRAITS_DEF:
+                    alter_traits_op = OperationAlterTraitsPersistence.to_data(operation, res_opt, options)
+                    operations.append(alter_traits_op)
+                elif operation.object_type == CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF:
+                    add_artifact_attribute_op = OperationAddArtifactAttributePersistence.to_data(operation, res_opt, options)
+                    operations.append(add_artifact_attribute_op)
                 else:
                     base_op = OperationBase()
                     base_op.type = OperationTypeConvertor._operation_type_to_string(CdmOperationType.ERROR)

@@ -58,7 +58,7 @@ class AdlsModelJsonTestHelper:
             actual_input_file.write(input_content)
         
         # Update expected content and save to ActualOutput/Input
-        expected_content = TestHelper.get_output_file_content(test_sub_path, test_name, file_name)
+        expected_content = TestHelper.get_output_file_content(test_sub_path, test_name, file_name, True)
         expected_content = AdlsModelJsonTestHelper._replace_placeholder(expected_content, test_sub_path, test_name, file_name, root_path, string_to_add_suffix, suffix)
         expected_folder_path = AdlsModelJsonTestHelper.get_actual_sub_folder_path(test_sub_path, test_name, AdlsModelJsonTestHelper.expected_folder_name)
         if not os.path.exists(expected_folder_path):

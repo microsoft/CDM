@@ -3,12 +3,10 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -19,8 +17,11 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmContainerDefinition {
+  private static final String TAG = CdmFolderDefinition.class.getSimpleName();
+
   private final Map<String, CdmDocumentDefinition> documentLookup = new LinkedHashMap<>();
   private final CdmFolderCollection childFolders = new CdmFolderCollection(this.getCtx(), this);
   private final CdmDocumentCollection documents = new CdmDocumentCollection(this.getCtx(), this);
@@ -70,11 +71,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   }
 
   /**
-   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    * @return String
    */
-  @Deprecated
   public String getFolderPath() {
     return folderPath;
   }
@@ -100,10 +98,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    *
    * @return String
-   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    */
-  @Deprecated
   public String getNamespace() {
     return namespace;
   }
@@ -117,19 +112,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   @Deprecated
   public void setNamespace(final String namespace) {
     this.namespace = namespace;
-  }
-
-  CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
-          final String path,
-          final StorageAdapter adapter) {
-    return this.fetchDocumentFromFolderPathAsync(path, adapter, false);
-  }
-
-  CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
-          final String path,
-          final StorageAdapter adapter,
-          final boolean forceReload) {
-    return this.fetchDocumentFromFolderPathAsync(path, adapter, forceReload, null);
   }
 
   /**
@@ -149,7 +131,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   @Deprecated
   CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
       final String objectPath,
-      final StorageAdapter adapter,
       final boolean forceReload,
       final ResolveOptions resOpt) {
     final String docName;
@@ -167,7 +148,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
         return CompletableFuture.completedFuture(doc);
       }
       if (doc.isDirty()) {
-        Logger.warning(CdmFolderDefinition.class.getSimpleName(), this.getCtx(), Logger.format("discarding changes in document: {0}", doc.getName()));
+        Logger.warning(this.getCtx(), TAG, "fetchDocumentFromFolderPathAsync", this.getAtCorpusPath(), CdmLogCode.WarnDocChangesDiscarded , doc.getName());
       }
       this.documents.remove(docName);
     }
@@ -218,12 +199,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
         }
 
         if (!name.equalsIgnoreCase(childFolder.getName())) {
-          Logger.error(
-                  CdmFolderDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Invalid path '{0}'.", path),
-                  "fetchChildFolderFromPath"
-          );
+          Logger.error(this.getCtx(), TAG, "fetchChildFolderFromPath", this.getAtCorpusPath(), CdmLogCode.ErrInvalidPath, path);
           return null;
         }
 
@@ -241,22 +217,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
           break;
         }
 
-        // check children folders
-        CdmFolderDefinition result = null;
-        for (int i = 0; i < childFolder.getChildFolders().size(); i++) {
-          CdmFolderDefinition folder = childFolder.getChildFolders()
-                  .get(i);
-          if (childFolderName.equalsIgnoreCase(folder.getName())) {
-            result = folder;
-            break;
-          }
-        }
-
-        if (result == null) {
-          result = childFolder.getChildFolders().add(childFolderName);
-        }
-
-        childFolder = result;
+        // get next child folder.
+        childFolder = childFolder.getChildFolders().getOrCreate(childFolderName);
       }
 
       if (makeFolder) {
@@ -316,7 +278,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.name)) {
-      Logger.error(CdmFolderDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("name"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

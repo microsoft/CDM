@@ -20,6 +20,8 @@ class CdmOperationType(Enum):
     INCLUDE_ATTRIBUTES = 'IncludeAttributes'
     RENAME_ATTRIBUTES = 'RenameAttributes'
     REPLACE_AS_FOREIGN_KEY = 'ReplaceAsForeignKey'
+    ALTER_TRAITS = 'AlterTraits'
+    ADD_ARTIFACT_ATTRIBUTE = 'AddArtifactAttribute'
     ERROR = 'Error'
 
 object_type_to_operation_type = {
@@ -32,7 +34,9 @@ object_type_to_operation_type = {
     CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF: CdmOperationType.EXCLUDE_ATTRIBUTES,
     CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF: CdmOperationType.INCLUDE_ATTRIBUTES,
     CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF: CdmOperationType.RENAME_ATTRIBUTES,
-    CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF: CdmOperationType.REPLACE_AS_FOREIGN_KEY
+    CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF: CdmOperationType.REPLACE_AS_FOREIGN_KEY,
+    CdmObjectType.OPERATION_ALTER_TRAITS_DEF: CdmOperationType.ALTER_TRAITS,
+    CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF: CdmOperationType.ADD_ARTIFACT_ATTRIBUTE
 }  # type: Dict[CdmObjectType, CdmOperationType]
 
 class OperationTypeConvertor:
@@ -58,6 +62,10 @@ class OperationTypeConvertor:
             return 'includeAttributes'
         elif op_type == CdmOperationType.ADD_ATTRIBUTE_GROUP:
             return 'addAttributeGroup'
+        elif op_type == CdmOperationType.ALTER_TRAITS:
+            return 'alterTraits'
+        elif op_type == CdmOperationType.ADD_ARTIFACT_ATTRIBUTE:
+            return 'addArtifactAttribute'
         elif op_type == CdmOperationType.ERROR:
             raise NotImplementedError()
         else:

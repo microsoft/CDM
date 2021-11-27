@@ -41,7 +41,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionExclude';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionExcludeTest';
 
     /**
      * Test for creating a projection with an ExcludeAttributes operation on an entity attribute using the object model
@@ -59,8 +59,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('id');
-        excludeAttrsOp.excludeAttributes.push('date');
+        excludeAttrsOp.excludeAttributes = ['id', 'date'];
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -102,8 +101,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('name');
-        excludeAttrsOp.excludeAttributes.push('value');
+        excludeAttrsOp.excludeAttributes = ['name', 'value'];
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -143,8 +141,8 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('id');
-        excludeAttrsOp.excludeAttributes.push('date');
+        excludeAttrsOp.excludeAttributes = ['id', 'date'];
+
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -157,7 +155,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp2: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp2.excludeAttributes.push('value');
+        excludeAttrsOp2.excludeAttributes = ['value'];
         projection2.operations.push(excludeAttrsOp2);
 
         // Create an entity reference to hold this projection
@@ -198,8 +196,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('id');
-        excludeAttrsOp.excludeAttributes.push('date');
+        excludeAttrsOp.excludeAttributes = ['id', 'date'];
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -253,7 +250,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestExcludeAttributes', async () => {
         const testName: string = 'TestExcludeAttributes';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -278,7 +275,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestSSAN', async () => {
         const testName: string = 'TestSSAN';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -303,7 +300,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestSSANRename', async () => {
         const testName: string = 'TestSSANRename';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -328,7 +325,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestSingleNestedProj', async () => {
         const testName: string = 'TestSingleNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -353,7 +350,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestNestedProj', async () => {
         const testName: string = 'TestNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -376,7 +373,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestMultipleExclude', async () => {
         const testName: string = 'TestMultipleExclude';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -405,7 +402,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestExtendsEntityProj', async () => {
         const testName: string = 'TestExtendsEntityProj';
         const entityName: string = 'Child';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -432,7 +429,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestExtendsEntity', async () => {
         const testName: string = 'TestExtendsEntity';
         const entityName: string = 'Child';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -459,7 +456,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestPolymorphicProj', async () => {
         const testName: string = 'TestPolymorphicProj';
         const entityName: string = 'BusinessPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -490,7 +487,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestPolymorphic', async () => {
         const testName: string = 'TestPolymorphic';
         const entityName: string = 'BusinessPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -521,7 +518,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestArraySourceProj', async () => {
         const testName: string = 'TestArraySourceProj';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -568,7 +565,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestArraySource', async () => {
         const testName: string = 'TestArraySource';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -616,7 +613,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestArraySourceRename', async () => {
         const testName: string = 'TestArraySourceRename';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -663,7 +660,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestConditionalProj', async () => {
         const testName: string = 'TestConditionalProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -705,7 +702,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestEmptyExclude', async () => {
         const testName: string = 'TestEmptyExclude';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -736,7 +733,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestGroupProj', async () => {
         const testName: string = 'TestGroupProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -761,7 +758,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestGroup', async () => {
         const testName: string = 'TestGroup';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -786,7 +783,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestGroupRename', async () => {
         const testName: string = 'TestGroupRename';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -813,7 +810,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestEANameProj', async () => {
         const testName: string = 'TestEANameProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -847,7 +844,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestTypeAttributeProj', async () => {
         const testName: string = 'TestTypeAttributeProj';
         const entityName: string = 'Person';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

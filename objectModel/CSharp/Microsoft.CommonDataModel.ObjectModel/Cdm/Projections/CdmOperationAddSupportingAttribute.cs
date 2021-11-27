@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,13 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle AddSupportingAttribute operations
     /// </summary>
     public class CdmOperationAddSupportingAttribute : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationAddSupportingAttribute);
+        private static readonly string Tag = nameof(CdmOperationAddSupportingAttribute);
 
         public CdmTypeAttributeDefinition SupportingAttribute { get; set; }
 
@@ -28,10 +29,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationAddSupportingAttribute copy = new CdmOperationAddSupportingAttribute(this.Ctx)
+            if (resOpt == null)
             {
-                SupportingAttribute = this.SupportingAttribute?.Copy() as CdmTypeAttributeDefinition
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationAddSupportingAttribute(this.Ctx) : host as CdmOperationAddSupportingAttribute;
+
+            copy.SupportingAttribute = this.SupportingAttribute?.Copy(resOpt) as CdmTypeAttributeDefinition;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -64,7 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -74,16 +81,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + "operationAddSupportingAttribute";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
@@ -130,7 +128,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (projCtx.CurrentAttributeStateSet.States.Count > 0)
             {
                 ProjectionAttributeState lastState = projCtx.CurrentAttributeStateSet.States[projCtx.CurrentAttributeStateSet.States.Count - 1];
-                CdmTraitReference inSupportOfTrait = this.SupportingAttribute.AppliedTraits.Add("is.addedInSupportOf");
+                CdmTraitReference inSupportOfTrait = this.SupportingAttribute.AppliedTraits.Add("is.addedInSupportOf") as CdmTraitReference;
                 inSupportOfTrait.Arguments.Add("inSupportOf", lastState.CurrentResolvedAttribute.ResolvedName);
             }
 

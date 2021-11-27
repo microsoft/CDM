@@ -7,6 +7,7 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmFolderDefinition,
+    CdmManifestDefinition,
     ImportInfo,
     resolveOptions
 } from '../../internal';
@@ -34,7 +35,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * In this case, although A imports B with a moniker, B should be in the priorityImports because it is imported by C.
      */
     it('testCircularImportWithMoniker', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testCircularImportWithMoniker');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
@@ -72,7 +73,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * In this case, although B imports C with a moniker, C should be in the A's priorityImports because it is imported by D.
      */
     it('testDeeperCircularImportWithMoniker', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testDeeperCircularImportWithMoniker');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
@@ -130,7 +131,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * Index docB first then docA. Make sure that C does not appear in docA priority list.
      */
     it('testReadingCachedImportPriority', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testReadingCachedImportPriority');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
@@ -170,7 +171,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * Test if monikered imports are added to the end of the priority list.
      */
     it('testMonikeredImportIsAddedToEnd', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testMonikeredImportIsAddedToEnd');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
@@ -220,6 +221,31 @@ describe('Cdm/CdmDocumentDefinition', () => {
         // if the reloaded doc is not indexed correctly, the entity will not be able to be found
         expect(reloadedEntity).not
             .toBeUndefined();
+    });
+
+    /**
+     * Tests if the DocumentVersion is set on the resolved document
+     */
+    it('testDocumentVersionSetOnResolution', async () => {
+        const testName: string = "testDocumentVersionSetOnResolution";
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync("local:/default.manifest.cdm.json");
+        const document: CdmDocumentDefinition = await corpus.fetchObjectAsync("local:/Person.cdm.json");
+
+        expect(manifest.documentVersion)
+            .toEqual('2.1.3');
+        expect(document.documentVersion)
+            .toEqual('1.5');
+
+        const resManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync(`res-${manifest.name}`, null);
+        const resEntity: CdmEntityDefinition = await corpus.fetchObjectAsync(resManifest.entities.allItems[0].entityPath, resManifest);
+        var resDocument = resEntity.inDocument;
+
+        expect(resManifest.documentVersion)
+            .toEqual('2.1.3');
+        expect(resDocument.documentVersion)
+            .toEqual('1.5');
     });
 
     /**

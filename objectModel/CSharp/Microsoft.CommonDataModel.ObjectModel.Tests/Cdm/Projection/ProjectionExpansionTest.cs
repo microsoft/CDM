@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -244,7 +244,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExpansion";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -273,11 +273,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// ArrayExpansion on an entity attribute
         /// </summary>
         [TestMethod]
-        public async Task TestProj()
+        public async Task TestEntityAttribute()
         {
-            string testName = "TestProj";
+            string testName = "TestEntityAttribute";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -302,6 +302,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// ArrayExpansion on an type attribute
+        /// </summary>
+        [TestMethod]
+        public async Task TestTypeAttribute()
+        {
+            string testName = "TestTypeAttribute";
+            string entityName = "Person";
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+
+            // Original set of attributes: ["Favorite Terms"]
+            // Expand 1...2, renameFormat = Term {o}
+            Assert.AreEqual(2, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("Term 1", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("Term 2", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+        }
+
+        /// <summary>
         /// ArrayExpansion on an entity attribute without a RenameAttributes
         /// </summary>
         [TestMethod]
@@ -309,7 +334,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestProjNoRename";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -337,7 +362,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntity";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -362,7 +387,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntityProj";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -394,7 +419,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestNestedProj";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -428,38 +453,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
-        /// Multiple ArrayExpansion operations in a single projection
-        /// </summary>
-        [TestMethod]
-        public async Task TestMultipleOps()
-        {
-            string testName = "TestMultipleOps";
-            string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
-
-            foreach (List<string> resOpt in resOptsCombinations)
-            {
-                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
-            }
-
-            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
-
-            // Original set of attributes: ["name", "age", "address"]
-            // Expand 1...2 and 1...3, renameFormat = {m}{o}
-            Assert.AreEqual(9, resolvedEntity.Attributes.Count);
-            Assert.AreEqual("name1", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("age1", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("address1", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("name2", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("age2", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("address2", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("name3", (resolvedEntity.Attributes[6] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("age3", (resolvedEntity.Attributes[7] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("address3", (resolvedEntity.Attributes[8] as CdmTypeAttributeDefinition).Name);
-        }
-
-        /// <summary>
         /// Start and end ordinals of -2...2
         /// </summary>
         [TestMethod]
@@ -467,7 +460,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestNegativeStartOrdinal";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -500,7 +493,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestStartGTEndOrdinal";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             // A warning should be logged when startOrdinal > endOrdinal
             corpus.SetEventCallback(new EventCallback
@@ -539,7 +532,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSameStartEndOrdinals";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -565,7 +558,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestCombineOps";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -579,9 +572,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             // Expand 1...3, renameFormat = {m}{o}, include [name, age1]
             Assert.AreEqual(4, resolvedEntity.Attributes.Count);
             Assert.AreEqual("name1", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("age1", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("name2", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("name3", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("name2", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("name3", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("age1", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
         }
 
         /// <summary>
@@ -592,7 +585,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphic";
             string entityName = "BusinessPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -626,10 +619,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphicProj";
             string entityName = "BusinessPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
+                if (resOpt.Contains("structured"))
+                {
+                    // Array expansion is not supported on an attribute group yet.
+                    continue;
+                }
+
                 await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
@@ -662,7 +661,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySource";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -696,7 +695,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySourceProj";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -733,7 +732,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroup";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -766,7 +765,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroupProj";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -798,7 +797,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestConditionalProj";
             string entityName = "ThreeMusketeers";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {

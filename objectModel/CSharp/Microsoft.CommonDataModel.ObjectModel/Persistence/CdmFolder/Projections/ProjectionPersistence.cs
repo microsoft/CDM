@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -16,6 +16,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     /// </summary>
     public class ProjectionPersistence
     {
+        private static readonly string Tag = nameof(ProjectionPersistence);
+
         public static CdmProjection FromData(CdmCorpusContext ctx, JToken obj)
         {
             if (obj == null)
@@ -83,8 +85,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                             CdmOperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.FromData(ctx, operationJson);
                             projection.Operations.Add(addAttributeGroupOp);
                             break;
+                        case "alterTraits":
+                            CdmOperationAlterTraits alterTraitsOp = OperationAlterTraitsPersistence.FromData(ctx, operationJson);
+                            projection.Operations.Add(alterTraitsOp);
+                            break;
+                        case "addArtifactAttribute":
+                            CdmOperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.FromData(ctx, operationJson);
+                            projection.Operations.Add(addArtifactAttributeOp);
+                            break;
                         default:
-                            Logger.Error(nameof(ProjectionPersistence), ctx, $"Invalid operation type '{type}'.", nameof(FromData));
+                            Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjInvalidOpsType, type);
                             break;
                     }
                 }
@@ -111,7 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 source = instance.Source.NamedReference;
             }
-            else if (instance.Source != null && instance.Source.GetType() == typeof(CdmEntityReference))
+            else if (instance.Source != null && instance.Source.ObjectType == CdmObjectType.EntityRef)
             {
                 source = EntityReferencePersistence.ToData(instance.Source, resOpt, options);
             }
@@ -163,6 +173,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                         case CdmObjectType.OperationAddAttributeGroupDef:
                             OperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.ToData(operation as CdmOperationAddAttributeGroup, resOpt, options);
                             operations.Add(addAttributeGroupOp);
+                            break;
+                        case CdmObjectType.OperationAlterTraitsDef:
+                            OperationAlterTraits alterTraitsOp = OperationAlterTraitsPersistence.ToData(operation as CdmOperationAlterTraits, resOpt, options);
+                            operations.Add(alterTraitsOp);
+                            break;
+                        case CdmObjectType.OperationAddArtifactAttributeDef:
+                            OperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.ToData(operation as CdmOperationAddArtifactAttribute, resOpt, options);
+                            operations.Add(addArtifactAttributeOp);
                             break;
                         default:
                             OperationBase baseOp = new OperationBase();

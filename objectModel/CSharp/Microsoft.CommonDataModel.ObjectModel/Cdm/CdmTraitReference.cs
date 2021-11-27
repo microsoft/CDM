@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,7 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System;
     using System.Collections.Generic;
 
-    public class CdmTraitReference : CdmObjectReferenceBase
+    public class CdmTraitReference : CdmTraitReferenceBase
     {
         /// <summary>
         /// Gets the trait reference's arguments.
@@ -55,7 +55,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.ResolvedArguments = this.ResolvedArguments;
             }
             foreach (var arg in this.Arguments)
-                copy.Arguments.Add(arg);
+            {
+                copy.Arguments.Add(arg.Copy(resOpt) as CdmArgumentDefinition);
+            }
 
             return copy;
         }
@@ -175,96 +177,60 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 rtsTrait = trait.FetchResolvedTraits(resOpt);
             }
 
-            bool cacheByPath = true;
-            if (trait.ThisIsKnownToHaveParameters != null)
-            {
-                cacheByPath = !((bool)trait.ThisIsKnownToHaveParameters);
-            }
-
-            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.AtCorpusPath);
-            dynamic rtsResult = null;
-            if (cacheTag != null)
-                ctx.Cache.TryGetValue(cacheTag, out rtsResult);
+            ResolvedTraitSet rtsResult = null;
 
             // store the previous reference symbol set, we will need to add it with
             // children found from the constructResolvedTraits call
-            SymbolSet currSymRefSet = resOpt.SymbolRefSet;
-            if (currSymRefSet == null)
-                currSymRefSet = new SymbolSet();
+            SymbolSet currSymRefSet = resOpt.SymbolRefSet ?? new SymbolSet();
             resOpt.SymbolRefSet = new SymbolSet();
 
-            // if not, then make one and save it
-            if (rtsResult == null)
+            // get the set of resolutions, should just be this one trait
+            if (rtsTrait == null)
             {
-                // get the set of resolutions, should just be this one trait
-                if (rtsTrait == null)
+                // store current symbol ref set
+                SymbolSet newSymbolRefSet = resOpt.SymbolRefSet;
+                resOpt.SymbolRefSet = new SymbolSet();
+
+                rtsTrait = trait.FetchResolvedTraits(resOpt);
+
+                // bubble up symbol reference set from children
+                if (newSymbolRefSet != null)
                 {
-                    // store current symbol ref set
-                    SymbolSet newSymbolRefSet = resOpt.SymbolRefSet;
-                    resOpt.SymbolRefSet = new SymbolSet();
-
-                    rtsTrait = trait.FetchResolvedTraits(resOpt);
-
-                    // bubble up symbol reference set from children
-                    if (newSymbolRefSet != null)
-                    {
-                        newSymbolRefSet.Merge(resOpt.SymbolRefSet);
-                    }
-                    resOpt.SymbolRefSet = newSymbolRefSet;
+                    newSymbolRefSet.Merge(resOpt.SymbolRefSet);
                 }
-                if (rtsTrait != null)
-                    rtsResult = rtsTrait.DeepCopy();
+                resOpt.SymbolRefSet = newSymbolRefSet;
+            }
+            if (rtsTrait != null)
+            {
+                rtsResult = rtsTrait.DeepCopy();
+            }
 
-                // now if there are argument for this application, set the values in the array
-                if (this.Arguments != null && rtsResult != null)
+            // now if there are argument for this application, set the values in the array
+            if (this.Arguments != null && rtsResult != null)
+            {
+                // if never tried to line up arguments with parameters, do that
+                if (!this.ResolvedArguments)
                 {
-                    // if never tried to line up arguments with parameters, do that
-                    if (!this.ResolvedArguments)
+                    this.ResolvedArguments = true;
+                    ParameterCollection param = trait.FetchAllParameters(resOpt);
+                    int argumentIndex = 0;
+                    foreach (CdmArgumentDefinition argument in this.Arguments)
                     {
-                        this.ResolvedArguments = true;
-                        ParameterCollection param = trait.FetchAllParameters(resOpt);
-                        CdmParameterDefinition paramFound = null;
-                        dynamic aValue = null;
-
-                        int iArg = 0;
-                        if (this.Arguments != null)
-                        {
-                            foreach (CdmArgumentDefinition argument in this.Arguments)
-                            {
-                                paramFound = param.ResolveParameter(iArg, argument.Name);
-                                argument.ResolvedParameter = paramFound;
-                                aValue = argument.Value;
-                                aValue = ctx.Corpus.ConstTypeCheck(resOpt, this.InDocument, paramFound, aValue);
-                                argument.Value = aValue;
-                                iArg++;
-                            }
-                        }
-                    }
-                    if (this.Arguments != null)
-                    {
-                        foreach (CdmArgumentDefinition a in this.Arguments)
-                        {
-                            rtsResult.SetParameterValueFromArgument(trait, a);
-                        }
+                        CdmParameterDefinition paramFound = param.ResolveParameter(argumentIndex, argument.Name);
+                        argument.ResolvedParameter = paramFound;
+                        argument.Value = paramFound.ConstTypeCheck(resOpt, this.InDocument, argument.Value);
+                        argumentIndex++;
                     }
                 }
 
-                // register set of possible symbols
-                ctx.Corpus.RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinition>(resOpt), kind, resOpt.SymbolRefSet);
+                foreach (CdmArgumentDefinition argument in this.Arguments)
+                {
+                    rtsResult.SetParameterValueFromArgument(trait, argument);
+                }
+            }
 
-                // get the new cache tag now that we have the list of symbols
-                cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.AtCorpusPath);
-                if (!string.IsNullOrWhiteSpace(cacheTag))
-                    ctx.Cache[cacheTag] = rtsResult;
-            }
-            else
-            {
-                // cache was found
-                // get the SymbolSet for this cached object
-                string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
-                resOpt.SymbolRefSet = tempDocRefSet;
-            }
+            // register set of possible symbols
+            ctx.Corpus.RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinition>(resOpt), kind, resOpt.SymbolRefSet);
 
             // merge child document set with current
             currSymRefSet.Merge(resOpt.SymbolRefSet);

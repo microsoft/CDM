@@ -7,6 +7,7 @@ import { PredefinedTokens } from './PredefinedTokens';
 import { Tokenizer } from './Tokenizer';
 import { PredefinedType } from './PredefinedType';
 import { Node } from './Node';
+import { StringUtils } from '../../Utilities/StringUtils';
 
 /**
  * Class to generate an expression tree so that expression can be evaluated or parsed at a later date
@@ -21,7 +22,7 @@ export class ExpressionTree {
     /**
      * Create a new node of the expression tree
      */
-    private createNewNode(value: any, type: PredefinedType): Node {
+    private static createNewNode(value: any, type: PredefinedType): Node {
         const newNode: Node = new Node();
 
         newNode.value = value;
@@ -37,7 +38,7 @@ export class ExpressionTree {
      * Given an expression string, create an expression tree
      * @internal
      */
-    public constructExpressionTree(expression: string): Node {
+    public static constructExpressionTree(expression: string): Node {
         if (!expression || !expression.trim()) {
             // caller to log info "Optional expression missing. Implicit expression will automatically apply." if returned null
             return undefined;
@@ -151,7 +152,7 @@ export class ExpressionTree {
      * Order of operators
      * Higher the priority - higher the precedence
      */
-    private operatorPriority(op: string): number {
+    private static operatorPriority(op: string): number {
         if (!ExpressionTree.textToTokenHash.has(op)) {
             return 0;
         } else {
@@ -178,106 +179,119 @@ export class ExpressionTree {
     }
 
     /**
+     * Given a condition and the input values, evaluate the condition
+     * @internal
+     */
+    public static evaluateCondition(condition: string, input: InputValues): boolean {
+        if (StringUtils.isNullOrWhiteSpace(condition)) {
+            return true;
+        }
+
+        const treeRoot: Node = this.constructExpressionTree(condition);
+        return this.evaluateExpressionTree(treeRoot, input);
+    }
+
+    /**
      * Given an expression tree, evaluate the expression
      * @internal
      */
     public static evaluateExpressionTree(top: Node, input: InputValues): any {
-        if (top) {
-            let leftReturn: any = false;
-            let rightReturn: any = false;
+        if (!top) {
+            return false;
+        }
 
-            if (top.left) {
-                leftReturn = this.evaluateExpressionTree(top.left, input);
+        let leftReturn: any = false;
+        let rightReturn: any = false;
+
+        if (top.left) {
+            leftReturn = this.evaluateExpressionTree(top.left, input);
+        }
+
+        if (top.right) {
+            rightReturn = this.evaluateExpressionTree(top.right, input);
+        }
+
+        if (top.valueType === PredefinedType.custom) {
+            // check if number and return number
+            const num: number = Number(top.value);
+            if (!isNaN(num)) {
+                return num;
             }
 
-            if (top.right) {
-                rightReturn = this.evaluateExpressionTree(top.right, input);
-            }
-
-            if (top.valueType === PredefinedType.custom) {
-                // check if number and return number
-                const num: number = Number(top.value);
-                if (!isNaN(num)) {
-                    return num;
-                }
-
-                // check if bool and return bool
-                if (typeof top.value === 'string') {
-                    if (top.value.trim().toLowerCase() === 'true') {
-                        return true;
-                    } else if (top.value.trim().toLowerCase() === 'false') {
-                        return false;
-                    }
-                }
-            }
-
-            if (!ExpressionTree.textToTokenHash.has(top.value)) {
-                return top.value;
-            } else {
-                switch (ExpressionTree.textToTokenHash.get(top.value)) {
-                    case PredefinedTokenEnum.AND:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn && rightReturn;
-                    case PredefinedTokenEnum.NOT:
-                        return (rightReturn === undefined || rightReturn == null) ? false : !rightReturn;
-                    case PredefinedTokenEnum.OR:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn || rightReturn;
-
-                    case PredefinedTokenEnum.GT:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn > rightReturn;
-                    case PredefinedTokenEnum.LT:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn < rightReturn;
-                    case PredefinedTokenEnum.GE:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn >= rightReturn;
-                    case PredefinedTokenEnum.LE:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn <= rightReturn;
-                    case PredefinedTokenEnum.EQ:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn === rightReturn;
-                    case PredefinedTokenEnum.NE:
-                        return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn !== rightReturn;
-
-                    case PredefinedTokenEnum.TRUE:
-                        return true;
-                    case PredefinedTokenEnum.FALSE:
-                        return false;
-
-                    case PredefinedTokenEnum.OPENPAREN:
-                    case PredefinedTokenEnum.CLOSEPAREN:
-                        return true;
-
-                    case PredefinedTokenEnum.DEPTH:
-                        return input.nextDepth;
-                    case PredefinedTokenEnum.MAXDEPTH:
-                        return input.maxDepth;
-
-                    case PredefinedTokenEnum.ISARRAY:
-                        return input.isArray;
-                    case PredefinedTokenEnum.NOMAXDEPTH:
-                        return input.noMaxDepth;
-
-                    case PredefinedTokenEnum.MINCARDINALITY:
-                        return input.minCardinality;
-                    case PredefinedTokenEnum.MAXCARDINALITY:
-                        return input.maxCardinality;
-
-                    case PredefinedTokenEnum.NORMALIZED:
-                        return input.normalized;
-                    case PredefinedTokenEnum.REFERENCEONLY:
-                        return input.referenceOnly;
-                    case PredefinedTokenEnum.STRUCTURED:
-                        return input.structured;
-                    case PredefinedTokenEnum.VIRTUAL:
-                        return input.isVirtual;
-
-                    case PredefinedTokenEnum.ALWAYS:
-                        return true;
-
-                    default:
-                        return top.value;
+            // check if bool and return bool
+            if (typeof top.value === 'string') {
+                if (top.value.trim().toLowerCase() === 'true') {
+                    return true;
+                } else if (top.value.trim().toLowerCase() === 'false') {
+                    return false;
                 }
             }
         }
 
-        return false;
+        if (!ExpressionTree.textToTokenHash.has(top.value)) {
+            return top.value;
+        } else {
+            switch (ExpressionTree.textToTokenHash.get(top.value)) {
+                case PredefinedTokenEnum.AND:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn && rightReturn;
+                case PredefinedTokenEnum.NOT:
+                    return (rightReturn === undefined || rightReturn == null) ? false : !rightReturn;
+                case PredefinedTokenEnum.OR:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn || rightReturn;
+
+                case PredefinedTokenEnum.GT:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn > rightReturn;
+                case PredefinedTokenEnum.LT:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn < rightReturn;
+                case PredefinedTokenEnum.GE:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn >= rightReturn;
+                case PredefinedTokenEnum.LE:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn <= rightReturn;
+                case PredefinedTokenEnum.EQ:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn === rightReturn;
+                case PredefinedTokenEnum.NE:
+                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn !== rightReturn;
+
+                case PredefinedTokenEnum.TRUE:
+                    return true;
+                case PredefinedTokenEnum.FALSE:
+                    return false;
+
+                case PredefinedTokenEnum.OPENPAREN:
+                case PredefinedTokenEnum.CLOSEPAREN:
+                    return true;
+
+                case PredefinedTokenEnum.DEPTH:
+                    return input.nextDepth;
+                case PredefinedTokenEnum.MAXDEPTH:
+                    return input.maxDepth;
+
+                case PredefinedTokenEnum.ISARRAY:
+                    return input.isArray;
+                case PredefinedTokenEnum.NOMAXDEPTH:
+                    return input.noMaxDepth;
+
+                case PredefinedTokenEnum.MINCARDINALITY:
+                    return input.minCardinality;
+                case PredefinedTokenEnum.MAXCARDINALITY:
+                    return input.maxCardinality;
+
+                case PredefinedTokenEnum.NORMALIZED:
+                    return input.normalized;
+                case PredefinedTokenEnum.REFERENCEONLY:
+                    return input.referenceOnly;
+                case PredefinedTokenEnum.STRUCTURED:
+                    return input.structured;
+                case PredefinedTokenEnum.VIRTUAL:
+                    return input.isVirtual;
+
+                case PredefinedTokenEnum.ALWAYS:
+                    return true;
+
+                default:
+                    return top.value;
+            }
+        }
     }
 
     /**

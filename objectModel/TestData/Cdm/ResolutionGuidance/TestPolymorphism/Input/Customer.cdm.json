@@ -1,0 +1,83 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Customer",
+      "extendsEntity": "CdmEntity",
+      "hasAttributes": [
+        {
+          "name": "customer",
+          "purpose": "referencesCustomer",
+          "entity": {
+            "entityReference": {
+              "entityName": "Customer",
+              "hasAttributes": [
+                {
+                  "entity": {
+                    "entityReference": "Contact",
+                    "appliedTraits": [
+                      {
+                        "traitReference": "is.identifiedBy",
+                        "arguments": [
+                          "Contact/(resolvedAttributes)/contactId"
+                        ]
+                      }
+                    ]
+                  },
+                  "name": "contactOption"
+                },
+                {
+                  "entity": {
+                    "entityReference": "Account",
+                    "appliedTraits": [
+                      {
+                        "traitReference": "is.identifiedBy",
+                        "arguments": [
+                          "Account/(resolvedAttributes)/accountId"
+                        ]
+                      }
+                    ]
+                  },
+                  "name": "accountOption"
+                }
+              ]
+            }
+          },
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true,
+              "alwaysIncludeForeignKey": false,
+              "referenceOnlyAfterDepth": 2,
+              "foreignKeyAttribute": {
+                "name": "customerId",
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "sourceName": "customerid",
+                "displayName": "Customer"
+              }
+            },
+            "selectsSubAttribute": {
+              "selects": "one",
+              "selectedTypeAttribute": {
+                "name": "customerIdType",
+                "purpose": "hasA",
+                "dataType": "entityName",
+                "sourceName": "customeridtype",
+                "displayName": "Customer Type"
+              }
+            }
+          }
+        }
+      ],
+      "sourceName": "Customer",
+      "displayName": "Customer",
+      "description": "Customer information.",
+      "version": "1.1"
+    }
+  ]
+}

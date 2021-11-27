@@ -12,7 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// <unitTest>TokenizerUnitTest</unitTest>
     internal sealed class Tokenizer
     {
-        internal static Dictionary<string, PredefinedType> textToTypeHash = PredefinedTokens.InitializeTextToTypeHash();
+        internal static IReadOnlyDictionary<string, PredefinedType> textToTypeHash = PredefinedTokens.InitializeTextToTypeHash();
 
         /// <summary>
         /// Tokenize the expression into an array of token, operators and parenthesis

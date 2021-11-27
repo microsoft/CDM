@@ -9,6 +9,7 @@ import {
     CdmTraitCollection,
     CdmTraitDefinition,
     CdmTraitReference,
+    cdmLogCode,
     copyOptions,
     resolveOptions,
     traitToPropertyMap
@@ -21,6 +22,8 @@ import { processExtensionFromJson } from './ExtensionHelper';
 import { processAnnotationsFromData, processTraitsAndAnnotationsToData } from './utils';
 
 export class ReferencedEntityDeclarationPersistence {
+    private static TAG: string = ReferencedEntityDeclarationPersistence.name;
+
     public static async fromData(
         ctx: CdmCorpusContext,
         dataObj: ReferenceEntity,
@@ -30,9 +33,14 @@ export class ReferencedEntityDeclarationPersistence {
             cdmObjectType.referencedEntityDeclarationDef,
             dataObj.name
         );
+        referencedEntity.entityName = dataObj.name;
         const corpusPath: string = ctx.corpus.storage.adapterPathToCorpusPath(location);
 
-        referencedEntity.entityName = dataObj.name;
+        if (corpusPath === undefined) {
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, location, referencedEntity.entityName);
+            return undefined;
+        }
+
         referencedEntity.entityPath = `${corpusPath}/${dataObj.source}`;
         referencedEntity.explanation = dataObj.description;
 
@@ -65,7 +73,7 @@ export class ReferencedEntityDeclarationPersistence {
         processExtensionFromJson(ctx, dataObj, referenceEntityBaseProperties, extensionTraits, extensionTraitDefList);
 
         if (extensionTraitDefList.length > 0) {
-            Logger.warning(ReferencedEntityDeclarationPersistence.name, ctx, 'Custom extensions are not supported in referenced entity.');
+            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistCustomExtNotSupported);
         }
 
         return referencedEntity;
@@ -84,13 +92,7 @@ export class ReferencedEntityDeclarationPersistence {
         const sourceIndex: number = instance.entityPath.lastIndexOf('/');
 
         if (sourceIndex === -1) {
-            Logger.error(
-                ReferencedEntityDeclarationPersistence.name,
-                instance.ctx,
-                'Source name is not present in entityDeclaration path.',
-                instance.atCorpusPath
-            );
-
+            Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityRefConversionError, instance.entityName);
             return Promise.reject('Source name is not present in entityDeclaration path.');
         }
 

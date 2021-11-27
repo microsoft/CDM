@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,9 +9,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmConstantEntityDefinition : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmConstantEntityDefinition);
+
         /// <summary>
         /// Gets or sets the constant entity name.
         /// </summary>
@@ -60,7 +63,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmConstantEntityDefinition;
-                copy.Ctx = this.Ctx;
                 copy.ConstantEntityName = this.ConstantEntityName;
             }
 
@@ -85,11 +87,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 string[] pathSplit = this.DeclaredPath.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
                 string entityName = (pathSplit.Length > 0) ? pathSplit[0].ToString() : string.Empty;
-                Logger.Warning(nameof(CdmConstantEntityDefinition), this.Ctx, $"constant entity '{entityName}' defined without a constant value.");
+                Logger.Warning(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.WarnValdnEntityNotDefined, entityName);
             }
             if (this.EntityShape == null)
             {
-                Logger.Error(nameof(CdmConstantEntityDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityShape" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "EntityShape" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -146,16 +149,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + (!string.IsNullOrEmpty(this.ConstantEntityName) ? this.ConstantEntityName : "(unspecified)");
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
             //trackVisits(path);
 
             if (preChildren != null && preChildren.Invoke(this, path))
@@ -169,6 +163,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
+        }
+
+        /// <inheritdoc />
+        internal override string UpdateDeclaredPath(string pathFrom)
+        {
+            return pathFrom + (!string.IsNullOrEmpty(this.ConstantEntityName) ? this.ConstantEntityName : "(unspecified)");
         }
 
         internal override void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)

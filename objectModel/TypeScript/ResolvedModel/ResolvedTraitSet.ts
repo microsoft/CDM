@@ -4,7 +4,7 @@
 import {
     ArgumentValue,
     CdmArgumentDefinition,
-    CdmObjectBase,
+    CdmParameterDefinition,
     CdmTraitDefinition,
     ParameterCollection,
     ParameterValue,
@@ -50,7 +50,7 @@ export class ResolvedTraitSet {
     constructor(resOpt: resolveOptions) {
         // let bodyCode = () =>
         {
-            this.resOpt = resOpt.copy();
+            this.resOpt = resOpt;
             this.set = [];
             this.lookupByTrait = new Map<CdmTraitDefinition, ResolvedTrait>();
             this.hasElevated = false;
@@ -161,16 +161,27 @@ export class ResolvedTraitSet {
         // return p.measure(bodyCode);
     }
 
+    public remove(resOpt: resolveOptions, traitName: string): boolean {
+        const rt: ResolvedTrait = this.find(resOpt, traitName);
+        if (rt != null) {
+            this.lookupByTrait.delete(rt.trait);
+            const index:number = this.set.indexOf(rt);
+            if (index > -1) {
+                this.set.splice(index, 1);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public deepCopy(): ResolvedTraitSet {
         // let bodyCode = () =>
         {
             const copy: ResolvedTraitSet = new ResolvedTraitSet(this.resOpt);
-            const newSet: ResolvedTrait[] = copy.set;
             const l: number = this.set.length;
             for (let i: number = 0; i < l; i++) {
-                let rt: ResolvedTrait = this.set[i];
-                rt = rt.copy();
-                newSet.push(rt);
+                const rt: ResolvedTrait = this.set[i].copy();
+                copy.set.push(rt);
                 copy.lookupByTrait.set(rt.trait, rt);
             }
             copy.hasElevated = this.hasElevated;
@@ -184,14 +195,13 @@ export class ResolvedTraitSet {
         // let bodyCode = () =>
         {
             const copy: ResolvedTraitSet = new ResolvedTraitSet(this.resOpt);
-            const newSet: ResolvedTrait[] = copy.set;
             const l: number = this.set.length;
             for (let i: number = 0; i < l; i++) {
                 let rt: ResolvedTrait = this.set[i];
                 if (rt.trait === just) {
                     rt = rt.copy();
                 }
-                newSet.push(rt);
+                copy.set.push(rt);
                 copy.lookupByTrait.set(rt.trait, rt);
             }
             copy.hasElevated = this.hasElevated;
@@ -206,11 +216,10 @@ export class ResolvedTraitSet {
         {
             const copy: ResolvedTraitSet = new ResolvedTraitSet(this.resOpt);
             if (this.set) {
-                const newSet: ResolvedTrait[] = copy.set;
                 const l: number = this.set.length;
                 for (let i: number = 0; i < l; i++) {
                     const rt: ResolvedTrait = this.set[i];
-                    newSet.push(rt);
+                    copy.set.push(rt);
                     copy.lookupByTrait.set(rt.trait, rt);
                 }
             }
@@ -246,9 +255,16 @@ export class ResolvedTraitSet {
                 const av: ArgumentValue[] = resTrait.parameterValues.values;
                 const newVal: ArgumentValue = arg.getValue();
                 // get the value index from the parameter collection given the parameter that this argument is setting
-                const iParam: number = resTrait.parameterValues.indexOf(arg.getParameterDef());
-                av[iParam] = ParameterValue.fetchReplacementValue(this.resOpt, av[iParam], newVal, true);
-                resTrait.parameterValues.wasSet[iParam] = true;
+                let paramDef: CdmParameterDefinition = arg.getParameterDef();
+                if (paramDef)
+                {
+                    resTrait.parameterValues.setParameterValue(this.resOpt, paramDef.getName(), newVal);
+                }
+                else
+                {
+                    // debug
+                    paramDef = arg.getParameterDef();
+                }
             }
         }
         // return p.measure(bodyCode);

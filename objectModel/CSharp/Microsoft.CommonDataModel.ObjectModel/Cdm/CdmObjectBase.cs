@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -91,6 +91,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <inheritdoc />
         public virtual CdmDocumentDefinition InDocument { get; set; }
+
         internal virtual void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
             return;
@@ -117,9 +118,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
             ResolvedTraitSetBuilder rtsbAll = null;
             if (this.TraitCache == null)
+            {
                 this.TraitCache = new Dictionary<string, ResolvedTraitSetBuilder>();
+            }
             else if (!string.IsNullOrWhiteSpace(cacheTagA))
+            {
                 this.TraitCache.TryGetValue(cacheTagA, out rtsbAll);
+            }
 
             // store the previous document set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -155,7 +160,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // get the new cache tag now that we have the list of docs
                     cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
                     if (!string.IsNullOrWhiteSpace(cacheTagA))
+                    {
                         this.TraitCache[cacheTagA] = rtsbAll;
+                    }
                 }
             }
             else
@@ -163,7 +170,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // cache was found
                 // get the SymbolSet for this cached object
                 string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                ((CdmCorpusDefinition)ctx.Corpus).DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
+                ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
                 resOpt.SymbolRefSet = tempDocRefSet;
             }
 
@@ -174,17 +181,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
             return rtsbAll.ResolvedTraitSet;
         }
-        virtual internal ResolvedAttributeSetBuilder FetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext = null)
+
+        virtual internal ResolvedAttributeSetBuilder FetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext)
         {
             const string kind = "rasb";
             ResolveContext ctx = this.Ctx as ResolveContext;
             string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
 
-            dynamic rasbCache = null;
+            ResolvedAttributeSetBuilder rasbCache = null;
             if (cacheTag != null)
             {
-                ctx.Cache.TryGetValue(cacheTag, out rasbCache);
+                ctx.AttributeCache.TryGetValue(cacheTag, out rasbCache);
             }
+
             return rasbCache;
         }
 
@@ -212,13 +221,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 //}
             }
 
+            int currentDepth = resOpt.DepthInfo.CurrentDepth;
+
             const string kind = "rasb";
             ResolveContext ctx = this.Ctx as ResolveContext;
             ResolvedAttributeSetBuilder rasbResult = null;
             ResolvedAttributeSetBuilder rasbCache = this.FetchObjectFromCache(resOpt, acpInContext);
             CdmAttributeContext underCtx;
-
-            int currentDepth = resOpt.DepthInfo.CurrentDepth;
 
             // store the previous document set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -253,16 +262,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         ctx.Corpus.RegisterDefinitionReferenceSymbols(oDef, kind, resOpt.SymbolRefSet);
 
+                        if (this.ObjectType == CdmObjectType.EntityDef)
+                        {
+                            // if we just got attributes for an entity, take the time now to clean up this cached tree and prune out
+                            // things that don't help explain where the final set of attributes came from
+                            if (underCtx != null)
+                            {
+                                var scopesForAttributes = new HashSet<CdmAttributeContext>();
+                                underCtx.CollectContextFromAtts(rasbCache.ResolvedAttributeSet, scopesForAttributes); // the context node for every final attribute
+                                if (!underCtx.PruneToScope(scopesForAttributes))
+                                {
+                                    return null;
+                                }
+                            }
+                        }
+
                         // get the new cache tag now that we have the list of docs
                         string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
 
                         // save this as the cached version
                         if (!string.IsNullOrWhiteSpace(cacheTag))
-                            ctx.Cache[cacheTag] = rasbCache;
+                        {
+                            ctx.AttributeCache[cacheTag] = rasbCache;
+                        }
                     }
                     // get the 'underCtx' of the attribute set from the acp that is wired into
                     // the target tree
-                    underCtx = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
+                    underCtx = rasbCache.ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
                 }
             }
             else
@@ -270,7 +296,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
                 // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
                 // copies of all cached children
-                underCtx = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
+                underCtx = rasbCache.ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
                 //underCtx.ValidateLineage(resOpt); // debugging
             }
 
@@ -284,13 +310,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
                 rasbResult = new ResolvedAttributeSetBuilder
                 {
-                    ResolvedAttributeSet = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.Copy()
+                    ResolvedAttributeSet = rasbCache.ResolvedAttributeSet.Copy()
                 };
 
                 // 2. deep copy the tree and map the context references. 
                 if (underCtx != null) // null context? means there is no tree, probably 0 attributes came out
                 {
-                    if (underCtx.AssociateTreeCopyWithAttributes(resOpt, rasbResult.ResolvedAttributeSet) == false)
+                    if (!underCtx.AssociateTreeCopyWithAttributes(resOpt, rasbResult.ResolvedAttributeSet))
                     {
                         return null;
                     }
@@ -321,6 +347,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resOpt.SymbolRefSet = currDocRefSet;
 
             this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
+
             return rasbResult?.ResolvedAttributeSet;
         }
 
@@ -354,7 +381,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 options = new CopyOptions();
             }
 
-            string persistenceTypeName = "CdmFolder";
+            string persistenceTypeName = options?.PersistenceTypeName;
+
+            if (persistenceTypeName == null || persistenceTypeName == "")
+            {
+                persistenceTypeName = "CdmFolder";
+            }
+
             return PersistenceLayer.ToData<T, dynamic>(instance, resOpt, options, persistenceTypeName);
         }
 
@@ -448,8 +481,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (resOpt.SaveResolutionsOnCopy)
             {
                 // used to localize references between documents
-                traitRef.ExplicitReference = rt.Trait as CdmTraitDefinition;
-                traitRef.InDocument = (rt.Trait as CdmTraitDefinition).InDocument;
+                traitRef.ExplicitReference = rt.Trait;
+                traitRef.InDocument = rt.Trait.InDocument;
             }
             // always make it a property when you can, however the dataFormat traits should be left alone
             // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.

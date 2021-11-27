@@ -8,7 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -24,12 +24,7 @@ public class ProjectionAttributeContextTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionAttributeContext")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAttributeContextTest").toString();
 
     /**
      * Extends entity with a string reference
@@ -37,17 +32,10 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityStringReference() throws InterruptedException {
         String testName = "testEntityStringReference";
-        String entityName = "TestEntityStringReference";
+        String entityName = "TestEntStrRef";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityStringReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityStringReference);
-        CdmEntityDefinition resolvedTestEntityStringReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityStringReference);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -56,17 +44,10 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityEntityReference() throws InterruptedException {
         String testName = "testEntityEntityReference";
-        String entityName = "TestEntityEntityReference";
+        String entityName = "TestEntEntRef";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityEntityReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityEntityReference);
-        CdmEntityDefinition resolvedTestEntityEntityReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityEntityReference, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityEntityReference);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityEntityReference);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -76,16 +57,9 @@ public class ProjectionAttributeContextTest {
     public void testEntityProjection() throws InterruptedException {
         String testName = "testEntityProjection";
         String entityName = "TestEntityProjection";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityProjection);
-        CdmEntityDefinition resolvedTestEntityProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityProjection, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityProjection);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityProjection);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -94,17 +68,10 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityNestedProjection() throws InterruptedException {
         String testName = "testEntityNestedProjection";
-        String entityName = "TestEntityNestedProjection";
+        String entityName = "NestedProjection";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityNestedProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityNestedProjection);
-        CdmEntityDefinition resolvedTestEntityNestedProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityNestedProjection, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityNestedProjection);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityNestedProjection);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -113,17 +80,10 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityAttributeStringReference() throws InterruptedException {
         String testName = "testEntityAttributeStringReference";
-        String entityName = "TestEntityAttributeStringReference";
+        String entityName = "TestEntAttrStrRef";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityAttributeStringReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityAttributeStringReference);
-        CdmEntityDefinition resolvedTestEntityAttributeStringReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeStringReference, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityAttributeStringReference);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeStringReference);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -132,17 +92,10 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityAttributeEntityReference() throws InterruptedException {
         String testName = "testEntityAttributeEntityReference";
-        String entityName = "TestEntityAttributeEntityReference";
+        String entityName = "TestEntAttrEntRef";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityAttributeEntityReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityAttributeEntityReference);
-        CdmEntityDefinition resolvedTestEntityAttributeEntityReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeEntityReference, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityAttributeEntityReference);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeEntityReference);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -151,17 +104,10 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityAttributeProjection() throws InterruptedException {
         String testName = "testEntityAttributeProjection";
-        String entityName = "TestEntityAttributeProjection";
+        String entityName = "TestEntAttrProj";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityAttributeProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityAttributeProjection);
-        CdmEntityDefinition resolvedTestEntityAttributeProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeProjection, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityAttributeProjection);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeProjection);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -170,17 +116,10 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityAttributeNestedProjection() throws InterruptedException {
         String testName = "testEntityAttributeNestedProjection";
-        String entityName = "TestEntityAttributeNestedProjection";
+        String entityName = "NestedProjection";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityAttributeNestedProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityAttributeNestedProjection);
-        CdmEntityDefinition resolvedTestEntityAttributeNestedProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeNestedProjection, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityAttributeNestedProjection);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeNestedProjection);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
 
     /**
@@ -190,27 +129,20 @@ public class ProjectionAttributeContextTest {
     public void testEntityTrait() throws InterruptedException {
         String testName = "testEntityTrait";
         String entityName = "TestEntityTrait";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityTrait);
-        CdmEntityDefinition resolvedTestEntityTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityTrait, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityTrait);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityTrait);
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 
         // Attribute Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestEntityTrait.getAttributes().get(0)).getName(), "TestAttribute");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "TestAttribute");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestEntityTrait.getAttributes().get(0)).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestEntityTrait.getAttributes().get(0)).getAppliedTraits().get(4).getNamedReference(), "testTrait");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4).getNamedReference(), "testTrait");
         // Trait Param Name
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestEntityTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getResolvedParameter().getName(), "testTraitParam1");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getResolvedParameter().getName(), "testTraitParam1");
         // Trait Param Default Value
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestEntityTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getValue(), "TestTrait Param 1 DefaultValue");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getValue(), "TestTrait Param 1 DefaultValue");
     }
 
     /**
@@ -219,28 +151,21 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testEntityExtendsTrait() throws InterruptedException {
         String testName = "testEntityExtendsTrait";
-        String entityName = "TestEntityExtendsTrait";
+        String entityName = "ExtendsTrait";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityExtendsTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestEntityExtendsTrait);
-        CdmEntityDefinition resolvedTestEntityExtendsTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityExtendsTrait, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestEntityExtendsTrait);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityExtendsTrait);
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 
         // Attribute Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestEntityExtendsTrait.getAttributes().get(0)).getName(), "TestExtendsTraitAttribute");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "TestExtendsTraitAttribute");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestEntityExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestEntityExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(4).getNamedReference(), "testTraitDerived");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4).getNamedReference(), "testTraitDerived");
         // Trait Param Name
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestEntityExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getResolvedParameter().getName(), "testTraitParam1");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getResolvedParameter().getName(), "testTraitParam1");
         // Trait Param Default Value
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestEntityExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getValue(), "TestTrait Param 1 DefaultValue");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getValue(), "TestTrait Param 1 DefaultValue");
     }
 
     /**
@@ -250,27 +175,20 @@ public class ProjectionAttributeContextTest {
     public void testProjectionTrait() throws InterruptedException {
         String testName = "testProjectionTrait";
         String entityName = "TestProjectionTrait";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestProjectionTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestProjectionTrait);
-        CdmEntityDefinition resolvedTestProjectionTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestProjectionTrait, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestProjectionTrait);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionTrait);
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 
         // Attribute Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionTrait.getAttributes().get(0)).getName(), "TestProjectionAttribute");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "TestProjectionAttribute");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionTrait.getAttributes().get(0)).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionTrait.getAttributes().get(0)).getAppliedTraits().get(4).getNamedReference(), "testTrait");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4).getNamedReference(), "testTrait");
         // Trait Param Name
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getResolvedParameter().getName(), "testTraitParam1");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getResolvedParameter().getName(), "testTraitParam1");
         // Trait Param Default Value
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getValue(), "TestTrait Param 1 DefaultValue");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getValue(), "TestTrait Param 1 DefaultValue");
     }
 
     /**
@@ -279,49 +197,42 @@ public class ProjectionAttributeContextTest {
     @Test
     public void testProjectionExtendsTrait() throws InterruptedException {
         String testName = "testProjectionExtendsTrait";
-        String entityName = "TestProjectionExtendsTrait";
+        String entityName = "ExtendsTrait";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestProjectionExtendsTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entTestProjectionExtendsTrait);
-        CdmEntityDefinition resolvedTestProjectionExtendsTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestProjectionExtendsTrait, new ArrayList<String>()).join();
-        Assert.assertNotNull(resolvedTestProjectionExtendsTrait);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionExtendsTrait);
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 
         // Attribute Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(0)).getName(), "TestProjectionAttribute");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "TestProjectionAttribute");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(4).getNamedReference(), "testTrait");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4).getNamedReference(), "testTrait");
         // Trait Param Name
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getResolvedParameter().getName(), "testTraitParam1");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getResolvedParameter().getName(), "testTraitParam1");
         // Trait Param Default Value
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(0)).getAppliedTraits().get(4).getArguments().get(0)).getValue(), "TestTrait Param 1 DefaultValue");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(0).getAppliedTraits().get(4)).getArguments().get(0).getValue(), "TestTrait Param 1 DefaultValue");
 
         // Attribute Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getName(), "TestProjectionAttributeB");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "TestProjectionAttributeB");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(1).getAppliedTraits().get(3).getNamedReference(), "does.haveDefault");
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(4).getNamedReference(), "testTrait");
+        Assert.assertEquals( resolvedEntity.getAttributes().get(1).getAppliedTraits().get(4).getNamedReference(), "testTrait");
         // Trait Param Name
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(4).getArguments().get(0)).getResolvedParameter().getName(), "testTraitParam1");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(1).getAppliedTraits().get(4)).getArguments().get(0).getResolvedParameter().getName(), "testTraitParam1");
         // Trait Param Default Value
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(4).getArguments().get(0)).getValue(), "TestTrait Param 1 DefaultValue");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(1).getAppliedTraits().get(4)).getArguments().get(0).getValue(), "TestTrait Param 1 DefaultValue");
 
         // Trait Name
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(5).getNamedReference(), "testExtendsTraitB");
+        Assert.assertEquals(resolvedEntity.getAttributes().get(1).getAppliedTraits().get(5).getNamedReference(), "testExtendsTraitB");
         // Trait Param Name
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(5).getArguments().get(0)).getResolvedParameter().getName(), "testTraitParam1");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(1).getAppliedTraits().get(5)).getArguments().get(0).getResolvedParameter().getName(), "testTraitParam1");
         // Trait Param Default Value
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(5).getArguments().get(0)).getValue(), "TestTrait Param 1 DefaultValue");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(1).getAppliedTraits().get(5)).getArguments().get(0).getValue(), "TestTrait Param 1 DefaultValue");
         // Trait Param Name
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(5).getArguments().get(1)).getResolvedParameter().getName(), "testExtendsTraitBParam1");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(1).getAppliedTraits().get(5)).getArguments().get(1).getResolvedParameter().getName(), "testExtendsTraitBParam1");
         // Trait Param Default Value
-        Assert.assertEquals(((CdmArgumentDefinition)((CdmTypeAttributeDefinition) resolvedTestProjectionExtendsTrait.getAttributes().get(1)).getAppliedTraits().get(5).getArguments().get(1)).getValue(), "TestExtendsTraitB Param 1 DefaultValue");
+        Assert.assertEquals(((CdmTraitReference) resolvedEntity.getAttributes().get(1).getAppliedTraits().get(5)).getArguments().get(1).getValue(), "TestExtendsTraitB Param 1 DefaultValue");
     }
 }

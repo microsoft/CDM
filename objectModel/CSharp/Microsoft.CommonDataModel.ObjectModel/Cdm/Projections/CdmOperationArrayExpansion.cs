@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,13 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle ArrayExpansion operations
     /// </summary>
     public class CdmOperationArrayExpansion : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationArrayExpansion);
+        private static readonly string Tag = nameof(CdmOperationArrayExpansion);
 
         public int? StartOrdinal { get; set; }
 
@@ -30,11 +31,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationArrayExpansion copy = new CdmOperationArrayExpansion(this.Ctx)
+            if (resOpt == null)
             {
-                StartOrdinal = this.StartOrdinal,
-                EndOrdinal = this.EndOrdinal
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationArrayExpansion(this.Ctx) : host as CdmOperationArrayExpansion;
+
+            copy.StartOrdinal = this.StartOrdinal;
+            copy.EndOrdinal = this.EndOrdinal;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -74,7 +81,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
 
@@ -84,16 +91,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + "operationArrayExpansion";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
@@ -126,7 +124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // Ordinal validation
             if (this.StartOrdinal > this.EndOrdinal)
             {
-                Logger.Warning(TAG, this.Ctx, $"startOrdinal {this.StartOrdinal} should not be greater than endOrdinal {this.EndOrdinal}", nameof(AppendProjectionAttributeState));
+                Logger.Warning(this.Ctx, Tag, nameof(AppendProjectionAttributeState), this.AtCorpusPath, CdmLogCode.WarnValdnOrdinalStartEndOrder, this.StartOrdinal.ToString(), this.EndOrdinal.ToString());
             }
             else
             {
@@ -136,7 +134,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // Ordinals should end at endOrdinal or the maximum ordinal allowed (set in resolve options), whichever is smaller.
                 if (this.EndOrdinal > projCtx.ProjectionDirective.ResOpt.MaxOrdinalForArrayExpansion)
                 {
-                    Logger.Warning(TAG, this.Ctx, $"endOrdinal {this.EndOrdinal} is greater than the maximum allowed ordinal of {projCtx.ProjectionDirective.ResOpt.MaxOrdinalForArrayExpansion}. Using the maximum allowed ordinal instead.", nameof(AppendProjectionAttributeState));
+                    Logger.Warning(this.Ctx, Tag, nameof(AppendProjectionAttributeState), this.AtCorpusPath, CdmLogCode.WarnValdnMaxOrdinalTooHigh, this.EndOrdinal.ToString(), projCtx.ProjectionDirective.ResOpt.MaxOrdinalForArrayExpansion.ToString());
                 }
                 int endingOrdinal = Math.Min(projCtx.ProjectionDirective.ResOpt.MaxOrdinalForArrayExpansion, (int)this.EndOrdinal);
 
@@ -167,14 +165,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         if (currentPAS.CurrentResolvedAttribute.Target is ResolvedAttributeSet)
                         {
-                            Logger.Error(TAG, this.Ctx, "Array expansion operation does not support attribute groups.");
+                            Logger.Error(this.Ctx, Tag, nameof(AppendProjectionAttributeState), this.AtCorpusPath, CdmLogCode.ErrProjUnsupportedAttrGroups);
                             projAttrStatesFromRounds.Clear();
                             break;
                         }
 
                         // Create a new resolved attribute for the expanded attribute
-                        ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.CurrentResolvedAttribute.Target, currentPAS.CurrentResolvedAttribute.ResolvedName);
-                        newResAttr.AttCtx.AddLineage(currentPAS.CurrentResolvedAttribute.AttCtx);
+                        ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.CurrentResolvedAttribute, currentPAS.CurrentResolvedAttribute.ResolvedName);
 
                         // Create a projection attribute state for the expanded attribute
                         ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)

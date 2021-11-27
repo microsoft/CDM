@@ -5,12 +5,13 @@ package com.microsoft.commondatamodel.objectmodel;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 public class FileReadWriteUtil {
 
   public static String readFileToString(final String fileRelativePathName) throws IOException {
-    return new String(Files.readAllBytes(new File(fileRelativePathName).toPath()));
+    return new String(Files.readAllBytes(new File(fileRelativePathName).toPath()), StandardCharsets.UTF_8);
   }
 
   public static void writeStringToFile(final String fileRelativePathName, final String str) throws IOException {

@@ -3,11 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
@@ -19,12 +17,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle AddAttributeGroup operations
  */
 public class CdmOperationAddAttributeGroup extends CdmOperationBase {
-    private String TAG = CdmOperationAddAttributeGroup.class.getSimpleName();
+    private static final String TAG = CdmOperationAddAttributeGroup.class.getSimpleName();
     private String attributeGroupName;
 
 
@@ -36,9 +35,15 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        final CdmOperationAddAttributeGroup copy = new CdmOperationAddAttributeGroup(this.getCtx());
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationAddAttributeGroup copy = host == null ?  new CdmOperationAddAttributeGroup(this.getCtx()) : (CdmOperationAddAttributeGroup)host;
+
         copy.setAttributeGroupName(this.getAttributeGroupName());
 
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -91,7 +96,7 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
             missingFields.add("attributeGroupName");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -99,14 +104,7 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrTrimEmpty(path)) {
-                path = pathFrom + this.getName();
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;

@@ -13,18 +13,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Threading.Tasks;
 
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
-    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Microsoft.Identity.Client;
 
     using Newtonsoft.Json;
     using System.Security.Cryptography;
     using Newtonsoft.Json.Linq;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
 
     public class ADLSAdapter : NetworkAdapter
     {
         private const double ADLSDefaultTimeout = 6000;
 
-        private AuthenticationContext Context;
+        private IConfidentialClientApplication Context;
 
         /// <summary>
         /// The root.
@@ -54,8 +55,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             private set
             {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Hostname cannot be null or whitespace.");
+                }
                 this._hostname = value;
-                this.formattedHostname = this.FormatHostname(this._hostname);
+                this.formattedHostname = this.FormatHostname(this.RemoveProtocolFromHostname(this._hostname));
             }
         }
 
@@ -83,6 +88,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public string SharedKey { get; set; }
 
         /// <summary>
+        /// The national clouds endpoints, default is the public cloud endpoint.
+        /// </summary>
+        public AzureCloudEndpoint? Endpoint { get; set; }
+
+        /// <summary>
         /// The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
         /// </summary>
         public string SasToken {
@@ -103,6 +113,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The user-defined token provider.
         /// </summary>
         public TokenProvider TokenProvider { get; set; }
+
+        /// <summary>
+        /// The user-defined token provider ( Async ).
+        /// </summary>
+        public TokenProviderAsync TokenProviderAsync { get; set; }
 
         /// <summary>
         /// Maximum number of items to be returned by the directory list API.
@@ -147,9 +162,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         private Dictionary<string, DateTimeOffset> fileModifiedTimeCache = new Dictionary<string, DateTimeOffset>();
 
         /// <summary>
-        /// The predefined ADLS resource.
+        /// The Scopes.
         /// </summary>
-        private const string Resource = "https://storage.azure.com";
+        private string[] scopes = { $"https://storage.azure.com/.default" };
 
         /// <summary>
         /// The authorization header key, used during shared key auth.
@@ -185,14 +200,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The ADLS constructor for clientId/secret authentication.
         /// </summary>
-        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret) : this()
+        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret, AzureCloudEndpoint endpoint = AzureCloudEndpoint.AzurePublic) : this()
         {
             this.Hostname = hostname;
             this.Root = root;
             this.Tenant = tenant;
             this.ClientId = clientId;
             this.Secret = secret;
-            this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
+            this.Endpoint = endpoint;
         }
 
         /// <summary>
@@ -216,6 +231,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
+        /// The ADLS constructor for user-defined token provider (Async)).
+        /// </summary>
+        public ADLSAdapter(string hostname, TokenProviderAsync tokenProviderAsync) : this()
+        {
+            this.Hostname = hostname;
+            this.TokenProviderAsync = tokenProviderAsync;
+        }
+
+        /// <summary>
         /// The ADLS constructor without auth info - the auth configuration is set after the construction.
         /// <param name="hostname">Host name</param>
         /// <param name="root">Root location</param>
@@ -235,7 +259,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public override async Task<string> ReadAsync(string corpusPath)
         {
-            string url = this.CreateAdapterPath(corpusPath);
+            string url = this.CreateFormattedAdapterPath(corpusPath);
 
             var httpRequest = await this.BuildRequest(url, HttpMethod.Get);
 
@@ -259,7 +283,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 throw new Exception($"Could not create folder for document '{corpusPath}'");
             }
 
-            string url = this.CreateAdapterPath(corpusPath);
+            string url = this.CreateFormattedAdapterPath(corpusPath);
 
             var request = await this.BuildRequest($"{url}?resource=file", HttpMethod.Put);
             await this.ExecuteRequest(request);
@@ -277,7 +301,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public override string CreateAdapterPath(string corpusPath)
         {
+            if (corpusPath == null)
+            {
+                return null;
+            }
+
             var formattedCorpusPath = this.FormatCorpusPath(corpusPath);
+
             if (formattedCorpusPath == null)
             {
                 return null;
@@ -289,7 +319,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                return $"https://{this.Hostname}{this.GetEscapedRoot()}{this.EscapePath(formattedCorpusPath)}";
+                return $"https://{this.RemoveProtocolFromHostname(this.Hostname)}{this.GetEscapedRoot()}{this.EscapePath(formattedCorpusPath)}";
             }
         }
 
@@ -321,6 +351,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 }
             }
 
+            // If adapterPath does not belong to the ADLSAdapter, return null
             return null;
         }
 
@@ -338,7 +369,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                var url = this.CreateAdapterPath(corpusPath);
+                var url = this.CreateFormattedAdapterPath(corpusPath);
 
                 var httpRequest = await this.BuildRequest(url, HttpMethod.Head);
 
@@ -464,6 +495,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 configObject.Add("locationHint", this.LocationHint);
             }
 
+            if (this.Endpoint != null)
+            {
+                configObject.Add("endpoint", this.Endpoint.ToString());
+            }
+
             resultConfig.Add("config", configObject);
 
             return resultConfig.ToString();
@@ -474,7 +510,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             if (config == null)
             {
-                throw new Exception("ADLS adapter needs a config.");
+                throw new ArgumentNullException("ADLS adapter needs a config.");
             }
 
             var configJson = JsonConvert.DeserializeObject<JObject>(config);
@@ -485,7 +521,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                throw new Exception("Root has to be set for ADLS adapter.");
+                throw new ArgumentException("Root has to be set for ADLS adapter.");
             }
 
             if (configJson["hostname"] != null)
@@ -494,34 +530,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                throw new Exception("Hostname has to be set for ADLS adapter.");
+                throw new ArgumentException("Hostname has to be set for ADLS adapter.");
             }
 
             this.UpdateNetworkConfig(config);
 
-            // Check first for clientId/secret auth.
             if (configJson["tenant"] != null && configJson["clientId"] != null)
             {
                 this.Tenant = configJson["tenant"].ToString();
                 this.ClientId = configJson["clientId"].ToString();
 
-                // Check for a secret, we don't really care is it there, but it is nice if it is.
-                if (configJson["secret"] != null)
+                // To keep backwards compatibility with config files that were generated before the introduction of the `Endpoint` property.
+                if (this.Endpoint == null)
                 {
-                    this.Secret = configJson["secret"].ToString();
+                    this.Endpoint = AzureCloudEndpoint.AzurePublic;
                 }
-            }
-
-            // Check for shared key auth
-            if (configJson["sharedKey"] != null)
-            {
-                this.SharedKey = configJson["sharedKey"].ToString();
-            }
-
-            // Check for SAS token auth
-            if (configJson["sasToken"] != null)
-            {
-                this.SasToken = configJson["sasToken"].ToString();
             }
 
             if (configJson["locationHint"] != null)
@@ -529,9 +552,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 this.LocationHint = configJson["locationHint"].ToString();
             }
 
-            if (this.Tenant != null)
-            {
-                this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
+            if (configJson["endpoint"] != null) {
+                AzureCloudEndpoint endpoint;
+                if (Enum.TryParse(configJson["endpoint"].ToString(), out endpoint)) {
+                    this.Endpoint = endpoint;
+                } 
+                else
+                {
+                    throw new ArgumentException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
+                }
             }
         }
 
@@ -645,15 +674,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 request = this.SetUpCdmRequest(ApplySasToken(url), method);
             }
-            else if (this.Context != null)
-            {
-                var token = await this.GenerateBearerToken();
-
-                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.AccessTokenType} {token.AccessToken}" } }, method);
-            }
             else if (this.TokenProvider != null)
             {
                 request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{this.TokenProvider.GetToken()}" } }, method);
+            }
+            else if (this.TokenProviderAsync != null)
+            {
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{await this.TokenProviderAsync.GetTokenAsync()}" } }, method);
+            }
+            else if (this.ClientId != null && this.Tenant != null && this.Secret != null)
+            {
+                var token = await this.GenerateBearerToken();
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.CreateAuthorizationHeader()}" } }, method);
             }
             else
             {
@@ -670,11 +702,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
+        /// Create formatted adapter path with "dfs" in the url for sending requests.
+        /// </summary>
+        /// <param name="corpusPath">The corpusPath</param>
+        /// <returns>The formatted adapter path</returns>
+        private string CreateFormattedAdapterPath(string corpusPath)
+        {
+            string adapterPath = this.CreateAdapterPath(corpusPath);
+
+            return adapterPath != null ? adapterPath.Replace(this.Hostname, this.formattedHostname) : null;
+        }
+
+        /// <summary>
         /// Extracts the filesystem and sub-path from the given root value.
         /// </summary>
         /// <param name="root">The root</param>
-        /// <param name="fileSystem">The extracted filesystem name</param>
-        /// <param name="subPath">The extracted sub-path</param>
         /// <returns>The root path with leading slash</returns>
         private string ExtractRootBlobContainerAndSubPath(string root)
         {
@@ -773,13 +815,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 : "/" + this.rootBlobContainer + "/" + this.escapedRootSubPath;
         }
 
-        private Task<AuthenticationResult> GenerateBearerToken()
+        private async Task<AuthenticationResult> GenerateBearerToken()
         {
-            // In-memory token caching is handled by AuthenticationContext by default.
-            var clientCredentials = new ClientCredential(this.ClientId, this.Secret);
-            return this.Context.AcquireTokenAsync(Resource, clientCredentials);
+            BuildContext();
+            AuthenticationResult result;
+            try
+            {
+                result = await Context.AcquireTokenForClient(scopes).ExecuteAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"There was an error while acquiring ADLS Adapter's Token with client ID/secret authentication. Exception: {ex.Message}");
+            }
+
+            if (result == null || result.CreateAuthorizationHeader() == null)
+            {
+                throw new Exception("Received invalid ADLS Adapter's authentication result. The result might be null, or missing HTTP authorization header from the authentication result.");
+            }
+            return result;
         }
-      
+
         /// <summary>
         /// Encodes from base 64 string to the byte array.
         /// </summary>
@@ -804,6 +859,48 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             this.unescapedRootSubPath = value;
             this.escapedRootSubPath = this.EscapePath(this.unescapedRootSubPath);
+        }
+
+        /// <summary>
+        /// Build context when users make the first call. Also need to ensure client Id, tenant and secret are not null.
+        /// </summary>
+        private void BuildContext()
+        {
+            if (this.Context == null)
+            {
+                this.Context = ConfidentialClientApplicationBuilder.Create(this.ClientId)
+                    .WithAuthority(AzureCloudEndpointConvertor.AzureCloudEndpointToInstance(this.Endpoint.Value), this.Tenant)
+                    .WithClientSecret(this.Secret)
+                    .Build();
+            }
+        }
+
+        /// <summary>
+        /// Check if the hostname has a leading protocol. 
+        /// if it doesn't have, return the hostname
+        /// if the leading protocol is not "https://", throw an error
+        /// otherwise, return the hostname with no leading protocol.
+        /// </summary>
+        /// <returns>The hostname without the leading protocol "https://" if original hostname has it, otherwise it is same as hostname.</returns>
+        private string RemoveProtocolFromHostname(string hostname)
+        {
+            if (!hostname.Contains("://"))
+            {
+                return hostname;
+            }
+
+            Uri outUri;
+
+            if (Uri.TryCreate(hostname, UriKind.Absolute, out outUri))
+            {
+                if (outUri.Scheme == Uri.UriSchemeHttps)
+                {
+                    return hostname.Substring("https://".Length);
+                } 
+                throw new ArgumentException("ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.");
+            }
+
+            throw new ArgumentException("Please provide a valid hostname.");
         }
     }
 }

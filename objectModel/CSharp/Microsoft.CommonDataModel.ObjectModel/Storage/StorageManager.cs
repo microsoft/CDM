@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json;
@@ -17,13 +18,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
     public class StorageManager
     {
+        private static readonly string Tag = nameof(StorageManager);
+
         internal CdmCorpusDefinition Corpus { get; }
         internal CdmCorpusContext Ctx => this.Corpus.Ctx;
 
         /// <summary>
         /// The dictionary of registered namespace <-> adapters.
         /// </summary>
-        public IDictionary<string, StorageAdapter> NamespaceAdapters { get; set; }
+        public IDictionary<string, StorageAdapterBase> NamespaceAdapters { get; set; }
 
         internal IDictionary<string, CdmFolderDefinition> NamespaceFolders { get; set; }
 
@@ -61,7 +64,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public StorageManager(CdmCorpusDefinition corpus)
         {
             this.Corpus = corpus;
-            this.NamespaceAdapters = new Dictionary<string, StorageAdapter>();
+            this.NamespaceAdapters = new Dictionary<string, StorageAdapterBase>();
             this.NamespaceFolders = new Dictionary<string, CdmFolderDefinition>();
             this.systemDefinedNamespaces = new HashSet<string>();
             
@@ -73,7 +76,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 { "adls", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.ADLSAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Adls") },
                 { "remote", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.RemoteAdapter") },
                 { "github", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.GithubAdapter") },
-                { "cdm-standards", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.CdmStandardsAdapter") }
+                { "cdm-standards", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.CdmStandardsAdapter") },
+                { "syms", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.SymsAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Syms") },
             };
 
             // Set up default adapters.
@@ -108,8 +112,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             catch (Exception ex)
             {
-                Logger.Info(nameof(StorageManager), this.Ctx,
-                    $"Unable to load type '{typeName}' from assembly '{assemblyName}. Exception: {ex.Message}", nameof(FetchType));
+                Logger.Info(this.Ctx, Tag, nameof(FetchType), null,
+                    $"Unable to load type '{typeName}' from assembly '{assemblyName}. Exception: {ex.Message}");
                 return null;
             }
         }
@@ -117,32 +121,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// Mounts a namespace to the specified adapter.
         /// </summary>
-        public void Mount(string nameSpace, StorageAdapter adapter)
+        public void Mount(string nameSpace, StorageAdapterBase adapter)
         {
-            if (string.IsNullOrEmpty(nameSpace))
+            using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(Mount)))
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The namespace cannot be null or empty.", nameof(Mount));
-                return;
-            }
-
-            if (adapter != null)
-            {
-                if (adapter is StorageAdapterBase adapterBase)
+                if (string.IsNullOrEmpty(nameSpace))
                 {
-                    adapterBase.Ctx = this.Ctx;
+                    Logger.Error(this.Ctx, Tag, nameof(Mount), null, CdmLogCode.ErrStorageNullNamespace);
+                    return;
                 }
 
-                this.NamespaceAdapters[nameSpace] = adapter;
-                CdmFolderDefinition fd = new CdmFolderDefinition(this.Ctx, "");
-                fd.Corpus = this.Corpus as CdmCorpusDefinition;
-                fd.Namespace = nameSpace;
-                fd.FolderPath = "/";
-                this.NamespaceFolders[nameSpace] = fd;
-                this.systemDefinedNamespaces.Remove(nameSpace);
-            }
-            else
-            {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The adapter cannot be null.", nameof(Mount));
+                if (adapter != null)
+                {
+                    if (adapter is StorageAdapterBase adapterBase)
+                    {
+                        adapterBase.Ctx = this.Ctx;
+                    }
+
+                    this.NamespaceAdapters[nameSpace] = adapter;
+                    CdmFolderDefinition fd = new CdmFolderDefinition(this.Ctx, "");
+                    fd.Corpus = this.Corpus as CdmCorpusDefinition;
+                    fd.Namespace = nameSpace;
+                    fd.FolderPath = "/";
+                    this.NamespaceFolders[nameSpace] = fd;
+                    this.systemDefinedNamespaces.Remove(nameSpace);
+                }
+                else
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(Mount), null, CdmLogCode.ErrStorageNullAdapter);
+                }
             }
         }
 
@@ -151,14 +158,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public bool Unmount(string nameSpace)
         {
-            if (string.IsNullOrEmpty(nameSpace))
+            using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(Unmount)))
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The namespace cannot be null or empty.", nameof(Unmount));
-                return false;
-            }
+                if (string.IsNullOrEmpty(nameSpace))
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(Unmount), null, CdmLogCode.ErrStorageNullNamespace);
+                    return false;
+                }
 
-            if (this.NamespaceAdapters.ContainsKey(nameSpace))
-            {
+                if (!this.NamespaceAdapters.ContainsKey(nameSpace))
+                {
+                    Logger.Warning(this.Ctx, Tag, nameof(Unmount), null, CdmLogCode.WarnStorageRemoveAdapterFailed, nameSpace);
+                    return false;
+                }
+
                 this.NamespaceAdapters.Remove(nameSpace);
                 this.NamespaceFolders.Remove(nameSpace);
                 this.systemDefinedNamespaces.Remove(nameSpace);
@@ -171,22 +184,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                 return true;
             }
-            else
-            {
-                Logger.Warning(nameof(StorageManager), this.Ctx, "Cannot remove the adapter from non-existing namespace.", nameof(Unmount));
-                return false;
-            }
         }
 
 
         /// <summary>
         /// Allow replacing a storage adapter with another one for testing, leaving folders intact.
         /// </summary>
-        internal void SetAdapter(string nameSpace, StorageAdapter adapter)
+        internal void SetAdapter(string nameSpace, StorageAdapterBase adapter)
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The namespace cannot be null or empty.", nameof(SetAdapter));
+                Logger.Error(this.Ctx, Tag, nameof(SetAdapter), null, CdmLogCode.ErrStorageNullNamespace);
                 return;
             }
 
@@ -196,7 +204,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The adapter cannot be null.", nameof(SetAdapter));
+                Logger.Error(this.Ctx, Tag, nameof(SetAdapter), null, CdmLogCode.ErrStorageNullAdapter);
             }
         }
 
@@ -205,11 +213,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         /// <param name="nameSpace"></param>
         /// <returns>The adapter.</returns>
-        public StorageAdapter FetchAdapter(string nameSpace)
+        public StorageAdapterBase FetchAdapter(string nameSpace)
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The namespace cannot be null or empty.", nameof(FetchAdapter));
+                Logger.Error(this.Ctx, Tag, nameof(FetchAdapter), null, CdmLogCode.ErrStorageNullNamespace);
                 return null;
             }
 
@@ -218,8 +226,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 return this.NamespaceAdapters[nameSpace];
             }
 
-            Logger.Error(nameof(StorageManager), this.Ctx, $"Adapter not found for the namespace '{nameSpace}'", nameof(FetchAdapter));
-
+            Logger.Error(this.Ctx, Tag, nameof(FetchAdapter), null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
             return null;
         }
 
@@ -228,24 +235,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public CdmFolderDefinition FetchRootFolder(string nameSpace)
         {
-            if (string.IsNullOrEmpty(nameSpace))
+            using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(FetchRootFolder)))
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The namespace cannot be null or empty.", nameof(FetchRootFolder));
-                return null;
+                if (string.IsNullOrEmpty(nameSpace))
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(FetchRootFolder), null, CdmLogCode.ErrStorageNullNamespace);
+                    return null;
+                }
+
+                CdmFolderDefinition folder = null;
+                if (this.NamespaceFolders.ContainsKey(nameSpace))
+                    this.NamespaceFolders.TryGetValue(nameSpace, out folder);
+                else
+                    this.NamespaceFolders.TryGetValue(this.DefaultNamespace, out folder);
+
+                if (folder == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(FetchAdapter), null, CdmLogCode.ErrStorageFolderNotFound, nameSpace);
+                }
+
+                return folder;
             }
-
-            CdmFolderDefinition folder = null;
-            if (this.NamespaceFolders.ContainsKey(nameSpace))
-                this.NamespaceFolders.TryGetValue(nameSpace, out folder);
-            else
-                this.NamespaceFolders.TryGetValue(this.DefaultNamespace, out folder);
-
-            if (folder == null)
-            {
-                Logger.Error(nameof(StorageManager), this.Ctx, $"Adapter not found for the namespace '{nameSpace}'", nameof(FetchRootFolder));
-            }
-
-            return folder;
         }
 
         /// <summary>
@@ -253,29 +263,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public string AdapterPathToCorpusPath(string adapterPath)
         {
-            string result = null;
-
-            // keep trying adapters until one of them likes what it sees
-            if (this.NamespaceAdapters != null)
+            using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(AdapterPathToCorpusPath)))
             {
-                foreach (KeyValuePair<string, StorageAdapter> kv in this.NamespaceAdapters)
+                string result = null;
+
+                // keep trying adapters until one of them likes what it sees
+                if (this.NamespaceAdapters != null)
                 {
-                    result = kv.Value.CreateCorpusPath(adapterPath);
-                    if (result != null)
+                    foreach (KeyValuePair<string, StorageAdapterBase> kv in this.NamespaceAdapters)
                     {
-                        // got one, add the prefix
-                        result = $"{kv.Key}:{result}";
-                        break;
+                        result = kv.Value.CreateCorpusPath(adapterPath);
+                        if (result != null)
+                        {
+                            // got one, add the prefix
+                            if (result == "")
+                                result = "/";
+                            result = $"{kv.Key}:{result}";
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (result == null)
-            {
-                Logger.Error(nameof(StorageManager), (ResolveContext)this.Ctx, $"No registered storage adapter understood the path '{adapterPath}'", nameof(AdapterPathToCorpusPath));
-            }
+                if (result == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(AdapterPathToCorpusPath), null, CdmLogCode.ErrStorageInvalidAdapterPath, adapterPath);
+                }
 
-            return result;
+                return result;
+            }
         }
 
         /// <summary>
@@ -283,37 +298,40 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public string CorpusPathToAdapterPath(string corpusPath)
         {
-            if (string.IsNullOrEmpty(corpusPath))
+            using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(CorpusPathToAdapterPath)))
             {
-                Logger.Error(nameof(StorageManager), (ResolveContext)this.Ctx, $"The corpus path is null or empty", nameof(CorpusPathToAdapterPath));
-                return null;
-            }
+                if (string.IsNullOrEmpty(corpusPath))
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(CorpusPathToAdapterPath), null, CdmLogCode.ErrStorageNullCorpusPath);
+                    return null;
+                }
 
-            string result = "";
-            // break the corpus path into namespace and ... path
-            Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
-            if (pathTuple == null)
-            {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The corpus path cannot be null or empty.", nameof(CorpusPathToAdapterPath));
-                return null;
-            }
-            string nameSpace = pathTuple.Item1;
-            if (string.IsNullOrWhiteSpace(nameSpace))
-                nameSpace = this.DefaultNamespace;
+                string result = "";
+                // break the corpus path into namespace and ... path
+                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
+                if (pathTuple == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(CorpusPathToAdapterPath), null, CdmLogCode.ErrStorageNullCorpusPath);
+                    return null;
+                }
+                string nameSpace = pathTuple.Item1;
+                if (string.IsNullOrWhiteSpace(nameSpace))
+                    nameSpace = this.DefaultNamespace;
 
-            // get the adapter registered for this namespace
-            StorageAdapter namespaceAdapter = this.FetchAdapter(nameSpace);
-            if (namespaceAdapter == null)
-            {
-                Logger.Error(nameof(StorageManager), (ResolveContext)this.Ctx, $"The namespace '{nameSpace}' has not been registered", nameof(CorpusPathToAdapterPath));
-            }
-            else
-            {
-                // ask the storage adapter to 'adapt' this path
-                result = namespaceAdapter.CreateAdapterPath(pathTuple.Item2);
-            }
+                // get the adapter registered for this namespace
+                StorageAdapterBase namespaceAdapter = this.FetchAdapter(nameSpace);
+                if (namespaceAdapter == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(CorpusPathToAdapterPath), null, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);
+                }
+                else
+                {
+                    // ask the storage adapter to 'adapt' this path
+                    result = namespaceAdapter.CreateAdapterPath(pathTuple.Item2);
+                }
 
-            return result;
+                return result;
+            }
         }
 
         /// <summary>
@@ -321,79 +339,82 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public string CreateAbsoluteCorpusPath(string objectPath, CdmObject obj = null)
         {
-            if (string.IsNullOrWhiteSpace(objectPath))
+            using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(CreateAbsoluteCorpusPath)))
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The object path cannot be null or empty.", nameof(CreateAbsoluteCorpusPath));
-                return null;
-            }
-
-            if (this.ContainsUnsupportedPathFormat(objectPath))
-            {
-                // already called statusRpt when checking for unsupported path format.
-                return null;
-            }
-
-            Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(objectPath);
-            if (pathTuple == null)
-            {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The object path cannot be null or empty.", nameof(CreateAbsoluteCorpusPath));
-                return null;
-            }
-            string nameSpace = pathTuple.Item1;
-            string newObjectPath = pathTuple.Item2;
-            string finalNamespace;
-
-            string prefix = "";
-            string namespaceFromObj = "";
-            if (obj != null && obj is CdmContainerDefinition container)
-            {
-                prefix = container.FolderPath;
-                namespaceFromObj = container.Namespace;
-            }
-            else if (obj != null)
-            {
-                prefix = obj.InDocument.FolderPath;
-                namespaceFromObj = obj.InDocument.Namespace;
-            }
-
-            if (prefix != null && this.ContainsUnsupportedPathFormat(prefix))
-            {
-                // already called statusRpt when checking for unsupported path format.
-                return null;
-            }
-
-            if (!string.IsNullOrEmpty(prefix) && prefix[prefix.Length - 1] != '/')
-            {
-                Logger.Warning(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, "Expected path prefix to end in /, but it didn't. Appended the /", prefix);
-                prefix += "/";
-            }
-
-            // check if this is a relative path
-            if (!string.IsNullOrWhiteSpace(newObjectPath) && !newObjectPath.StartsWith("/"))
-            {
-                if (obj == null)
+                if (string.IsNullOrWhiteSpace(objectPath))
                 {
-                    // relative path and no other info given, assume default and root
-                    prefix = "/";
-
-                }
-                if (!string.IsNullOrWhiteSpace(nameSpace) && nameSpace != namespaceFromObj)
-                {
-                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, "The namespace '" + nameSpace + "' found on the path does not match the namespace found on the object");
+                    Logger.Error(this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.ErrPathNullObjectPath);
                     return null;
                 }
-                newObjectPath = prefix + newObjectPath;
 
-                finalNamespace = string.IsNullOrWhiteSpace(namespaceFromObj) ?
-                                    (string.IsNullOrWhiteSpace(nameSpace) ? this.DefaultNamespace : nameSpace) : namespaceFromObj;
-            }
-            else
-            {
-                finalNamespace = string.IsNullOrWhiteSpace(nameSpace) ?
-                                    (string.IsNullOrWhiteSpace(namespaceFromObj) ? this.DefaultNamespace : namespaceFromObj) : nameSpace;
-            }
+                if (this.ContainsUnsupportedPathFormat(objectPath))
+                {
+                    // already called statusRpt when checking for unsupported path format.
+                    return null;
+                }
 
-            return (!string.IsNullOrWhiteSpace(finalNamespace) ? $"{finalNamespace}:" : "") + newObjectPath;
+                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(objectPath);
+                if (pathTuple == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.ErrPathNullObjectPath);
+                    return null;
+                }
+                string nameSpace = pathTuple.Item1;
+                string newObjectPath = pathTuple.Item2;
+                string finalNamespace;
+
+                string prefix = "";
+                string namespaceFromObj = "";
+                if (obj != null && obj is CdmContainerDefinition container)
+                {
+                    prefix = container.FolderPath;
+                    namespaceFromObj = container.Namespace;
+                }
+                else if (obj != null && obj.InDocument != null)
+                {
+                    prefix = obj.InDocument.FolderPath;
+                    namespaceFromObj = obj.InDocument.Namespace;
+                }
+
+                if (prefix != null && this.ContainsUnsupportedPathFormat(prefix))
+                {
+                    // already called statusRpt when checking for unsupported path format.
+                    return null;
+                }
+
+                if (!string.IsNullOrEmpty(prefix) && prefix[prefix.Length - 1] != '/')
+                {
+                    Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.WarnStorageExpectedPathPrefix, prefix);
+                    prefix += "/";
+                }
+
+                // check if this is a relative path
+                if (!string.IsNullOrWhiteSpace(newObjectPath) && !newObjectPath.StartsWith("/"))
+                {
+                    if (obj == null)
+                    {
+                        // relative path and no other info given, assume default and root
+                        prefix = "/";
+
+                    }
+                    if (!string.IsNullOrWhiteSpace(nameSpace) && nameSpace != namespaceFromObj)
+                    {
+                        Logger.Error(this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.ErrStorageNamespaceMismatch, nameSpace, newObjectPath, prefix, namespaceFromObj);
+                        return null;
+                    }
+                    newObjectPath = prefix + newObjectPath;
+
+                    finalNamespace = string.IsNullOrWhiteSpace(namespaceFromObj) ?
+                                        (string.IsNullOrWhiteSpace(nameSpace) ? this.DefaultNamespace : nameSpace) : namespaceFromObj;
+                }
+                else
+                {
+                    finalNamespace = string.IsNullOrWhiteSpace(nameSpace) ?
+                                        (string.IsNullOrWhiteSpace(namespaceFromObj) ? this.DefaultNamespace : namespaceFromObj) : nameSpace;
+                }
+
+                return (!string.IsNullOrWhiteSpace(finalNamespace) ? $"{finalNamespace}:" : "") + newObjectPath;
+            }
         }
 
         /// <summary>
@@ -416,7 +437,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 var config = namespaceAdapterTuple.Value.FetchConfig();
                 if (string.IsNullOrWhiteSpace(config))
                 {
-                    Logger.Error(nameof(StorageManager), this.Ctx, $"JSON config constructed by adapter is null or empty.", nameof(FetchConfig));
+                    Logger.Error(this.Ctx, Tag, nameof(FetchConfig), null, CdmLogCode.ErrStorageNullAdapter);
                     continue;
                 }
 
@@ -445,7 +466,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         /// <param name="name">The name of a file.</param>
         /// <param name="adapter">The adapter used to save the config to a file.</param>
-        public async Task SaveAdaptersConfigAsync(string name, StorageAdapter adapter)
+        public async Task SaveAdaptersConfigAsync(string name, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync(name, FetchConfig());
         }
@@ -460,7 +481,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             if (string.IsNullOrWhiteSpace(adapterConfig))
             {
-                Logger.Error(nameof(StorageManager), this.Ctx, $"Adapter config cannot be null or empty.", nameof(Mount));
+                Logger.Error(this.Ctx, Tag, nameof(MountFromConfig), null, CdmLogCode.ErrStorageNullAdapterConfig);
                 return null;
             }
 
@@ -489,7 +510,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 }
                 else
                 {
-                    Logger.Error(nameof(StorageManager), this.Ctx, $"The namespace is missing for one of the adapters in the JSON config.");
+                    Logger.Error(this.Ctx, Tag, nameof(MountFromConfig), null, CdmLogCode.ErrStorageMissingNamespace);
                     continue;
                 }
 
@@ -502,13 +523,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 }
                 else
                 {
-                    Logger.Error(nameof(StorageManager), this.Ctx, $"Missing JSON config for the namespace {nameSpace}.");
+                    Logger.Error(this.Ctx, Tag, nameof(MountFromConfig), null, CdmLogCode.ErrStorageMissingJsonConfig, nameSpace);
                     continue;
                 }
                     
                 if (item["type"] == null)
                 {
-                    Logger.Error(nameof(StorageManager), this.Ctx, $"Missing type in the JSON config for the namespace {nameSpace}.");
+                    Logger.Error(this.Ctx, Tag, nameof(MountFromConfig), null, CdmLogCode.ErrStorageMissingTypeJsonConfig, nameSpace);
                     continue;
                 }
 
@@ -522,7 +543,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 }
                 else
                 {
-                    var adapter = Activator.CreateInstance(adapterType) as StorageAdapter;
+                    var adapter = Activator.CreateInstance(adapterType) as StorageAdapterBase;
                     adapter.UpdateConfig(configs.ToString());
                     this.Mount(nameSpace, adapter);
                 }
@@ -538,19 +559,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public string CreateRelativeCorpusPath(string objectPath, CdmContainerDefinition relativeTo = null)
         {
-            string newPath = this.CreateAbsoluteCorpusPath(objectPath, relativeTo);
-
-            string namespaceString = relativeTo != null ? $"{relativeTo.Namespace}:" : "";
-            if (!string.IsNullOrWhiteSpace(namespaceString) && !string.IsNullOrWhiteSpace(newPath) && newPath.StartsWith(namespaceString))
+            using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(CreateRelativeCorpusPath)))
             {
-                newPath = newPath.Substring(namespaceString.Length);
+                string newPath = this.CreateAbsoluteCorpusPath(objectPath, relativeTo);
 
-                if (relativeTo?.FolderPath != null && newPath.StartsWith(relativeTo.FolderPath))
+                string namespaceString = relativeTo != null ? $"{relativeTo.Namespace}:" : "";
+                if (!string.IsNullOrWhiteSpace(namespaceString) && !string.IsNullOrWhiteSpace(newPath) && newPath.StartsWith(namespaceString))
                 {
-                    newPath = newPath.Substring(relativeTo.FolderPath.Length);
+                    newPath = newPath.Substring(namespaceString.Length);
+
+                    if (relativeTo?.FolderPath != null && newPath.StartsWith(relativeTo.FolderPath))
+                    {
+                        newPath = newPath.Substring(relativeTo.FolderPath.Length);
+                    }
                 }
+                return newPath;
             }
-            return newPath;
         }
 
         /// <summary>
@@ -562,18 +586,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <returns>True if an unsupported path format was found.</returns>
         private bool ContainsUnsupportedPathFormat(string path)
         {
-            string statusMessage;
-            if (path.StartsWith("./") || path.StartsWith(".\\"))
-                statusMessage = "The path should not start with ./";
-            else if (path.Contains("../") || path.Contains("..\\"))
-                statusMessage = "The path should not contain ../";
-            else if (path.Contains("/./") || path.Contains("\\.\\"))
-                statusMessage = "The path should not contain /./";
+            if (path.StartsWith("./") || path.StartsWith(".\\")
+                || path.Contains("../") || path.Contains("..\\")
+                || path.Contains("/./") || path.Contains("\\.\\"))
+            {
+                //Invalid Path.
+            }
+          
             else
                 return false;
 
-            Logger.Error(nameof(CdmCorpusDefinition), this.Ctx as ResolveContext, statusMessage, path);
-
+            Logger.Error(this.Ctx, Tag, nameof(ContainsUnsupportedPathFormat), null, CdmLogCode.ErrStorageInvalidPathFormat);
             return true;
         }
     }

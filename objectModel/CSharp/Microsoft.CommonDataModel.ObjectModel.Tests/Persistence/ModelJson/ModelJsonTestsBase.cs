@@ -23,7 +23,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
         /// </summary>
         /// <param name="data">The object to be serialized</param>
         /// <returns>A string containing the serialized object.</returns>
-        public string Serialize(object data)
+        public static string Serialize(object data)
         {
             var serializerSettings = GetSerializerSettings();
             return JsonConvert.SerializeObject(data, serializerSettings);
@@ -46,7 +46,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
         /// Creates serializer settings that will serialize DateTime in UTC and will use indentation.
         /// </summary>
         /// <returns>Serializer settings that handle TimeZone and indentation..</returns>
-        private JsonSerializerSettings GetSerializerSettings()
+        private static JsonSerializerSettings GetSerializerSettings()
         {
             return new JsonSerializerSettings()
             {

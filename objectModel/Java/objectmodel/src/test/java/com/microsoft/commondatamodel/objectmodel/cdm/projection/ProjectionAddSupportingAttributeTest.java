@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import org.testng.Assert;
@@ -25,7 +26,7 @@ public class ProjectionAddSupportingAttributeTest {
       Arrays.asList(
           new ArrayList<>(Arrays.asList()),
           new ArrayList<>(Arrays.asList("referenceOnly")),
-          new ArrayList<>(Arrays.asList("normalized")), new ArrayList<>(Arrays.asList("structured")),
+          new ArrayList<>(Arrays.asList("normalized", "structured")),
           new ArrayList<>(Arrays.asList("referenceOnly", "normalized")),
           new ArrayList<>(Arrays.asList("referenceOnly", "virtual")),
           new ArrayList<>(Arrays.asList("referenceOnly", "structured")),
@@ -38,8 +39,7 @@ public class ProjectionAddSupportingAttributeTest {
   /**
    * The path between TestDataPath and TestName.
    */
-  private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-      "testProjectionAddSupportingAttr").toString();
+  private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAddSupportingAttributeTest").toString();
 
   /**
    * AddSupportingAttribute with replaceAsForeignKey operation in the same
@@ -51,7 +51,7 @@ public class ProjectionAddSupportingAttributeTest {
   public void testCombineOpsProj() throws InterruptedException, ExecutionException {
         String testName = "testCombineOpsProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -80,7 +80,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testConditionalProj() throws InterruptedException, ExecutionException {
         String testName = "testConditionalProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -119,7 +119,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testEntityAttribute() throws InterruptedException, ExecutionException {
         String testName = "testEntityAttribute";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -156,7 +156,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testEntityAttributeProj() throws InterruptedException, ExecutionException {
         String testName = "testEntityAttributeProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -183,7 +183,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testExtendsEntity() throws InterruptedException, ExecutionException {
         String testName = "testExtendsEntity";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -211,7 +211,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testExtendsEntityProj() throws InterruptedException, ExecutionException {
         String testName = "testExtendsEntityProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -239,7 +239,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testNestedProj() throws InterruptedException, ExecutionException {
         String testName = "testNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -262,7 +262,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testNestedTypeAttributeProj() throws InterruptedException, ExecutionException {
         String testName = "testNestedTAProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -286,7 +286,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testTypeAttribute() throws InterruptedException, ExecutionException {
         String testName = "testTypeAttribute";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
           ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -310,7 +310,7 @@ public class ProjectionAddSupportingAttributeTest {
     public void testTypeAttributeProj() throws InterruptedException, ExecutionException {
         String testName = "testTypeAttributeProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
@@ -337,7 +337,7 @@ public class ProjectionAddSupportingAttributeTest {
      * @param fromAttribute
      */
     private void validateInSupportOfAttribute(CdmAttributeItem supportingAttribute, String fromAttribute, Boolean checkVirtualTrait) {
-        CdmTraitReference inSupportOfTrait = supportingAttribute.getAppliedTraits().item("is.addedInSupportOf");
+        CdmTraitReference inSupportOfTrait = (CdmTraitReference) supportingAttribute.getAppliedTraits().item("is.addedInSupportOf");
         Assert.assertNotNull(inSupportOfTrait);
         Assert.assertEquals(1, inSupportOfTrait.getArguments().size());
         Assert.assertEquals(fromAttribute, inSupportOfTrait.getArguments().get(0).getValue());

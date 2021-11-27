@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -10,7 +10,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -277,7 +276,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
         public async Task<CdmEntityDefinition> GetAndValidateResolvedEntity(CdmEntityDefinition entity, List<string> resOpts)
         {
-            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(Corpus, entity, resOpts, addResOptToName: true);
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(Corpus, entity, resOpts);
             Assert.IsNotNull(resolvedEntity, $"GetAndValidateResolvedEntity: {entity.EntityName} resolution with options '{string.Join(", ", resOpts)}' failed!");
 
             return resolvedEntity;

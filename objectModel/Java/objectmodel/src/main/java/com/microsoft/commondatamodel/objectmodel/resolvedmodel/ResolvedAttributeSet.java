@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
@@ -58,8 +59,8 @@ public class ResolvedAttributeSet extends RefCounted {
   }
 
   public CdmAttributeContext createAttributeContext(
-      final ResolveOptions resOpt,
-      final AttributeContextParameters acp) {
+          final ResolveOptions resOpt,
+          final AttributeContextParameters acp) {
     if (acp == null) {
       return null;
     }
@@ -190,14 +191,45 @@ public class ResolvedAttributeSet extends RefCounted {
     return rasResult;
   }
 
+  /**
+   * Recursively sets the target owner's to be the provided entity.
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  public void setTargetOwner(CdmEntityDefinition entity) {
+    for (ResolvedAttribute ra : this.set) {
+      ra.setOwner(entity);
+      if (ra.getTarget() instanceof ResolvedAttributeSet) {
+        ResolvedAttributeSet ras = (ResolvedAttributeSet) ra.getTarget();
+        ras.setTargetOwner(entity);
+      }
+    }
+  }
+
+  /**
+   * Apply a set of resolved traits to this resolved attribute set.
+   * @param traits
+   * @deprecated
+   */
+  public void applyTraits(final ResolvedTraitSet traits) {
+    for (ResolvedAttribute resAtt : this.set) {
+      if (resAtt.getTarget() instanceof ResolvedAttributeSet) {
+        ((ResolvedAttributeSet) resAtt.getTarget()).applyTraits(traits);
+      } else {
+        resAtt.setResolvedTraits(resAtt.getResolvedTraits().mergeSet(traits));
+      }
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //  traits that change attributes
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  ResolvedAttributeSet applyTraits(
-      final ResolvedTraitSet traits,
-      final ResolveOptions resOpt,
-      final CdmAttributeResolutionGuidance resGuide,
-      final List<AttributeResolutionApplier> actions) {
+  ResolvedAttributeSet applyTraitsResolutionGuidance(
+          final ResolvedTraitSet traits,
+          final ResolveOptions resOpt,
+          final CdmAttributeResolutionGuidance resGuide,
+          final List<AttributeResolutionApplier> actions) {
     ResolvedAttributeSet rasResult = this;
     final ResolvedAttributeSet rasApplied;
 
@@ -239,10 +271,10 @@ public class ResolvedAttributeSet extends RefCounted {
   }
 
   ResolvedAttributeSet apply(
-      final ResolvedTraitSet traits,
-      final ResolveOptions resOpt,
-      final CdmAttributeResolutionGuidance resGuide,
-      final List<AttributeResolutionApplier> actions) {
+          final ResolvedTraitSet traits,
+          final ResolveOptions resOpt,
+          final CdmAttributeResolutionGuidance resGuide,
+          final List<AttributeResolutionApplier> actions) {
     if (traits == null && actions.size() == 0) {
       // nothing can change
       return this;
@@ -278,7 +310,7 @@ public class ResolvedAttributeSet extends RefCounted {
       AttributeContextParameters acp = new AttributeContextParameters();
       acp.setUnder(appliedAttSet.getAttributeContext());
       acp.setType(CdmAttributeContextType.GeneratedSet);
-      acp.setName("_generatedAttributeSet");
+      acp.setName("_generatedAttributeSet_template");
 
       appliedAttSet.setAttributeContext(CdmAttributeContext.createChildUnder(traits.getResOpt(), acp));
 
@@ -301,7 +333,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
         // the set contains another set. process those
         resAtt.setTarget(
-            ((ResolvedAttributeSet) resAtt.getTarget()).apply(traits, resOpt, resGuide, actions)
+                ((ResolvedAttributeSet) resAtt.getTarget()).apply(traits, resOpt, resGuide, actions)
         );
       } else {
         final ResolvedTraitSet rtsMerge = resAtt.getResolvedTraits().mergeSet(traits);
@@ -361,8 +393,8 @@ public class ResolvedAttributeSet extends RefCounted {
       ResolvedAttribute resAtt = set.get(iAtt);
       // possible for another set to be in this set
       final ResolvedAttributeSet subSet = resAtt.getTarget() instanceof ResolvedAttributeSet
-          ? (ResolvedAttributeSet) resAtt.getTarget()
-          : null;
+              ? (ResolvedAttributeSet) resAtt.getTarget()
+              : null;
 
       if (subSet != null && subSet.getSet() != null) {
         // well, that happened. so now we go around again on this same function and get rid of things from this group
@@ -385,7 +417,7 @@ public class ResolvedAttributeSet extends RefCounted {
         resAtt.setPreviousResolvedName(resAtt.getResolvedName());
 
         if (resAtt.getArc() != null && resAtt.getArc().getApplierCaps() != null && resAtt.getArc()
-            .getApplierCaps().canRemove) {
+                .getApplierCaps().canRemove) {
           for (final AttributeResolutionApplier apl : resAtt.getArc().getActionsRemove()) {
             // this should look like the applier context when the att was created
             final ApplierContext ctx = new ApplierContext();
@@ -492,11 +524,6 @@ public class ResolvedAttributeSet extends RefCounted {
     final ResolvedAttributeSet copy = new ResolvedAttributeSet();
     copy.setAttributeContext(attributeContext);
 
-    // save the mappings to overwrite
-    // maps from merge may not be correct
-    final Map<ResolvedAttribute, Set<CdmAttributeContext>> newRa2attCtxSet = new LinkedHashMap<>();
-    final Map<CdmAttributeContext, ResolvedAttribute> newAttCtx2ra = new LinkedHashMap<>();
-
     for (final ResolvedAttribute sourceRa : set) {
       final ResolvedAttribute copyRa = sourceRa.copy();
       copy.merge(copyRa);
@@ -513,7 +540,7 @@ public class ResolvedAttributeSet extends RefCounted {
   }
 
   public void spew(final ResolveOptions resOpt, final StringSpewCatcher to, final String indent, final boolean nameSort)
-      throws IOException {
+          throws IOException {
     if (set.size() > 0) {
       final List<ResolvedAttribute> list = new ArrayList<>(set);
 
@@ -528,7 +555,7 @@ public class ResolvedAttributeSet extends RefCounted {
   }
 
   public ResolvedAttributeSet fetchAttributesWithTraits(final ResolveOptions resOpt, final Object queryFor)
-      throws IOException {
+          throws IOException {
     // put the input into a standard form
     final List<TraitParamSpec> query = new ArrayList<>();
 
@@ -809,7 +836,7 @@ public class ResolvedAttributeSet extends RefCounted {
   }
 
   public void setResolvedName2resolvedAttribute(
-      final Map<String, ResolvedAttribute> resolvedName2resolvedAttribute) {
+          final Map<String, ResolvedAttribute> resolvedName2resolvedAttribute) {
     this.resolvedName2resolvedAttribute = resolvedName2resolvedAttribute;
   }
 

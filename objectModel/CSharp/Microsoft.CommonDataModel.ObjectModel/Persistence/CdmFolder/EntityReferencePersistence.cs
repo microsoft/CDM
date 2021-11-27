@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -18,9 +18,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            dynamic entity = null;
+            dynamic entity;
             bool simpleReference = true;
-            List<CdmTraitReference> appliedTraits = null;
 
             if (obj is JValue)
             {
@@ -36,11 +35,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (!(obj is JValue))
             {
-                appliedTraits = Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]);
-                if (appliedTraits != null)
-                {
-                    Utils.AddListToCdmCollection(entityReference.AppliedTraits, appliedTraits);
-                }
+                Utils.AddListToCdmCollection(entityReference.AppliedTraits, Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]));
             }
 
             return entityReference;

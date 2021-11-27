@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -27,6 +27,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the attribute's resolution guidance.
         /// </summary>
+        [Obsolete("Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview")]
         public CdmAttributeResolutionGuidance ResolutionGuidance { get; set; }
 
         /// <summary>
@@ -53,12 +54,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal CdmAttribute CopyAtt(ResolveOptions resOpt, CdmAttribute copy)
         {
-            copy.Purpose = this.Purpose != null ? (CdmPurposeReference)this.Purpose.Copy(resOpt) : null;
-            copy.ResolutionGuidance = this.ResolutionGuidance != null ? (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt) : null;
+            copy.Purpose = this.Purpose?.Copy(resOpt) as CdmPurposeReference;
+            copy.ResolutionGuidance = this.ResolutionGuidance?.Copy(resOpt) as CdmAttributeResolutionGuidance;
             copy.AppliedTraits.Clear();
             foreach (var trait in this.AppliedTraits)
             {
-                copy.AppliedTraits.Add(trait);
+                copy.AppliedTraits.Add(trait.Copy(resOpt) as CdmTraitReferenceBase);
             }
             this.CopyDef(resOpt, copy);
             return copy;
@@ -70,6 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.Name;
         }
 
+        [Obsolete("For internal use only.")]
         public abstract ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null);
 
         internal bool VisitAtt(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
@@ -97,11 +99,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal ResolvedTraitSet AddResolvedTraitsApplied(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
-            int l = this.AppliedTraits.Count;
-            for (int i = 0; i < l; i++)
-            {
-                rtsb.MergeTraits(this.AppliedTraits[i].FetchResolvedTraits(resOpt));
-            }
+            AppliedTraits.AllItems.ForEach(item => rtsb.MergeTraits(item.FetchResolvedTraits(resOpt)));
 
             // dynamic applied on use
             return rtsb.ResolvedTraitSet;

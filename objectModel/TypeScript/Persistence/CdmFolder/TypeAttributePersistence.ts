@@ -3,11 +3,13 @@
 
 import { CdmFolder } from '..';
 import {
-    CardinalitySettings,
     CdmCorpusContext,
     cdmDataFormat,
+    cdmLogCode,
     cdmObjectType,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     CdmTypeAttributeDefinition,
     copyOptions,
     Logger,
@@ -20,12 +22,15 @@ import {
     DataTypeReference,
     Projection,
     PurposeReference,
+    TraitGroupReference,
     TraitReference,
     TypeAttribute
 } from './types';
 import * as utils from './utils';
 
 export class TypeAttributePersistence {
+    private static TAG: string = TypeAttributePersistence.name;
+
     public static fromData(ctx: CdmCorpusContext, object: TypeAttribute, entityName?: string): CdmTypeAttributeDefinition {
         const typeAttribute: CdmTypeAttributeDefinition = ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, object.name);
 
@@ -36,39 +41,11 @@ export class TypeAttributePersistence {
         typeAttribute.purpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.purpose);
         typeAttribute.dataType = CdmFolder.DataTypeReferencePersistence.fromData(ctx, object.dataType);
 
-        if (object.cardinality) {
-            let minCardinality: string;
-            if (object.cardinality.minimum) {
-                minCardinality = object.cardinality.minimum;
-            }
-
-            let maxCardinality: string;
-            if (object.cardinality.maximum) {
-                maxCardinality = object.cardinality.maximum;
-            }
-
-            if (!minCardinality || !maxCardinality) {
-                Logger.error(TypeAttributePersistence.name, ctx, 'Both minimum and maximum are required for the Cardinality property.', this.fromData.name);
-            }
-
-            if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-                Logger.error(TypeAttributePersistence.name, ctx, `Invalid minimum cardinality ${minCardinality}.`, this.fromData.name);
-            }
-
-            if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-                Logger.error(TypeAttributePersistence.name, ctx, `Invalid maximum cardinality ${maxCardinality}.`, this.fromData.name);
-            }
-
-            if (minCardinality && maxCardinality && CardinalitySettings.isMinimumValid(minCardinality) && CardinalitySettings.isMaximumValid(maxCardinality)) {
-                typeAttribute.cardinality = new CardinalitySettings(typeAttribute);
-                typeAttribute.cardinality.minimum = minCardinality;
-                typeAttribute.cardinality.maximum = maxCardinality;
-            }
-        }
+        typeAttribute.cardinality = utils.cardinalitySettingsFromData(object.cardinality, typeAttribute);
 
         typeAttribute.attributeContext =
             CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
             typeAttribute.appliedTraits,
             utils.createTraitReferenceArray(ctx, object.appliedTraits)
         );
@@ -95,12 +72,7 @@ export class TypeAttributePersistence {
         if (object.dataFormat !== undefined) {
             typeAttribute.dataFormat = TypeAttributePersistence.dataTypeFromData(object.dataFormat);
             if (typeAttribute.dataFormat === undefined) {
-                Logger.warning(
-                    TypeAttributePersistence.name,
-                    ctx,
-                    `Couldn't find an enum value for ${object.dataFormat}.`,
-                    this.fromData.name
-                );
+                Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersitEnumNotFound, object.dataFormat);
             }
         }
         if (object.defaultValue !== undefined) {
@@ -115,8 +87,9 @@ export class TypeAttributePersistence {
             return undefined;
         }
 
-        const appliedTraits: CdmTraitReference[] = instance.appliedTraits ?
-            instance.appliedTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
+        const appliedTraits: CdmTraitReferenceBase[] = instance.appliedTraits ?
+            instance.appliedTraits.allItems.filter(
+                (trait: CdmTraitReferenceBase) => trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty) : undefined;
         const object: TypeAttribute = {
             explanation: instance.explanation,
             purpose: instance.purpose
@@ -124,10 +97,11 @@ export class TypeAttributePersistence {
                 : undefined,
             dataType: instance.dataType ? instance.dataType.copyData(resOpt, options) as (string | DataTypeReference) : undefined,
             name: instance.name,
-            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options),
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
-            attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined
+            attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined,
+            cardinality: utils.cardinalitySettingsToData(instance.cardinality)
         };
 
         object.projection = instance.projection ? instance.projection.copyData(resOpt, options) as Projection : undefined;

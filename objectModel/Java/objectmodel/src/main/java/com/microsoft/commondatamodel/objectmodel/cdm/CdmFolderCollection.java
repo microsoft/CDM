@@ -5,12 +5,15 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * {@link CdmCollection} customized for {@link CdmFolderDefinition}
  * that are the children of af the Owner CdmFolderDefinition.
  */
 public class CdmFolderCollection extends CdmCollection<CdmFolderDefinition> {
+  Lock folderLock;
 
   /**
    * Constructs a CdmFolderCollection
@@ -20,6 +23,7 @@ public class CdmFolderCollection extends CdmCollection<CdmFolderDefinition> {
    */
   public CdmFolderCollection(final CdmCorpusContext ctx, final CdmFolderDefinition parentFolder) {
     super(ctx, parentFolder, CdmObjectType.FolderDef);
+    this.folderLock = new ReentrantLock();
   }
 
   @Override
@@ -29,14 +33,25 @@ public class CdmFolderCollection extends CdmCollection<CdmFolderDefinition> {
 
   @Override
   public void add(int index, CdmFolderDefinition childFolder) {
+    this.folderLock.lock();
+
     this.addItemModifications(childFolder);
     super.add(index, childFolder);
+
+    this.folderLock.unlock();
   }
 
   @Override
   public CdmFolderDefinition add(final CdmFolderDefinition childFolder) {
+    this.folderLock.lock();
+
     this.addItemModifications(childFolder);
-    return super.add(childFolder);
+    super.add(childFolder);
+
+    this.folderLock.unlock();
+
+    return childFolder;
+
   }
 
   @Override
@@ -76,5 +91,31 @@ public class CdmFolderCollection extends CdmCollection<CdmFolderDefinition> {
     // TODO: At this point we should also propagate the root adapter into the child folder
     // and all its sub-folders and contained documents. For now, don't add things to the
     // folder unless it's tied to an adapter root.
+  }
+
+  /**
+   * Gets a folder by name or creates if it doesn't exist.
+   * @param name
+   * @return
+   */
+  CdmFolderDefinition getOrCreate(String name) {
+    this.folderLock.lock();
+
+    CdmFolderDefinition result = null;
+    for (int i = 0; i < this.size(); i++) {
+      CdmFolderDefinition folder = this.get(i);
+      if (name.equalsIgnoreCase(folder.getName())) {
+        result = folder;
+        break;
+      }
+    }
+
+    if (result == null) {
+      result = this.add(name);
+    }
+
+    this.folderLock.unlock();
+
+    return result;
   }
 }

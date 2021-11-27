@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Cdm;
+using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Storage;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
-using Microsoft.CommonDataModel.Tools.Processor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using System;
@@ -23,7 +23,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// The path of the TestDataFolder.
         /// Here will be found input files and expected output files used by tests
         /// </summary>
-        public const string TestDataPath = "../../../TestData";
+        public const string TestDataPath = "../../../../../TestData";
 
         /// <summary>
         /// The path of the sample schema documents folder.
@@ -43,14 +43,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         public const string CdmStandardSchemaPath = "local:/core/applicationCommon/applicationCommon.manifest.cdm.json";
 
         /// <summary>
+        /// The log codes that are allowed to be logged without failing the test
+        /// </summary>
+        private static readonly HashSet<string> ignoredLogCodes = new HashSet<string>()
+        {
+            CdmLogCode.WarnDeprecatedResolutionGuidance.ToString()
+        };
+
+        /// <summary>
         /// Gets the input folder path associated with specified test.
         /// </summary>
         /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>
         /// <param name="testName">The name of the test this path is associated with.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
         /// <returns>Input folder path.</returns>
-        public static string GetInputFolderPath(string testSubpath, string testName)
+        public static string GetInputFolderPath(string testSubpath, string testName, bool isLanguageSpecific = false)
         {
-            return GetTestFolderPath(testSubpath, testName, TestHelper.TestFolders.Input);
+            return GetTestFolderPath(testSubpath, testName, TestHelper.TestFolders.Input, isLanguageSpecific);
         }
 
         /// <summary>
@@ -99,10 +108,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>
         /// <param name="testName">The name of the test this file is an expected output for.</param>
         /// <param name="fileName">The name of the file to be read.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
         /// <returns>The content of the file</returns>
-        public static string GetExpectedOutputFileContent(string testSubpath, string testName, string fileName)
+        public static string GetExpectedOutputFileContent(string testSubpath, string testName, string fileName, bool isLanguageSpecific = false)
         {
             var pathOfExpectedOutputFolder = GetExpectedOutputFolderPath(testSubpath, testName);
+            if (isLanguageSpecific)
+            {
+                pathOfExpectedOutputFolder = Path.Combine(pathOfExpectedOutputFolder, "CSharp");
+            }
 
             var pathOfExpectedOutputFile = Path.Combine(pathOfExpectedOutputFolder, fileName);
             Assert.IsTrue(File.Exists(pathOfExpectedOutputFile),
@@ -110,6 +124,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
             return File.ReadAllText(pathOfExpectedOutputFile);
         }
+
+        /// <summary>
+        /// Gets the content of an actual output file for a particular test.
+        /// </summary>
+        /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>
+        /// <param name="testName">The name of the test this file is an expected output for.</param>
+        /// <param name="fileName">The name of the file to be read.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
+        /// <returns>The content of the file</returns>
+        public static string GetActualOutputFileContent(string testSubpath, string testName, string fileName, bool isLanguageSpecific = false)
+        {
+            var pathOfActualOutputFolder = GetActualOutputFolderPath(testSubpath, testName);
+            if (isLanguageSpecific)
+            {
+                pathOfActualOutputFolder = Path.Combine(pathOfActualOutputFolder, "CSharp");
+            }
+
+            var pathOfActualOutputFile = Path.Combine(pathOfActualOutputFolder, fileName);
+            Assert.IsTrue(File.Exists(pathOfActualOutputFile),
+                $"Was unable to find the actual output file for test {testName}, file name = {fileName}");
+
+            return File.ReadAllText(pathOfActualOutputFile);
+        }
+
         /// <summary>
         /// Writes the content of an expected output file for a particular test.
         /// </summary>
@@ -128,13 +166,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
             File.WriteAllText(pathOfExpectedOutputFile, fileContent);
         }
-        public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null)
+
+        /// <summary>
+        /// Creates a corpus to be used by the tests, which mounts inputFolder, outputFolder, cdm, and remoteAdapter. Will fail on any unexpected warning/error.
+        /// </summary>
+        /// <param name="testSubpath">The subpath of the test.</param>
+        /// <param name="testName">The name of the test.</param>
+        /// <param name="testInputDir">The test input directory.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp, it's used when input is different compared with other languages.</param>
+        /// <param name="expectedCodes">The error codes that are expected, and they should not block the test.</param>
+        /// <param name="noInputAndOutputFolder">No input and output folder needed.</param>
+        /// <returns>CdmCorpusDefinition</returns>
+        public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null, bool isLanguageSpecific = false, HashSet<CdmLogCode> expectedCodes = null, bool noInputAndOutputFolder = false)
         {
-            testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName);
-            var testOutputDir = GetActualOutputFolderPath(testSubpath, testName);
+            if (noInputAndOutputFolder)
+            {
+                testInputDir = "C:\\dummyPath";
+            }
+
+            testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName, isLanguageSpecific);
+            var testOutputDir = noInputAndOutputFolder ? testInputDir : GetActualOutputFolderPath(testSubpath, testName);
 
             var corpus = new CdmCorpusDefinition();
-            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (status, message) =>
+                {
+                    FailOnUnexpectedFailure(corpus, message, expectedCodes);
+                }
+            }, CdmStatusLevel.Warning);
+
             corpus.Storage.DefaultNamespace = "local";
 
             corpus.Storage.Mount("local", new LocalAdapter(testInputDir));
@@ -149,6 +211,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             });
 
             return corpus;
+        }
+
+        /// <summary>
+        /// Fail on an unexpected message.
+        /// </summary>
+        /// <param name="corpus">The corpus.</param>
+        /// <param name="message">The unexpected error messages.</param>
+        /// <param name="expectedCodes">The expected error codes.</param>
+        /// <returns></returns>
+        private static void FailOnUnexpectedFailure(CdmCorpusDefinition corpus, string message, HashSet<CdmLogCode> expectedCodes = null)
+        {
+            var events = corpus.Ctx.Events;
+            if (events.Count > 0)
+            {
+                var lastLog = events[events.Count - 1];
+                if (!lastLog.ContainsKey("code") || !ignoredLogCodes.Contains(lastLog["code"]))
+                {
+                    if (expectedCodes != null && expectedCodes.Contains((CdmLogCode)Enum.Parse(typeof(CdmLogCode), lastLog["code"])))
+                    {
+                        return;
+                    }
+                    var code = lastLog.ContainsKey("code") ? lastLog["code"] : "no code associated";
+                    Assert.Fail($"Encountered unexpected log event: {code} - {message}!");
+                }
+            }
         }
 
         /// <summary>
@@ -183,21 +270,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// </summary>
         /// <param name="expectedFolderPath">The expected output folder path.</param>
         /// <param name="actualFolderPath">The actual output folder path.</param>
-        public static void AssertFolderFilesEquality(string expectedFolderPath, string actualFolderPath)
+        /// <param name="differentConfig">Indicate whether the config file is different with other languages.</param>
+        public static void AssertFolderFilesEquality(string expectedFolderPath, string actualFolderPath, bool differentConfig = false)
         {
             var expectedFilePaths = Directory.GetFiles(expectedFolderPath);
-            Assert.AreEqual(
-                expectedFilePaths.Length,
-                Directory.GetFiles(actualFolderPath).Length,
-                String.Format("The number of files in actual directory {0} is different.", actualFolderPath));
+            if (!differentConfig)
+            {
+                Assert.AreEqual(
+                    expectedFilePaths.Length,
+                    Directory.GetFiles(actualFolderPath).Length,
+                    String.Format("The number of files in actual directory {0} is different.", actualFolderPath));
+            }
 
             foreach (var expectedFilePath in expectedFilePaths)
             {
                 var expectedFilename = Path.GetRelativePath(expectedFolderPath, expectedFilePath);
-                var actualFilePath = Path.Combine(actualFolderPath, expectedFilename);
+                var isSpecialConfig = expectedFilename == "config-CSharp.json";
+
+                if (expectedFilename.EndsWith("-Java.json")
+                        || expectedFilename.EndsWith("-Python.json")
+                        || expectedFilename.EndsWith("-TypeScript.json"))
+                {
+                    continue;
+                }
+
+                var actualFilePath = Path.Combine(actualFolderPath, isSpecialConfig && differentConfig ? "config.json" : expectedFilename);
                 var expectedFileContent = File.ReadAllText(expectedFilePath);
                 var actualFileContent = File.ReadAllText(actualFilePath);
-                AssertFileContentEquality(expectedFileContent, actualFileContent);
+                if (expectedFilename.EndsWith(".csv"))
+                {
+                    AssertFileContentEquality(expectedFileContent, actualFileContent);
+                }
+                else
+                {
+                    AssertSameObjectWasSerialized(expectedFileContent, actualFileContent);
+                }
             }
 
             var expectedSubFolders = Directory.GetDirectories(expectedFolderPath);
@@ -206,6 +313,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 var expectedSubFolderName = Path.GetRelativePath(expectedFolderPath, expectedSubFolderPath);
                 var actualSubFolderPath = Path.Combine(actualFolderPath, expectedSubFolderName);
                 AssertFolderFilesEquality(expectedSubFolderPath, actualSubFolderPath);
+            }
+        }
+
+        /// <summary>
+        /// Asserts in logcode, if expected log code is not in log codes recorded list (isPresent = true)
+        /// Asserts in logcode, if expected log code in log codes recorded list (isPresent = false)
+        /// </summary>
+        /// <param name="corpus">The corpus object.</param>
+        /// <param name="expectedcode">The expectedcode cdmlogcode.</param>
+        /// <param name="isPresent">The flag to decide how to assert the test.</param>
+        public static void AssertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode, bool isPresent)
+        {
+            bool toAssert = false;
+            corpus.Ctx.Events.ForEach(logEntry =>
+            {
+                if (((expectedCode.ToString().StartsWith("Warn") && logEntry["level"].Equals(CdmStatusLevel.Warning.ToString()))
+                     || (expectedCode.ToString().StartsWith("Err") && logEntry["level"].Equals(CdmStatusLevel.Error.ToString())))
+                    && logEntry["code"].Equals(expectedCode.ToString()))
+                {
+                    toAssert = true;
+                }
+            });
+
+            if (isPresent)
+            {
+                Assert.IsTrue(toAssert, $"The recorded log events should have contained message with log code {expectedCode} of appropriate level");
+            }
+            else
+            {
+                Assert.IsFalse(toAssert, $"The recorded log events should not have contained message with log code {expectedCode} of appropriate level as this message should be filtered out.");
             }
         }
 
@@ -441,12 +578,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// </summary>
         /// <param name="testName">The name of test currently runnig that will used created path.</param>
         /// <param name="use">Whether the path is for Input, Expected Output or ActualOutput.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
         /// <returns></returns>
-        private static string GetTestFolderPath(string testSubpath, string testName, TestHelper.TestFolders use)
+        private static string GetTestFolderPath(string testSubpath, string testName, TestHelper.TestFolders use, bool isLanguageSpecific = false)
         {
             string folderName = Enum.GetName(typeof(TestHelper.TestFolders), use);
+            if (use == TestFolders.ActualOutput)
+            {
+                folderName = GetTestActualOutputFolderName();
+            }
 
-            string testFolderPath = Path.Combine(TestDataPath, testSubpath, testName, folderName);
+            string testFolderPath = isLanguageSpecific ? Path.Combine(TestDataPath, testSubpath, testName, folderName, "CSharp")
+                : Path.Combine(TestDataPath, testSubpath, testName, folderName);
 
             if (use == TestHelper.TestFolders.ActualOutput && !Directory.Exists(testFolderPath))
             {
@@ -461,6 +604,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             return testFolderPath;
         }
 
-
+        public static string GetTestActualOutputFolderName()
+        {
+            return $"{Enum.GetName(typeof(TestFolders), TestFolders.ActualOutput)}-CSharp";
+        }
     }
 }

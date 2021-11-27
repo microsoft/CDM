@@ -8,7 +8,9 @@ from cdm.objectmodel import CdmAttributeContext
 from cdm.resolvedmodel.projections.projection_attribute_context_tree_builder import ProjectionAttributeContextTreeBuilder
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
-from cdm.utilities import AttributeContextParameters, Errors, logger
+from cdm.utilities import AttributeContextParameters, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 
@@ -25,15 +27,19 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
-        self.exclude_attributes = []  # type: List[str]
+        self._TAG = CdmOperationExcludeAttributes.__name__
         self.type = CdmOperationType.EXCLUDE_ATTRIBUTES  # type: CdmOperationType
 
-        # --- internal ---
-        self._TAG = CdmOperationExcludeAttributes.__name__
-
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationExcludeAttributes'] = None) -> 'CdmOperationExcludeAttributes':
-        copy = CdmOperationExcludeAttributes(self.ctx)
-        copy.exclude_attributes = self.exclude_attributes[:]
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationExcludeAttributes(self.ctx) if not host else host
+
+        if self.exclude_attributes is not None:
+            copy.exclude_attributes = self.exclude_attributes.copy()
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:
@@ -50,18 +56,12 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
             missing_fields.append('exclude_attributes')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + 'operationExcludeAttributes'
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -116,7 +116,7 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
                 # We will create the attribute contexts at the end
                 attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
                     exclude_attribute_name, current_PAS, current_PAS._current_resolved_attribute,
-                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    CdmAttributeContextType.ATTRIBUTE_EXCLUDED,
                     current_PAS._current_resolved_attribute.att_ctx,  # lineage is the included attribute
                     None)  # don't know who will point here yet, excluded, so... this could be the end for you.
 

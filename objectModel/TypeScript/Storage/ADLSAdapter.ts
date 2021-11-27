@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as adal from 'adal-node';
+import * as msal from '@azure/msal-node';
 import * as crypto from 'crypto';
 import { URL } from 'url';
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse, TokenProvider } from '../Utilities/Network';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { configObjectType } from '../internal';
+import { azureCloudEndpoint, AzureCloudEndpointConvertor } from '../Enums/azureCloudEndpoint';
+import { StringUtils } from '../Utilities/StringUtils';
 
 export class ADLSAdapter extends NetworkAdapter {
     /**
@@ -33,8 +35,11 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public set hostname(val: string) {
+        if (StringUtils.isNullOrWhiteSpace(val)) {
+            throw new URIError('Hostname cannot be null or whitespace.');
+        }
         this._hostname = val;
-        this.formattedHostname = this.formatHostname(this._hostname);
+        this.formattedHostname = this.formatHostname(this.removeProtocolFromHostname(this._hostname));
     }
 
     public get sasToken(): string {
@@ -46,8 +51,8 @@ export class ADLSAdapter extends NetworkAdapter {
      */
     public set sasToken(val: string) {
         // Remove the leading question mark, so we can append this token to URLs that already have it
-        this._sasToken = val != null ? 
-            (val.startsWith('?') ? val.substr(1) : val) 
+        this._sasToken = val != null ?
+            (val.startsWith('?') ? val.substr(1) : val)
             : null;
     }
 
@@ -56,9 +61,10 @@ export class ADLSAdapter extends NetworkAdapter {
     public sharedKey: string;
     public tokenProvider: TokenProvider;
     public httpMaxResults: number = 5000;
+    public endpoint?: azureCloudEndpoint;
 
     // The map from corpus path to adapter path.
-    private readonly adapterPaths: Map<string, string>; 
+    private readonly adapterPaths: Map<string, string>;
     // The authorization header key, used during shared key auth.
     private readonly httpAuthorization: string = 'Authorization';
     // The MS date header key, used during shared key auth.
@@ -69,17 +75,17 @@ export class ADLSAdapter extends NetworkAdapter {
     private readonly httpXmsContinuation: string = 'x-ms-continuation';
 
     private readonly resource: string = 'https://storage.azure.com';
+    private readonly scopes: string[] = ['https://storage.azure.com/.default']
 
     private _hostname: string;
     private _root: string;
     private _tenant: string;
     private _sasToken: string;
-    private context: adal.AuthenticationContext;
+    private context: msal.IConfidentialClientApplication;
     private formattedHostname: string = '';
     private rootBlobContainer: string = '';
     private unescapedRootSubPath: string = '';
     private escapedRootSubPath: string = '';
-    private tokenResponse: adal.TokenResponse;
     private fileModifiedTimeCache: Map<string, Date> = new Map<string, Date>();
 
     // The ADLS constructor for clientId/secret authentication.
@@ -88,7 +94,8 @@ export class ADLSAdapter extends NetworkAdapter {
         root?: string,
         tenantOrSharedKeyorTokenProvider?: string | TokenProvider,
         clientId?: string,
-        secret?: string) {
+        secret?: string,
+        endpoint?: azureCloudEndpoint) {
         super();
 
         if (hostname && root) {
@@ -103,11 +110,11 @@ export class ADLSAdapter extends NetworkAdapter {
                         this._tenant = tenantOrSharedKeyorTokenProvider;
                         this.clientId = clientId;
                         this.secret = secret;
-                        this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
+                        this.endpoint = endpoint === undefined ? azureCloudEndpoint.AzurePublic : endpoint;
                     }
                 } else {
                     this.tokenProvider = tenantOrSharedKeyorTokenProvider;
-                }
+              }
             }
         }
 
@@ -122,7 +129,7 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public async readAsync(corpusPath: string): Promise<string> {
-        const url: string = this.createAdapterPath(corpusPath);
+        const url: string = this.createFormattedAdapterPath(corpusPath);
 
         const cdmHttpRequest: CdmHttpRequest = await this.buildRequest(url, 'GET');
 
@@ -135,7 +142,8 @@ export class ADLSAdapter extends NetworkAdapter {
         if (!this.ensurePath(`${this.root}${corpusPath}`)) {
             throw new Error(`Could not create folder for document ${corpusPath}`);
         }
-        const url: string = this.createAdapterPath(corpusPath);
+
+        const url: string = this.createFormattedAdapterPath(corpusPath);
 
         let request: CdmHttpRequest = await this.buildRequest(`${url}?resource=file`, 'PUT');
         await super.executeRequest(request);
@@ -155,7 +163,12 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public createAdapterPath(corpusPath: string): string {
+        if (corpusPath === undefined || corpusPath === null) {
+            return undefined;
+        }
+
         const formattedCorpusPath: string = this.formatCorpusPath(corpusPath);
+
         if (formattedCorpusPath === undefined || formattedCorpusPath === null) {
             return undefined;
         }
@@ -163,7 +176,7 @@ export class ADLSAdapter extends NetworkAdapter {
         if (this.adapterPaths.has(formattedCorpusPath)) {
             return this.adapterPaths.get(formattedCorpusPath);
         } else {
-            return `https://${this.hostname}${this.getEscapedRoot()}${this.escapePath(formattedCorpusPath)}`;
+            return `https://${this.removeProtocolFromHostname(this.hostname)}${this.getEscapedRoot()}${this.escapePath(formattedCorpusPath)}`;
         }
     }
 
@@ -180,7 +193,7 @@ export class ADLSAdapter extends NetworkAdapter {
 
             if (hostname === this.formattedHostname
                 && adapterPath.substring(endIndex)
-                .startsWith(this.getEscapedRoot())) {
+                    .startsWith(this.getEscapedRoot())) {
                 const escapedCorpusPath: string = adapterPath.substring(endIndex + this.getEscapedRoot().length);
                 const corpusPath: string = decodeURIComponent(escapedCorpusPath);
                 if (!this.adapterPaths.has(corpusPath)) {
@@ -201,7 +214,7 @@ export class ADLSAdapter extends NetworkAdapter {
         }
         else {
 
-            const url: string = this.createAdapterPath(corpusPath);
+            const url: string = this.createFormattedAdapterPath(corpusPath);
 
             const request: CdmHttpRequest = await this.buildRequest(url, 'HEAD');
 
@@ -211,11 +224,9 @@ export class ADLSAdapter extends NetworkAdapter {
                 // http nodejs lib returns lowercase headers.
                 // tslint:disable-next-line: no-backbone-get-set-outside-model
                 const lastTimeString: string = cdmResponse.responseHeaders.get('last-modified');
-                if(lastTimeString)
-                {
-                    const lastTime:Date = new Date(lastTimeString);
-                    if(this.isCacheEnabled())
-                    {
+                if (lastTimeString) {
+                    const lastTime: Date = new Date(lastTimeString);
+                    if (this.isCacheEnabled()) {
                         this.fileModifiedTimeCache.set(corpusPath, lastTime);
                     }
                     return lastTime;
@@ -248,28 +259,27 @@ export class ADLSAdapter extends NetworkAdapter {
             }
 
             const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
-    
+
             if (cdmResponse.statusCode === 200) {
 
                 continuationToken = cdmResponse.responseHeaders.has(this.httpXmsContinuation) ? cdmResponse.responseHeaders.get(this.httpXmsContinuation) : null;
 
                 const json: string = cdmResponse.content;
                 const jObject1 = JSON.parse(json);
-    
+
                 const jArray = jObject1.paths;
-    
+
                 for (const jObject of jArray) {
                     const isDirectory: boolean = jObject.isDirectory;
                     if (isDirectory === undefined || !isDirectory) {
                         const name: string = jObject.name;
                         const nameWithoutSubPath: string = this.unescapedRootSubPath.length > 0 && name.startsWith(this.unescapedRootSubPath) ?
                             name.substring(this.unescapedRootSubPath.length + 1) : name;
-    
+
                         const path: string = this.formatCorpusPath(nameWithoutSubPath);
                         result.push(path);
-    
-                        if(jObject.lastModified && this.isCacheEnabled())
-                        {
+
+                        if (jObject.lastModified && this.isCacheEnabled()) {
                             this.fileModifiedTimeCache.set(path, new Date(jObject.lastModified));
                         }
                     }
@@ -310,6 +320,10 @@ export class ADLSAdapter extends NetworkAdapter {
             configObject.locationHint = this.locationHint;
         }
 
+        if (this.endpoint !== undefined) {
+            configObject.endpoint = azureCloudEndpoint[this.endpoint];
+        }
+
         resultConfig.config = configObject;
 
         return JSON.stringify(resultConfig);
@@ -317,7 +331,7 @@ export class ADLSAdapter extends NetworkAdapter {
 
     public updateConfig(config: string): void {
         if (!config) {
-            throw new Error('ADLS adapter needs a config.');
+            throw new TypeError('ADLS adapter needs a config.');
         }
 
         const configJson: configObjectType = JSON.parse(config);
@@ -325,44 +339,38 @@ export class ADLSAdapter extends NetworkAdapter {
         if (configJson.root) {
             this.root = configJson.root;
         } else {
-            throw new Error('Root has to be set for ADLS adapter.');
+            throw new TypeError('Root has to be set for ADLS adapter.');
         }
 
         if (configJson.hostname) {
             this.hostname = configJson.hostname;
         } else {
-            throw new Error('Hostname has to be set for ADLS adapter.');
+            throw new TypeError('Hostname has to be set for ADLS adapter.');
         }
 
         this.updateNetworkConfig(config);
 
-        // Check first for clientId/secret auth.
         if (configJson.tenant && configJson.clientId) {
             this._tenant = configJson.tenant;
             this.clientId = configJson.clientId;
 
-            // Check for a secret, we don't really care is it there, but it is nice if it is.
-            if (configJson.secret) {
-                this.secret = configJson.secret;
+            // To keep backwards compatibility with config files that were generated before the introduction of the `endpoint` property.
+            if (!this.endpoint) {
+                this.endpoint = azureCloudEndpoint.AzurePublic;
             }
-        }
-
-        // Check for shared key auth
-        if (configJson.sharedKey) {
-            this.sharedKey = configJson.sharedKey;
-        }
-
-        // Check for sas token auth
-        if (configJson.sasToken) {
-            this.sasToken = configJson.sasToken;
         }
 
         if (configJson.locationHint) {
             this.locationHint = configJson.locationHint;
         }
 
-        if (this.tenant) {
-            this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
+        if (configJson.endpoint) {
+            const endpointStr = configJson.endpoint;
+            if (Object.values(azureCloudEndpoint).includes(endpointStr)) {
+                this.endpoint = azureCloudEndpoint[endpointStr as unknown as keyof azureCloudEndpoint];
+            } else {
+                throw new TypeError('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.');
+            }
         }
     }
 
@@ -433,7 +441,7 @@ export class ADLSAdapter extends NetworkAdapter {
      * @returns URL with the SAS token appended
      */
     private applySasToken(url: string): string {
-        return `${url}${url.includes('?')? '&' : '?'}${this.sasToken}`;
+        return `${url}${url.includes('?') ? '&' : '?'}${this.sasToken}`;
     }
 
     private async buildRequest(url: string, method: string, content?: string, contentType?: string): Promise<CdmHttpRequest> {
@@ -445,7 +453,7 @@ export class ADLSAdapter extends NetworkAdapter {
         } else if (this.sasToken) {
             request = this.setUpCdmRequest(this.applySasToken(url), null, method);
         } else if (this.tenant && this.clientId && this.secret) {
-            const token: adal.TokenResponse = await this.generateBearerToken();
+            const token: msal.AuthenticationResult = await this.generateBearerToken();
             request = this.setUpCdmRequest(
                 url,
                 new Map<string, string>([['authorization', `${token.tokenType} ${token.accessToken}`]]),
@@ -467,6 +475,12 @@ export class ADLSAdapter extends NetworkAdapter {
         }
 
         return request;
+    }
+
+    private createFormattedAdapterPath(corpusPath: string): string {
+        const adapterPath: string = this.createAdapterPath(corpusPath);
+
+        return adapterPath ? adapterPath.replace(this.hostname, this.formattedHostname) : undefined;
     }
 
     private ensurePath(pathFor: string): boolean {
@@ -533,26 +547,27 @@ export class ADLSAdapter extends NetworkAdapter {
 
         const port: string = ':443';
 
-        if (hostname.includes(port))
-        {
+        if (hostname.includes(port)) {
             hostname = hostname.substr(0, hostname.length - port.length);
         }
 
         return hostname;
     }
 
-    private async generateBearerToken(): Promise<adal.TokenResponse> {
-        return new Promise<adal.TokenResponse>((resolve, reject) => {
-            // In-memory token caching is handled by adal by default.
-            this.context.acquireTokenWithClientCredentials(
-                this.resource,
-                this.clientId,
-                this.secret,
-                (error: Error, response: adal.TokenResponse | adal.ErrorResponse) => {
-                    this.tokenResponse = response as adal.TokenResponse;
-                    resolve(this.tokenResponse);
+    private async generateBearerToken(): Promise<msal.AuthenticationResult> {
+        this.buildContext();
+        return new Promise<msal.AuthenticationResult>((resolve, reject) => {
+            const clientCredentialRequest = {
+                scopes: this.scopes,
+            };
+            this.context.acquireTokenByClientCredential(clientCredentialRequest).then((response) => {
+                if (response.accessToken && response.accessToken.length !== 0 && response.tokenType) {
+                    resolve(response);
                 }
-            );
+                reject(Error('Received invalid ADLS Adapter\'s authentication result. The result might be null, or missing access token or/and token type from the authentication result.'));
+            }).catch((error) => {
+                reject(Error('There was an error while acquiring ADLS Adapter\'s Token with client ID/secret authentication. Exception:' + JSON.stringify(error)));
+            });
         });
     }
 
@@ -565,5 +580,43 @@ export class ADLSAdapter extends NetworkAdapter {
     private updateRootSubPath(value: string): void {
         this.unescapedRootSubPath = value;
         this.escapedRootSubPath = this.escapePath(this.unescapedRootSubPath);
+    }
+
+    // Build context when users make the first call. Also need to ensure client Id, tenant and secret are not null.
+    private buildContext(): void {
+        if (this.context === undefined) {
+            const clientConfig = {
+                auth: {
+                    clientId: this.clientId,
+                    authority: `${AzureCloudEndpointConvertor.azureCloudEndpointToURL(this.endpoint)}${this.tenant}`,
+                    clientSecret: this.secret
+                }
+            };
+            this.context = new msal.ConfidentialClientApplication(clientConfig);
+        }
+    }
+
+    /**
+     * Check if the hostname has a leading protocol. 
+     * if it doesn't have, return the hostname
+     * if the leading protocol is not "https://", throw an error
+     * otherwise, return the hostname with no leading protocol.
+     * @param {string} hostname The hostname.
+     * @return The hostname without the leading protocol "https://" if original hostname has it, otherwise it is same as hostname.
+     */
+    private removeProtocolFromHostname(hostname: string): string {
+        if (hostname.indexOf('://') == -1) {
+            return hostname;
+        }
+
+        try {
+            const url = new URL(hostname);
+            if (url.protocol === 'https:') {
+                return hostname.substring('https://'.length);
+            } 
+        } catch (error) {
+            throw new URIError('Please provide a valid hostname.');
+        }
+        throw new URIError('ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.');
     }
 }

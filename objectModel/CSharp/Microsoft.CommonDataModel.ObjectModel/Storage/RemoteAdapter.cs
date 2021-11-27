@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
@@ -196,15 +196,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             var configObject = new JObject();
 
-            // Go through the Hosts dictionary and build a JObject for each item.
-            foreach (var host in this.Hosts)
+            if (this.Hosts != null)
             {
-                var hostItem = new JObject() {
+                // Go through the Hosts dictionary and build a JObject for each item.
+                foreach (var host in this.Hosts)
+                {
+                    var hostItem = new JObject() {
 
                     { host.Key, host.Value }
                 };
 
-                hostsArray.Add(hostItem);
+                    hostsArray.Add(hostItem);
+                }
             }
 
             configObject.Add("hosts", hostsArray);

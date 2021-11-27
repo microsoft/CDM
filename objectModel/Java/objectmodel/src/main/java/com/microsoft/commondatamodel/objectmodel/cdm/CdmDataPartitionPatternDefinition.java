@@ -3,8 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.tuple.Pair;
@@ -20,8 +21,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
+  private static final String TAG = CdmDataPartitionPatternDefinition.class.getSimpleName();
+
   private String name;
   private String rootLocation;
   private String globPattern;
@@ -41,7 +45,8 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrEmpty(getRootLocation())) {
-      Logger.error(CdmDataPartitionPatternDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("rootLocation"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("rootLocation"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -73,14 +78,15 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
       copy = new CdmDataPartitionPatternDefinition(getCtx(), getName());
     } else {
       copy = (CdmDataPartitionPatternDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 
     copy.setRootLocation(this.getRootLocation());
     copy.setGlobPattern(this.getGlobPattern());
     copy.setRegularExpression(this.getRegularExpression());
-    copy.setParameters(this.getParameters());
+    copy.setParameters(
+            this.getParameters() != null
+                    ? new ArrayList<>(this.getParameters()) : null);
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(this.getLastFileModifiedTime());
 
@@ -103,18 +109,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
       final String pathFrom,
       final VisitCallback preChildren,
       final VisitCallback postChildren) {
-    String path = "";
-    if (!this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-      if (path == null) {
-        String thisName = this.getName();
-        if (thisName == null) {
-          thisName = "UNNAMED";
-        }
-        path = pathFrom + thisName;
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -125,10 +120,15 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;
+  }
+
+  @Deprecated
+  public String fetchDeclaredPath(String pathFrom) {
+    return pathFrom + (this.getName() == null ? "UNNAMED": this.getName());
   }
 
   /**
@@ -258,121 +258,112 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      final String nameSpace = getInDocument().getNamespace();
-      final StorageAdapter adapter = getCtx().getCorpus().getStorage().fetchAdapter(nameSpace);
+      try (Logger.LoggerScope logScope = Logger.enterScope(CdmDataPartitionPatternDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
+        String nameSpace = null;
+        StorageAdapterBase adapter = null;
 
-      if (adapter == null) {
-        Logger.error(
-            CdmDataPartitionPatternDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Adapter not found for the document '{0}'", this.getInDocument().getName()),
-            "fileStatusCheckAsync"
-        );
-        return;
-      }
+        // make sure the root is a good full corpus path
+        String rootCleaned = getRootLocation() != null && getRootLocation().endsWith("/") ? getRootLocation().substring(0, getRootLocation().length() - 1) : getRootLocation();
 
-      // make sure the root is a good full corpus path
-      String rootCleaned = getRootLocation() != null && getRootLocation().endsWith("/") ? getRootLocation().substring(0, getRootLocation().length() - 1): getRootLocation();
-
-      if (rootCleaned == null) {
-        rootCleaned = "";
-      }
-
-      final String rootCorpus = getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(rootCleaned, getInDocument());
-
-      List<String> fileInfoList = null;
-      try {
-        // Remove namespace from path
-        final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(rootCorpus);
-        if (pathTuple == null) {
-          Logger.error(CdmDataPartitionPatternDefinition.class.getSimpleName(), this.getCtx(), "The root corpus path should not be null or empty.", "fileStatusCheckAsync");
-          return;
-        }
-        // get a list of all corpusPaths under the root
-        fileInfoList = adapter.fetchAllFilesAsync(pathTuple.getRight()).join();
-      } catch (Exception e) {
-        Logger.warning(
-            CdmDataPartitionPatternDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Failed to fetch all files in the folder location '{0}' described by a partition pattern. Exception: '{1}'", rootCorpus, e.getMessage()),
-            "fileStatusCheckAsync"
-        );
-      }
-
-      if (fileInfoList != null) {
-        // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-        for (int i = 0; i < fileInfoList.size(); i++) {
-          fileInfoList.set(i, nameSpace + ":" + fileInfoList.get(i));
-          fileInfoList.set(i, StringUtils.slice(fileInfoList.get(i), rootCorpus.length()));
+        if (rootCleaned == null) {
+          rootCleaned = "";
         }
 
-        if (getOwner() instanceof CdmLocalEntityDeclarationDefinition) {
-          // if both are present log warning and use glob pattern, otherwise use regularExpression
-          if (!StringUtils.isNullOrTrimEmpty(this.getGlobPattern()) && !StringUtils.isNullOrTrimEmpty(this.getRegularExpression())) {
-            Logger.warning(
-              CdmDataPartitionPatternDefinition.class.getSimpleName(),
-              this.getCtx(),
-              String.format("The Data Partition Pattern contains both a glob pattern (%s) and a regular expression (%s) set, the glob pattern will be used.", this.getGlobPattern(), this.getRegularExpression()));
-          }
-          String regularExpression = !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPatternToRegex(this.globPattern) : this.regularExpression;
-          Pattern regexPattern = null;
+        final String rootCorpus = getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(rootCleaned, getInDocument());
 
-          try {
-            regexPattern = Pattern.compile(regularExpression);
-          } catch (final PatternSyntaxException e) {
-            Logger.error(
-              CdmDataPartitionPatternDefinition.class.getSimpleName(),
-              this.getCtx(),
-              String.format(
-                "The %s '%s' could not form a valid regular expression. Reason: %s",
-                !StringUtils.isNullOrTrimEmpty(this.globPattern) ? "glob pattern" : "regular expression",
-                !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPattern : this.regularExpression,
-                e.getMessage())
-              );
+        List<String> fileInfoList = null;
+        try {
+          // Remove namespace from path
+          final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(rootCorpus);
+          if (pathTuple == null) {
+            Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", this.getAtCorpusPath(), CdmLogCode.ErrStorageNullCorpusPath);
+            return;
           }
 
-          if (regexPattern != null) {
-            for (final String fi : fileInfoList) {
-              final Matcher m = regexPattern.matcher(fi);
+          nameSpace = pathTuple.getLeft();
+          adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(nameSpace);
 
-              if (m.matches() && m.group().equals(fi)) {
-                // create a map of arguments out of capture groups
-                final Map<String, List<String>> args = new LinkedHashMap<>();
+          if (adapter == null) {
+            Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocAdapterNotFound, this.getInDocument().getName());
+            return;
+          }
 
-                // For each capture group, save the matching substring into the parameter.
-                for (int i = 0; i < m.groupCount(); i++) {
-                  if (this.getParameters() != null && i < this.getParameters().size()) {
-                    final String currentParam = this.getParameters().get(i);
+          // get a list of all corpusPaths under the root
+          fileInfoList = adapter.fetchAllFilesAsync(pathTuple.getRight()).join();
+        } catch (Exception e) {
+          Logger.warning(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.getMessage());
+        }
 
-                    if (!args.containsKey(currentParam)) {
-                      args.put(currentParam, new ArrayList<>());
+        if (fileInfoList != null && nameSpace != null) {
+          // remove root of the search from the beginning of all paths so anything in the root is not found by regex
+          for (int i = 0; i < fileInfoList.size(); i++) {
+            fileInfoList.set(i, nameSpace + ":" + fileInfoList.get(i));
+            fileInfoList.set(i, StringUtils.slice(fileInfoList.get(i), rootCorpus.length()));
+          }
+
+          if (getOwner() instanceof CdmLocalEntityDeclarationDefinition) {
+            // if both are present log warning and use glob pattern, otherwise use regularExpression
+            if (!StringUtils.isNullOrTrimEmpty(this.getGlobPattern()) && !StringUtils.isNullOrTrimEmpty(this.getRegularExpression())) {
+              Logger.warning(this.getCtx(), TAG,
+                      "fileStatusCheckAsync",
+                      rootCorpus, CdmLogCode.WarnPartitionGlobAndRegexPresent,
+                      this.getGlobPattern(), this.getRegularExpression());
+            }
+            String regularExpression = !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPatternToRegex(this.globPattern) : this.regularExpression;
+            Pattern regexPattern = null;
+
+            try {
+              regexPattern = Pattern.compile(regularExpression);
+            } catch (final PatternSyntaxException e) {
+              Logger.error(this.getCtx(), TAG,
+                      "fileStatusCheckAsync",
+                      rootCorpus, CdmLogCode.ErrValdnInvalidExpression, !StringUtils.isNullOrTrimEmpty(this.globPattern) ? "glob pattern" : "regular expression",
+                      !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPattern : this.regularExpression, e.getMessage());
+            }
+
+            if (regexPattern != null) {
+              for (final String fi : fileInfoList) {
+                final Matcher m = regexPattern.matcher(fi);
+
+                if (m.matches() && m.group().equals(fi)) {
+                  // create a map of arguments out of capture groups
+                  final Map<String, List<String>> args = new LinkedHashMap<>();
+
+                  // For each capture group, save the matching substring into the parameter.
+                  for (int i = 0; i < m.groupCount(); i++) {
+                    if (this.getParameters() != null && i < this.getParameters().size()) {
+                      final String currentParam = this.getParameters().get(i);
+
+                      if (!args.containsKey(currentParam)) {
+                        args.put(currentParam, new ArrayList<>());
+                      }
+
+                      args.get(currentParam).add(m.group(i + 1));
                     }
-
-                    args.get(currentParam).add(m.group(i+1));
                   }
-                }
 
-                // put the original but cleaned up root back onto the matched doc as the location stored in the partition
-                final String locationCorpusPath = rootCleaned + fi;
-                final String fullPath = rootCorpus + fi;
-                // Remove namespace from path
-                final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(fullPath);
-                if (pathTuple == null) {
-                  Logger.error(CdmDataPartitionPatternDefinition.class.getSimpleName(), this.getCtx(), "The corpus path should not be null or empty.", "fileStatusCheckAsync");
-                  return;
+                  // put the original but cleaned up root back onto the matched doc as the location stored in the partition
+                  final String locationCorpusPath = rootCleaned + fi;
+                  final String fullPath = rootCorpus + fi;
+                  // Remove namespace from path
+                  final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(fullPath);
+                  if (pathTuple == null) {
+                    Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
+                    return;
+                  }
+                  final OffsetDateTime lastModifiedTime =
+                          adapter.computeLastModifiedTimeAsync(pathTuple.getRight()).join();
+                  ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
+                          locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
                 }
-                final OffsetDateTime lastModifiedTime =
-                    adapter.computeLastModifiedTimeAsync(pathTuple.getRight()).join();
-                ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
-                        locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
               }
             }
           }
         }
-      }
 
-      // update modified times
-      setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+        // update modified times
+        setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+      }
     });
   }
 

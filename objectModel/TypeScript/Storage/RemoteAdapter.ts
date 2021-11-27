@@ -3,7 +3,7 @@
 
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { configObjectType } from '../internal';
 
 interface HostInfo {
     key?: string;
@@ -107,15 +107,17 @@ export class RemoteAdapter extends NetworkAdapter {
 
         const configObject: configObjectType = {};
 
-        // Go through the Hosts dictionary and build a JObject for each item.
-        for (const host of this.hosts) {
-            const hostItem = {};
-            hostItem[host[0]] = host[1];
+        if (this.hosts !== undefined) {
+            // Go through the Hosts dictionary and build a JObject for each item.
+            for (const host of this.hosts) {
+                const hostItem = {};
+                hostItem[host[0]] = host[1];
 
-            hostsArray.push(hostItem);
+                hostsArray.push(hostItem);
+            }
+
+            configObject.hosts = hostsArray;
         }
-
-        configObject.hosts = hostsArray;
 
         // Try constructing network configs.
         const networkConfigList: configObjectType = this.fetchNetworkConfig();

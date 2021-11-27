@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
@@ -18,12 +19,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle ReplaceAsForeignKey operations
  */
 public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
-    private static String TAG = CdmOperationReplaceAsForeignKey.class.getSimpleName();
+    private static final String TAG = CdmOperationReplaceAsForeignKey.class.getSimpleName();
     private String reference;
     private CdmTypeAttributeDefinition replaceWith;
 
@@ -35,10 +37,18 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        final CdmOperationReplaceAsForeignKey copy = new CdmOperationReplaceAsForeignKey(this.getCtx());
-        copy.setReference(this.getReference());
-        copy.setReplaceWith((CdmTypeAttributeDefinition) this.getReplaceWith().copy());
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
 
+        CdmOperationReplaceAsForeignKey copy = host == null ? new CdmOperationReplaceAsForeignKey(this.getCtx()) : (CdmOperationReplaceAsForeignKey)host;
+
+        copy.setReplaceWith(
+                this.getReplaceWith() != null
+                        ? (CdmTypeAttributeDefinition)this.getReplaceWith().copy(resOpt) : null);
+        copy.reference = this.reference;
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -94,7 +104,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
             missingFields.add("replaceWith");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -102,15 +112,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrTrimEmpty(path))
-            {
-                path = pathFrom + "operationReplaceAsForeignKey";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -151,7 +153,6 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         CdmAttributeContext attrCtxFK = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxFKParam);
 
         // get the added attribute and applied trait
-        // the name here will be {m} and not {A}{o}{M} - should this map to the not projections approach and default to {A}{o}{M} - ???
         CdmTypeAttributeDefinition subFK = this.replaceWith;
         List<String> addTrait = new ArrayList<>(Arrays.asList("is.linkedEntity.identifier"));
 
@@ -169,11 +170,17 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         ResolvedAttribute newResAttrFK,
         String refAttrName) {
         List<ProjectionAttributeState> pasList = ProjectionResolutionCommonUtil.getLeafList(projCtx, refAttrName);
+        String sourceEntity = projCtx.getProjectionDirective().getOriginalSourceAttributeName();
+
+        if (sourceEntity == null) {
+            Logger.warning(projOutputSet.getCtx(), TAG, "createNewProjectionAttributeStateSet", null,
+                    CdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);
+        }
 
         if (pasList != null) {
             // update the new foreign key resolved attribute with trait param with reference details
             ResolvedTrait reqdTrait = newResAttrFK.getResolvedTraits().find(projCtx.getProjectionDirective().getResOpt(), "is.linkedEntity.identifier");
-            if (reqdTrait != null) {
+            if (reqdTrait != null && sourceEntity != null) {
                 CdmEntityReference traitParamEntRef = ProjectionResolutionCommonUtil.createForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.getProjectionDirective(), projOutputSet.getCtx().getCorpus(), pasList);
                 reqdTrait.getParameterValues().setParameterValue(projCtx.getProjectionDirective().getResOpt(), "entityReferences", traitParamEntRef);
             }
@@ -186,7 +193,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
             projOutputSet.add(newProjAttrStateFK);
         } else {
             // Log error & return projOutputSet without any change
-            Logger.error(TAG, projOutputSet.getCtx(), Logger.format("Unable to locate state for reference attribute \"{0}\".", refAttrName), "createNewProjectionAttributeStateSet");
+            Logger.error(projOutputSet.getCtx(), TAG, "createNewProjectionAttributeStateSet", null, CdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
         }
 
         return projOutputSet;

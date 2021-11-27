@@ -1,27 +1,33 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { CardinalitySettings } from '../../internal';
 import { CdmFolder } from '..';
 import {
     ArgumentValue,
+    CdmAttribute,
     CdmAttributeItem,
     CdmCollection,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     CdmObjectDefinition,
     CdmObjectReference,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     identifierRef,
+    Logger,
     resolveOptions
 } from '../../internal';
 import {
     AttributeGroupReference,
+    CardinalitySettingsData,
     CdmJsonType,
     DataTypeReference,
     EntityAttribute,
     EntityReferenceDefinition,
     PurposeReference,
+    TraitGroupReference,
     TraitReference,
     TypeAttribute
 } from './types';
@@ -39,16 +45,20 @@ function isAttributeGroupReference(object: object): object is AttributeGroupRefe
 }
 
 /**
- * Converts a JSON object to a CdmCollection of TraitReferences
+ * Converts a JSON object to a CdmCollection of TraitReferences and TraitGroupReferences
  */
 export function createTraitReferenceArray(
     ctx: CdmCorpusContext,
-    object: (string | TraitReference)[]): CdmTraitReference[] {
+    object: (string | TraitReference | TraitGroupReference)[]): CdmTraitReferenceBase[] {
     if (!object || !object.map) { return; }
 
-    const result: CdmTraitReference[] = [];
-    object.forEach((traitReference: string | TraitReference) => {
-        result.push(CdmFolder.TraitReferencePersistence.fromData(ctx, traitReference));
+    const result: CdmTraitReferenceBase[] = [];
+    object.forEach((traitReference: string | TraitReference | TraitGroupReference) => {
+        if (typeof traitReference !== 'string' && 'traitGroupReference' in traitReference) {
+            result.push(CdmFolder.TraitGroupReferencePersistence.fromData(ctx, traitReference as TraitGroupReference));
+        } else {
+            result.push(CdmFolder.TraitReferencePersistence.fromData(ctx, traitReference));
+        }
     });
 
     return result;
@@ -69,7 +79,7 @@ export function addArrayToCdmCollection<T extends CdmObject>(cdmCollection: CdmC
  * Creates a CDM object from a JSON object
  */
 export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): ArgumentValue {
-    if (!object) {
+    if (object === undefined || object === null) {
         return undefined;
     }
     if (typeof object === 'string') {
@@ -95,6 +105,8 @@ export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): Argu
             return CdmFolder.PurposeReferencePersistence.fromData(ctx, object as PurposeReference);
         } else if (checkExistingProperty('traitReference')) {
             return CdmFolder.TraitReferencePersistence.fromData(ctx, object as TraitReference);
+        } else if (checkExistingProperty('traitGroupReference')) {
+            return CdmFolder.TraitGroupReferencePersistence.fromData(ctx, object as TraitGroupReference);
         } else if (checkExistingProperty('dataTypeReference')) {
             return CdmFolder.DataTypeReferencePersistence.fromData(ctx, object as DataTypeReference);
         } else if (checkExistingProperty('entityReference')) {
@@ -215,3 +227,36 @@ export function propertyFromDataToBool(value): boolean {
     return undefined;
 }
 
+/**
+ * Converts cardinality data into a CardinalitySettings object
+ * @param object The dasta representation of CardinalitySettings.
+ * @param attribute The attribute object where the cardinality object belongs.
+ * @returns The CardinalitySettings object.
+ */
+export function cardinalitySettingsFromData(object: CardinalitySettingsData, attribute: CdmAttribute): CardinalitySettings {
+    if (!object) {
+        return;
+    }
+
+    const cardinality: CardinalitySettings = new CardinalitySettings(attribute);
+    cardinality.minimum = object.minimum;
+    cardinality.maximum = object.maximum;
+
+    return cardinality.minimum !== undefined && cardinality.maximum !== undefined ?
+        cardinality : undefined;
+}
+
+/**
+ * Converts CardinalitySettings into a CardinalitySettingsData object
+ * @param instance The CardinalitySettings object.
+ */
+export function cardinalitySettingsToData(instance: CardinalitySettings): CardinalitySettingsData {
+    if (!instance || instance.minimum === undefined || instance.maximum === undefined) {
+        return undefined;
+    }
+
+    return {
+        minimum: instance.minimum,
+        maximum: instance.maximum
+    };
+}

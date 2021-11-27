@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
     /// </summary>
     public class CdmHttpClient : IDisposable
     {
+        private static readonly string Tag = nameof(CdmHttpClient);
         /// <summary>
         /// The callback function that gets called after the request is finished in CDM Http client.
         /// </summary>
@@ -65,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         /// <param name="cdmRequest">The CDM Http request.</param>
         /// <param name="callback">The callback that gets executed after the request finishes.</param>
         /// <returns>The <see cref="Task"/>, representing CDM Http response.</returns>
-        internal async Task<CdmHttpResponse> SendAsync(CdmHttpRequest cdmRequest, Callback callback = null, CdmCorpusContext ctx = null)
+        public async Task<CdmHttpResponse> SendAsync(CdmHttpRequest cdmRequest, Callback callback = null, CdmCorpusContext ctx = null)
         {
             // Merge headers first.
             foreach (var item in this.Headers)
@@ -73,23 +75,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                 cdmRequest.Headers.Add(item.Key, item.Value);
             }
 
+            var maxTimeoutToken = new CancellationTokenSource();
+            TimeSpan timeout = (TimeSpan)cdmRequest.MaximumTimeout;
+            int timeoutMilliseconds = (int)timeout.TotalMilliseconds;
+            maxTimeoutToken.CancelAfter(timeoutMilliseconds);
+
             try
             {
-                var task = Task.Run(async () => await SendAsyncHelper(cdmRequest, callback, ctx));
+                return await SendAsyncHelper(cdmRequest, callback, ctx, maxTimeoutToken.Token);
 
-                // Wait for all the requests to finish, if the time exceedes maximum timeout throw the CDM timed out exception.
-                if (task.Wait((TimeSpan)cdmRequest.MaximumTimeout))
-                {
-                    return task.Result;
-                }
-                else
-                {
-                    throw new CdmTimedOutException("Maximum timeout exceeded.");
-                }
             }
             catch (AggregateException err)
             {
                 throw err.InnerException;
+            }
+            catch (Exception ex)
+            {
+                if (ex is CdmTimedOutException && maxTimeoutToken.IsCancellationRequested)
+                {
+                    throw new CdmTimedOutException("Maximum timeout exceeded.");
+                }
+
+                throw ex;
             }
         }
 
@@ -99,7 +106,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         /// <param name="cdmRequest">The CDM Http request.</param>
         /// <param name="callback">The callback that gets executed after the request finishes.</param>
         /// <returns>The <see cref="Task"/>, representing CDM Http response.</returns>
-        private async Task<CdmHttpResponse> SendAsyncHelper(CdmHttpRequest cdmRequest, Callback callback = null, CdmCorpusContext ctx = null)
+        private async Task<CdmHttpResponse> SendAsyncHelper(CdmHttpRequest cdmRequest, Callback callback, CdmCorpusContext ctx, CancellationToken maxTimeoutToken)
         {
             string fullUrl;
             if (isApiEndpointSet)
@@ -129,44 +136,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                 CdmHttpResponse cdmHttpResponse = null;
                 var hasFailed = false;
+                DateTimeOffset startTime = DateTimeOffset.UtcNow;
                 try
                 {
-                    Task<HttpResponseMessage> request;
-
-                    DateTimeOffset startTime = DateTimeOffset.UtcNow;
+                    HttpResponseMessage response;
 
                     if (ctx != null)
                     {
-                        Logger.Info(nameof(CdmHttpClient), ctx, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.", nameof(SendAsyncHelper));
+                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.");
                     }
+
+                    TimeSpan timeout = (TimeSpan)cdmRequest.Timeout;
+                    int timeoutMilliseconds = (int)(timeout.TotalMilliseconds);
+
+                    CancellationTokenSource requestToken = new CancellationTokenSource();
+                    requestToken.CancelAfter(timeoutMilliseconds);
+                    
+                    // The request should timeout either for its own timeout or if maximum timeout is reached.
+                    CancellationTokenSource requestLinkedToken = CancellationTokenSource.CreateLinkedTokenSource(requestToken.Token, maxTimeoutToken);
 
                     // The check is added to fix a known issue in .net http client when reading HEAD request > 2GB.
                     // .net http client tries to write content even when the request is HEAD request.
                     if (cdmRequest.Method.Equals(HttpMethod.Head))
                     {
-                        request = Task.Run(async () => await this.client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
+                        response = await this.client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, requestLinkedToken.Token);
                     }
                     else
                     {
-                        request = Task.Run(async () => await this.client.SendAsync(requestMessage));
+                        response = await this.client.SendAsync(requestMessage, requestLinkedToken.Token);
                     }
 
-                    if (!request.Wait((TimeSpan)cdmRequest.Timeout))
-                    {
-                        if (ctx != null && cdmRequest.Timeout != null)
-                        {
-                            Logger.Info(nameof(CdmHttpClient), ctx, $"Request {cdmRequest.RequestId} timeout after {cdmRequest.Timeout?.Seconds} s.", nameof(SendAsyncHelper));
-                        }
-
-                        throw new CdmTimedOutException("Request timeout.");
-                    }
-
-                    HttpResponseMessage response = request.Result;
 
                     if (ctx != null)
                     {
                         DateTimeOffset endTime = DateTimeOffset.UtcNow;
-                        Logger.Info(nameof(CdmHttpClient), ctx, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.", nameof(SendAsyncHelper));
+                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.");
                     }
 
                     if (response != null)
@@ -186,29 +190,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                 }
                 catch (Exception ex)
                 {
+                    DateTimeOffset endTime = DateTimeOffset.UtcNow;
+                    hasFailed = true;
+
+                    if (ex is TaskCanceledException && ctx != null)
+                    {
+                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Request {cdmRequest.RequestId} timeout after {endTime.Subtract(startTime).TotalMilliseconds} ms.");
+                    }
+
                     if (ex is AggregateException aggrEx)
                     {
                         ex = aggrEx.InnerException;
                     }
 
-                    hasFailed = true;
-
                     // Only throw an exception if another retry is not expected anymore.
                     if (callback == null || retryNumber == cdmRequest.NumberOfRetries)
                     {
-                        if (retryNumber != 0)
+                        if (retryNumber != 0 && !maxTimeoutToken.IsCancellationRequested)
                         {
                             throw new CdmNumberOfRetriesExceededException(ex.Message);
                         }
-                        else
+
+                        if (ex is TaskCanceledException)
                         {
-                            throw ex;
+                            throw new CdmTimedOutException("Request timeout.");
                         }
+                        
+                        throw ex;
                     }
                 }
 
                 // Check whether we have a callback function set and whether this is not our last retry.
-                if (callback != null && retryNumber != cdmRequest.NumberOfRetries)
+                if (callback != null && retryNumber != cdmRequest.NumberOfRetries && !maxTimeoutToken.IsCancellationRequested)
                 {
                     // Call the callback function with the retry numbers starting from 1.
                     var waitTime = callback(cdmHttpResponse, hasFailed, retryNumber + 1);
@@ -231,17 +244,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                     {
                         return cdmHttpResponse;
                     }
+                    else if (retryNumber < cdmRequest.NumberOfRetries || maxTimeoutToken.IsCancellationRequested)
+                    {
+                        throw new CdmTimedOutException("Request timeout.");
+                    }
                     else
                     {
-                        if (retryNumber == 0)
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            // If response doesn't exist repeatedly, just throw that the number of retries has exceeded (we don't have any other information).
-                            throw new CdmNumberOfRetriesExceededException();
-                        }
+                        // If response doesn't exist repeatedly, just throw that the number of retries has exceeded (we don't have any other information).
+                        throw new CdmNumberOfRetriesExceededException();
                     }
                 }
             }

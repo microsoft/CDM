@@ -8,7 +8,8 @@ from cdm.resolvedmodel.projections.projection_resolution_common_util import Proj
 
 from cdm.objectmodel import CdmAttribute, CdmAttributeContext
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmOperationType
-from cdm.utilities import AttributeContextParameters, Errors, logger
+from cdm.utilities import AttributeContextParameters, logger
+from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
@@ -27,18 +28,22 @@ class CdmOperationRenameAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationRenameAttributes.__name__
         self.rename_format = None  # type: str
         self.apply_to = None  # type: List[str]
         self.type = CdmOperationType.RENAME_ATTRIBUTES  # type: CdmOperationType
 
-        # --- internal ---
-        self._TAG = CdmOperationRenameAttributes.__name__
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationRenameAttributes'] = None) -> 'CdmOperationRenameAttributes':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationrename_attributes'] = None) -> 'CdmOperationrename_attributes':
-        copy = CdmOperationRenameAttributes(self.ctx)
-        copy.rename_format = self.rename_format
+        copy = CdmOperationRenameAttributes(self.ctx) if not host else host
+
         if self.apply_to is not None:
-            copy.apply_to = self.apply_to[:]
+            copy.apply_to = self.apply_to.copy()
+        copy.rename_format = self.rename_format
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:
@@ -55,18 +60,13 @@ class CdmOperationRenameAttributes(CdmOperationBase):
             missing_fields.append('rename_format')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
+        
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + 'operationRenameAttributes'
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -99,8 +99,6 @@ class CdmOperationRenameAttributes(CdmOperationBase):
         # We use the top-level names because the rename list may contain a previous name our current resolved attributes had
         top_level_rename_attribute_names = ProjectionResolutionCommonUtil._get_top_list(proj_ctx, rename_attributes)  # type: Dict[str, str]
 
-        source_attribute_name = proj_ctx._projection_directive._original_source_entity_attribute_name  # type: str
-
         # Initialize a projection attribute context tree builder with the created attribute context for the operation
         attr_ctx_tree_builder = ProjectionAttributeContextTreeBuilder(attr_ctx_op_rename_attrs)
 
@@ -113,10 +111,10 @@ class CdmOperationRenameAttributes(CdmOperationBase):
                 if isinstance(current_PAS._current_resolved_attribute.target, CdmAttribute):
                     # The current attribute should be renamed
 
-                    new_attribute_name = self._get_new_attribute_name(current_PAS, source_attribute_name)  # type: str
+                    new_attribute_name = self._get_new_attribute_name(proj_ctx._projection_directive._original_source_attribute_name, current_PAS)  # type: str
 
                     # Create new resolved attribute with the new name, set the new attribute as target
-                    res_attr_new = self._create_new_resolved_attribute(proj_ctx, None, current_PAS._current_resolved_attribute.target, new_attribute_name)  # type: ResolvedAttribute
+                    res_attr_new = self._create_new_resolved_attribute(proj_ctx, None, current_PAS._current_resolved_attribute, new_attribute_name)  # type: ResolvedAttribute
 
                     # Get the attribute name the way it appears in the applyTo list
                     apply_to_name = top_level_rename_attribute_names[current_PAS._current_resolved_attribute.resolved_name]
@@ -139,7 +137,9 @@ class CdmOperationRenameAttributes(CdmOperationBase):
 
                     proj_output_set._add(new_PAS)
                 else:
-                    logger.warning(self._TAG, self.ctx, 'RenameAttributes is not supported on an attribute group yet.')
+                    logger.warning(self.ctx, self._TAG,
+                                   CdmOperationRenameAttributes._append_projection_attribute_state.__name__, self.at_corpus_path,
+                                   CdmLogCode.WARN_PROJ_RENAME_ATTR_NOT_SUPPORTED)
                     # Add the attribute without changes
                     proj_output_set._add(current_PAS)
             else:
@@ -151,16 +151,9 @@ class CdmOperationRenameAttributes(CdmOperationBase):
 
         return proj_output_set
 
-    def _get_new_attribute_name(self, attribute_state: 'ProjectionAttributeState', source_attribute_name: str):
-        current_attribute_name = attribute_state._current_resolved_attribute._resolved_name
-        ordinal = str(attribute_state._ordinal) if attribute_state._ordinal is not None else ''
-
+    def _get_new_attribute_name(self, projection_owner_name: str, current_PAS: 'ProjectionAttributeState'):
         if not self.rename_format:
-            logger.error(self._TAG, self.ctx, 'RenameFormat should be set for this operation to work.')
+            logger.error(self.ctx, self._TAG, self.getNewAttributeName.__name__, self.at_corpus_path, CdmLogCode.ERR_PROJ_RENAME_FORMAT_IS_NOT_SET)
             return ''
 
-        attribute_name = StringUtils._replace(self.rename_format, 'a', source_attribute_name)
-        attribute_name = StringUtils._replace(attribute_name, 'o', ordinal)
-        attribute_name = StringUtils._replace(attribute_name, 'm', current_attribute_name)
-
-        return attribute_name
+        return self._replace_wildcard_characters(self.rename_format, projection_owner_name, current_PAS)

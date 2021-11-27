@@ -12,21 +12,23 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmImport,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmParameterDefinition,
     CdmPurposeDefinition,
     CdmTraitCollection,
     CdmTraitDefinition,
-    CdmTraitReference
+    CdmTraitReference,
+    CdmTraitReferenceBase,
+    Logger
 } from '../../internal';
 import { isCdmTraitDefinition } from '../../Utilities/cdmObjectTypeGuards';
-import { Logger } from '../../Utilities/Logging/Logger';
 
 /**
  * Dictionary used to cache documents with trait definitions by file name.
  */
-const cachedDefDocs: { [key: string]: CdmDocumentDefinition } = {};
+const cachedDefDocs: Map<[CdmCorpusContext, string], CdmDocumentDefinition> = new Map<[CdmCorpusContext, string], CdmDocumentDefinition>();
 
 /**
  * Set of extensions that are officially supported and have their definitions in the extensions folder.
@@ -76,13 +78,7 @@ export async function standardImportDetection(
     for (let traitIndex: number = localExtensionTraitDefList.length - 1; traitIndex >= 0; traitIndex--) {
         const extensionTraitDef: CdmTraitDefinition = localExtensionTraitDefList[traitIndex];
         if (!traitDefIsExtension(extensionTraitDef)) {
-            Logger.error(
-                'ExtensionHelper',
-                ctx,
-                `Invalid extension trait name ${extensionTraitDef.traitName},
-                         expected prefix ${extensionTraitNamePrefix}.`
-            );
-
+            Logger.error(this.ctx, this.TAG, this.standardImportDetection.name, null, cdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
             return undefined;
         }
 
@@ -265,11 +261,11 @@ export function processExtensionTraitToObject(extensionTraitRef: CdmTraitReferen
 }
 
 /**
- * Checks whether the trait reference is an extension (by checking whether its name has the extension prefix)
+ * Checks whether the trait reference base is an extension (by checking whether its name has the extension prefix)
  * @param trait The trait to be checked
  * @returns Whether the trait is an extension.
  */
-export function traitRefIsExtension(trait: CdmTraitReference): boolean {
+export function traitRefIsExtension(trait: CdmTraitReferenceBase): boolean {
     return traitNameHasExtensionMark(trait.namedReference);
 }
 
@@ -282,22 +278,22 @@ export function traitRefIsExtension(trait: CdmTraitReference): boolean {
  * @returns The retrieved document or null if no such document was found.
  */
 async function fetchDefDoc(ctx: CdmCorpusContext, fileName: string): Promise<CdmDocumentDefinition> {
-    if (cachedDefDocs[fileName] !== undefined) {
-        /**
-         * We already loaded this document and it is in the cache (dictionary)
-         */
-        return cachedDefDocs[fileName];
+    // Since the CachedDefDocs is a static property and there might be multiple corpus running,
+    // we need to make sure that each corpus will have its own cached def document.
+    // This is achieved by adding the context as part of the key to the document.
+    const key: [CdmCorpusContext, string] = [ctx, fileName];
+    if (cachedDefDocs.has(key)) {
+        // We already loaded this document and it is in the cache (dictionary)
+        return cachedDefDocs.get(key);
     }
 
-    /**
-     * We retrieve the document and cache in the dictionary for future reference.
-     */
+    // We retrieve the document and cache in the dictionary for future reference.
     const path: string = `/extensions/${fileName}`;
     const absPath: string = ctx.corpus.storage.createAbsoluteCorpusPath(path, ctx.corpus.storage.fetchRootFolder('cdm'));
     const document: CdmObject = await ctx.corpus.fetchObjectAsync(absPath);
     if (document) {
         const extensionDoc: CdmDocumentDefinition = document as CdmDocumentDefinition;
-        cachedDefDocs[fileName] = extensionDoc;
+        cachedDefDocs.set(key, extensionDoc);
 
         return extensionDoc;
     }

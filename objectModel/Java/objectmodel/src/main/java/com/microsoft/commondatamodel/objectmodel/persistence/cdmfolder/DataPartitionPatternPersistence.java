@@ -48,9 +48,7 @@ public class DataPartitionPatternPersistence {
             newPattern.setSpecializedSchema(obj.getSpecializedSchema());
         }
 
-        if (obj.getExhibitsTraits() != null) {
-            Utils.addListToCdmCollection(newPattern.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.getExhibitsTraits()));
-        }
+        Utils.addListToCdmCollection(newPattern.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.getExhibitsTraits()));
 
         return newPattern;
     }

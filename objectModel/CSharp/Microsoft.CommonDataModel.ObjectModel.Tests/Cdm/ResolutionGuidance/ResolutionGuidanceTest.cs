@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
@@ -25,6 +26,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// The test's data path.
         /// </summary>
         private static readonly string TestsSubpath = Path.Combine("Cdm", "ResolutionGuidance");
+
+        /// <summary>
+        /// Tests if a warning is logged if resolution guidance is used
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestResolutionGuidanceDeprecation()
+        {
+            var corpus = TestHelper.GetLocalCorpus(TestsSubpath, nameof(TestResolutionGuidanceDeprecation));
+
+            // Tests warning log when resolution guidance is used on a data typed attribute.
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TypeAttribute.cdm.json/Entity");
+            await entity.CreateResolvedEntityAsync("res-entity");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
+
+            // Tests warning log when resolution guidance is used on a entity typed attribute.
+            entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/EntityAttribute.cdm.json/Entity");
+            await entity.CreateResolvedEntityAsync("res-entity");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
+
+            // Tests warning log when resolution guidance is used when extending an entity.
+            entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/ExtendsEntity.cdm.json/Entity");
+            await entity.CreateResolvedEntityAsync("res-entity");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
+        }
 
         [TestMethod]
         public void TestResolutionGuidanceCopy()
@@ -191,7 +217,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             corpus.Storage.Mount("localActualOutput", new LocalAdapter(testActualOutputPath));
             CdmFolderDefinition actualOutputFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>("localActualOutput:/");
 
-            // Test "structured" imposed directive 
+            // Test "structured" imposed directive
             var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Person_Structured.cdm.json/Person");
             var resolvedEntity = await entity.CreateResolvedEntityAsync("Person_Resolved", null, actualOutputFolder);
             await resolvedEntity.InDocument.SaveAsAsync("Person_Structured_Resolved.cdm.json", true, new CopyOptions());
@@ -242,7 +268,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { })
                 };
 
-                CdmFolderDefinition actualOutputFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>("localActualOutput:/") as CdmFolderDefinition;
+                CdmFolderDefinition actualOutputFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>("localActualOutput:/");
                 CdmEntityDefinition resolvedEntityDef = null;
                 string outputEntityFileName = string.Empty;
                 string entityFileName = string.Empty;

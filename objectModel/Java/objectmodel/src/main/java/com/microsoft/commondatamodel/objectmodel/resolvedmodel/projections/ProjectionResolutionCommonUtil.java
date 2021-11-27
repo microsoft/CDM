@@ -4,10 +4,13 @@
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.*;
 
@@ -19,6 +22,8 @@ import java.util.*;
  */
 @Deprecated
 public final class ProjectionResolutionCommonUtil {
+    private static final String TAG = ProjectionResolutionCommonUtil.class.getSimpleName();
+
     /**
      * Function to initialize the input projection attribute state Set for a projection
      *
@@ -99,7 +104,6 @@ public final class ProjectionResolutionCommonUtil {
      * @param ctx CdmCorpusContext 
      * @param source CdmEntityReference
      * @param rasSource ResolvedAttributeSet
-     * @param attrCtxParam AttributeContextParameters  
      * @return Map of String and List of ProjectionAttributeState
      */
     @Deprecated
@@ -107,8 +111,7 @@ public final class ProjectionResolutionCommonUtil {
         ProjectionDirective projDir,
         CdmCorpusContext ctx,
         CdmEntityReference source,
-        ResolvedAttributeSet rasSource,
-        AttributeContextParameters attrCtxParam) {
+        ResolvedAttributeSet rasSource) {
         Map<String, List<ProjectionAttributeState>> polySources = new HashMap<>();
 
         // TODO (sukanyas): when projection based polymorphic source is made available - the following line will have to be changed
@@ -116,7 +119,15 @@ public final class ProjectionResolutionCommonUtil {
         CdmEntityDefinition sourceDef = source.fetchObjectDefinition(projDir.getResOpt());
         for (CdmAttributeItem attr : sourceDef.getAttributes()) {
             if (attr.getObjectType() == CdmObjectType.EntityAttributeDef) {
-                ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition) attr).fetchResolvedAttributes(projDir.getResOpt(), null);
+                // the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
+                // we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
+                // create this dummy attribute context so the resolution code works properly and discard it after.
+                AttributeContextParameters attrCtxParam = new AttributeContextParameters();
+                attrCtxParam.setRegarding(attr);
+                attrCtxParam.setType(CdmAttributeContextType.PassThrough);
+                attrCtxParam.setUnder(new CdmAttributeContext(ctx, "discard"));
+
+                ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition) attr).fetchResolvedAttributes(projDir.getResOpt(), attrCtxParam);
                 for (ResolvedAttribute resAttr : raSet.getSet()) {
                     // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
                     // so steal them based on name
@@ -129,16 +140,11 @@ public final class ProjectionResolutionCommonUtil {
                     projAttrState.setCurrentResolvedAttribute(resAttr);
                     projAttrState.setPreviousStateList(null);
 
-                    // the key already exists, just add to the existing list
-                    if (polySources.containsKey(resAttr.getResolvedName())) {
-                        List<ProjectionAttributeState> existingSet = polySources.get(resAttr.getResolvedName());
-                        existingSet.add(projAttrState);
-                        polySources.put(resAttr.getResolvedName(), existingSet);
-                    } else {
-                        List<ProjectionAttributeState> pasList = new ArrayList<>();
-                        pasList.add(projAttrState);
-                        polySources.put(resAttr.getResolvedName(), pasList);
+                    // the key doesn't exist, initialize with an empty list first
+                    if (!polySources.containsKey(resAttr.getResolvedName())) {
+                        polySources.put(resAttr.getResolvedName(), new ArrayList<>());
                     }
+                    polySources.get(resAttr.getResolvedName()).add(projAttrState);
                 }
             }
         }
@@ -182,7 +188,7 @@ public final class ProjectionResolutionCommonUtil {
     public static Map<String, String> getTopList(ProjectionContext projCtx, List<String> attrNames) {
         // This dictionary contains a mapping from the top-level name of an attribute
         // to the attribute name the top-level name was derived from (the name contained in the given list)
-        Map<String, String> topLevelAttributeNames = new HashMap<>();
+        Map<String, String> topLevelAttributeNames = new LinkedHashMap<>();
 
         // Iterate through each attribute name in the list and search for their top-level names
         for (String attrName : attrNames) {
@@ -245,14 +251,15 @@ public final class ProjectionResolutionCommonUtil {
         for (ProjectionAttributeState refFound : refFoundList) {
             ResolvedAttribute resAttr = refFound.getCurrentResolvedAttribute();
 
-            if (resAttr != null && resAttr.getTarget() != null && ((CdmObject) resAttr.getTarget()).getOwner() != null &&
-                (((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.TypeAttributeDef || ((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.EntityAttributeDef)) {
+            if (resAttr.getOwner() == null) {
+                final String atCorpusPath = resAttr.getTarget() instanceof CdmObjectBase ?
+                        ((CdmObjectBase) resAttr.getTarget()).getAtCorpusPath() :
+                        resAttr.getResolvedName();
+                Logger.warning(corpus.getCtx(), TAG, "createForeignKeyLinkedEntityIdentifierTraitParameter", atCorpusPath,
+                        CdmLogCode.WarnProjCreateForeignKeyTraits, resAttr.getResolvedName());
+            } else if (((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.TypeAttributeDef || ((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.EntityAttributeDef) {
                 // find the linked entity
-                CdmObject owner = ((CdmObject) resAttr.getTarget()).getOwner();
-
-                while (owner != null && owner.getObjectType() != CdmObjectType.EntityDef) {
-                    owner = owner.getOwner();
-                }
+                CdmObject owner = resAttr.getOwner();
 
                 // find where the projection is defined
                 CdmDocumentDefinition projectionDoc = projDir.getOwner() != null ? projDir.getOwner().getInDocument() : null;
@@ -270,11 +277,11 @@ public final class ProjectionResolutionCommonUtil {
 
         if (entRefAndAttrNameList.size() > 0) {
             CdmConstantEntityDefinition constantEntity = corpus.makeObject(CdmObjectType.ConstantEntityDef);
-            constantEntity.setEntityShape(corpus.makeRef(CdmObjectType.EntityRef, "entityGroupSet", true));
+            constantEntity.setEntityShape(corpus.makeRef(CdmObjectType.EntityRef, "entitySet", true));
 
             List<List<String>> constantValues = new ArrayList<>();
             for (List<String> entAndAttrName : entRefAndAttrNameList) {
-                String originalSourceEntityAttributeName = projDir.getOriginalSourceEntityAttributeName();
+                String originalSourceEntityAttributeName = projDir.getOriginalSourceAttributeName();
                 if (originalSourceEntityAttributeName == null) {
                     originalSourceEntityAttributeName = "";
                 }

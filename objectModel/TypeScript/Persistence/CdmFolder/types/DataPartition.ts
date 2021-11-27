@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { FileStatus, TraitReference } from '.';
+import { FileStatus, TraitGroupReference, TraitReference } from '.';
 
 /**
  * abstract class for a key value pair in typescript.
@@ -25,7 +25,7 @@ export abstract class DataPartition implements FileStatus {
     /**
      * The exhibited traits.
      */
-    public exhibitsTraits?: (string | TraitReference)[];
+    public exhibitsTraits?: (string | TraitReference | TraitGroupReference)[];
 
     /**
      * The list of key value pairs to give names for the replacement values from the RegEx.

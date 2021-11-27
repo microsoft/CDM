@@ -8,13 +8,14 @@ from cdm.enums import CdmObjectType
 from .cdm_argument_collection import CdmArgumentCollection
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_object_ref import CdmObjectReference
+from cdm.objectmodel import CdmTraitReferenceBase
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmObject, CdmTraitDefinition
-    from cdm.utilities import FriendlyFormatNode, ResolveOptions, VisitCallback
+    from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmTraitDefinition
+    from cdm.utilities import ResolveOptions, VisitCallback
 
 
-class CdmTraitReference(CdmObjectReference):
+class CdmTraitReference(CdmTraitReferenceBase):
     def __init__(self, ctx: 'CdmCorpusContext', trait: Union[str, 'CdmTraitDefinition'], simple_reference: bool) -> None:
         super().__init__(ctx, trait, simple_reference)
 
@@ -44,14 +45,17 @@ class CdmTraitReference(CdmObjectReference):
 
     def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmTraitDefinition'], simple_reference: bool, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
         if not host:
-            copy = CdmTraitReference(self.ctx, ref_to, bool(self.arguments))
+            copy = CdmTraitReference(self.ctx, ref_to, simple_reference)
         else:
             copy = host._copy_to_host(self.ctx, ref_to, simple_reference)
             copy.arguments.clear()
 
         if not simple_reference:
-            copy.arguments.extend(self.arguments)
             copy._resolved_arguments = self._resolved_arguments
+
+        for arg in self.arguments:
+            copy.arguments.append(arg.copy(res_opt))
+
         return copy
 
     def _visit_ref(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
@@ -82,7 +86,7 @@ class CdmTraitReference(CdmObjectReference):
             if not arg_name and len(self.arguments) == 1:
                 return arg.value
 
-    def _fetch_resolved_traits(self, res_opt: 'ResolveOptions') -> 'ResolvedTraitSet':
+    def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
         from cdm.utilities import SymbolSet
         from .cdm_corpus_def import CdmCorpusDefinition
 
@@ -101,67 +105,47 @@ class CdmTraitReference(CdmObjectReference):
             # never been resolved, it will happen soon, so why not now?
             rts_trait = trait._fetch_resolved_traits(res_opt)
 
-        cache_by_path = True
-        if trait._this_is_known_to_have_parameters is not None:
-            cache_by_path = not trait._this_is_known_to_have_parameters
-
-        cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
-        rts_result = ctx._cache.get(cache_tag) if cache_tag else None
+        rts_result = None
 
         # store the previous reference symbol set, we will need to add it with
         # children found from the _construct_resolved_traits call
         curr_sym_ref_set = res_opt._symbol_ref_set or SymbolSet()
         res_opt._symbol_ref_set = SymbolSet()
 
-        # if not, then make one and save it
-        if not rts_result:
-            # get the set of resolutions, should just be this one trait
-            if not rts_trait:
-                # store current doc ref set
-                new_doc_ref_set = res_opt._symbol_ref_set
-                res_opt._symbol_ref_set = SymbolSet()
+        # get the set of resolutions, should just be this one trait
+        if not rts_trait:
+            # store current doc ref set
+            new_doc_ref_set = res_opt._symbol_ref_set
+            res_opt._symbol_ref_set = SymbolSet()
 
-                rts_trait = trait._fetch_resolved_traits(res_opt)
+            rts_trait = trait._fetch_resolved_traits(res_opt)
 
-                # bubble up symbol reference set from children
-                if new_doc_ref_set:
-                    new_doc_ref_set._merge(res_opt._symbol_ref_set)
+            # bubble up symbol reference set from children
+            if new_doc_ref_set:
+                new_doc_ref_set._merge(res_opt._symbol_ref_set)
 
-                res_opt._symbol_ref_set = new_doc_ref_set
-            if rts_trait:
-                rts_result = rts_trait.deep_copy()
+            res_opt._symbol_ref_set = new_doc_ref_set
+        if rts_trait:
+            rts_result = rts_trait.deep_copy()
 
-            # now if there are argument for this application, set the values in the array
-            if self.arguments and rts_result:
-                # if never tried to line up arguments with parameters, do that
-                if not self._resolved_arguments:
-                    self._resolved_arguments = True
-                    params = trait._fetch_all_parameters(res_opt)
-                    param_found = None
-                    a_value = None
+        # now if there are argument for this application, set the values in the array
+        if self.arguments and rts_result:
+            # if never tried to line up arguments with parameters, do that
+            if not self._resolved_arguments:
+                self._resolved_arguments = True
 
-                    for index, argument in enumerate(self.arguments):
-                        param_found = params.resolve_parameter(index, argument.get_name())
-                        argument._resolved_parameter = param_found
-                        a_value = argument.value
-                        a_value = ctx.corpus._const_type_check(res_opt, self.in_document, param_found, a_value)
-                        argument.value = a_value
+                params = trait._fetch_all_parameters(res_opt)
 
-                for argument in self.arguments:
-                    rts_result.set_parameter_value_from_argument(trait, argument)
+                for argument_index, argument in enumerate(self.arguments):
+                    param_found = params.resolve_parameter(argument_index, argument.get_name())
+                    argument._resolved_parameter = param_found
+                    argument.value = param_found._const_type_check(res_opt, self.in_document, argument.value)
 
-            # register set of possible symbols
-            ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
+            for argument in self.arguments:
+                rts_result.set_parameter_value_from_argument(trait, argument)
 
-            # get the new cache tag now that we have the list of docs
-            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
-            if cache_tag:
-                ctx._cache[cache_tag] = rts_result
-        else:
-            # cache was found
-            # get the SymbolSet for this cached object
-            key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
-            res_opt._symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
+        # register set of possible symbols
+        ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
 
         # merge child document set with current
         curr_sym_ref_set._merge(res_opt._symbol_ref_set)

@@ -70,8 +70,10 @@ class LocalAdapter(StorageAdapterBase):
         return None
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
+        def _walk_error(os_error):
+            raise Exception('os error on {}'.format(type(os_error)))
         adapter_folder = self.create_adapter_path(folder_corpus_path)
-        adapter_files = [os.path.join(dp, fn) for dp, dn, fns in os.walk(adapter_folder) for fn in fns]
+        adapter_files = [os.path.join(dp, fn) for dp, dn, fns in os.walk(adapter_folder, onerror=_walk_error) for fn in fns]
         return [self.create_corpus_path(file) for file in adapter_files]
 
     def fetch_config(self) -> str:
@@ -101,3 +103,4 @@ class LocalAdapter(StorageAdapterBase):
             self.location_hint = config_json['locationHint']
 
         self._full_root = os.path.abspath(self.root)
+

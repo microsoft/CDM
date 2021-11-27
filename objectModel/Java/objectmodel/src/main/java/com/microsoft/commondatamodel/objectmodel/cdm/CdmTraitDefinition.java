@@ -3,7 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterValueSet;
@@ -14,7 +14,6 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
@@ -24,8 +23,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CdmTraitDefinition extends CdmObjectDefinitionBase {
+
+  private static final String TAG = CdmTraitDefinition.class.getSimpleName();
 
   Boolean thisIsKnownToHaveParameters;
   private Boolean baseIsKnownToHaveParameters;
@@ -89,11 +91,10 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
     String cacheTag = ctx.getCorpus()
         .createDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
-    Object rtsResultDynamic = null;
+    ResolvedTraitSet rtsResult = null;
     if (cacheTag != null) {
-      rtsResultDynamic = ctx.fetchCache().get(cacheTag);
+      rtsResult = ctx.getTraitCache().get(cacheTag);
     }
-    ResolvedTraitSet rtsResult = (ResolvedTraitSet) rtsResultDynamic;
 
     // store the previous reference symbol set, we will need to add it with
     // children found from the constructResolvedTraits call
@@ -122,26 +123,25 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
         }
       }
       this.hasSetFlags = true;
-      final ParameterCollection pc = this.fetchAllParameters(resOpt);
-      final List<Object> av = new ArrayList<>();
+      final ParameterCollection parameterCollection = this.fetchAllParameters(resOpt);
+      final List<Object> argumentValues = new ArrayList<>();
       final List<Boolean> wasSet = new ArrayList<>();
-      this.thisIsKnownToHaveParameters = pc.getSequence().size() > 0;
-      for (int i = 0; i < pc.getSequence().size(); i++) {
+      this.thisIsKnownToHaveParameters = parameterCollection.getSequence().size() > 0;
+      for (int i = 0; i < parameterCollection.getSequence().size(); i++) {
         // either use the default value or (higher precidence) the value taken from the base reference
-        Object value = pc.getSequence().get(i).getDefaultValue();
-        Object baseValue = null;
+        Object value = parameterCollection.getSequence().get(i).getDefaultValue();
         if (baseInfo.getValues() != null && i < baseInfo.getValues().size()) {
-          baseValue = baseInfo.getValues().get(i);
+          Object baseValue = baseInfo.getValues().get(i);
           if (baseValue != null) {
             value = baseValue;
           }
         }
-        av.add(value);
+        argumentValues.add(value);
         wasSet.add(false);
       }
 
       // save it
-      final ResolvedTrait resTrait = new ResolvedTrait(this, pc, av, wasSet);
+      final ResolvedTrait resTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet);
       rtsResult = new ResolvedTraitSet(resOpt);
       rtsResult.merge(resTrait, false);
 
@@ -152,8 +152,8 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
       // get the new cache tag now that we have the list of docs
       cacheTag = ctx.getCorpus()
           .createDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
-      if (!Strings.isNullOrEmpty(cacheTag)) {
-        ctx.fetchCache().put(cacheTag, rtsResult);
+      if (!StringUtils.isNullOrEmpty(cacheTag)) {
+        ctx.getTraitCache().put(cacheTag, rtsResult);
       }
     } else {
       // cache found
@@ -186,18 +186,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-
-      if (Strings.isNullOrEmpty(path)) {
-        path = pathFrom + this.traitName;
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -304,9 +293,9 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
     }
     this.allParameters = new ParameterCollection(prior);
     if (this.parameters != null) {
-      for (final CdmParameterDefinition element : this.parameters) {
+      for (final CdmParameterDefinition parameter : this.parameters) {
         try {
-          this.allParameters.add(element);
+          this.allParameters.add(parameter);
         } catch (final CdmException e) {
           throw new RuntimeException(e);
         }
@@ -318,7 +307,8 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.traitName)) {
-      Logger.error(CdmTraitDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("traitName"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("traitName"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -351,7 +341,6 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
       copy = new CdmTraitDefinition(this.getCtx(), this.traitName, null);
     } else {
       copy = (CdmTraitDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setTraitName(this.getTraitName());
     }
 
@@ -359,7 +348,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
             (CdmTraitReference) (this.extendsTrait == null ? null : this.extendsTrait.copy(resOpt)));
     copy.allParameters = null;
     copy.setUgly(this.ugly);
-    copy.setAssociatedProperties(this.associatedProperties);
+    copy.setAssociatedProperties(this.associatedProperties != null ? new ArrayList<>(this.associatedProperties) : null);
     this.copyDef(resOpt, copy);
     return copy;
   }
@@ -370,6 +359,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
    * meant to be called externally at all. Please refrain from using it.
    * @param resOpt Resolved options
    * @param under attribute context
+   *
    * @return ResolvedAttributeSetBuilder
    */
   @Override

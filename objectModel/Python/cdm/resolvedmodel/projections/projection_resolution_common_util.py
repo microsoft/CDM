@@ -1,17 +1,20 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+from collections import OrderedDict
 from typing import Optional, Dict, List
 
-from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference, CdmEntityDefinition
+from cdm.enums import CdmAttributeContextType, CdmLogCode, CdmObjectType
+from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference, CdmEntityDefinition, CdmObject
 from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
 from cdm.resolvedmodel.projections.search_structure import SearchStructure
-from cdm.utilities import AttributeContextParameters
+from cdm.utilities import AttributeContextParameters, logger
+
+TAG = 'ProjectionResolutionCommonUtil'
 
 
 class ProjectionResolutionCommonUtil:
@@ -48,8 +51,7 @@ class ProjectionResolutionCommonUtil:
         proj_dir: 'ProjectionDirective',
         ctx: 'CdmCorpusContext',
         source: 'CdmEntityReference',
-        ras_source: 'ResolvedAttributeSet',
-        attr_ctx_param: 'AttributeContextParameters'
+        ras_source: 'ResolvedAttributeSet'
     ) -> Dict[str, 'ProjectionAttributeState']:
         """If a source is tagged as polymorphic source, get the list of original source"""
         poly_sources = {}
@@ -59,7 +61,15 @@ class ProjectionResolutionCommonUtil:
         source_def = source.fetch_object_definition(proj_dir._res_opt)  # type: CdmEntityDefinition
         for attr in source_def.attributes:
             if attr.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
-                ra_set = attr._fetch_resolved_attributes(proj_dir._res_opt, None)
+                # the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
+                # we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
+                # create this dummy attribute context so the resolution code works properly and discard it after.
+                attr_ctx_param = AttributeContextParameters  # type: AttributeContextParameters
+                attr_ctx_param._regarding = attr
+                attr_ctx_param._type = CdmAttributeContextType.PASS_THROUGH
+                attr_ctx_param._under = CdmAttributeContext(ctx, 'discard')
+
+                ra_set = attr._fetch_resolved_attributes(proj_dir._res_opt, attr_ctx_param)
                 for res_attr in ra_set._set:
                     # we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
                     # so steal them based on name
@@ -70,15 +80,10 @@ class ProjectionResolutionCommonUtil:
                     proj_attr_state._current_resolved_attribute = res_attr
                     proj_attr_state._previous_state_list = None
 
-                    # the key already exists, just add to the existing list
-                    if res_attr.resolved_name in poly_sources:
-                        existing_set = poly_sources[res_attr.resolved_name]
-                        existing_set.append(proj_attr_state)
-                        poly_sources[res_attr.resolved_name] = existing_set
-                    else:
-                        pas_list = []
-                        pas_list.append(proj_attr_state)
-                        poly_sources[res_attr.resolved_name] = pas_list
+                    # the key doesn't exist, initialize with an empty list first
+                    if res_attr.resolved_name not in poly_sources:
+                        poly_sources[res_attr.resolved_name] = []
+                    poly_sources[res_attr.resolved_name].append(proj_attr_state)
 
         return poly_sources
 
@@ -100,7 +105,7 @@ class ProjectionResolutionCommonUtil:
         """Gets the names of the top-level nodes in the projection state tree (for non-polymorphic scenarios) that match a set of attribute names """
         # This dictionary contains a mapping from the top-level name of an attribute
         # to the attribute name the top-level name was derived from (the name contained in the given list)
-        top_level_attribute_names = {}
+        top_level_attribute_names = OrderedDict()
 
         # Iterate through each attribute name in the list and search for their top-level names
         for attr_name in attr_names:
@@ -127,9 +132,9 @@ class ProjectionResolutionCommonUtil:
 
     @staticmethod
     def _create_foreign_key_linked_entity_identifier_trait_parameter(
-        proj_dir: 'ProjectionDirective',
-        corpus: 'CdmCorpusDefinition',
-        ref_found_list: List['ProjectionAttributeState']
+            proj_dir: 'ProjectionDirective',
+            corpus: 'CdmCorpusDefinition',
+            ref_found_list: List['ProjectionAttributeState']
     ) -> 'CdmEntityReference':
         """
         Create a constant entity that contains the source mapping to a foreign key.
@@ -148,13 +153,13 @@ class ProjectionResolutionCommonUtil:
         for ref_found in ref_found_list:
             res_attr = ref_found._current_resolved_attribute
 
-            if (res_attr and res_attr.target and res_attr.target.owner and
-                (res_attr.target.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF or res_attr.target.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF)):
+            if not res_attr.owner:
+                at_corpus_path = res_attr.target.at_corpus_path if isinstance(res_attr.target, CdmObject) else res_attr.resolved_name
+                logger.warning(corpus.ctx, TAG, '_create_foreign_key_linked_entity_identifier_trait_parameter', at_corpus_path, \
+                    CdmLogCode.WARN_PROJ_CREATE_FOREIGN_KEY_TRAITS, res_attr.resolved_name)
+            elif res_attr.target.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF or res_attr.target.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
                 # find the linked entity
-                owner = res_attr.target.owner
-
-                while owner and owner.object_type != CdmObjectType.ENTITY_DEF:
-                    owner = owner.owner
+                owner = res_attr.owner
                 
                 # find where the projection is defined
                 projection_doc = proj_dir._owner.in_document if proj_dir._owner else None
@@ -168,11 +173,11 @@ class ProjectionResolutionCommonUtil:
 
         if len(ent_ref_and_attr_name_list) > 0:
             constant_entity = corpus.make_object(CdmObjectType.CONSTANT_ENTITY_DEF)
-            constant_entity.entity_shape = corpus.make_ref(CdmObjectType.ENTITY_REF, 'entityGroupSet', True)
+            constant_entity.entity_shape = corpus.make_ref(CdmObjectType.ENTITY_REF, 'entitySet', True)
 
             constant_values = []
             for ent_and_attr_name in ent_ref_and_attr_name_list:
-                original_source_entity_attribute_name = proj_dir._original_source_entity_attribute_name or ''
+                original_source_entity_attribute_name = proj_dir._original_source_attribute_name or ''
                 constant_values.append([
                     ent_and_attr_name[0],
                     ent_and_attr_name[1],

@@ -27,12 +27,12 @@ class ProjectionAddTypeTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAddType')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAddTypeTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):
         """Test for creating a projection with an AddTypeAttribute operation on an entity attribute using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -74,7 +74,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
     @async_test
     async def test_entity_proj_using_object_model(self):
         """Test for creating a projection with an AddTypeAttribute operation on an entity definition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -115,7 +115,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
     @async_test
     async def test_conditional_proj_using_object_model(self):
         """Test for creating a projection with an AddTypeAttribute operation and a condition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_conditional_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -177,7 +177,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """AddTypeAttribute on an entity attribute"""
         test_name = 'test_add_type_attribute_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -203,7 +203,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """SelectedTypeAttribute on an entity attribute"""
         test_name = 'test_selected_type_attr'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -229,7 +229,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """AddTypeAttribute on an entity definition"""
         test_name = 'test_extends_entity_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -255,7 +255,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """SelectedTypeAttribute on an entity definition"""
         test_name = 'test_extends_entity'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -281,7 +281,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """AddTypeAttribute on an entity attribute (after a CombineAttributes)"""
         test_name = 'test_add_type_with_combine_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -305,7 +305,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """AddTypeAttribute with other operations in the same projection"""
         test_name = 'test_combine_ops_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -332,7 +332,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """Nested projections with AddTypeAttribute and other operations"""
         test_name = 'test_combine_ops_nested_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -344,8 +344,8 @@ class ProjectionAddTypeTest(unittest.TestCase):
         # Merge ["emailId, "phoneId, "socialId"] into "contactId", type attribute: "contactType",
         # rename ["contactId", "isPrimary"] as "new_{m}", include ["contactId", "new_isPrimary", "contactType"]
         self.assertEqual(3, len(resolved_entity.attributes))
-        self.assertEqual('new_isPrimary', resolved_entity.attributes[0].name)
-        self.assertEqual('new_contactId', resolved_entity.attributes[1].name)
+        self.assertEqual('new_contactId', resolved_entity.attributes[0].name)
+        self.assertEqual('new_isPrimary', resolved_entity.attributes[1].name)
         self.assertEqual('contactType', resolved_entity.attributes[2].name)
         self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[2].applied_traits[4].named_reference)
 
@@ -354,7 +354,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         """AddTypeAttribute with a condition"""
         test_name = 'test_conditional_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)

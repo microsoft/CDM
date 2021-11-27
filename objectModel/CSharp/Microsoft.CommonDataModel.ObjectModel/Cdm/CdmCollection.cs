@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -254,8 +254,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (this.Ctx.Corpus.isCurrentlyResolving == false)
             {
-                this.Ctx.Corpus.blockDeclaredPathChanges = true;
-#pragma warning disable CS0612 // Type or member is obsolete
                 cdmObject.Visit(string.Empty,
                     new VisitCallback
                     {
@@ -273,8 +271,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                     },
                     null);
-#pragma warning restore CS0612 // Type or member is obsolete
-                this.Ctx.Corpus.blockDeclaredPathChanges = false;
             }
         }
     }

@@ -23,6 +23,12 @@ export abstract class cdmObjectSimple extends CdmObjectBase {
     public createSimpleReference(resOpt: resolveOptions): CdmObjectReference {
         return undefined;
     }
+    /**
+     * @internal
+     */
+    public createPortableReference(resOpt: resolveOptions): CdmObjectReference {
+        return undefined;
+    }
     public isDerivedFrom(baseDef: string, resOpt: resolveOptions): boolean {
         return false;
     }

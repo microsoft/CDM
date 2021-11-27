@@ -1,14 +1,12 @@
 ﻿//Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-using Microsoft.CommonDataModel.ObjectModel.Cdm;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
+    using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The CDM base class for an adapter object that can read and write documents from a data source.
@@ -16,7 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     /// to manually copy data to the location where the Object Model is running. By deriving from this 
     /// this class, users can to create their own adapter if needed.
     /// </summary>
-    public abstract class StorageAdapterBase : StorageAdapter
+    public abstract class StorageAdapterBase
     {
         /// <summary>
         /// The CDM corpus context, gives information for the logger.

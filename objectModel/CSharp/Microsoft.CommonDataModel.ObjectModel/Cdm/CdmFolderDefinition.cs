@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -11,6 +11,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -18,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmFolderDefinition : CdmObjectDefinitionBase, CdmContainerDefinition
     {
+        private static readonly string Tag = nameof(CdmFolderDefinition);
         /// <summary>
         /// Mapping from document name to document implementation class.
         /// </summary>
@@ -52,8 +54,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the corpus path for the folder.
         /// </summary>
-        [Obsolete("Only for internal use")]
-        public string FolderPath { get; set; }
+        public string FolderPath { get; internal set; }
 
         /// <summary>
         /// Gets or sets the direct children for the directory folder.
@@ -66,8 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmDocumentCollection Documents { get; set; }
 
         /// <inheritdoc />
-        [Obsolete("Only for internal use")]
-        public string Namespace { get; set; }
+        public string Namespace { get; internal set; }
 
         /// <summary>
         /// Creates a folder instance from data.
@@ -92,7 +92,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.Name))
             {
-                Logger.Error(nameof(CdmFolderDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "Name" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -141,7 +142,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="adapter">The storage adapter where the document can be found.</param>
         /// <param name="forceReload">If true, reload the object from file and replace the current object with it.</param>
         /// <returns>The <see cref="CdmDocumentDefinition"/>.</returns>
-        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, StorageAdapter adapter, bool forceReload = false, ResolveOptions resOpt = null)
+        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, bool forceReload = false, ResolveOptions resOpt = null)
         {
             string docName;
             string remainingPath;
@@ -167,9 +168,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return doc;
                 }
                 // remove them from the caches since they will be back in a moment
-                if ((doc as CdmDocumentDefinition).IsDirty)
+                if (doc.IsDirty)
                 {
-                    Logger.Warning(nameof(CdmFolderDefinition), this.Ctx, $"discarding changes in document: {doc.Name}");
+                    Logger.Warning(this.Ctx, Tag, nameof(FetchDocumentFromFolderPathAsync), this.AtCorpusPath, CdmLogCode.WarnDocChangesDiscarded , doc.Name);
                 }
                 this.Documents.Remove(docName);
             }
@@ -228,7 +229,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (name.ToLowerInvariant() != childFolder.Name.ToLowerInvariant())
                 {
-                    Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Invalid path '{path}'", nameof(FetchChildFolderFromPath));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(FetchChildFolderFromPath), this.AtCorpusPath, CdmLogCode.ErrInvalidPath, path);
                     return null;
                 }
 
@@ -250,27 +251,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     break;
                 }
 
-                // check children folders
-                CdmFolderDefinition result = null;
-                if (this.ChildFolders != null)
-                {
-                    foreach (var folder in childFolder.ChildFolders)
-                    {
-                        if (childFolderName.ToLowerInvariant() == folder.Name.ToLowerInvariant())
-                        {
-                            // found our folder.
-                            result = folder;
-                            break;
-                        }
-                    }
-                }
-
-                if (result == null)
-                {
-                    result = childFolder.ChildFolders.Add(childFolderName);
-                }
-
-                childFolder = result;
+                // get next child folder.
+                childFolder = childFolder.ChildFolders.GetOrCreate(childFolderName);
             }
 
             if (makeFolder)

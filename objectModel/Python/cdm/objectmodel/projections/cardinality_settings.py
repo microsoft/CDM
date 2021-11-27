@@ -4,6 +4,7 @@
 import sys
 from typing import TYPE_CHECKING
 
+from cdm.enums import CdmLogCode
 from cdm.utilities.logging import logger
 from cdm.utilities.string_utils import StringUtils
 
@@ -21,6 +22,7 @@ class CardinalitySettings:
 
     def __init__(self, owner: 'CdmAttribute') -> None:
         """CardinalitySettings constructor"""
+        self._TAG = CardinalitySettings.__name__
         self._owner = owner
         self._ctx = owner.ctx if owner else None  # type: CdmCorpusContext
 
@@ -32,8 +34,6 @@ class CardinalitySettings:
         self._minimum_number = self._default_minimum  # type: int
         self._maximum_number = self._default_maximum  # type: int
 
-        self._TAG = CardinalitySettings.__name__
-
     @property
     def minimum(self) -> str:
         return self._minimum
@@ -42,8 +42,10 @@ class CardinalitySettings:
     def minimum(self, val: str) -> None:
         from cdm.objectmodel import CdmTypeAttributeDefinition
 
-        if not CardinalitySettings._is_minimum_valid(val):
-            logger.error(self._TAG, self._ctx, 'Invalid minimum cardinality {}.'.format(val))
+        if StringUtils.is_null_or_white_space(val):
+            logger.error(self._ctx, self._TAG, 'minimum', self._owner.at_corpus_path, CdmLogCode.ERR_PERSIST_CARDINALITY_PROP_MISSING)
+        elif not CardinalitySettings._is_minimum_valid(val):
+            logger.error(self._ctx, self._TAG, 'minimum', self._owner.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MIN_CARDINALITY, val)
         else:
             self._minimum = val
             self._minimum_number = self._get_number(self._minimum, self._default_minimum)
@@ -58,8 +60,10 @@ class CardinalitySettings:
 
     @maximum.setter
     def maximum(self, val: str) -> None:
-        if not CardinalitySettings._is_maximum_valid(val):
-            logger.error(self._TAG, self._ctx, 'Invalid maximum cardinality {}.'.format(val))
+        if StringUtils.is_null_or_white_space(val):
+            logger.error(self._ctx, self._TAG, 'maximum', self._owner.at_corpus_path, CdmLogCode.ERR_PERSIST_CARDINALITY_PROP_MISSING)
+        elif not CardinalitySettings._is_maximum_valid(val):
+            logger.error(self._ctx, self._TAG, 'maximum', self._owner.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MAX_CARDINALITY, val)
         else:
             self._maximum = val
             self._maximum_number = self._get_number(self._maximum, self._default_maximum)
@@ -73,7 +77,7 @@ class CardinalitySettings:
             number = int(val)
             return number
         except ValueError:
-            logger.error(self._TAG, self._ctx, 'Unable to get number for string \'{}\'. Falling to default value {}.'.format(val, default_value))
+            logger.error(self._ctx, self._TAG, '_get_number', self._owner.at_corpus_path, CdmLogCode.ERR_PROJ_STRING_ERROR, val, default_value)
             # defaults to min:max DefaultMinimum:DefaultMaximum in the invalid values
             return default_value
 

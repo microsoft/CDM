@@ -27,7 +27,7 @@ public class ExpressionTree {
     /**
      * Create a new node of the expression tree
      */
-    private Node createNewNode(Object value, PredefinedType type) {
+    private static Node createNewNode(Object value, PredefinedType type) {
         Node newNode = new Node();
 
         newNode.setValue(value);
@@ -48,7 +48,7 @@ public class ExpressionTree {
      * @return Node
      */
     @Deprecated
-    public Node constructExpressionTree(String expression) {
+    public static Node constructExpressionTree(String expression) {
         if (StringUtils.isNullOrTrimEmpty(expression)) {
             // caller to log info "Optional expression missing. Implicit expression will automatically apply." if returned null
             return null;
@@ -159,7 +159,7 @@ public class ExpressionTree {
      * Order of operators
      * Higher the priority - higher the precedence
      */
-    private int operatorPriority(String op) {
+    private static int operatorPriority(String op) {
         if (!textToTokenHash.containsKey(op)) {
             return 0;
         } else {
@@ -190,103 +190,123 @@ public class ExpressionTree {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param condition String
+     * @param inputValues InputValues
+     * @return boolean
+     */
+    @Deprecated
+    public static boolean evaluateCondition(String condition, InputValues inputValues) {
+        if (StringUtils.isNullOrTrimEmpty(condition)) {
+            return true;
+        }
+
+        Node treeRoot = constructExpressionTree(condition);
+        return (boolean) evaluateExpressionTree(treeRoot, inputValues);
+    }
+
+    /**
+     * Given an expression tree, evaluate the expression
+     *
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
      * @param top Node
-     * @param input InputValues
+     * @param inputValues InputValues
      * @return Object
      */
     @Deprecated
-    public static Object evaluateExpressionTree(Node top, InputValues input) {
-        if (top != null) {
-            Object leftReturn = false, rightReturn = false;
+    public static Object evaluateExpressionTree(Node top, InputValues inputValues) {
+        if (top == null) {
+            return false;
+        }
 
-            if (top.getLeft() != null) {
-                leftReturn = evaluateExpressionTree(top.getLeft(), input);
+        Object leftReturn = false, rightReturn = false;
+
+        if (top.getLeft() != null) {
+            leftReturn = evaluateExpressionTree(top.getLeft(), inputValues);
+        }
+
+        if (top.getRight() != null) {
+            rightReturn = evaluateExpressionTree(top.getRight(), inputValues);
+        }
+
+        if (top.getValueType() == PredefinedType.Custom) {
+            // check if number and return number
+            try {
+                int num = Integer.parseInt((String) top.getValue());
+                return num;
+            } catch (NumberFormatException e) {
             }
 
-            if (top.getRight() != null) {
-                rightReturn = evaluateExpressionTree(top.getRight(), input);
-            }
-
-            if (top.getValueType() == PredefinedType.Custom) {
-                // check if number and return number
-                try {
-                    int num = Integer.parseInt((String) top.getValue());
-                    return num;
-                } catch (NumberFormatException e) {
-                }
-
-                // check if bool and return bool
-                if (((String) top.getValue()).trim().equalsIgnoreCase("true") || ((String) top.getValue()).trim().equalsIgnoreCase("false")) {
-                    return Boolean.parseBoolean(((String) top.getValue()).trim());
-                }
-            }
-
-            if (!textToTokenHash.containsKey(top.getValue())) {
-                return top.getValue();
-            } else {
-                switch (textToTokenHash.get(top.getValue())) {
-                    case AND:
-                        return (leftReturn == null || rightReturn == null) ? false : (boolean) leftReturn && (boolean) rightReturn;
-                    case NOT:
-                        return (rightReturn == null) ? false : !((boolean) rightReturn);
-                    case OR:
-                        return (leftReturn == null || rightReturn == null) ? false : (boolean) leftReturn || (boolean) rightReturn;
-
-                    case GT:
-                        return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn > (int) rightReturn;
-                    case LT:
-                        return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn < (int) rightReturn;
-                    case GE:
-                        return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn >= (int) rightReturn;
-                    case LE:
-                        return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn <= (int) rightReturn;
-                    case EQ:
-                        return convertToTypeAndCheckEquality(leftReturn, rightReturn);
-                    case NE:
-                        return convertToTypeAndCheckInequality(leftReturn, rightReturn);
-
-                    case TRUE:
-                        return true;
-                    case FALSE:
-                        return false;
-
-                    case OPENPAREN:
-                    case CLOSEPAREN:
-                        return true;
-
-                    case DEPTH:
-                        return input.getNextDepth();
-                    case MAXDEPTH:
-                        return input.getMaxDepth();
-
-                    case ISARRAY:
-                        return input.getIsArray();
-                    case NOMAXDEPTH:
-                        return input.getNoMaxDepth();
-
-                    case MINCARDINALITY:
-                        return input.getMinCardinality();
-                    case MAXCARDINALITY:
-                        return input.getMaxCardinality();
-
-                    case NORMALIZED:
-                        return input.getNormalized();
-                    case REFERENCEONLY:
-                        return input.getReferenceOnly();
-                    case STRUCTURED:
-                        return input.getStructured();
-                    case VIRTUAL:
-                        return input.getIsVirtual();
-
-                    case ALWAYS:
-                        return true;
-
-                    default:
-                        return top.getValue();
-                }
+            // check if bool and return bool
+            if (((String) top.getValue()).trim().equalsIgnoreCase("true") || ((String) top.getValue()).trim().equalsIgnoreCase("false")) {
+                return Boolean.parseBoolean(((String) top.getValue()).trim());
             }
         }
-        return false;
+
+        if (!textToTokenHash.containsKey(top.getValue())) {
+            return top.getValue();
+        } else {
+            switch (textToTokenHash.get(top.getValue())) {
+                case AND:
+                    return (leftReturn == null || rightReturn == null) ? false : (boolean) leftReturn && (boolean) rightReturn;
+                case NOT:
+                    return (rightReturn == null) ? false : !((boolean) rightReturn);
+                case OR:
+                    return (leftReturn == null || rightReturn == null) ? false : (boolean) leftReturn || (boolean) rightReturn;
+
+                case GT:
+                    return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn > (int) rightReturn;
+                case LT:
+                    return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn < (int) rightReturn;
+                case GE:
+                    return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn >= (int) rightReturn;
+                case LE:
+                    return (leftReturn == null || rightReturn == null) ? false : (int) leftReturn <= (int) rightReturn;
+                case EQ:
+                    return convertToTypeAndCheckEquality(leftReturn, rightReturn);
+                case NE:
+                    return convertToTypeAndCheckInequality(leftReturn, rightReturn);
+
+                case TRUE:
+                    return true;
+                case FALSE:
+                    return false;
+
+                case OPENPAREN:
+                case CLOSEPAREN:
+                    return true;
+
+                case DEPTH:
+                    return inputValues.getNextDepth();
+                case MAXDEPTH:
+                    return inputValues.getMaxDepth();
+
+                case ISARRAY:
+                    return inputValues.getIsArray();
+                case NOMAXDEPTH:
+                    return inputValues.getNoMaxDepth();
+
+                case MINCARDINALITY:
+                    return inputValues.getMinCardinality();
+                case MAXCARDINALITY:
+                    return inputValues.getMaxCardinality();
+
+                case NORMALIZED:
+                    return inputValues.getNormalized();
+                case REFERENCEONLY:
+                    return inputValues.getReferenceOnly();
+                case STRUCTURED:
+                    return inputValues.getStructured();
+                case VIRTUAL:
+                    return inputValues.getIsVirtual();
+
+                case ALWAYS:
+                    return true;
+
+                default:
+                    return top.getValue();
+            }
+        }
     }
 
     /**

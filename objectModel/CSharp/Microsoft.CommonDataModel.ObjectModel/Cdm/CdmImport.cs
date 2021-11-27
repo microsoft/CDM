@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,9 +9,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmImport : CdmObjectSimple
     {
+        private static readonly string Tag = nameof(CdmImport);
         /// <summary>
         /// Gets or sets the document that has been resolved for this import.
         /// </summary>
@@ -74,7 +76,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.Moniker = this.Moniker;
             }
 
-            copy.Document = this.Document;
+            copy.Document = this.Document?.Copy(resOpt) as CdmDocumentDefinition;
             return copy;
         }
 
@@ -83,7 +85,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.CorpusPath))
             {
-                Logger.Error(nameof(CdmImport), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "CorpusPath" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "CorpusPath" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;

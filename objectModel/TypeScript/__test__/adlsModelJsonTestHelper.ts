@@ -69,7 +69,7 @@ export namespace adlsModelJsonTestHelper {
                 inputContent);
 
             // Update expected content and save to ActualOutput/Expected
-            let expectedContent: string = testHelper.getExpectedOutputFileContent(testSubPath, testName, fileName);
+            let expectedContent: string = testHelper.getExpectedOutputFileContent(testSubPath, testName, fileName, true);
             expectedContent = replacePlaceholder(expectedContent, rootPath, stringToAddSuffix, suffix);
 
             const expectedFolderPath: string = getActualSubFolderPath(testSubPath, testName, expectedFolderName);

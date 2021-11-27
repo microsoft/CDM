@@ -3,7 +3,7 @@
 
 from typing import TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.enums.cdm_operation_type import OperationTypeConvertor, CdmOperationType
 from cdm.utilities.logging import logger
 from cdm.utilities.string_utils import StringUtils
@@ -17,7 +17,7 @@ def _make_data_object(object_type: 'CdmObjectType'):
     """Instantiates a data object based on the object type."""
     from cdm.persistence.cdmfolder.types import OperationAddAttributeGroup, OperationAddCountAttribute, OperationAddSupportingAttribute, \
         OperationAddTypeAttribute, OperationArrayExpansion, OperationCombineAttributes, OperationExcludeAttributes, OperationIncludeAttributes, \
-        OperationRenameAttributes, OperationReplaceAsForeignKey
+        OperationRenameAttributes, OperationReplaceAsForeignKey, OperationAlterTraits, OperationAddArtifactAttribute
     data_map = {
         CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF: lambda: OperationAddAttributeGroup(),
         CdmObjectType.OPERATION_ADD_COUNT_ATTRIBUTE_DEF: lambda: OperationAddCountAttribute(),
@@ -29,6 +29,8 @@ def _make_data_object(object_type: 'CdmObjectType'):
         CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF: lambda: OperationIncludeAttributes(),
         CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF: lambda: OperationRenameAttributes(),
         CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF: lambda: OperationReplaceAsForeignKey(),
+        CdmObjectType.OPERATION_ALTER_TRAITS_DEF: lambda: OperationAlterTraits(),
+        CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF: lambda: OperationAddArtifactAttribute(),
     }
 
     return data_map.get(object_type)()
@@ -44,7 +46,7 @@ class OperationBasePersistence:
         operation_type = OperationTypeConvertor._from_object_type(object_type)  # type: CdmOperationType
         operation_name = OperationTypeConvertor._operation_type_to_string(CdmOperationType.COMBINE_ATTRIBUTES)
         if data.type and not StringUtils.equals_with_ignore_case(data.type, operation_name):
-            logger.error(operation_name, ctx, '$type {} is invalid for this operation.'.format(data.type))
+            logger.error(ctx, operation_name, OperationBasePersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_INVALID_OPS_TYPE, data.type)
         else:
             operation.type = operation_type
 

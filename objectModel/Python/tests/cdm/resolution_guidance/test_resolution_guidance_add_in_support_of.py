@@ -10,7 +10,7 @@ class ResolutionGuidanceAddInSupportOfTest(common_test.CommonTest):
     @async_test
     async def test_add_in_support_of(self):
         """Resolution Guidance Test - AddInSupportOf"""
-        test_name = 'TestAddInSupportOf'
+        test_name = 'test_add_in_support_of'
         entity_name = 'Product'
 
         expectedContext_default = AttributeContextExpectedValue()
@@ -59,7 +59,7 @@ class ResolutionGuidanceAddInSupportOfTest(common_test.CommonTest):
     @async_test
     async def test_add_in_support_of_with_is_correlated_with(self):
         """Resolution Guidance Test - AddInSupportOf with IsCorrelatedWith"""
-        test_name = 'TestAddInSupportOfWithIsCorrelatedWith'
+        test_name = 'test_add_in_support_of_with_is_correlated_with'
         entity_name = 'Product'
 
         expectedContext_default = AttributeContextExpectedValue()

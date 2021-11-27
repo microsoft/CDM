@@ -35,7 +35,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRefreshDataPartitionPatterns");
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/patternManifest.manifest.cdm.json");
 
-            var partitionEntity = cdmManifest.Entities.AllItems[0];
+            var partitionEntity = cdmManifest.Entities.AllItems[1];
             Assert.AreEqual(partitionEntity.DataPartitions.Count, 1);
 
             var timeBeforeLoad = DateTime.Now;
@@ -130,11 +130,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
                     }
                 }
             }, CdmStatusLevel.Warning);
+
             await cdmManifest.FileStatusCheckAsync();
             Assert.AreEqual(1, errorLogged);
             Assert.AreEqual(cdmManifest.Entities[0].DataPartitions.Count, 0);
             // make sure the last check time is still being set
             Assert.IsNotNull(cdmManifest.Entities[0].DataPartitionPatterns[0].LastFileStatusCheckTime);
+        }
+
+        /// <summary>
+        /// Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
+        /// </summary>
+        [TestMethod]
+        public async Task TestPatternWithDifferentNamespace()
+        {
+            string testName = "TestPatternWithDifferentNamespace";
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            LocalAdapter localAdapter = (LocalAdapter)cdmCorpus.Storage.FetchAdapter("local");
+            var localPath = localAdapter.FullRoot;
+            cdmCorpus.Storage.Mount("other", new LocalAdapter(Path.Combine(localPath, "other")));
+            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/patternManifest.manifest.cdm.json");
+
+            await cdmManifest.FileStatusCheckAsync();
+
+            Assert.AreEqual(1, cdmManifest.Entities[0].DataPartitions.Count);
         }
 
         /// <summary>
@@ -176,7 +195,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
                 {
-                    if (message.Equals("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | FileStatusCheckAsync"))
+                    if (message.Contains("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | FileStatusCheckAsync"))
                         patternWithGlobAndRegex++;
                 }
             }, CdmStatusLevel.Warning);
@@ -391,7 +410,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
                     Assert.AreEqual(statusLevel, CdmStatusLevel.Error, "Error level message should have been reported");
                     Assert.IsTrue(
                         message == "StorageManager | The object path cannot be null or empty. | CreateAbsoluteCorpusPath" ||
-                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetLastModifiedTimeAsyncFromPartitionPath",
+                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetLastModifiedTimeFromPartitionPathAsync",
                        "Unexpected error message received");
                 }
             }, CdmStatusLevel.Warning);

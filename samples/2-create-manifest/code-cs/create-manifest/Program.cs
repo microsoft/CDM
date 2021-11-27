@@ -3,16 +3,13 @@
 
 namespace create_manifest
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Newtonsoft.Json.Linq;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
 
     /*
      * ---------------------------------------------------------------------------------------------------------------------------------------
@@ -34,6 +31,15 @@ namespace create_manifest
         {
             // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
             var cdmCorpus = new CdmCorpusDefinition();
+
+            // set callback to receive error and warning logs.
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Console.WriteLine(message);
+                }
+            }, CdmStatusLevel.Warning);
 
             Console.WriteLine("Configure storage adapters");
 
@@ -100,7 +106,7 @@ namespace create_manifest
                 part.Location = cdmCorpus.Storage.CreateRelativeCorpusPath(location, manifestResolved);
 
                 // Add trait to partition for csv params
-                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false);
+                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false) as CdmTraitReference;
                 csvTrait.Arguments.Add("columnHeaders", "true");
                 csvTrait.Arguments.Add("delimiter", ",");
                 

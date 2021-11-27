@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Newtonsoft.Json;
@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
 {
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The entity to entity relationship object that will be populated in a manifest.
@@ -41,5 +43,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         /// </summary>
         [JsonProperty("toEntityAttribute", NullValueHandling = NullValueHandling.Ignore)]
         public string ToEntityAttribute { get; set; }
+
+        /// <summary>
+        /// Gets or sets the purpose resolved traits that represent relationship meanings.
+        /// </summary>
+        [JsonProperty("exhibitsTraits", NullValueHandling = NullValueHandling.Ignore)]
+        public List<JToken> ExhibitsTraits { get; set; }
     }
 }

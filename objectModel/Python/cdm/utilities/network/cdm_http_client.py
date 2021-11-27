@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import asyncio
+import json
 import urllib
 import urllib.parse
 from datetime import datetime
@@ -10,11 +11,22 @@ from typing import Optional, TYPE_CHECKING
 from cdm.utilities.network.cdm_http_response import CdmHttpResponse
 from cdm.utilities.network.cdm_number_of_retries_exceeded_exception import CdmNumberOfRetriesExceededException
 from cdm.utilities.network.cdm_timed_out_exception import CdmTimedOutException
-from cdm.utilities import ResolveOptions, logger
+from cdm.utilities import logger
+
 
 if TYPE_CHECKING:
     from cdm.utilities.network.cdm_http_request import CdmHttpRequest
     from cdm.objectmodel import CdmCorpusContext
+
+def urlopen_wrapper(request, timeout):
+    return urllib.request.urlopen(request, timeout=timeout)
+    
+
+async def in_thread_urlopen(request, timeout):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(
+            None, urlopen_wrapper, request, timeout)
+
 
 class CdmHttpClient:
     """
@@ -27,6 +39,7 @@ class CdmHttpClient:
     """
 
     def __init__(self, api_endpoint: str = None) -> None:
+        self._TAG = CdmHttpClient.__name__
         self.headers = {}  # type : Dict[str, str]
         self._api_endpoint = api_endpoint  # type : str
 
@@ -43,10 +56,16 @@ class CdmHttpClient:
         for key in self.headers:
             cdm_request.headers[key] = self.headers[key]
 
-        # TODO: Figure out how to set maximum timeout on the whole method.
-        return await self._send_async_helper(cdm_request, callback, ctx)
+        cdm_request._start()
 
-    async def _send_async_helper(self, cdm_request: 'CdmHttpRequest', callback=None, ctx: Optional['CdmCorpusContext'] = None) -> 'CdmHttpResponse':
+        try:
+            return await self._send_async_helper(cdm_request, callback, ctx)
+        except Exception as exc:
+            if isinstance(exc, CdmTimedOutException) and cdm_request._maximum_timeout_exceeded:
+                raise CdmTimedOutException('Maximum timeout exceeded.')
+            raise exc
+
+    async def _send_async_helper(self, cdm_request: 'CdmHttpRequest', callback, ctx: Optional['CdmCorpusContext']) -> 'CdmHttpResponse':
         """
         Sends a CDM request with the retry logic helper function.
         :param cdm_request: The CDM Http request.
@@ -72,7 +91,7 @@ class CdmHttpClient:
 
         # urllib.request.Request() expects 'data' to be in bytes, so we convert to bytes here.
         if data is not None:
-            data = data.encode("utf-8")
+            data = data.encode('utf-8')
         request = urllib.request.Request(full_url, method=cdm_request.method, data=data)
 
         for key in cdm_request.headers:
@@ -87,13 +106,27 @@ class CdmHttpClient:
             try:
                 start_time = datetime.now()
                 if ctx is not None:
-                    logger.info(self.__class__.__name__, ctx, 'Sending request: {}, request type: {}, request url: {}, retry number: {}.'.format(cdm_request.request_id, request.method, cdm_request._strip_sas_sig(), retry_number), self._send_async_helper)
+                    logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                                'Sending request: {}, request type: {}, request url: {}, retry number: {}.'.format(
+                                    cdm_request.request_id, request.method, cdm_request._strip_sas_sig(), retry_number))
+
+                if cdm_request._maximum_timeout_exceeded:
+                    raise Exception('timed out')
+
+                # Calculate how much longer we have before hitting the maximum timout.
+                max_timeout = cdm_request._time_for_maximum_timeout
+
+                # The request should timeout either for its own timeout or if maximum timeout is reached.
+                timeout = min(max_timeout, cdm_request.timeout) / 1000
+
                 # Send the request and convert timeout to seconds from milliseconds.
-                with urllib.request.urlopen(request, timeout=cdm_request.timeout / 1000) as response:  # type: http.client.HTTPResponse
+                with await in_thread_urlopen(request, timeout=timeout) as response:
                     if response is not None:
                         end_time = datetime.now()
                         if ctx is not None:
-                            logger.info(self.__class__.__name__, ctx, 'Reponse for request {} received with elapsed time: {} ms.'.format(cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0), self._send_async_helper)
+                            logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                                        'Response for request {} received with elapsed time: {} ms.'.format(
+                                            cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0))
                         cdm_response = CdmHttpResponse()
                         encoded_content = response.read()
 
@@ -110,24 +143,41 @@ class CdmHttpClient:
 
                         if hasattr(response, 'getheaders'):
                             cdm_response.response_headers = dict(response.getheaders())
-            except urllib.error.URLError as exception:
-                has_failed = True
-                if callback is None or retry_number == cdm_request.number_of_retries:
-                    if retry_number != 0:
-                        raise CdmNumberOfRetriesExceededException(exception)
-                    else:
-                        if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out':
-                            if ctx is not None:
-                                logger.info(self.__class__.__name__, ctx, 'Request {} timeout after {} s.'.format(cdm_request.request_id, cdm_request.timeout/1000), self._send_async_helper)
-                            raise CdmTimedOutException('Request timeout.')
-                        else:
-                            raise exception
             except Exception as exception:
+                end_time = datetime.now()
                 has_failed = True
-                raise
+
+                if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out' and ctx is not None:
+                    logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                                        'Request {} timeout after {} ms.'.format(
+                                            cdm_request.request_id,
+                                            (end_time - start_time).total_seconds() * 1000.0))
+
+                # If the server returned an error like, 404, 500...
+                if isinstance(exception, urllib.error.URLError):
+                    if ctx is not None:
+                        logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                                    'Response for request {} received with elapsed time: {} ms.'.format(
+                                        cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0))
+
+                    cdm_response = CdmHttpResponse()
+                    if hasattr(exception, 'reason'):
+                        cdm_response.reason = exception.reason
+                    if hasattr(exception, 'status'):
+                        cdm_response.status_code = exception.status
+                    cdm_response.is_successful = False
+
+                if callback is None or retry_number == cdm_request.number_of_retries:
+                    if retry_number != 0 and not cdm_request._maximum_timeout_exceeded:
+                        raise CdmNumberOfRetriesExceededException(exception)
+                
+                    if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out':
+                        raise CdmTimedOutException('Request timeout.')
+
+                    raise exception
 
             # Check whether we have a callback function set and whether this is not our last retry.
-            if callback is not None and retry_number != cdm_request.number_of_retries:
+            if callback is not None and retry_number != cdm_request.number_of_retries and not cdm_request._maximum_timeout_exceeded:
                 # Call the callback function with the retry numbers starting from 1.
                 wait_time = callback(cdm_response, has_failed, retry_number + 1)  # type: int
 
@@ -141,11 +191,13 @@ class CdmHttpClient:
                 if cdm_response is not None:
                     return cdm_response
 
-                if retry_number == 0:
-                    return None
+                if retry_number < cdm_request.number_of_retries or cdm_request._maximum_timeout_exceeded:
+                    raise CdmTimedOutException('Request timeout.')
 
+                # If response doesn't exist repeatedly, just throw that the number of retries has exceeded (we don't have any other information).
                 raise CdmNumberOfRetriesExceededException()
 
+        #  Should never come here, but just in case throw this exception.
         raise CdmNumberOfRetriesExceededException()
 
     def _combine_urls(self, url1: str, url2: str) -> str:

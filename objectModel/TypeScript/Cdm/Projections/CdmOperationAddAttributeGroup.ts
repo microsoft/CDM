@@ -6,11 +6,11 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
-    Errors,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
@@ -18,6 +18,7 @@ import {
     ResolvedAttribute,
     ResolvedAttributeSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -41,9 +42,16 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy = new CdmOperationAddAttributeGroup(this.ctx);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
+
+        const copy: CdmOperationAddAttributeGroup = !host ? new CdmOperationAddAttributeGroup(this.ctx) : host as CdmOperationAddAttributeGroup;
+
         copy.attributeGroupName = this.attributeGroupName;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -72,13 +80,7 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -89,14 +91,7 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationAddAttributeGroup';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -120,7 +115,7 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
             type: cdmAttributeContextType.operationAddAttributeGroup,
             name: `operation/index${this.index}/${this.getName()}`
         };
-        const attrCtxOpAddAttrGroup: CdmAttributeContext  = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpAddAttrGroupParam);
+        const attrCtxOpAddAttrGroup: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpAddAttrGroupParam);
 
         // Create a new attribute context for the attribute group we will create
         const attrCtxAttrGroupParam: AttributeContextParameters = {
@@ -128,7 +123,7 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
             type: cdmAttributeContextType.attributeDefinition,
             name: this.attributeGroupName
         };
-        const attrCtxAttrGroup: CdmAttributeContext  = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxAttrGroupParam);
+        const attrCtxAttrGroup: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxAttrGroupParam);
 
         // Create a new resolve attribute set builder that will be used to combine all the attributes into one set
         const rasb = new ResolvedAttributeSetBuilder();
@@ -136,15 +131,20 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
         // Iterate through all the projection attribute states generated from the source's resolved attributes
         // Each projection attribute state contains a resolved attribute that it is corresponding to
         for (const currentPAS of projCtx.currentAttributeStateSet.states) {
-            // Create an attribute set build that owns one resolved attribute
-            const attributeRasb = new ResolvedAttributeSetBuilder();
-            attributeRasb.ownOne(currentPAS.currentResolvedAttribute);
+            // Create a copy of the resolved attribute
+            const resolvedAttribute: ResolvedAttribute = currentPAS.currentResolvedAttribute.copy();
 
-            // Merge the attribute set containing one attribute with the one holding all the attributes
-            rasb.mergeAttributes(attributeRasb.ras);
+            // Add the attribute to the resolved attribute set
+            rasb.ras.merge(resolvedAttribute);
 
             // Add each attribute's attribute context to the resolved attribute set attribute context
-            attrCtxAttrGroup.contents.push(currentPAS.currentResolvedAttribute.attCtx);
+            const attrParam: AttributeContextParameters = {
+                under: attrCtxAttrGroup,
+                type: cdmAttributeContextType.attributeDefinition,
+                name: resolvedAttribute.resolvedName
+            };
+            resolvedAttribute.attCtx = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrParam)
+            resolvedAttribute.attCtx.addLineage(currentPAS.currentResolvedAttribute.attCtx)
         }
 
         // Create a new resolved attribute that will hold the attribute set containing all the attributes

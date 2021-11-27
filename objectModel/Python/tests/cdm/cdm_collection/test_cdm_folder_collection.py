@@ -13,8 +13,8 @@ class CdmFolderCollectionTests(unittest.TestCase):
         manifest = generate_manifest('C:\\Root\\Path')
 
         parent_folder = CdmFolderDefinition(manifest.ctx, 'ParentFolder')
-        parent_folder.namespace = 'TheNamespace'
-        parent_folder.folder_path = 'ParentFolderPath/'
+        parent_folder._namespace = 'TheNamespace'
+        parent_folder._folder_path = 'ParentFolderPath/'
 
         child_folders = parent_folder.child_folders
         child_folder = CdmFolderDefinition(manifest.ctx, 'ChildFolder1')
@@ -27,16 +27,16 @@ class CdmFolderCollectionTests(unittest.TestCase):
         self.assertEqual(manifest.ctx, child_folder.ctx)
         self.assertEqual('ChildFolder1', child_folder.name)
         self.assertEqual(parent_folder, child_folder.owner)
-        self.assertEqual('TheNamespace', child_folder.namespace)
-        self.assertEqual(parent_folder.folder_path + child_folder.name + '/', child_folder.folder_path)
+        self.assertEqual('TheNamespace', child_folder._namespace)
+        self.assertEqual(parent_folder._folder_path + child_folder.name + '/', child_folder._folder_path)
 
     @async_test
     def test_cdm_trait_collection_insert(self):
         manifest = generate_manifest('C:\\Root\\Path')
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
         parent_folder.in_document = manifest
-        parent_folder.namespace = 'TheNamespace'
-        parent_folder.folder_path = 'ParentFolderPath/'
+        parent_folder._namespace = 'TheNamespace'
+        parent_folder._folder_path = 'ParentFolderPath/'
 
         child_folders = parent_folder.child_folders
         child_folder = CdmFolderDefinition(manifest.ctx, 'ChildFolder1')
@@ -55,15 +55,15 @@ class CdmFolderCollectionTests(unittest.TestCase):
         self.assertEqual(manifest.ctx, child_folder.ctx)
         self.assertEqual('ChildFolder1', child_folder.name)
         self.assertEqual(parent_folder, child_folder.owner)
-        self.assertEqual('TheNamespace', child_folder.namespace)
-        self.assertEqual(parent_folder.folder_path + child_folder.name + '/', child_folder.folder_path)
+        self.assertEqual('TheNamespace', child_folder._namespace)
+        self.assertEqual(parent_folder._folder_path + child_folder.name + '/', child_folder._folder_path)
 
     @async_test
     def test_folder_collection_add_with_name_parameter(self):
         manifest = generate_manifest('C:\\Root\\Path')
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
-        parent_folder.namespace = 'TheNamespace'
-        parent_folder.folder_path = 'ParentFolderPath/'
+        parent_folder._namespace = 'TheNamespace'
+        parent_folder._folder_path = 'ParentFolderPath/'
 
         child_folders = parent_folder.child_folders
 
@@ -74,15 +74,15 @@ class CdmFolderCollectionTests(unittest.TestCase):
         self.assertEqual(manifest.ctx, child_folder.ctx)
         self.assertEqual('ChildFolder1', child_folder.name)
         self.assertEqual(parent_folder, child_folder.owner)
-        self.assertEqual('TheNamespace', child_folder.namespace)
-        self.assertEqual(parent_folder.folder_path + child_folder.name + '/', child_folder.folder_path)
+        self.assertEqual('TheNamespace', child_folder._namespace)
+        self.assertEqual(parent_folder._folder_path + child_folder.name + '/', child_folder._folder_path)
 
     @async_test
     def test_folder_collection_add_range(self):
         manifest = generate_manifest('C:\\Root\\Path')
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
-        parent_folder.namespace = 'TheNamespace'
-        parent_folder.folder_path = 'ParentFolderPath/'
+        parent_folder._namespace = 'TheNamespace'
+        parent_folder._folder_path = 'ParentFolderPath/'
 
         child_folders = parent_folder.child_folders
         child_folder = CdmFolderDefinition(manifest.ctx, 'ChildFolder1')
@@ -97,21 +97,21 @@ class CdmFolderCollectionTests(unittest.TestCase):
         self.assertEqual(manifest.ctx, child_folder.ctx)
         self.assertEqual('ChildFolder1', child_folder.name)
         self.assertEqual(parent_folder, child_folder.owner)
-        self.assertEqual('TheNamespace', child_folder.namespace)
-        self.assertEqual(parent_folder.folder_path + child_folder.name + '/', child_folder.folder_path)
+        self.assertEqual('TheNamespace', child_folder._namespace)
+        self.assertEqual(parent_folder._folder_path + child_folder.name + '/', child_folder._folder_path)
 
         self.assertEqual(child_folder2, child_folders[1])
         self.assertEqual('ChildFolder2', child_folder2.name)
         self.assertEqual(parent_folder, child_folder2.owner)
-        self.assertEqual('TheNamespace', child_folder2.namespace)
-        self.assertEqual(parent_folder.folder_path + child_folder2.name + '/', child_folder2.folder_path)
+        self.assertEqual('TheNamespace', child_folder2._namespace)
+        self.assertEqual(parent_folder._folder_path + child_folder2.name + '/', child_folder2._folder_path)
 
     @async_test
     def test_folder_collection_remove(self):
         manifest = generate_manifest('C:\\Root\\Path')
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
-        parent_folder.namespace = 'TheNamespace'
-        parent_folder.folder_path = 'ParentFolderPath/'
+        parent_folder._namespace = 'TheNamespace'
+        parent_folder._folder_path = 'ParentFolderPath/'
 
         child_folders = parent_folder.child_folders
         child_folder = CdmFolderDefinition(manifest.ctx, 'ChildFolder1')

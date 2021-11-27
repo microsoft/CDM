@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -146,7 +146,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             document.Namespace = this.Owner.Namespace;
             MakeDocumentDirty(); // set the document to dirty so it will get saved in the new folder location if saved
             this.Owner.Corpus.AddDocumentObjects(this.Owner, document);
-            this.Owner.DocumentLookup.Add(document.Name, document);
         }
 
         /// <summary>

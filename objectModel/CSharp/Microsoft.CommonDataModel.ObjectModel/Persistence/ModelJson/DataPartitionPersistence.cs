@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -16,6 +16,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     class DataPartitionPersistence
     {
+        private static readonly string Tag = nameof(DataPartitionPersistence);
+
         public static async Task<CdmDataPartitionDefinition> FromData(CdmCorpusContext ctx, Partition obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList, CdmFolderDefinition documentFolder)
         {
             var partition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, obj.Name);
@@ -32,7 +34,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (string.IsNullOrEmpty(partition.Location))
             {
-                Logger.Warning(nameof(DataPartitionPersistence), ctx as ResolveContext, $"Couldn't find data partition's location for partition {partition.Name}.", nameof(FromData));
+                Logger.Warning(ctx as ResolveContext, Tag, nameof(FromData), null, CdmLogCode.WarnPersistPartitionLocMissing, partition.Name);
             }
 
             if (obj.IsHidden == true)
@@ -48,8 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 var csvFormatTrait = Utils.CreateCsvTrait(obj.FileFormatSettings, ctx);
 
                 if (csvFormatTrait == null) {
-                    Logger.Error(nameof(DataPartitionPersistence), ctx as ResolveContext, "There was a problem while processing csv format settings inside data partition.");
-
+                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCsvProcessingError);
                     return null;
                 }
 
@@ -75,9 +76,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 LastFileStatusCheckTime = instance.LastFileStatusCheckTime
             };
 
+            if (result.Name == null)
+            {
+                Logger.Warning(instance.Ctx, Tag, instance.AtCorpusPath, nameof(ToData), CdmLogCode.WarnPersistPartitionNameNull);
+                result.Name = "";
+            }
+
             if (string.IsNullOrEmpty(result.Location))
             {
-                Logger.Warning(nameof(DataPartitionPersistence), instance.Ctx, $"Couldn't find data partition's location for partition {result.Name}.", nameof(ToData));
+                Logger.Warning(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.WarnPersistPartitionLocMissing, result.Name);
             }
 
             Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
@@ -102,9 +109,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 }
                 else
                 {
-                    Logger.Error(nameof(DataPartitionPersistence), instance.Ctx,
-                        "There was a problem while processing csv format trait inside data partition.");
-
+                    Logger.Error(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistCsvProcessingError);
                     return null;
                 }
             }

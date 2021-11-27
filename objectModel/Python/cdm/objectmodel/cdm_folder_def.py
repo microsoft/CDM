@@ -4,7 +4,9 @@
 from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import logger, Errors
+from cdm.utilities import logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_document_collection import CdmDocumentCollection
@@ -22,16 +24,16 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmFolderDefinition.__name__
         #  the folder name.
         self.name = name  # type: str
 
-        self.namespace = None  # type: Optional[str]
 
-        self.folder_path = '{}/'.format(name)  # type: Optional[str]
+        # --- internal ---
 
-        # --- Internal ---
 
         self._document_lookup = {}  # type: Dict[str, CdmDocumentDefinition]
+        self._folder_path = '{}/'.format(name)  # type: Optional[str]
 
         # the direct children for the directory folder.
         self._child_folders = CdmFolderCollection(self.ctx, self)  # type: CdmFolderCollection
@@ -39,17 +41,25 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         # the child documents for the directory folder.
         self._documents = CdmDocumentCollection(self.ctx, self)  # type: CdmDocumentCollection
 
-        self._corpus = None  # type: CdmDocumentDefinition
+        self._corpus = None  # type: CdmCorpusDefinition
+        self._namespace = None  # type: Optional[str]
 
-        self._TAG = CdmFolderDefinition.__name__
 
     @property
     def at_corpus_path(self) -> str:
-        if self.namespace is None:
+        if self._namespace is None:
             # We're not under any adapter (not in a corpus), so return special indicator.
-            return 'NULL:{}'.format(self.folder_path)
+            return 'NULL:{}'.format(self._folder_path)
 
-        return '{}:{}'.format(self.namespace, self.folder_path)
+        return '{}:{}'.format(self._namespace, self._folder_path)
+
+    @property
+    def folder_path(self) -> str:
+        return self._folder_path
+
+    @property
+    def namespace(self) -> str:
+        return self._namespace
 
     @property
     def child_folders(self) -> 'CdmFolderCollection':
@@ -71,7 +81,8 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
 
     def validate(self) -> bool:
         if not bool(self.name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            missing_fields = ['name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, missing_fields)
             return False
         return True
 
@@ -100,7 +111,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
             remaining_path = remaining_path[first + 1:]
 
             if name.lower() != child_folder.name.lower():
-                logger.error(self._TAG, self.ctx, 'Invalid path \'{}\''.format(path), '_fetch_child_folder_from_path')
+                logger.error(self.ctx, self._TAG, '_fetch_child_folder_from_path', self.at_corpus_path, CdmLogCode.ERR_INVALID_PATH, path)
                 return None
 
             # the end?
@@ -114,31 +125,20 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
             else:
                 # the last part of the path will be considered part of the part depending on the make_folder flag.
                 break
-
-            # check children folders
-            result = None
-            if child_folder.child_folders:
-                for folder in child_folder.child_folders:
-                    if child_folder_name == folder.name:
-                        result = folder
-                        break
-            if not result:
-                result = child_folder.child_folders.append(child_folder_name)
-
-            child_folder = result
+            
+            # get next child folder.
+            child_folder = child_folder.child_folders._get_or_create(child_folder_name)
 
         if make_folder:
             child_folder = child_folder.child_folders.append(remaining_path)
 
         return child_folder
 
-    async def _fetch_document_from_folder_path_async(self, document_path: str, adapter: 'StorageAdapterBase',
-                                                     force_reload: bool, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDocumentDefinition':
+    async def _fetch_document_from_folder_path_async(self, document_path: str, force_reload: bool, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDocumentDefinition':
         """Gets the document from folder path.
 
         arguments:
-        path: The path.
-        adapter: The storage adapter where the document can be found."""
+        path: The path."""
 
         doc_name = None
         first = document_path.find('/')
@@ -158,7 +158,8 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
 
             # remove them from the caches since they will be back in a moment
             if doc._is_dirty:
-                logger.warning(self._TAG, self.ctx, 'discarding changes in document: {}'.format(doc.name))
+                logger.warning(self.ctx, self._TAG, CdmFolderDefinition._fetch_document_from_folder_path_async.__name__, self.at_corpus_path,
+                               CdmLogCode.WARN_DOC_CHANGES_DISCARDED , doc.name)
 
             self.documents.remove(doc_name)
 

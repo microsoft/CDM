@@ -6,9 +6,10 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public class TraitReferenceDefinition {
-    public Object traitReference;
-    public ArrayNode arguments;
-    public ArrayNode appliedTraits;
+    private Object traitReference;
+    private ArrayNode arguments;
+    private ArrayNode appliedTraits;
+    private Boolean optional;
 
     public Object getTraitReference() {
         return traitReference;
@@ -32,5 +33,13 @@ public class TraitReferenceDefinition {
 
     public void setAppliedTraits(final ArrayNode appliedTraits) {
         this.appliedTraits = appliedTraits;
+    }
+
+    public Boolean getOptional() {
+        return optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        this.optional = optional;
     }
 }

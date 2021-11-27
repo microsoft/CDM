@@ -1,0 +1,109 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Person",
+            "hasAttributes": [
+                {
+                    "name": "contactAt",
+                    "isPolymorphicSource": true,
+                    "purpose": {
+                        "purposeReference": "hasA",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "means.forward",
+                                "arguments": [
+                                    "Description for the forward direction in the relationship."
+                                ]
+                            },
+                            {
+                                "traitReference": "means.backward",
+                                "arguments": [
+                                    "Description for the backward direction in the relationship."
+                                ]
+                            }
+                        ]
+                    },
+                    "entity": {
+                        "operations": [
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "isPrimary",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "PolyFK_isPrimary"
+                                }
+                            },
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "userId",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "PolyFK_userId"
+                                }
+                            }
+                        ],
+                        "source": {
+                            "entityReference": {
+                                "entityName": "ContactKinds",
+                                "hasAttributes": [
+                                    {
+                                        "name": "emailKind",
+                                        "entity": "Email",
+                                        "resolutionGuidance": {
+                                            "renameFormat": "{m}"
+                                        }
+                                    },
+                                    {
+                                        "name": "phoneKind",
+                                        "entity": "Phone",
+                                        "resolutionGuidance": {
+                                            "renameFormat": "{m}"
+                                        }
+                                    },
+                                    {
+                                        "name": "socialKind",
+                                        "entity": "Social",
+                                        "resolutionGuidance": {
+                                            "renameFormat": "{m}"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "traitName": "means.backward",
+            "explanation": "the attribute represents B->A.",
+            "hasParameters": [
+              {
+                  "name": "test",
+                  "dataType": "string",
+                  "explanation": "The description of the relationship B->A",
+                  "required": false
+              }
+            ]
+        },
+        {
+            "traitName": "means.forward",
+            "explanation": "the attribute represents A->B.",
+            "hasParameters": [
+              {
+                  "name": "test",
+                  "dataType": "string",
+                  "explanation": "The description of the relationship A->B",
+                  "required": false
+              }
+            ]
+        }
+    ]
+}

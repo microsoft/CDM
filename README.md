@@ -1,10 +1,14 @@
+# We welcome your feedback
+
+Do you use the Common Data Model SDK?  If you do, please can you tell us which version(s) you use (C#/.NET, Java, Python, or TypeScript) by taking this [**short survey**](https://forms.office.com/r/hainr3a7rR).
+
 # Common Data Model (CDM) Schema
 
 The Common Data Model is a declarative specification, and definition of standard entities that represent commonly used concepts and activities across business and productivity applications, and is being extended to observational and analytical data as well. CDM provides well-defined, modular, and extensible business entities such as Account, Business Unit, Case, Contact, Lead, Opportunity, and Product, as well as interactions with vendors, workers, and customers, such as activities and service level agreements. Anyone can build on and extend CDM definitions to capture additional business-specific ideas.
 
 <pre>
 <img src="docs/blank.png"/>  <a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/dynamicsCRM.manifest.cdm.json&simpleChrome=true"> <img src="docs/dyn-static.PNG"/> </a>
-<a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=standards.manifest.cdm.json&simpleChrome=true"> <img src="docs/all-entities-small.PNG"/></a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/insightsApplications.manifest.cdm.json&simpleChrome=true"> <img src="docs/insights-static.PNG"/></a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/financeAndOperations.manifest.cdm.json&simpleChrome=true"> <img src="docs/f-and-o-static.PNG"/> </a>
+<a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=standards.manifest.cdm.json&simpleChrome=true"> <img src="docs/all-entities-small.PNG"/></a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/insightsApplications.manifest.cdm.json&simpleChrome=true"> <img src="docs/insights-static.PNG"/> </a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/financeAndOperations.manifest.cdm.json&simpleChrome=true"> <img src="docs/f-and-o-static.PNG"/> </a>
 <a href="https://microsoft.github.io/CDM/SchemaViz.html?"> <img src="docs/advanced-small.PNG"/> </a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/automotiveAccelerator.manifest.cdm.json&simpleChrome=true"> <img src="docs/auto-accel-static.png"/> </a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/bankingAccelerator.manifest.cdm.json&simpleChrome=true"> <img src="docs/banking-accel-static.png"/> </a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/electronicMedicalRecordsAccelerator.manifest.cdm.json&simpleChrome=true"> <img src="docs/medical-accel-static.png"/> </a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/higherEducationAccelerator.manifest.cdm.json&simpleChrome=true"> <img src="docs/higher-ed-accel-static.png"/> </a><a href="https://microsoft.github.io/CDM/SchemaViz.html?initialManifest=manifests/nonProfitAccelerator.manifest.cdm.json&simpleChrome=true"> <img src="docs/non-prof-accel-static.png"/> </a>
 </pre>
 
@@ -12,19 +16,11 @@ The Common Data Model is a declarative specification, and definition of standard
 
 The Common Data Model standard defines a common language for business entities covering, over time, the full range of business processes across sales, services, marketing, operations, finance, talent, and commerce and for the Customer, People, and Product entities at the core of a company's business processes. The goal of CDM is to enable data and application interoperability spanning multiple channels, service implementations, and vendors. CDM provides self-describing data (structurally and semantically), enabling applications to easily read and understand the data.
 
-The CDM is undergoing a specification effort driven by Microsoft. The documents published are a preview, and will be iterated on.
+The CDM is undergoing a specification effort driven by Microsoft and the documents published are continuously being iterated upon.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-### Open Data Initiative
-
-As announced at Microsoft Ignite, the Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
-
-CDM is already supported in the Common Data Service, Dynamics 365, PowerApps, Power BI, and upcoming Azure data services, directly accruing value towards the Open Data Initiative. 
-
-[Get the latest updates about the Open Data Initiative](https://info.microsoft.com/Open-Data-Initiative.html)
 
 # Repository Layout
 

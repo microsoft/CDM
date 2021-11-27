@@ -3,7 +3,7 @@
 
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType } from './StorageAdapter';
+import { configObjectType } from '../internal';
 
 /**
  * @deprecated Please use the CdmStandardsAdapter instead.

@@ -6,18 +6,23 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
 
 export class CdmE2ERelationship extends CdmObjectDefinitionBase {
+    private TAG: string = CdmE2ERelationship.name;
+
     public fromEntity: string;
     public fromEntityAttribute: string;
     public toEntity: string;
     public toEntityAttribute: string;
     public name: string;
+
+    private lastFileModifiedTime: Date;
+    private lastFileModifiedOldTime: Date;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.e2eRelationshipDef;
@@ -27,6 +32,9 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
         super(ctx);
         this.name = name;
         this.objectType = cdmObjectType.e2eRelationshipDef;
+
+        this.lastFileModifiedTime = null;
+        this.lastFileModifiedOldTime = null;
     }
 
     public getObjectType(): cdmObjectType {
@@ -43,7 +51,6 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
             copy = new CdmE2ERelationship(this.ctx, this.name);
         } else {
             copy = host as CdmE2ERelationship;
-            copy.ctx = this.ctx;
             copy.name = this.name;
         }
 
@@ -72,13 +79,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                CdmE2ERelationship.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -90,13 +91,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            if (!this.declaredPath) {
-                this.declaredPath = pathFrom + this.name;
-            }
-            path = this.declaredPath;
-        }
+        const path: string = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -114,4 +109,34 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         return false;
     }
+
+    public setLastFileModifiedTime(value: Date): void {
+        this.setLastFileModifiedOldTime(this.lastFileModifiedTime);
+        this.lastFileModifiedTime = value;
+    }
+
+    public getlastFileModifiedTime(): Date {
+        return this.lastFileModifiedTime;
+    }
+
+    private setLastFileModifiedOldTime(value: Date): void {
+        this.lastFileModifiedOldTime = value;
+    }
+
+    public getlastFileModifiedOldTime(): Date {
+        return this.lastFileModifiedOldTime;
+    }
+
+    public resetLastFileModifiedOldTime(): void {
+        this.setLastFileModifiedOldTime(null);
+    }
+
+    public createCacheKey(): string {
+        let nameAndPipe: string = '';
+        if (this.name) {
+            nameAndPipe = `${this.name}|`;
+        }
+
+        return `${nameAndPipe}${this.toEntity}|${this.toEntityAttribute}|${this.fromEntity}|${this.fromEntityAttribute}`;
+    };
 }

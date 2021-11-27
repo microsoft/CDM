@@ -16,30 +16,26 @@ import {
     CdmLocalEntityDeclarationDefinition,
     CdmManifestDeclarationDefinition,
     CdmObject,
+    cdmLogCode,
     cdmObjectType,
     cdmRelationshipDiscoveryStyle,
     CdmTraitCollection,
+    CdmTraitReferenceBase,
     copyOptions,
+    importsLoadStrategy,
     Logger,
     resolveOptions,
+    StorageAdapterBase,
+    StorageAdapterCacheContext,
     VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
-import { StorageAdapterBase, StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 import { using } from "using-statement";
 import { enterScope } from '../Utilities/Logging/Logger';
 
-const rel2CacheKey = (rel: CdmE2ERelationship): string => {
-    let nameAndPipe: string = '';
-    if (rel.name) {
-        nameAndPipe = `${rel.name}|`;
-    }
-
-    return `${nameAndPipe}${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
-};
-
 export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmObjectDefinition, CdmFileStatus {
+    private _TAG: string = CdmManifestDefinition.name;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.manifestDef;
@@ -131,19 +127,19 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
         copy.entities.clear();
         for (const ent of this.entities) {
-            copy.entities.push(ent);
+            copy.entities.push(ent.copy(resOpt) as CdmEntityDeclarationDefinition);
         }
         copy.relationships.clear();
         for (const rel of this.relationships) {
-            copy.relationships.push(rel);
+            copy.relationships.push(rel.copy(resOpt) as CdmE2ERelationship);
         }
         copy.subManifests.clear();
         for (const man of this.subManifests) {
-            copy.subManifests.push(man);
+            copy.subManifests.push(man.copy(resOpt) as CdmManifestDeclarationDefinition);
         }
         copy.exhibitsTraits.clear();
         for (const et of this.exhibitsTraits) {
-            copy.exhibitsTraits.push(et);
+            copy.exhibitsTraits.push(et.copy(resOpt) as CdmTraitReferenceBase);
         }
 
         return copy;
@@ -167,13 +163,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             }
 
             if (!this.folder) {
-                Logger.error(
-                    CdmManifestDefinition.name,
-                    this.ctx,
-                    `Cannot resolve the manifest '${this.manifestName}' because it has not been added to a folder`,
-                    this.createResolvedManifestAsync.name
-                );
-
+                Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveManifestFailed, this.manifestName);
                 return undefined;
             }
 
@@ -195,13 +185,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 const newFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(resolvedManifestPath, this);
                 resolvedManifestFolder = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newFolderPath);
                 if (!resolvedManifestFolder) {
-                    Logger.error(
-                        CdmManifestDefinition.name,
-                        this.ctx,
-                        `New folder for manifest not found ${newFolderPath}`,
-                        this.createResolvedManifestAsync.name
-                    );
-
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveFolderNotFound, newFolderPath);
                     return undefined;
                 }
                 newManifestName = newManifestName.substr(resolvedManifestPathSplit, newManifestName.length - resolvedManifestPathSplit);
@@ -209,20 +193,25 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 resolvedManifestFolder = this.owner as CdmFolderDefinition;
             }
 
-            Logger.debug(
-                'CdmManifestDefinition',
-                this.ctx,
-                `resolving manifest ${this.manifestName}`,
-                this.createResolvedManifestAsync.name
-            );
+            if (resolvedManifestFolder.documents.item(newManifestName) !== undefined) {
+                Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveManifestExists, newManifestName, resolvedManifestFolder.atCorpusPath);
+                return undefined;
+            }
+
+            Logger.debug(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, `resolving manifest ${this.manifestName}`);
 
             // Using the references present in the resolved entities, get an entity
             // create an imports doc with all the necessary resolved entity references and then resolve it
+            // sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+            if (newManifestName.toLowerCase().endsWith('.manifest.cdm.json')) {
+                newManifestName = newManifestName.substring(0, newManifestName.length - '.manifest.cdm.json'.length);
+            }
             const resolvedManifest: CdmManifestDefinition = new CdmManifestDefinition(this.ctx, newManifestName);
 
             // bring over any imports in this document or other bobbles
             resolvedManifest.schema = this.schema;
             resolvedManifest.explanation = this.explanation;
+            resolvedManifest.documentVersion = this.documentVersion;
             for (const imp of this.imports) {
                 resolvedManifest.imports.push(imp.copy());
             }
@@ -235,27 +224,16 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             }
 
             for (const entity of this.entities) {
-                const entDef: CdmEntityDefinition = await this.getEntityFromReference(entity, this);
+                const entityPath: string = await this.getEntityPathFromDeclaration(entity, this);
+                const entDef: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entityPath);
 
                 if (entDef === undefined) {
-                    Logger.error(
-                        CdmManifestDefinition.name,
-                        this.ctx,
-                        `Unable to get entity from reference`,
-                        this.createResolvedManifestAsync.name
-                    );
-
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveEntityFailure, entityPath);
                     return undefined;
                 }
 
                 if (!entDef.inDocument.folder) {
-                    Logger.error(
-                        CdmManifestDefinition.name,
-                        this.ctx,
-                        `The document containing the entity '${entDef.entityName}' is not in a folder`,
-                        this.createResolvedManifestAsync.name
-                    );
-
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrDocIsNotFolder, entDef.entityName);
                     return undefined;
                 }
 
@@ -276,27 +254,16 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 // make sure the new folder exists
                 const folder: CdmFolderDefinition = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newDocumentPath);
                 if (folder === undefined) {
-                    Logger.error(
-                        CdmManifestDefinition.name,
-                        this.ctx,
-                        `new folder not found ${newDocumentPath}`,
-                        this.createResolvedManifestAsync.name
-                    );
-
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveFolderNotFound, newDocumentPath);
                     return undefined;
                 }
 
                 // Next create the resolved entity
                 const withDirectives: AttributeResolutionDirectiveSet = directives !== undefined ? directives :
-                                                                        this.ctx.corpus.defaultResolutionDirectives;
+                    this.ctx.corpus.defaultResolutionDirectives;
                 const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, withDirectives?.copy());
 
-                Logger.debug(
-                    'CdmManifestDefinition',
-                    this.ctx,
-                    `resolving entity ${sourceEntityFullPath} to document {newDocumentFullPath}`,
-                    this.createResolvedManifestAsync.name
-                );
+                Logger.debug(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, `resolving entity ${sourceEntityFullPath} to document ${newDocumentFullPath}`);
 
                 const resolvedEntity: CdmEntityDefinition =
                     await entDef.createResolvedEntityAsync(entDef.entityName, resOpt, folder, newDocumentName);
@@ -320,12 +287,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 return undefined;
             }
 
-            Logger.debug(
-                'CdmManifestDefinition',
-                this.ctx,
-                `calculating relationships`,
-                this.createResolvedManifestAsync.name
-            );
+            Logger.debug(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, `calculating relationships`);
 
             // calculate the entity graph for this manifest and any submanifests
             await this.ctx.corpus.calculateEntityGraphAsync(resolvedManifest);
@@ -341,113 +303,93 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     }
 
     public async populateManifestRelationshipsAsync(option: cdmRelationshipDiscoveryStyle = cdmRelationshipDiscoveryStyle.all): Promise<void> {
-        this.relationships.clear();
-        const relCache: Set<string> = new Set<string>();
+        return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.populateManifestRelationshipsAsync.name), async _ => {
+            this.relationships.clear();
+            const relCache: Set<string> = new Set<string>();
 
-        for (const entDec of this.entities) {
-            const entPath: string = await this.getEntityPathFromDeclaration(entDec, this);
-            const currEntity: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entPath);
+            for (const entDec of this.entities) {
+                const entPath: string = await this.getEntityPathFromDeclaration(entDec, this);
+                const currEntity: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entPath);
 
-            if (!currEntity) {
-                continue;
-            }
-
-            // handle the outgoing relationships
-            const outgoingRels: CdmE2ERelationship[] = this.ctx.corpus.fetchOutgoingRelationships(currEntity);
-            if (outgoingRels) {
-                for (const rel of outgoingRels) {
-                    const cacheKey: string = rel2CacheKey(rel);
-                    if (!relCache.has(cacheKey) && this.isRelAllowed(rel, option)) {
-                        this.relationships.push(this.localizeRelToManifest(rel));
-                        relCache.add(cacheKey);
-                    }
+                if (!currEntity) {
+                    continue;
                 }
-            }
 
-            const incomingRels: CdmE2ERelationship[] =
-                (this.ctx.corpus).fetchIncomingRelationships(currEntity);
-
-            if (incomingRels) {
-                for (const inRel of incomingRels) {
-                    // get entity object for current toEntity
-                    let currentInBase: CdmEntityDefinition =
-                        await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(inRel.toEntity, this);
-
-                    if (!currentInBase) {
-                        continue;
-                    }
-
-                    // create graph of inheritance for to currentInBase
-                    // graph represented by an array where entity at i extends entity at i+1
-                    const toInheritanceGraph: CdmEntityDefinition[] = [];
-                    while (currentInBase) {
-                        const resOpt: resolveOptions = new resolveOptions(currentInBase.inDocument);
-                        currentInBase = currentInBase.extendsEntity ? currentInBase.extendsEntity.fetchObjectDefinition(resOpt) : undefined;
-
-                        if (currentInBase) {
-                            toInheritanceGraph.push(currentInBase);
+                // handle the outgoing relationships
+                const outgoingRels: CdmE2ERelationship[] = this.ctx.corpus.fetchOutgoingRelationships(currEntity);
+                if (outgoingRels) {
+                    for (const rel of outgoingRels) {
+                        const cacheKey: string = rel.createCacheKey();
+                        if (!relCache.has(cacheKey) && this.isRelAllowed(rel, option)) {
+                            this.relationships.push(this.localizeRelToManifest(rel));
+                            relCache.add(cacheKey);
                         }
                     }
+                }
 
-                    // add current incoming relationship
-                    const cacheKey: string = rel2CacheKey(inRel);
-                    if (!relCache.has(cacheKey) && this.isRelAllowed(inRel, option)) {
-                        this.relationships.push(this.localizeRelToManifest(inRel));
-                        relCache.add(cacheKey);
-                    }
+                const incomingRels: CdmE2ERelationship[] =
+                    (this.ctx.corpus).fetchIncomingRelationships(currEntity);
 
-                    // if A points at B, A's base classes must point at B as well
-                    for (const baseEntity of toInheritanceGraph) {
-                        const incomingRelsForBase: CdmE2ERelationship[] =
-                            this.ctx.corpus.fetchIncomingRelationships(baseEntity);
+                if (incomingRels) {
+                    for (const inRel of incomingRels) {
+                        // get entity object for current toEntity
+                        let currentInBase: CdmEntityDefinition =
+                            await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(inRel.toEntity, this);
 
-                        if (incomingRelsForBase) {
-                            for (const inRelBase of incomingRelsForBase) {
-                                const newRel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
-                                newRel.fromEntity = inRelBase.fromEntity;
-                                newRel.fromEntityAttribute = inRelBase.fromEntityAttribute;
-                                newRel.toEntity = inRel.toEntity;
-                                newRel.toEntityAttribute = inRel.toEntityAttribute;
+                        if (!currentInBase) {
+                            continue;
+                        }
 
-                                const baseRelCacheKey: string = rel2CacheKey(newRel);
-                                if (!relCache.has(baseRelCacheKey) && this.isRelAllowed(newRel, option)) {
-                                    this.relationships.push(this.localizeRelToManifest(newRel));
-                                    relCache.add(baseRelCacheKey);
+                        // create graph of inheritance for to currentInBase
+                        // graph represented by an array where entity at i extends entity at i+1
+                        const toInheritanceGraph: CdmEntityDefinition[] = [];
+                        while (currentInBase) {
+                            const resOpt: resolveOptions = new resolveOptions(currentInBase.inDocument);
+                            currentInBase = currentInBase.extendsEntity ? currentInBase.extendsEntity.fetchObjectDefinition(resOpt) : undefined;
+
+                            if (currentInBase) {
+                                toInheritanceGraph.push(currentInBase);
+                            }
+                        }
+
+                        // add current incoming relationship
+                        const cacheKey: string = inRel.createCacheKey();
+                        if (!relCache.has(cacheKey) && this.isRelAllowed(inRel, option)) {
+                            this.relationships.push(this.localizeRelToManifest(inRel));
+                            relCache.add(cacheKey);
+                        }
+
+                        // if A points at B, A's base classes must point at B as well
+                        for (const baseEntity of toInheritanceGraph) {
+                            const incomingRelsForBase: CdmE2ERelationship[] =
+                                this.ctx.corpus.fetchIncomingRelationships(baseEntity);
+
+                            if (incomingRelsForBase) {
+                                for (const inRelBase of incomingRelsForBase) {
+                                    const newRel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
+                                    newRel.fromEntity = inRelBase.fromEntity;
+                                    newRel.fromEntityAttribute = inRelBase.fromEntityAttribute;
+                                    newRel.toEntity = inRel.toEntity;
+                                    newRel.toEntityAttribute = inRel.toEntityAttribute;
+
+                                    const baseRelCacheKey: string = newRel.createCacheKey();
+                                    if (!relCache.has(baseRelCacheKey) && this.isRelAllowed(newRel, option)) {
+                                        this.relationships.push(this.localizeRelToManifest(newRel));
+                                        relCache.add(baseRelCacheKey);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        for (const subManifestDef of this.subManifests) {
-            const corpusPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(subManifestDef.definition, this);
-            const subManifest: CdmManifestDefinition = await this.ctx.corpus.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
-            await (subManifest as unknown as CdmManifestDefinition).populateManifestRelationshipsAsync(option);
-        }
-    }
-
-    /**
-     * @internal
-     * Find and return an entity object from an EntityDeclaration object that probably comes from a manifest
-     */
-    public async getEntityFromReference(
-        entity: CdmEntityDeclarationDefinition,
-        manifest: CdmManifestDefinition): Promise<CdmEntityDefinition> {
-        const entityPath: string = await this.getEntityPathFromDeclaration(entity, manifest);
-        const result: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entityPath);
-
-        if (result === undefined) {
-            Logger.error(
-                CdmManifestDefinition.name,
-                this.ctx,
-                `failed to resolve entity ${entityPath}`,
-                this.getEntityFromReference.name
-            );
-        }
-
-        return result;
+            for (const subManifestDef of this.subManifests) {
+                const corpusPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(subManifestDef.definition, this);
+                const subManifest: CdmManifestDefinition = await this.ctx.corpus.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                await (subManifest as unknown as CdmManifestDefinition).populateManifestRelationshipsAsync(option);
+            }
+        });
     }
 
     /**
@@ -455,10 +397,10 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
      */
     public async fileStatusCheckAsync(): Promise<void> {
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
-            let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+            let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
             let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
             try {
-                const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeAsyncFromObject(this);
+                const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeFromObjectAsync(this);
 
                 this.lastFileStatusCheckTime = new Date();
                 if (!this.lastFileModifiedTime) {
@@ -481,7 +423,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 }
             }
             finally {
-                if(cacheContext != null) {
+                if (cacheContext != null) {
                     cacheContext.dispose()
                 }
             }
@@ -499,21 +441,20 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
     /**
      * @internal
-     * Helper that fixes a path from local to absolute, gets the object from that path 
+     * Helper that fixes a path from local to absolute, gets the object from that path
      * then looks at the document where the object is found.
      * If dirty, the document is saved with the original name.
      */
     public async saveDirtyLink(relative: string, options: copyOptions): Promise<boolean> {
         // get the document object from the import
-        const objAt: CdmObject = await this.ctx.corpus.fetchObjectAsync(relative, this);
+        const docPath = this.ctx.corpus.storage.createAbsoluteCorpusPath(relative, this);
+        if (!docPath) {
+            Logger.error(this.ctx, this._TAG, this.saveDirtyLink.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidCorpusPath, relative);
+            return false;
+        }
+        const objAt: CdmObject = await this.ctx.corpus.fetchObjectAsync(docPath);
         if (!objAt) {
-            Logger.error(
-                'CdmManifestDefinition',
-                this.ctx,
-                `Could not save document ${relative} because it couldn't be loaded.`,
-                this.saveDirtyLink.name
-            );
-
+            Logger.error(this.ctx, this._TAG, this.saveDirtyLink.name, this.atCorpusPath, cdmLogCode.ErrPersistObjectNotFound, docPath);
             return false;
         }
         const docImp: CdmDocumentDefinition = objAt.inDocument;
@@ -522,12 +463,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             if (docImp.isDirty) {
                 // save it with the same name
                 if (await docImp.saveAsAsync(docImp.name, true, options) === false) {
-                    Logger.error(
-                        'CdmManifestDefinition',
-                        this.ctx,
-                        `failed saving document ${docImp.name}`,
-                        this.saveDirtyLink.name
-                    );
+                    Logger.error(this.ctx, this._TAG, this.saveDirtyLink.name, docImp.atCorpusPath, cdmLogCode.ErrDocEntityDocSavingFailure, docImp.name);
                 }
             }
         }
@@ -537,21 +473,58 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
     /**
      * @internal
+     * Helper that fixes a path from local to absolute.Gets the object from that path.
+     * Created from saveDirtyLink in order to be able to save docs in parallel.
+     * Represents the part of saveDirtyLink that could not be parallelized.
+     */
+    public async fetchDocumentDefinition(relativePath: string): Promise<CdmDocumentDefinition> {
+        // get the document object from the import
+        const docPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(relativePath, this);
+        if (!docPath) {
+            Logger.error(this.ctx, this._TAG, this.fetchDocumentDefinition.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidCorpusPath, relativePath);
+            return undefined;
+        }
+
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
+        const objAt: CdmObject = await this.ctx.corpus.fetchObjectAsync(relativePath, this, resOpt);
+        if (!objAt) {
+            Logger.error(this.ctx, this._TAG, this.fetchDocumentDefinition.name, this.atCorpusPath, cdmLogCode.ErrPersistObjectNotFound, docPath);
+            return undefined;
+        }
+        return objAt.inDocument;
+    }
+
+    /**
+     * @internal
+     * Saves CdmDocumentDefinition if dirty.
+     * Was created from SaveDirtyLink in order to be able to save docs in parallel.
+     * Represents the part of SaveDirtyLink that could be parallelized.
+     */
+    public async saveDocumentIfDirty(docImp: CdmDocumentDefinition, options: copyOptions): Promise<boolean> {
+        // get the document object from the import
+        if (docImp !== undefined && docImp.isDirty) {
+            // save it with the same name
+            if (await docImp.saveAsAsync(docImp.name, true, options) === false) {
+                Logger.error(this.ctx, this._TAG, this.saveDocumentIfDirty.name, docImp.atCorpusPath, cdmLogCode.ErrDocEntityDocSavingFailure, docImp.name);
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * @internal
      */
     public async saveLinkedDocuments(options?: copyOptions): Promise<boolean> {
+        let links: Set<string> = new Set<string>();
         if (!options) {
             options = new copyOptions();
         }
         if (this.imports !== undefined) {
             for (const imp of this.imports) {
-                if (await this.saveDirtyLink(imp.atCorpusPath, options) === false) {
-                    Logger.error(
-                        'CdmManifestDefinition',
-                        this.ctx,
-                        `Failed saving imported document ${imp.atCorpusPath}`,
-                        this.saveLinkedDocuments.name
-                    );
-                }
+                links.add(imp.corpusPath);
             }
         }
         if (this.entities !== undefined) {
@@ -559,31 +532,13 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             for (const def of this.entities) {
                 if (isLocalEntityDeclarationDefinition(def)) {
                     const defImp: CdmLocalEntityDeclarationDefinition = def;
-                    if (await this.saveDirtyLink(defImp.entityPath, options) === false) {
-                        Logger.error(
-                            'CdmManifestDefinition',
-                            this.ctx,
-                            `failed saving local entity schema document ${defImp.entityPath}`,
-                            this.saveLinkedDocuments.name
-                        );
-
-                        return false;
-                    }
+                    links.add(defImp.entityPath);
 
                     // also, partitions can have their own schemas
                     if (defImp.dataPartitions !== undefined) {
                         for (const part of defImp.dataPartitions) {
                             if (part.specializedSchema !== undefined) {
-                                if (await this.saveDirtyLink(part.specializedSchema, options) === false) {
-                                    Logger.error(
-                                        'CdmManifestDefinition',
-                                        this.ctx,
-                                        `failed saving local entity schema documnet ${defImp.entityPath}`,
-                                        this.saveLinkedDocuments.name
-                                    );
-
-                                    return false;
-                                }
+                                links.add(part.specializedSchema);
                             }
                         }
                     }
@@ -591,30 +546,35 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                     if (defImp.dataPartitionPatterns !== undefined) {
                         for (const part of defImp.dataPartitionPatterns) {
                             if (part.specializedSchema !== undefined) {
-                                if (await this.saveDirtyLink(part.specializedSchema, options) === false) {
-                                    Logger.error(
-                                        'CdmManifestDifinition',
-                                        this.ctx,
-                                        `Failed saving partition shcema document ${part.specializedSchema}`,
-                                        this.saveLinkedDocuments.name
-                                    );
-                                }
+                                links.add(part.specializedSchema);
                             }
                         }
                     }
                 }
             }
         }
-        if (this.subManifests !== undefined) {
-            for (const sub of this.subManifests) {
-                if (await this.saveDirtyLink(sub.definition, options) === false) {
-                    Logger.error(
-                        'CdmManifestDefinition',
-                        this.ctx,
-                        `failed saving sub-manifest document ${sub.definition}`,
-                        this.saveLinkedDocuments.name
-                    );
 
+        const docs: CdmDocumentDefinition[] = [];
+        for (var link of links) {
+            const doc: CdmDocumentDefinition = await this.fetchDocumentDefinition(link);
+            if (!doc) {
+                return false;
+            }
+            docs.push(doc);
+        }
+
+        await Promise.all(docs.map(async (doc: CdmDocumentDefinition) => {
+            if (doc) {
+                if (!await this.saveDocumentIfDirty(doc, options)) {
+                    return false;
+                }
+            }
+        }));
+
+        if (this.subManifests !== undefined) {
+            for (const subDeclaration of this.subManifests) {
+                const subManifest: CdmManifestDefinition  = await this.fetchDocumentDefinition(subDeclaration.definition) as CdmManifestDefinition;
+                if (!subManifest || !await this.saveDocumentIfDirty(subManifest, options)) {
                     return false;
                 }
             }
@@ -622,6 +582,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
         return true;
     }
+
 
     /**
      * @internal
@@ -660,6 +621,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         relCopy.fromEntity = this.ctx.corpus.storage.createRelativeCorpusPath(rel.fromEntity, this);
         relCopy.toEntityAttribute = rel.toEntityAttribute;
         relCopy.fromEntityAttribute = rel.fromEntityAttribute;
+        relCopy.exhibitsTraits.concat(rel.exhibitsTraits.allItems);
 
         return relCopy;
     }

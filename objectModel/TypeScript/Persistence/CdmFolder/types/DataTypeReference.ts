@@ -3,10 +3,12 @@
 
 import {
     DataType,
+    TraitGroupReference,
     TraitReference
 } from '.';
 
 export abstract class DataTypeReference {
     public dataTypeReference: string | DataType;
-    public appliedTraits?: (string | TraitReference)[];
+    public appliedTraits?: (string | TraitReference | TraitGroupReference)[];
+    public optional?: boolean;
 }

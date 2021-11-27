@@ -33,13 +33,17 @@ from .projections.operation_rename_attributes import OperationRenameAttributes
 from .projections.operation_replace_as_foreign_key import OperationReplaceAsForeignKey
 from .projections.operation_include_attributes import OperationIncludeAttributes
 from .projections.operation_add_attribute_group import OperationAddAttributeGroup
+from .projections.operation_alter_traits import OperationAlterTraits
+from .projections.operation_add_artifact_attribute import OperationAddArtifactAttribute
 from .parameter import Parameter
 from .projections.projection import Projection
 from .purpose import Purpose
 from .purpose_reference import PurposeReference
 from .referenced_entity_declaration import ReferencedEntityDeclaration
 from .trait import Trait
+from .trait_group import TraitGroup
 from .trait_reference import TraitReference
+from .trait_group_reference import TraitGroupReference
 from .type_attribute import TypeAttribute
 
 __all__ = [
@@ -75,6 +79,8 @@ __all__ = [
     'OperationReplaceAsForeignKey',
     'OperationIncludeAttributes',
     'OperationAddAttributeGroup',
+    'OperationAlterTraits',
+    'OperationAddArtifactAttribute',
     'Parameter',
     'Projection',
     'Purpose',
@@ -82,5 +88,7 @@ __all__ = [
     'ReferencedEntityDeclaration',
     'Trait',
     'TraitReference',
+    'TraitGroup',
+    'TraitGroupReference',
     'TypeAttribute'
 ]

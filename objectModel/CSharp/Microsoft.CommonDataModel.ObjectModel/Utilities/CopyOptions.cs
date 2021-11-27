@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
@@ -12,11 +12,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// A value that helps us to figure out is the document that is using this object top level.
         /// </summary>
         internal bool IsTopLevelDocument { get; set; }
+        internal string PersistenceTypeName { get; set; }
 
         public CopyOptions()
         {
             this.IsTopLevelDocument = true;
             this.StringRefs = false;
+            PersistenceTypeName = "";
         }
     }
 }

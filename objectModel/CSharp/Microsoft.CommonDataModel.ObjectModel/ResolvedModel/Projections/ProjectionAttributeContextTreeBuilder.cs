@@ -65,6 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
         /// Mapping between an "action" attribute context parameter to the context to consider 'where from' lineage
         /// </summary>
         private Dictionary<AttributeContextParameters, CdmAttributeContext> actionAttrCtxParamToLineageOut;
+
         /// <summary>
         /// Mapping between an "action" attribute context parameter to the context that wants to point here for lineage
         /// </summary>
@@ -89,7 +90,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
         /// <param name="found">The projection attribute state that contains the "found" attribute</param>
         /// <param name="resAttrFromAction">The resolved attribute that resulted from the action</param>
         /// <param name="attrCtxType">The attribute context type to give the "action" attribute context parameter</param>
-        /// <param name="storeLineage">normally lineage goes from new context to the found. false means don't and maybe even flip it</param>
+        /// <param name="lineageOut">normally lineage goes from new context to the found. false means don't and maybe even flip it</param>
+        /// <param name="lineageIn"></param>
         internal void CreateAndStoreAttributeContextParameters(string searchFor, ProjectionAttributeState found, ResolvedAttribute resAttrFromAction, 
                             CdmAttributeContextType attrCtxType, CdmAttributeContext lineageOut, CdmAttributeContext lineageIn)
         {
@@ -131,15 +133,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
             // We store it this way so that we can create the found nodes under their corresponding searchFor nodes.
             if (!searchForAttrCtxParamToFoundAttrCtxParam.ContainsKey(searchForAttrCtxParam))
             {
-                searchForAttrCtxParamToFoundAttrCtxParam.Add(searchForAttrCtxParam, new List<AttributeContextParameters> { foundAttrCtxParam });
+                searchForAttrCtxParamToFoundAttrCtxParam.Add(searchForAttrCtxParam, new List<AttributeContextParameters>());
             }
-            else
-            {
-                List<AttributeContextParameters> foundAttrCtxParams = null;
-                searchForAttrCtxParamToFoundAttrCtxParam.TryGetValue(searchForAttrCtxParam, out foundAttrCtxParams);
-                foundAttrCtxParams.Add(foundAttrCtxParam);
-                searchForAttrCtxParamToFoundAttrCtxParam[searchForAttrCtxParam] = foundAttrCtxParams;
-            }
+
+            List<AttributeContextParameters> foundAttrCtxParams = searchForAttrCtxParamToFoundAttrCtxParam[searchForAttrCtxParam];
+            foundAttrCtxParams.Add(foundAttrCtxParam);
 
             // Create the attribute context parameter for the action node
             AttributeContextParameters actionAttrCtxParam = new AttributeContextParameters
@@ -181,29 +179,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
             // Iterate over all the searchFor attribute context parameters
             foreach (AttributeContextParameters searchForAttrCtxParam in this.searchForToSearchForAttrCtxParam.Values)
             {
-                CdmAttributeContext searchForAttrCtx = null;
-
                 // Fetch all the found attribute context parameters associated with this searchFor
-                List<AttributeContextParameters> foundAttrCtxParams = null;
-                searchForAttrCtxParamToFoundAttrCtxParam.TryGetValue(searchForAttrCtxParam, out foundAttrCtxParams);
+                List<AttributeContextParameters> foundAttrCtxParams = searchForAttrCtxParamToFoundAttrCtxParam[searchForAttrCtxParam];
 
                 // Iterate over all the found attribute context parameters
                 foreach (AttributeContextParameters foundAttrCtxParam in foundAttrCtxParams)
                 {
-                    // We should only create the searchFor node when searchFor and found have different names. Else collapse the nodes together.
-                    if (!StringUtils.EqualsWithCase(searchForAttrCtxParam.Name, foundAttrCtxParam.Name))
-                    {
-                        // Create the attribute context for searchFor if it hasn't been created already and set it as the parent of found
-                        if (searchForAttrCtx == null)
-                        {
-                            searchForAttrCtx = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, searchForAttrCtxParam);
-                        }
-                        foundAttrCtxParam.under = searchForAttrCtx;
-                    }
-
                     // Fetch the action attribute context parameter associated with this found
-                    AttributeContextParameters actionAttrCtxParam = null;
-                    foundAttrCtxParamToActionAttrCtxParam.TryGetValue(foundAttrCtxParam, out actionAttrCtxParam);
+                    AttributeContextParameters actionAttrCtxParam = foundAttrCtxParamToActionAttrCtxParam[foundAttrCtxParam];
 
                     // We should only create the found node when found and action have different names. Else collapse the nodes together.
                     if (!StringUtils.EqualsWithCase(foundAttrCtxParam.Name, actionAttrCtxParam.Name))
@@ -217,15 +200,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
                     CdmAttributeContext actionAttrCtx = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, actionAttrCtxParam);
 
                     // Fetch the resolved attribute that should now point at this action attribute context
-                    ResolvedAttribute resAttrFromAction = null;
-                    actionAttrCtxParamToResAttr.TryGetValue(actionAttrCtxParam, out resAttrFromAction);
+                    ResolvedAttribute resAttrFromAction = actionAttrCtxParamToResAttr[actionAttrCtxParam];
 
                     // make sure the lineage of the attribute stays linked up
                     // there can be either (or both) a lineageOut and a lineageIn.
                     // out lineage is where this attribute came from
                     // in lineage should be pointing back at this context as a source
-                    CdmAttributeContext lineageOut = null;
-                    if (actionAttrCtxParamToLineageOut.TryGetValue(actionAttrCtxParam, out lineageOut) == true)
+                    CdmAttributeContext lineageOut;
+                    if (actionAttrCtxParamToLineageOut.TryGetValue(actionAttrCtxParam, out lineageOut))
                     {
                         if (actionAttrCtx != null && lineageOut != null)
                         {
@@ -233,8 +215,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
                         }
                         resAttrFromAction.AttCtx = actionAttrCtx; // probably the right context for this resAtt, unless ...
                     }
-                    CdmAttributeContext lineageIn = null;
-                    if (actionAttrCtxParamToLineageIn.TryGetValue(actionAttrCtxParam, out lineageIn) == true)
+                    CdmAttributeContext lineageIn;
+                    if (actionAttrCtxParamToLineageIn.TryGetValue(actionAttrCtxParam, out lineageIn))
                     {
                         if (actionAttrCtx != null && lineageIn != null)
                         {

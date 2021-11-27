@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -10,13 +10,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle ExcludeAttributes operations
     /// </summary>
     public class CdmOperationExcludeAttributes : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationExcludeAttributes);
+        private static readonly string Tag = nameof(CdmOperationExcludeAttributes);
 
         public List<string> ExcludeAttributes { get; set; }
 
@@ -24,19 +25,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.ObjectType = CdmObjectType.OperationExcludeAttributesDef;
             this.Type = CdmOperationType.ExcludeAttributes;
-            this.ExcludeAttributes = new List<string>();
         }
 
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            List<string> excludeAttributes = new List<string>();
-            excludeAttributes.AddRange(this.ExcludeAttributes);
-
-            CdmOperationExcludeAttributes copy = new CdmOperationExcludeAttributes(this.Ctx)
+            if (resOpt == null)
             {
-                ExcludeAttributes = excludeAttributes
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationExcludeAttributes(this.Ctx) : host as CdmOperationExcludeAttributes;
+
+            if (this.ExcludeAttributes != null)
+            {
+                copy.ExcludeAttributes = new List<string>(this.ExcludeAttributes);
+            }
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -69,7 +75,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -79,16 +85,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + "operationExcludeAttributes";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
@@ -154,7 +151,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
                     attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute,
-                        CdmAttributeContextType.AttributeDefinition,
+                        CdmAttributeContextType.AttributeExcluded,
                         currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
                         null); // don't know who will point here yet, excluded, so... this could be the end for you.
 

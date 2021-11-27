@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
 import {
     CdmArgumentDefinition,
     CdmAttributeContext,
@@ -37,14 +36,20 @@ import {
     CdmOperationIncludeAttributes,
     CdmOperationRenameAttributes,
     CdmOperationReplaceAsForeignKey,
+    CdmOperationAlterTraits,
+    CdmOperationAddArtifactAttribute,
     CdmParameterDefinition,
     CdmProjection,
     CdmPurposeDefinition,
     CdmPurposeReference,
     CdmReferencedEntityDeclarationDefinition,
     CdmTraitDefinition,
+    CdmTraitGroupDefinition,
+    CdmTraitGroupReference,
     CdmTraitReference,
-    CdmTypeAttributeDefinition
+    CdmTypeAttributeDefinition,
+    refCounted,
+    ResolvedAttributeSet
 } from '../internal';
 
 export function isImport(obj: CdmObject): obj is CdmImport {
@@ -63,8 +68,16 @@ export function isCdmTraitDefinition(obj: CdmObject): obj is CdmTraitDefinition 
     return obj && obj.objectType === cdmObjectType.traitDef;
 }
 
+export function isCdmTraitGroupDefinition(obj: CdmObject): obj is CdmTraitGroupDefinition {
+    return obj && obj.objectType === cdmObjectType.traitGroupDef;
+}
+
 export function isCdmTraitReference(obj: CdmObject): obj is CdmTraitReference {
     return obj && obj.objectType === cdmObjectType.traitRef;
+}
+
+export function isCdmTraitGroupReference(obj: CdmObject): obj is CdmTraitGroupReference {
+    return obj && obj.objectType === cdmObjectType.traitGroupRef;
 }
 
 export function isPurposeDefinition(obj: CdmObject): obj is CdmPurposeDefinition {
@@ -209,4 +222,16 @@ export function isOperationIncludeAttributes(obj: CdmObject): obj is CdmOperatio
 
 export function isOperationAddAttributeGroup(obj: CdmObject): obj is CdmOperationAddAttributeGroup {
     return obj && obj.objectType === cdmObjectType.operationAddAttributeGroupDef;
+}
+
+export function isResolvedAttributeSet(obj: refCounted): obj is ResolvedAttributeSet {
+    return obj && (obj as ResolvedAttributeSet).set !== undefined && (obj as ResolvedAttributeSet).resolvedName2resolvedAttribute !== undefined;
+}
+
+export function isOperationAlterTraits(obj: CdmObject): obj is CdmOperationAlterTraits {
+    return obj && obj.objectType === cdmObjectType.operationAlterTraitsDef;
+}
+
+export function isOperationAddArtifactAttribute(obj: CdmObject): obj is CdmOperationAddArtifactAttribute {
+    return obj && obj.objectType === cdmObjectType.operationAddArtifactAttributeDef;
 }

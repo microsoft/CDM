@@ -17,8 +17,9 @@ import * as utils from './utils';
 export class ArgumentPersistence {
     public static fromData(ctx: CdmCorpusContext, object: string | Argument): CdmArgumentDefinition {
         const argument: CdmArgumentDefinition = ctx.corpus.MakeObject(cdmObjectType.argumentDef);
-
-        if (typeof object === 'object' && object.value) {
+        
+        // must use `object != undefined` here, since when object is null, null != undefined => false but null !== undefined => true
+        if (typeof object === 'object' && object != undefined && object.value !== undefined) {
             argument.value = utils.createConstant(ctx, object.value as CdmJsonType);
             if (object.name) {
                 argument.name = object.name;
@@ -36,7 +37,7 @@ export class ArgumentPersistence {
 
     public static toData(instance: CdmArgumentDefinition, resOpt: resolveOptions, options: copyOptions): CdmJsonType {
         let value: CdmJsonType;
-        if (instance.value) {
+        if (instance.value !== undefined) {
             if (typeof(instance.value) === 'object' && 'copyData' in instance.value
                 && typeof(instance.value.copyData) === 'function') {
                 value = instance.value.copyData(resOpt, options);

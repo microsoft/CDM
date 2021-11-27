@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -9,6 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -62,7 +63,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         for (int r = 0; r < entValues.Count; r++)
                         {
                             List<string> rowData = entValues[r];
-                            IDictionary<string, string> row = new SortedDictionary<string, string>();
+                            IDictionary<string, string> row = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                             if (rowData?.Count > 0)
                             {
                                 for (int c = 0; c < rowData.Count; c++)
@@ -73,21 +74,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                                         row.Add(colAtt.ResolvedName, tvalue);
                                 }
                                 rows.Add(row);
-                            }
-
-                            if (rows.Count > 0)
-                            {
-                                var keys = rows[0].Keys.OrderBy(key => key).ToList();
-                                var firstKey = keys[0];
-                                var orderesRows = rows.OrderBy(currentRow => currentRow[firstKey]);
-
-                                if (keys.Count > 1)
-                                {
-                                    var secondKey = keys[1];
-                                    orderesRows = orderesRows.ThenBy(currentRow => currentRow[secondKey]);
-                                }
-
-                                rows = orderesRows.ToList();
                             }
                         }
                     }

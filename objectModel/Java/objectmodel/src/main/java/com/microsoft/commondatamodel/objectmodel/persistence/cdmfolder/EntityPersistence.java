@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitGroupReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeContext;
@@ -86,7 +88,7 @@ public class EntityPersistence {
     obj.setExhibitsTraits(Utils.listCopyDataAsArrayNode(
         instance.getExhibitsTraits().getAllItems()
             .stream()
-            .filter(trait -> !trait.isFromProperty())
+            .filter(trait -> trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
             .collect(Collectors.toList()),
         resOpt,
         options));

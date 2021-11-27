@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System.Runtime.CompilerServices;
@@ -19,6 +19,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 
     internal class TraitToPropertyMap
     {
+        private static readonly string Tag = nameof(TraitToPropertyMap);
+
         private CdmObject Host { get; set; }
         private CdmTraitCollection Traits
         {
@@ -177,6 +179,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     return this.FetchTraitReference("is.nullable", onlyFromProperty) != null;
                 case "isReadOnly":
                     return this.FetchTraitReference("is.readOnly", onlyFromProperty) != null;
+                case "isResolved":
+                    var trait = this.FetchTraitReference("has.entitySchemaAbstractionLevel", onlyFromProperty);
+                    return string.Equals(trait?.Arguments?.FetchValue("level"), "resolved");
                 case "valueConstrainedToList":
                     return this.FetchTraitReference("is.constrainedList", onlyFromProperty) != null;
                 case "maximumValue":
@@ -191,9 +196,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 case "dataFormat":
                     return this.TraitsToDataFormat(onlyFromProperty);
                 case "primaryKey":
-                    CdmTypeAttributeDefinition attRef = FetchTraitReferenceArgumentValue(FetchTraitReference("is.identifiedBy", onlyFromProperty), "attribute");
+                    var attRef = FetchTraitReferenceArgumentValue(FetchTraitReference("is.identifiedBy", onlyFromProperty), "attribute");
                     if (attRef != null)
-                        return attRef.FetchObjectDefinitionName();
+                    {
+                        if (attRef is string)
+                        {
+                            return attRef;
+                        }
+                        return ((CdmTypeAttributeDefinition)attRef).FetchObjectDefinitionName();
+                    }
                     break;
                 case "defaultValue":
                     return this.FetchDefaultValue(onlyFromProperty);
@@ -210,7 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         {
             int traitIndex = this.Traits != null ? this.Traits.IndexOf(traitName, onlyFromProperty) : -1;
 
-            return (traitIndex == -1) ? null : this.Traits[traitIndex];
+            return (traitIndex == -1) ? null : this.Traits[traitIndex] as CdmTraitReference;
         }
 
         internal void RemoveTrait(string traitName)
@@ -350,7 +361,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             {
                 foreach (var trait in this.Traits)
                 {
-                    if (onlyFromProperty && !trait.IsFromProperty)
+                    if (onlyFromProperty && 
+                        (trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty))
                     {
                         continue;
                     }
@@ -528,7 +540,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         {
             CdmTraitReference trait;
             int traitIndex = this.Traits.IndexOf(traitName, onlyFromProperty);
-            trait = (traitIndex == -1) ? null : this.Traits[traitIndex];
+            trait = (traitIndex == -1) ? null : this.Traits[traitIndex] as CdmTraitReference;
 
             var locEntRef = FetchTraitReferenceArgumentValue(trait, argName);
             if (locEntRef != null)
@@ -616,7 +628,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                         return defVal;
                     if ((defVal as CdmObject).ObjectType == CdmObjectType.EntityRef)
                     {
-                        var cEnt = (defVal as CdmObject).FetchObjectDefinition<CdmObjectDefinition>(null) as CdmConstantEntityDefinition;
+                        var cEnt = (defVal as CdmObject).FetchObjectDefinition<CdmObjectDefinition>() as CdmConstantEntityDefinition;
                         if (cEnt != null)
                         {
                             string esName = cEnt.EntityShape.FetchObjectDefinitionName();
@@ -701,12 +713,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 }
                 else
                 {
-                    Logger.Error(nameof(TraitToPropertyMap), this.Host.Ctx, "Default value missing languageTag or displayText.");
+                    Logger.Error(this.Host.Ctx, Tag, null, nameof(UpdateDefaultValue), CdmLogCode.ErrValdnMissingLanguageTag);
                 }
             }
             else
             {
-                Logger.Error(nameof(TraitToPropertyMap), this.Host.Ctx, "Default value type not supported. Please use JArray.");
+                Logger.Error(this.Host.Ctx, Tag, null, nameof(UpdateDefaultValue), CdmLogCode.ErrUnsupportedType);
             }
         }
 

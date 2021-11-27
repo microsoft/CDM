@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
@@ -17,12 +18,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle AddSupportingAttribute operations
  */
 public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
-    private String TAG = CdmOperationAddSupportingAttribute.class.getSimpleName();
+    private static final String TAG = CdmOperationAddSupportingAttribute.class.getSimpleName();
     private CdmTypeAttributeDefinition supportingAttribute;
 
     public CdmOperationAddSupportingAttribute(final CdmCorpusContext ctx) {
@@ -33,11 +35,17 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationAddSupportingAttribute copy = new CdmOperationAddSupportingAttribute(this.getCtx());
-        if (this.supportingAttribute != null) {
-            copy.supportingAttribute = (CdmTypeAttributeDefinition) this.supportingAttribute.copy();
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
         }
 
+        CdmOperationAddSupportingAttribute copy = host == null ? new CdmOperationAddSupportingAttribute(this.getCtx()) : (CdmOperationAddSupportingAttribute)host;
+
+        copy.setSupportingAttribute(
+                this.getSupportingAttribute() != null
+                        ? (CdmTypeAttributeDefinition)this.getSupportingAttribute().copy(resOpt) : null);
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -82,7 +90,7 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
             missingFields.add("supportingAttribute");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -90,14 +98,7 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrTrimEmpty(path)) {
-                path = pathFrom + "operationAddSupportingAttribute";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -142,7 +143,7 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
         if (projCtx.getCurrentAttributeStateSet().getStates().size() > 0) {
             int lastIndex = projCtx.getCurrentAttributeStateSet().getStates().size() - 1;
             ProjectionAttributeState lastState = projCtx.getCurrentAttributeStateSet().getStates().get(lastIndex);
-            CdmTraitReference inSupportOfTrait = this.supportingAttribute.getAppliedTraits().add("is.addedInSupportOf");
+            CdmTraitReference inSupportOfTrait = (CdmTraitReference) this.supportingAttribute.getAppliedTraits().add("is.addedInSupportOf");
             inSupportOfTrait.getArguments().add("inSupportOf", lastState.getCurrentResolvedAttribute().getResolvedName());
         }
 

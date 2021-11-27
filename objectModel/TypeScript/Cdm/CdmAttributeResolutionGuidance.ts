@@ -11,6 +11,10 @@ import {
     VisitCallback
 } from '../internal';
 
+/**
+ * @deprecated 
+ * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+ */
 export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements CdmAttributeResolutionGuidance {
     public removeAttribute?: boolean;
     /**
@@ -123,13 +127,9 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
             }
 
             copy.removeAttribute = this.removeAttribute;
-            if (this.imposedDirectives) {
-                copy.imposedDirectives = this.imposedDirectives.slice();
-            }
-            if (this.removedDirectives) {
-                copy.removedDirectives = this.removedDirectives.slice();
-            }
-            copy.addSupportingAttribute = this.addSupportingAttribute;
+            copy.imposedDirectives = this.imposedDirectives ? this.imposedDirectives.slice() : undefined;
+            copy.removedDirectives = this.removedDirectives ? this.removedDirectives.slice() : undefined;
+            copy.addSupportingAttribute = this.addSupportingAttribute ? this.addSupportingAttribute.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
             copy.cardinality = this.cardinality;
             copy.renameFormat = this.renameFormat;
 
@@ -162,7 +162,7 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
     /**
      * @internal
      */
-    public updateAttributeDefaults(attName: string): void {
+    public updateAttributeDefaults(attName: string, owner: CdmObject): void {
         // handle the cardinality and expansion group.
         // default is one, but if there is some hint of an array, make it work
         if (this.cardinality === undefined) {
@@ -183,8 +183,9 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
                 this.expansion.maximumExpansion = 5;
             }
             if (this.expansion.countAttribute === undefined) {
-                this.expansion.countAttribute = this.ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, 'count');
-                this.expansion.countAttribute.dataType = this.ctx.corpus.MakeObject(cdmObjectType.dataTypeRef, 'integer', true);
+                this.expansion.countAttribute = this.ctx.corpus.fetchArtifactAttribute('count');
+                this.expansion.countAttribute.owner = owner;
+                this.expansion.countAttribute.inDocument = owner.inDocument;
             }
         }
         // entity by ref. anything mentioned?
@@ -198,9 +199,9 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
                 }
                 if (this.entityByReference.foreignKeyAttribute === undefined) {
                     // make up a fk
-                    this.entityByReference.foreignKeyAttribute = this.ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, 'id');
-                    this.entityByReference.foreignKeyAttribute.dataType =
-                        this.ctx.corpus.MakeObject(cdmObjectType.dataTypeRef, 'entityId', true);
+                    this.entityByReference.foreignKeyAttribute = this.ctx.corpus.fetchArtifactAttribute('id');
+                    this.entityByReference.foreignKeyAttribute.owner = owner;
+                    this.entityByReference.foreignKeyAttribute.inDocument = owner.inDocument;
                 }
             }
         }
@@ -211,10 +212,10 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
             }
             if (this.selectsSubAttribute.selects === 'one') {
                 if (this.selectsSubAttribute.selectedTypeAttribute === undefined) {
-                    // make up a fk
-                    this.selectsSubAttribute.selectedTypeAttribute = this.ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, 'type');
-                    this.selectsSubAttribute.selectedTypeAttribute.dataType =
-                        this.ctx.corpus.MakeObject(cdmObjectType.dataTypeRef, 'entityName', true);
+                    // make up a type indicator
+                    this.selectsSubAttribute.selectedTypeAttribute = this.ctx.corpus.fetchArtifactAttribute('type');
+                    this.selectsSubAttribute.selectedTypeAttribute.owner = owner;
+                    this.selectsSubAttribute.selectedTypeAttribute.inDocument = owner.inDocument;
                 }
             }
         }

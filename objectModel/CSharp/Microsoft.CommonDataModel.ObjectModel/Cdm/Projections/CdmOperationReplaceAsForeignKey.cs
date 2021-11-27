@@ -9,13 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle ReplaceAsForeignKey operations
     /// </summary>
     public class CdmOperationReplaceAsForeignKey : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationReplaceAsForeignKey);
+        private static readonly string Tag = nameof(CdmOperationReplaceAsForeignKey);
 
         public string Reference { get; set; }
 
@@ -30,12 +31,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationReplaceAsForeignKey copy = new CdmOperationReplaceAsForeignKey(this.Ctx)
+            if (resOpt == null)
             {
-                Reference = this.Reference,
-                ReplaceWith = this.ReplaceWith?.Copy() as CdmTypeAttributeDefinition
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
 
+            var copy = host == null ?  new CdmOperationReplaceAsForeignKey(this.Ctx) : host as CdmOperationReplaceAsForeignKey;
+
+            copy.ReplaceWith = this.ReplaceWith?.Copy(resOpt) as CdmTypeAttributeDefinition;
+            copy.Reference = this.Reference;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -71,7 +77,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -81,16 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + $"operationReplaceAsForeignKey";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
@@ -134,8 +131,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmAttributeContext attrCtxFK = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxFKParam);
 
             // get the added attribute and applied trait
-            // the name here will be {m} and not {A}{o}{M} - should this map to the not projections approach and default to {A}{o}{M} - ???
-            CdmTypeAttributeDefinition subFK = this.ReplaceWith as CdmTypeAttributeDefinition;
+            CdmTypeAttributeDefinition subFK = this.ReplaceWith;
             List<string> addTrait = new List<string>() { "is.linkedEntity.identifier" };
 
             // Create new resolved attribute, set the new attribute as target, and apply "is.linkedEntity.identifier" trait
@@ -153,12 +149,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string refAttrName)
         {
             List<ProjectionAttributeState> pasList = ProjectionResolutionCommonUtil.GetLeafList(projCtx, refAttrName);
+            string sourceEntity = projCtx.ProjectionDirective.OriginalSourceAttributeName;
+
+            if (sourceEntity == null)
+            {
+                Logger.Warning(projOutputSet.Ctx, Tag, nameof(CreateNewProjectionAttributeStateSet), null, CdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);
+            }
 
             if (pasList != null)
             {
                 // update the new foreign key resolved attribute with trait param with reference details
                 ResolvedTrait reqdTrait = newResAttrFK.ResolvedTraits.Find(projCtx.ProjectionDirective.ResOpt, "is.linkedEntity.identifier");
-                if (reqdTrait != null)
+                if (reqdTrait != null && sourceEntity != null)
                 {
                     CdmEntityReference traitParamEntRef = ProjectionResolutionCommonUtil.CreateForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.ProjectionDirective, projOutputSet.Ctx.Corpus, pasList);
                     reqdTrait.ParameterValues.SetParameterValue(projCtx.ProjectionDirective.ResOpt, "entityReferences", traitParamEntRef);
@@ -176,7 +178,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 // Log error & return projOutputSet without any change
-                Logger.Error(TAG, projOutputSet.Ctx, $"Unable to locate state for reference attribute \"{refAttrName}\".", nameof(CreateNewProjectionAttributeStateSet));
+                Logger.Error(projOutputSet.Ctx, Tag, nameof(CreateNewProjectionAttributeStateSet), null, CdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
             }
 
             return projOutputSet;

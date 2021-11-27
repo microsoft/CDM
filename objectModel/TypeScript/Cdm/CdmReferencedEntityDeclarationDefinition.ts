@@ -12,7 +12,7 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
@@ -25,6 +25,8 @@ import * as timeUtils from '../Utilities/timeUtils';
  * The object model implementation for referenced entity declaration.
  */
 export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitionBase implements CdmEntityDeclarationDefinition {
+    private TAG: string = CdmReferencedEntityDeclarationDefinition.name;
+
     /**
      * @inheritdoc
      */
@@ -83,7 +85,6 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
             copy = new CdmReferencedEntityDeclarationDefinition(this.ctx, this.entityName);
         } else {
             copy = host as CdmReferencedEntityDeclarationDefinition;
-            copy.ctx = this.ctx;
             copy.entityName = this.entityName;
         }
         copy.entityPath = this.entityPath;
@@ -107,13 +108,7 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                CdmReferencedEntityDeclarationDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -131,6 +126,15 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
+        const path: string = '';
+
+        if (preChildren && preChildren(this, path)) {
+            return false;
+        }
+
+        if (postChildren && postChildren(this, path)) {
+            return true;
+        }
         return false;
     }
 

@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
@@ -11,10 +10,8 @@ import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DocumentContent;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,7 +36,7 @@ public class CommonDataModelLoader {
       return CompletableFuture.completedFuture(null);
     }
 
-    final String endMatch = (!Strings.isNullOrEmpty(version)) ? "." + version + CdmConstants.CDM_EXTENSION : CdmConstants.CDM_EXTENSION;
+    final String endMatch = (!StringUtils.isNullOrEmpty(version)) ? "." + version + CdmConstants.CDM_EXTENSION : CdmConstants.CDM_EXTENSION;
 
     if (!Files.exists(Paths.get(path))) {
       throw new IllegalStateException("No directory found at " + path + ".");

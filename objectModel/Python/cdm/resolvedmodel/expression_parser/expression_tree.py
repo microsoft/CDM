@@ -3,6 +3,7 @@
 
 from typing import Union
 
+from cdm.resolvedmodel.expression_parser.input_values import InputValues
 from cdm.resolvedmodel.expression_parser.node import Node
 from cdm.resolvedmodel.expression_parser.predefined_token_enum import PredefinedTokenEnum
 from cdm.resolvedmodel.expression_parser.predefined_tokens import PredefinedTokens
@@ -15,7 +16,8 @@ class ExpressionTree:
 
     _text_to_token_hash = PredefinedTokens._initialize_text_to_token_hash()
 
-    def _create_new_node(self, value: Union[str, bool, int], type: 'PredefinedType') -> 'Node':
+    @staticmethod
+    def _create_new_node(value: Union[str, bool, int], type: 'PredefinedType') -> 'Node':
         """Create a new node of the expression tree"""
         new_node = Node()
 
@@ -27,7 +29,8 @@ class ExpressionTree:
 
         return new_node
 
-    def _construct_expression_tree(self, expression: str) -> 'Node':
+    @staticmethod
+    def _construct_expression_tree(expression: str) -> 'Node':
         """Given an expression string, create an expression tree"""
         if not expression or not expression.strip():
             # caller to log info "Optional expression missing. Implicit expression will automatically apply." if returned null
@@ -40,7 +43,7 @@ class ExpressionTree:
         token_list = Tokenizer._get_expression_as_token_list(expression)
 
         for token in token_list:
-            new_node = self._create_new_node(token[0], token[1])
+            new_node = ExpressionTree._create_new_node(token[0], token[1])
 
             if token[1] == PredefinedType.OPEN_PARENTHESIS:
                 op_stack.append(new_node)
@@ -76,7 +79,7 @@ class ExpressionTree:
                     if curr_node is not None:
                         curr_node._right = new_node
             elif token[1] == PredefinedType.NOT_OPERATOR or token[1] == PredefinedType.OPERATOR:
-                while len(op_stack) > 0 and self._operator_priority(op_stack[-1]._value) < self._operator_priority(token[0]):
+                while len(op_stack) > 0 and ExpressionTree._operator_priority(op_stack[-1]._value) < ExpressionTree._operator_priority(token[0]):
                     top_op_node = op_stack.pop()
 
                     val_node_right = None
@@ -111,7 +114,8 @@ class ExpressionTree:
 
         return value_stack.pop()
 
-    def _operator_priority(self, op: str) -> int:
+    @staticmethod
+    def _operator_priority(op: str) -> int:
         """
         Order of operators
         Higher the priority - higher the precedence
@@ -137,86 +141,96 @@ class ExpressionTree:
                 return 0
 
     @staticmethod
-    def _evaluate_expression_tree(top: 'None', input: 'InputValues') -> Union[str, bool, int]:
+    def _evaluate_condition(condition: str, input_values: 'InputValues') -> bool:
+        """Given a condition and the input values, evaluate the condition"""
+        if not condition or condition.isspace():
+            return True
+
+        tree_root = ExpressionTree._construct_expression_tree(condition)
+        return ExpressionTree._evaluate_expression_tree(tree_root, input_values)
+
+
+    @staticmethod
+    def _evaluate_expression_tree(top: 'Node', input_values: 'InputValues') -> Union[str, bool, int]:
         """Given an expression tree, evaluate the expression"""
-        if top is not None:
-            left_return = False
-            right_return = False
+        if top is None:
+            return False
 
-            if top._left is not None:
-                left_return = ExpressionTree._evaluate_expression_tree(top._left, input)
+        left_return = False
+        right_return = False
 
-            if top._right is not None:
-                right_return = ExpressionTree._evaluate_expression_tree(top._right, input)
+        if top._left is not None:
+            left_return = ExpressionTree._evaluate_expression_tree(top._left, input_values)
 
-            if top._value_type == PredefinedType.CUSTOM:
-                # check if number and return number
-                try:
-                    num = int(top._value)
-                    return num
-                except ValueError:
-                    pass
+        if top._right is not None:
+            right_return = ExpressionTree._evaluate_expression_tree(top._right, input_values)
 
-                # check if bool and return bool
-                if top._value.strip().lower() == 'true':
-                    return True
-                elif top._value.strip().lower() == 'false':
-                    return False
+        if top._value_type == PredefinedType.CUSTOM:
+            # check if number and return number
+            try:
+                num = int(top._value)
+                return num
+            except ValueError:
+                pass
 
-            if top._value not in ExpressionTree._text_to_token_hash:
-                return top._value
+            # check if bool and return bool
+            if top._value.strip().lower() == 'true':
+                return True
+            elif top._value.strip().lower() == 'false':
+                return False
+
+        if top._value not in ExpressionTree._text_to_token_hash:
+            return top._value
+        else:
+            token = ExpressionTree._text_to_token_hash[top._value]
+            if token == PredefinedTokenEnum.AND:
+                return False if left_return is None or right_return is None else left_return and right_return
+            elif token == PredefinedTokenEnum.NOT:
+                return False if right_return is None else not right_return
+            elif token == PredefinedTokenEnum.OR:
+                return False if left_return is None or right_return is None else left_return or right_return
+            elif token == PredefinedTokenEnum.GT:
+                return False if left_return is None or right_return is None else left_return > right_return
+            elif token == PredefinedTokenEnum.LT:
+                return False if left_return is None or right_return is None else left_return < right_return
+            elif token == PredefinedTokenEnum.GE:
+                return False if left_return is None or right_return is None else left_return >= right_return
+            elif token == PredefinedTokenEnum.LE:
+                return False if left_return is None or right_return is None else left_return <= right_return
+            elif token == PredefinedTokenEnum.EQ:
+                return False if left_return is None or right_return is None else left_return == right_return
+            elif token == PredefinedTokenEnum.NE:
+                return False if left_return is None or right_return is None else left_return != right_return
+            elif token == PredefinedTokenEnum.TRUE:
+                return True
+            elif token == PredefinedTokenEnum.FALSE:
+                return False
+            elif token == PredefinedTokenEnum.OPENPAREN or token == PredefinedTokenEnum.CLOSEPAREN:
+                return True
+            elif token == PredefinedTokenEnum.DEPTH:
+                return input_values.next_depth
+            elif token == PredefinedTokenEnum.MAXDEPTH:
+                return input_values.max_depth
+            elif token == PredefinedTokenEnum.ISARRAY:
+                return input_values.is_array
+            elif token == PredefinedTokenEnum.NOMAXDEPTH:
+                return input_values.no_max_depth
+            elif token == PredefinedTokenEnum.MINCARDINALITY:
+                return input_values.min_cardinality
+            elif token == PredefinedTokenEnum.MAXCARDINALITY:
+                return input_values.max_cardinality
+            elif token == PredefinedTokenEnum.NORMALIZED:
+                return input_values.normalized
+            elif token == PredefinedTokenEnum.REFERENCEONLY:
+                return input_values.reference_only
+            elif token == PredefinedTokenEnum.STRUCTURED:
+                return input_values.structured
+            elif token == PredefinedTokenEnum.VIRTUAL:
+                return input_values.is_virtual
+            elif token == PredefinedTokenEnum.ALWAYS:
+                return True
             else:
-                token = ExpressionTree._text_to_token_hash[top._value]
-                if token == PredefinedTokenEnum.AND:
-                    return False if left_return is None or right_return is None else left_return and right_return
-                elif token == PredefinedTokenEnum.NOT:
-                    return False if right_return is None else not right_return
-                elif token == PredefinedTokenEnum.OR:
-                    return False if left_return is None or right_return is None else left_return or right_return
-                elif token == PredefinedTokenEnum.GT:
-                    return False if left_return is None or right_return is None else left_return > right_return
-                elif token == PredefinedTokenEnum.LT:
-                    return False if left_return is None or right_return is None else left_return < right_return
-                elif token == PredefinedTokenEnum.GE:
-                    return False if left_return is None or right_return is None else left_return >= right_return
-                elif token == PredefinedTokenEnum.LE:
-                    return False if left_return is None or right_return is None else left_return <= right_return
-                elif token == PredefinedTokenEnum.EQ:
-                    return False if left_return is None or right_return is None else left_return == right_return
-                elif token == PredefinedTokenEnum.NE:
-                    return False if left_return is None or right_return is None else left_return != right_return
-                elif token == PredefinedTokenEnum.TRUE:
-                    return True
-                elif token == PredefinedTokenEnum.FALSE:
-                    return False
-                elif token == PredefinedTokenEnum.OPENPAREN or token == PredefinedTokenEnum.CLOSEPAREN:
-                    return True
-                elif token == PredefinedTokenEnum.DEPTH:
-                    return input.next_depth
-                elif token == PredefinedTokenEnum.MAXDEPTH:
-                    return input.max_depth
-                elif token == PredefinedTokenEnum.ISARRAY:
-                    return input.is_array
-                elif token == PredefinedTokenEnum.NOMAXDEPTH:
-                    return input.no_max_depth
-                elif token == PredefinedTokenEnum.MINCARDINALITY:
-                    return input.min_cardinality
-                elif token == PredefinedTokenEnum.MAXCARDINALITY:
-                    return input.max_cardinality
-                elif token == PredefinedTokenEnum.NORMALIZED:
-                    return input.normalized
-                elif token == PredefinedTokenEnum.REFERENCEONLY:
-                    return input.reference_only
-                elif token == PredefinedTokenEnum.STRUCTURED:
-                    return input.structured
-                elif token == PredefinedTokenEnum.VIRTUAL:
-                    return input.is_virtual
-                elif token == PredefinedTokenEnum.ALWAYS:
-                    return True
-                else:
-                    return top._value
-
-        return False
+                return top._value
 
     @staticmethod
     def _in_order_traversal(top: 'Node') -> None:

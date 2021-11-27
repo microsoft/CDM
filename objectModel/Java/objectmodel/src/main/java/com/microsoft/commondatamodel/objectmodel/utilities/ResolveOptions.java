@@ -80,6 +80,11 @@ public class ResolveOptions {
    * @deprecated
    */
   public HashSet<CdmEntityDefinition> currentlyResolvingEntities;
+  /**
+   * Indicates if resolution guidance was used at any point during resolution
+   * @deprecated
+   */
+  public boolean usedResolutionGuidance = false;
 
   /**
    * Creates a new instance of Resolve Options using most common parameters.
@@ -304,7 +309,8 @@ public class ResolveOptions {
     resOptCopy.setMapOldCtxToNewCtx(this.mapOldCtxToNewCtx); // ok to share this map
     resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
     resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
-    resOptCopy.currentlyResolvingEntities = new HashSet<>(this.currentlyResolvingEntities);
+    resOptCopy.currentlyResolvingEntities = this.currentlyResolvingEntities; // ok to share this map
+    resOptCopy.usedResolutionGuidance = this.usedResolutionGuidance;
 
     if (this.directives != null) {
       resOptCopy.directives = this.directives.copy();

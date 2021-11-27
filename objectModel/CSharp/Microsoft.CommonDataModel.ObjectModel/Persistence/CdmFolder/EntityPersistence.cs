@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -48,7 +48,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 EntityName = instance.EntityName,
                 ExtendsEntity = Utils.JsonForm(instance.ExtendsEntity, resOpt, options),
                 ExtendsEntityResolutionGuidance = Utils.JsonForm(instance.ExtendsEntityResolutionGuidance, resOpt, options),
-                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits?.AllItems.Where(trait => !trait.IsFromProperty)?.ToList(), options)
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits?.AllItems
+                    .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty)?.ToList(), options),
             };
 
 

@@ -7,7 +7,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.IO;
     using System.Threading.Tasks;
@@ -23,7 +22,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         [TestInitialize]
         public void CheckSampleRunTestsFlag()
         {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("SAMPLE_RUNTESTS environment variable not set.");
@@ -38,7 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             await this.CreateManifest(this.SetupCdmCorpus());
             TestHelper.AssertFolderFilesEquality(
                 TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestCreateManifest)),
-                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestCreateManifest)));
+                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestCreateManifest)), true);
         }
 
         private CdmCorpusDefinition SetupCdmCorpus()
@@ -96,7 +95,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
                 part.Location = cdmCorpus.Storage.CreateRelativeCorpusPath(location, manifestResolved);
 
                 // Add trait to partition for csv params
-                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false);
+                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false) as CdmTraitReference;
                 csvTrait.Arguments.Add("columnHeaders", "true");
                 csvTrait.Arguments.Add("delimiter", ",");
 

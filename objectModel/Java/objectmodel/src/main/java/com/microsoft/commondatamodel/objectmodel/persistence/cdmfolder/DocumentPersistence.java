@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
@@ -13,14 +12,15 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DocumentContent;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.DynamicObjectExtensions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class DocumentPersistence {
@@ -47,12 +47,11 @@ public class DocumentPersistence {
     doc.setFolderPath(path);
     doc.setNamespace(nameSpace);
 
-    if (!Strings.isNullOrEmpty(obj.getSchema())) {
+    if (!StringUtils.isNullOrEmpty(obj.getSchema())) {
       doc.setSchema(obj.getSchema());
     }
 
-    if (DynamicObjectExtensions.hasProperty(obj, "DocumentVersion") && !Strings
-            .isNullOrEmpty(obj.getDocumentVersion())) {
+    if (!StringUtils.isNullOrEmpty(obj.getDocumentVersion())) {
       doc.setDocumentVersion(obj.getDocumentVersion());
     }
 
@@ -74,6 +73,8 @@ public class DocumentPersistence {
           definitions.add(AttributeGroupPersistence.fromData(ctx, d));
         } else if (d.has("traitName")) {
           definitions.add(TraitPersistence.fromData(ctx, d));
+        } else if (d.has("traitGroupName")) {
+          definitions.add(TraitGroupPersistence.fromData(ctx, d));
         } else if (d.has("entityShape")) {
           definitions.add(ConstantEntityPersistence.fromData(ctx, d));
         } else if (d.has("entityName")) {
@@ -85,26 +86,26 @@ public class DocumentPersistence {
     boolean isResolvedDoc = false;
     if (doc.getDefinitions().getCount() == 1 && doc.getDefinitions().get(0).getObjectType() == CdmObjectType.EntityDef) {
       CdmEntityDefinition entity = (CdmEntityDefinition) doc.getDefinitions().get(0);
-      CdmTraitReference resolvedTrait = entity.getExhibitsTraits().item("has.entitySchemaAbstractionLevel");
+      CdmTraitReference resolvedTrait = (CdmTraitReference) entity.getExhibitsTraits().item("has.entitySchemaAbstractionLevel");
       // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
       // or the presence of the attribute context.
       isResolvedDoc = resolvedTrait != null && "resolved".equals(resolvedTrait.getArguments().get(0).getValue());
       isResolvedDoc = isResolvedDoc || entity.getAttributeContext() != null;
     }
 
-    if (!Strings.isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
+    if (!StringUtils.isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
       doc.setJsonSchemaSemanticVersion(obj.getJsonSchemaSemanticVersion());
       if (compareJsonSemanticVersion(ctx, doc.getJsonSchemaSemanticVersion()) > 0) {
           String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersion + " at maximum.";
           message += " Trying to load a document with version " + doc.getJsonSchemaSemanticVersion() + ".";
           if (isResolvedDoc) {
-            Logger.warning(TAG, ctx, message, "fromData");
+            Logger.warning(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistUnsupportedJsonSemVer);
           } else {
-            Logger.error(TAG, ctx, message, "fromData");
+            Logger.error(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.ErrPersistUnsupportedJsonSemVer, jsonSemanticVersion, doc.getJsonSchemaSemanticVersion());
           }
       }
     } else {
-        Logger.warning(TAG, ctx, "jsonSemanticVersion is a required property of a document.", "fromData");
+        Logger.warning(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistJsonSemVerMandatory);
     }
 
     return doc;
@@ -115,12 +116,7 @@ public class DocumentPersistence {
       DocumentContent obj = JMapper.MAP.readValue(jsonData, DocumentContent.class);
       return fromObject(ctx, docName, folder.getNamespace(), folder.getFolderPath(), obj);
     } catch (final Exception e) {
-      Logger.error(
-          DocumentPersistence.class.getSimpleName(),
-          ctx,
-          Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage()),
-          "fromData"
-      );
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistDocConversionFailure, docName, e.getLocalizedMessage());
       return null;
     }
   }
@@ -148,20 +144,18 @@ public class DocumentPersistence {
       String[] docSemanticVersionSplit = documentSemanticVersion.split("\\.");
       String[] currSemanticVersionSplit = jsonSemanticVersion.split("\\.");
 
-      String errorMessage = "jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.";
-
       if (docSemanticVersionSplit.length != 3) {
-        Logger.warning(TAG, ctx, errorMessage, "compareJsonSemanticVersion");
+        Logger.warning(ctx, TAG, "compareJsonSemanticVersion", null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
         return 0;
       }
 
       for (int i = 0; i < 3; ++i) {
           if (!docSemanticVersionSplit[i].equals(currSemanticVersionSplit[i])) {
               try {
-                Integer version = Integer.parseInt(docSemanticVersionSplit[i]);
+                int version = Integer.parseInt(docSemanticVersionSplit[i]);
                 return  version < Integer.parseInt(currSemanticVersionSplit[i]) ? -1 : 1;
               } catch (NumberFormatException e) {
-                Logger.warning(TAG, ctx, errorMessage, "compareJsonSemanticVersion");
+                Logger.warning(ctx, TAG, "compareJsonSemanticVersion", null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
                 return 0;
               }
           }

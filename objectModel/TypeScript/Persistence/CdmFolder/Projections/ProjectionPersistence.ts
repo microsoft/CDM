@@ -16,8 +16,11 @@ import {
     CdmOperationRenameAttributes,
     CdmOperationReplaceAsForeignKey,
     CdmOperationIncludeAttributes,
+    CdmOperationAlterTraits,
+    CdmOperationAddArtifactAttribute,
     cdmOperationType,
     CdmProjection,
+    cdmLogCode,
     copyOptions,
     OperationTypeConvertor,
     resolveOptions,
@@ -38,6 +41,8 @@ import {
     OperationIncludeAttributes,
     OperationRenameAttributes,
     OperationReplaceAsForeignKey,
+    OperationAlterTraits,
+    OperationAddArtifactAttribute,
     Projection
 } from '../types';
 import { OperationAddAttributeGroupPersistence } from './OperationAddAttributeGroupPersistence';
@@ -50,11 +55,15 @@ import { OperationCombineAttributesPersistence } from './OperationCombineAttribu
 import { OperationRenameAttributesPersistence } from './OperationRenameAttributesPersistence';
 import { OperationReplaceAsForeignKeyPersistence } from './OperationReplaceAsForeignKeyPersistence';
 import { OperationIncludeAttributesPersistence } from './OperationIncludeAttributesPersistence';
+import { OperationAlterTraitsPersistence } from './OperationAlterTraitsPersistence';
+import { OperationAddArtifactAttributePersistence } from './OperationAddArtifactAttributePersistence';
 
 /**
  * Projection persistence
  */
 export class ProjectionPersistence {
+    private static TAG: string = ProjectionPersistence.name;
+
     public static fromData(ctx: CdmCorpusContext, object: Projection): CdmProjection {
         if (!object) {
             return undefined;
@@ -114,8 +123,16 @@ export class ProjectionPersistence {
                         const addAttributeGroupOp: CdmOperationAddAttributeGroup = OperationAddAttributeGroupPersistence.fromData(ctx, operationJson as OperationAddAttributeGroup);
                         projection.operations.push(addAttributeGroupOp);
                         break;
+                    case 'alterTraits':
+                        const alterTraitsOp: CdmOperationAlterTraits = OperationAlterTraitsPersistence.fromData(ctx, operationJson as OperationAlterTraits);
+                        projection.operations.push(alterTraitsOp);
+                        break;
+                    case 'addArtifactAttribute':
+                        const addArtifactAttributeOp: CdmOperationAddArtifactAttribute = OperationAddArtifactAttributePersistence.fromData(ctx, operationJson as OperationAddArtifactAttribute);
+                        projection.operations.push(addArtifactAttributeOp);
+                        break;                    
                     default:
-                        Logger.error(ProjectionPersistence.name, ctx, `Invalid operation type '${type}'.`, ProjectionPersistence.fromData.name);
+                        Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjInvalidOpsType, type);
                 }
             });
         }
@@ -136,7 +153,7 @@ export class ProjectionPersistence {
         else if (instance.source && !StringUtils.isNullOrWhiteSpace(instance.source.namedReference) && instance.source.explicitReference === undefined) {
             source = instance.source.namedReference;
         }
-        else if (instance.source && typeof instance.source === typeof (CdmEntityReference)) {
+        else if (instance.source && instance.source.getObjectType() === cdmObjectType.entityRef) {
             source = EntityReferencePersistence.toData(instance.source as CdmEntityReference, resOpt, options) as EntityReferenceDefinition;
         }
 
@@ -184,6 +201,14 @@ export class ProjectionPersistence {
                     case cdmObjectType.operationAddAttributeGroupDef:
                         const addAttributeGroupOp: OperationAddAttributeGroup = OperationAddAttributeGroupPersistence.toData(operation as CdmOperationAddAttributeGroup, resOpt, options);
                         operations.push(addAttributeGroupOp);
+                        break;
+                    case cdmObjectType.operationAlterTraitsDef:
+                        const alterTraitsOp: OperationAlterTraits = OperationAlterTraitsPersistence.toData(operation as CdmOperationAlterTraits, resOpt, options);
+                        operations.push(alterTraitsOp);
+                        break;
+                    case cdmObjectType.operationAddArtifactAttributeDef:
+                        const addArtifactAttributeOp: OperationAddArtifactAttribute = OperationAddArtifactAttributePersistence.toData(operation as CdmOperationAddArtifactAttribute, resOpt, options);
+                        operations.push(addArtifactAttributeOp);
                         break;
                     default:
                         const baseOp: OperationBase = {

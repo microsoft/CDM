@@ -14,14 +14,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
     {
         public static void CheckADLSEnvironment()
         {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("ADLS_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("ADLS_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("ADLS environment not set up");
             }
         }
 
-        public static ADLSAdapter CreateAdapterWithSharedKey(string rootRelativePath = null)
+        public static ADLSAdapter CreateAdapterWithSharedKey(string rootRelativePath = null, bool testBlobHostName = false)
         {
             string hostname = Environment.GetEnvironmentVariable("ADLS_HOSTNAME");
             string rootPath = Environment.GetEnvironmentVariable("ADLS_ROOTPATH");
@@ -31,12 +31,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             Assert.IsFalse(String.IsNullOrEmpty(rootPath), "ADLS_ROOTPATH not set");
             Assert.IsFalse(String.IsNullOrEmpty(sharedKey), "ADLS_SHAREDKEY not set");
 
-            ADLSAdapter adapter = new ADLSAdapter(hostname, GetFullRootPath(rootPath, rootRelativePath), sharedKey);
+            if (testBlobHostName)
+            {
+                hostname = hostname.Replace("dfs", "blob");
+            }
 
-            return adapter;
+            return new ADLSAdapter(hostname, GetFullRootPath(rootPath, rootRelativePath), sharedKey);
         }
 
-        public static ADLSAdapter CreateAdapterWithClientId(string rootRelativePath = null)
+        public static ADLSAdapter CreateAdapterWithClientId(string rootRelativePath = null, bool specifyEndpoint = false, bool testBlobHostName = false)
         {
             string hostname = Environment.GetEnvironmentVariable("ADLS_HOSTNAME");
             string rootPath = Environment.GetEnvironmentVariable("ADLS_ROOTPATH");
@@ -50,9 +53,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             Assert.IsFalse(String.IsNullOrEmpty(clientId), "ADLS_CLIENTID not set");
             Assert.IsFalse(String.IsNullOrEmpty(clientSecret), "ADLS_CLIENTSECRET not set");
 
-            ADLSAdapter adapter = new ADLSAdapter(hostname, GetFullRootPath(rootPath, rootRelativePath), tenant, clientId, clientSecret);
+            if (testBlobHostName)
+            {
+                hostname = hostname.Replace("dfs", "blob");
+            }
 
-            return adapter;
+            if (specifyEndpoint)
+            {
+                return new ADLSAdapter(hostname, GetFullRootPath(rootPath, rootRelativePath), tenant, clientId, clientSecret, Enums.AzureCloudEndpoint.AzurePublic);
+            }
+
+            return new ADLSAdapter(hostname, GetFullRootPath(rootPath, rootRelativePath), tenant, clientId, clientSecret);
         }
 
         public static string GetFullRootPath(string rootPath, string rootRelativePath)

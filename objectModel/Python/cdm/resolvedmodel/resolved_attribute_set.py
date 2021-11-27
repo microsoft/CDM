@@ -151,7 +151,22 @@ class ResolvedAttributeSet(RefCounted):
 
         return ras_result
 
-    def apply_traits(self, traits: 'ResolvedTraitSet', res_opt: 'ResolveOptions', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
+    def set_target_owner(self, entity: 'CdmEntityDefinition'):
+        """Recursively sets the target owner's to be the provided entity."""
+        for ra in self._set:
+            ra.owner = entity
+            if isinstance(ra.target, ResolvedAttributeSet):
+                ra.target.set_target_owner(entity)
+
+    def apply_traits(self, traits: 'ResolvedTraitSet') -> None:
+        """Apply a set of resolved traits to this resolved attribute set."""
+        for res_att in self._set:
+            if isinstance(res_att.target, ResolvedAttributeSet):
+                res_att.target.apply_traits(traits)
+            else:
+                res_att.resolved_traits = res_att.resolved_traits.merge_set(traits)
+
+    def apply_traits_resolution_guidance(self, traits: 'ResolvedTraitSet', res_opt: 'ResolveOptions', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
                      actions: List['AttributeResolutionApplier']) -> 'ResolvedAttributeSet':
         ras_result = self
 
@@ -213,7 +228,7 @@ class ResolvedAttributeSet(RefCounted):
             acp = AttributeContextParameters(
                 under=applied_att_set.attribute_context,
                 type=CdmAttributeContextType.GENERATED_SET,
-                name='_generatedAttributeSet')
+                name='_generatedAttributeSet_template')
             applied_att_set.attribute_context = CdmAttributeContext._create_child_under(traits.res_opt, acp)
             acp = AttributeContextParameters(
                 under=applied_att_set.attribute_context,
@@ -437,10 +452,6 @@ class ResolvedAttributeSet(RefCounted):
     def copy(self) -> 'ResolvedAttributeSet':
         copy = ResolvedAttributeSet()
         copy.attribute_context = self.attribute_context
-
-        # Save the mappings to overwrite. Maps from merge may not be correct.
-        new_rattr_to_attctxset = OrderedDict()  # type: Dict[ResolvedAttribute, List[CdmAttributeContext]]
-        new_attctx_to_rattr = {}  # type: Dict[CdmAttributeContext, ResolvedAttribute]
 
         for source_ra in self._set:
             copy_ra = source_ra.copy()

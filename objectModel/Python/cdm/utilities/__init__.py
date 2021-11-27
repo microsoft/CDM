@@ -21,7 +21,6 @@ from .identifier_ref import IdentifierRef
 from .import_info import ImportInfo
 from .jobject import JObject
 from .ref_counted import RefCounted
-from .resolve_context_scope import ResolveContextScope
 from .resolve_options import ResolveOptions
 from .symbol_set import SymbolSet
 from .trait_to_property_map import TraitToPropertyMap
@@ -29,7 +28,7 @@ from .visit_callback import VisitCallback
 from .logging import logger
 from .logging.logger import _LoggerScope
 from .logging import event_list
-from .errors import Errors
+from .logging.telemetry_client import TelemetryClient
 from .storage_utils import StorageUtils
 
 
@@ -45,7 +44,6 @@ __all__ = [
     'DepthInfo',
     'DocsResult',
     'EventCallback',
-    'Errors',
     'FriendlyFormatNode',
     'IdentifierRef',
     'ImportInfo',
@@ -56,12 +54,12 @@ __all__ = [
     'event_list',
     'primitive_appliers',
     'RefCounted',
-    'ResolveContextScope',
     'ResolveOptions',
     'string_utils',
     'StorageUtils',
     'SymbolSet',
     'time_utils',
+    'TelemetryClient',
     'TraitToPropertyMap',
     'VisitCallback',
 ]

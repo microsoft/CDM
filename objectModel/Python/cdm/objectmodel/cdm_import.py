@@ -4,8 +4,10 @@
 from typing import Optional, TYPE_CHECKING
 import warnings
 
-from cdm.utilities import logger, Errors, ResolveOptions
+from cdm.utilities import logger, ResolveOptions
 from cdm.enums import CdmObjectType
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object_simple import CdmObjectSimple
 
@@ -18,13 +20,12 @@ class CdmImport(CdmObjectSimple):
     def __init__(self, ctx: 'CdmCorpusContext', corpus_path: str, moniker: str) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmImport.__name__
         self.corpus_path = corpus_path  # type: str
         self.moniker = moniker  # type: str
 
         # --- internal ---
         self._document = None  # type: Optional[CdmDocumentDefinition]
-
-        self._TAG = CdmImport.__name__
 
     @property
     def doc(self) -> Optional['CdmDocumentDefinition']:
@@ -47,13 +48,14 @@ class CdmImport(CdmObjectSimple):
             copy.corpus_path = self.corpus_path
             copy.moniker = self.moniker
 
-        copy._document = self._document
+        copy._document = self._document.copy(res_opt) if self._document else None
 
         return copy
 
     def validate(self) -> bool:
         if not bool(self.corpus_path):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['corpus_path']))
+            missing_fields = ['corpus_path']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

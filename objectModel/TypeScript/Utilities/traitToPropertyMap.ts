@@ -13,8 +13,10 @@ import {
     CdmObjectDefinition,
     CdmObjectReference,
     cdmObjectType,
+    cdmLogCode,
     CdmTraitCollection,
     CdmTraitReference,
+    CdmTraitGroupReference,
     CdmTypeAttributeDefinition,
     Logger,
     ResolvedTrait
@@ -58,6 +60,8 @@ const dataFormatTraitNames: string[] = [
  * however, it does make it easier to work with the consumption object model so ... i will hold my nose.
  */
 export class traitToPropertyMap {
+    private TAG: string = traitToPropertyMap.name;
+    
     private host: CdmObject;
 
     private get ctx(): CdmCorpusContext {
@@ -169,6 +173,9 @@ export class traitToPropertyMap {
                 return this.fetchTraitReference('is.nullable', fromProperty) !== undefined;
             case 'isReadOnly':
                 return this.fetchTraitReference('is.readOnly', fromProperty) !== undefined;
+            case 'isResolved':
+                const trait = this.fetchTraitReference('has.entitySchemaAbstractionLevel', fromProperty)
+                return  trait?.arguments?.fetchValue('level') === 'resolved'
             case 'valueConstrainedToList':
                 return this.fetchTraitReference('is.constrainedList', fromProperty) !== undefined;
             case 'maximumValue':
@@ -186,6 +193,9 @@ export class traitToPropertyMap {
             case 'primaryKey':
                 const attRef: ArgumentValue = this.fetchTraitReferenceArgumentValue(this.fetchTraitReference('is.identifiedBy', fromProperty), 'attribute');
                 if (attRef) {
+                    if (typeof attRef === 'string' || attRef instanceof String) {
+                        return attRef;
+                    }
                     return (attRef as CdmObject).fetchObjectDefinitionName();
                 }
                 break;
@@ -201,7 +211,7 @@ export class traitToPropertyMap {
     public fetchTraitReference(traitName: string, fromProperty: boolean = false): CdmTraitReference {
         const traitIndex: number = this.traits === undefined ? -1 : this.traits.indexOf(traitName, fromProperty);
 
-        return traitIndex !== -1 ? this.traits.allItems[traitIndex] : undefined;
+        return traitIndex !== -1 ? this.traits.allItems[traitIndex] as CdmTraitReference : undefined;
     }
 
     /**
@@ -335,7 +345,7 @@ export class traitToPropertyMap {
     /**
      * @internal
      */
-    public traitsToDataFormat(fromProperty: boolean = false): cdmDataFormat {
+    public traitsToDataFormat(onlyFromProperty: boolean = false): cdmDataFormat {
         let isArray: boolean = false;
         let isBig: boolean = false;
         let isSmall: boolean = false;
@@ -347,7 +357,10 @@ export class traitToPropertyMap {
 
         let baseType: cdmDataFormat = 0;
         for (const trait of this.traits) {
-            if (fromProperty && !trait.isFromProperty) { continue; }
+            if (onlyFromProperty && 
+                (trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty)) {
+                continue;
+            }
             const traitName: string = trait.fetchObjectDefinitionName();
             // tslint:disable:switch-default
             switch (traitName) {
@@ -503,7 +516,7 @@ export class traitToPropertyMap {
     public fetchTraitTable(traitName: string, argName: string, fromProperty: boolean): CdmConstantEntityDefinition {
         let trait: CdmTraitReference;
         const traitIndex: number = this.traits.indexOf(traitName, fromProperty);
-        trait = traitIndex !== -1 ? this.traits.allItems[traitIndex] : undefined;
+        trait = traitIndex !== -1 ? this.traits.allItems[traitIndex] as CdmTraitReference : undefined;
 
         const locEntRef: CdmObject = this.fetchTraitReferenceArgumentValue(trait, argName) as CdmObject;
         if (locEntRef) {
@@ -590,7 +603,7 @@ export class traitToPropertyMap {
                 }
                 if (defVal.getObjectType() === cdmObjectType.entityRef) {
                     // no doc or directives should work ?
-                    const cEnt: CdmConstantEntityDefinition = defVal.fetchObjectDefinition(undefined) as CdmConstantEntityDefinition;
+                    const cEnt: CdmConstantEntityDefinition = defVal.fetchObjectDefinition() as CdmConstantEntityDefinition;
 
                     if (cEnt) {
                         const esName: string = cEnt.getEntityShape()
@@ -671,10 +684,10 @@ export class traitToPropertyMap {
                 newDefault = this.ctx.corpus.MakeRef(cdmObjectType.entityRef, cEnt, false);
                 this.updateTraitArgument('does.haveDefault', 'default', newDefault);
             } else {
-                Logger.error(traitToPropertyMap.name, this.host.ctx, 'Default value missing languageTag or displayText.');
+                Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrValdnMissingLanguageTag);
             }
         } else {
-            Logger.error(traitToPropertyMap.name, this.host.ctx, 'Default value type not supported. Please use Array.');
+            Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrUnsupportedType);
         }
     }
 

@@ -4,6 +4,8 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 {
     using System.Collections.Generic;
+    using System.Threading;
+    using System;
 
     /// <summary>
     /// EventList is a supporting class for the logging system and allows subset of messages
@@ -31,25 +33,56 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// Specifies whether event recording is enabled or not.
         /// </summary>
         internal bool IsRecording { get; private set; } = false;
+
         /// <summary>
         /// Counts how many times we entered into nested functions that each enable recording.
         /// We only clear the previously recorded events if the nesting level is at 0.
         /// </summary>
-        private int nestingLevel = 0;
+        internal int nestingLevel { get; private set; } = 0;
+
+        /// <summary>
+        /// Identifies the outermost level api method called by user.
+        /// </summary>
+        public Guid ApiCorrelationId { get; private set; }
+
+        /// <summary>
+        /// Lock to be used to enter and leave scope.
+        /// </summary>
+        private SpinLock spinLock;
+
+        public EventList() : base()
+        {
+            spinLock = new SpinLock(false);
+        }
 
         /// <summary>
         /// Clears the log recorder and enables recoding of log messages.
         /// </summary>
         internal void Enable()
         {
-            // If we are going into nested recorded functions, we should not clear previously recorded events
-            if (nestingLevel == 0)
+            bool lockTaken = false;
+            try
             {
-                Clear();
-                IsRecording = true;
+                spinLock.Enter(ref lockTaken);
+
+                // If we are going into nested recorded functions, we should not clear previously recorded events
+                if (nestingLevel == 0)
+                {
+                    Clear();
+                    IsRecording = true;
+                    ApiCorrelationId = Guid.NewGuid();
+                }
+
+                nestingLevel++;
+            }
+            finally
+            {
+                if (lockTaken)
+                {
+                    spinLock.Exit();
+                }
             }
 
-            nestingLevel++;
         }
 
         /// <summary>
@@ -57,11 +90,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// </summary>
         internal void Disable()
         {
-            nestingLevel--;
-
-            if (nestingLevel == 0)
+            bool lockTaken = false;
+            try
             {
-                IsRecording = false;
+                spinLock.Enter(ref lockTaken);
+                nestingLevel--;
+
+                if (nestingLevel == 0)
+                {
+                    IsRecording = false;
+                    ApiCorrelationId = Guid.NewGuid();
+                }
+            }
+            finally
+            {
+                if (lockTaken)
+                {
+                    spinLock.Exit();
+                }
             }
         }
 

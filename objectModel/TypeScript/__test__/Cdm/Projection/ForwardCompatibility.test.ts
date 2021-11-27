@@ -3,12 +3,10 @@
 
 import {
     CdmCorpusDefinition,
-    CdmEntityDefinition,
     cdmStatusLevel
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
-import { AttributeContextUtil } from './AttributeContextUtil';
 
 /**
  * Tests all the projections will not break the OM even if not implemented.
@@ -17,7 +15,7 @@ describe('Cdm/Projection/ForwardCompatibility', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestForwardCompatibility';
+    const testsSubpath: string = 'Cdm/Projection/ForwardCompatibilityTest';
 
     /**
      * Tests running all the projections (includes projections that are not implemented).
@@ -34,14 +32,6 @@ describe('Cdm/Projection/ForwardCompatibility', () => {
             }
         }, cdmStatusLevel.error);
 
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-
-        const entTestEntityStringReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        expect(entTestEntityStringReference)
-            .toBeTruthy();
-        const resolvedTestEntityStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, [ 'referenceOnly' ]);
-        expect(resolvedTestEntityStringReference)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, [ 'referenceOnly' ]);
     });
 });

@@ -41,9 +41,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Concurrent
         /// </summary>
         private int? permits;
 
-        public ConcurrentSemaphore()
+        public ConcurrentSemaphore(int? permits = null)
         {
-            this.Permits = null;            
+            this.Permits = permits;
         }
 
         /// <summary>

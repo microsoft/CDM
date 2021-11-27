@@ -28,7 +28,9 @@ import { PurposePersistence as CdmFolderPurposePersistence } from './CdmFolder/P
 import { PurposeReferencePersistence as CdmFolderPurposeReferencePersistence } from './CdmFolder/PurposeReferencePersistence';
 import { ReferencedEntityDeclarationPersistence as CdmFolderReferencedEntityDeclarationPersistence } from './CdmFolder/ReferencedEntityDeclarationPersistence';
 import { TraitPersistence as CdmFolderTraitPersistence } from './CdmFolder/TraitPersistence';
+import { TraitGroupPersistence as CdmFolderTraitGroupPersistence } from './CdmFolder/TraitGroupPersistence';
 import { TraitReferencePersistence as CdmFolderTraitReferencePersistence } from './CdmFolder/TraitReferencePersistence';
+import { TraitGroupReferencePersistence as CdmFolderTraitGroupReferencePersistence } from './CdmFolder/TraitGroupReferencePersistence';
 import { TypeAttributePersistence as CdmFolderTypeAttributePersistence } from './CdmFolder/TypeAttributePersistence';
 import * as CdmFolderTypes from './CdmFolder/types';
 
@@ -71,7 +73,9 @@ const CdmFolder = {
     PurposePersistence: CdmFolderPurposePersistence,
     PurposeReferencePersistence: CdmFolderPurposeReferencePersistence,
     TraitPersistence: CdmFolderTraitPersistence,
+    TraitGroupPersistence: CdmFolderTraitGroupPersistence,
     TraitReferencePersistence: CdmFolderTraitReferencePersistence,
+    TraitGroupReferencePersistence: CdmFolderTraitGroupReferencePersistence,
     TypeAttributePersistence: CdmFolderTypeAttributePersistence,
     AttributeResolutionGuidancePersistence: CdmFolderAttributeResolutionGuidancePersistence,
     types: CdmFolderTypes
