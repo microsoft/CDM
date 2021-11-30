@@ -42,6 +42,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         private string _endpoint;
 
+        private string Baseuri
+        {
+            get
+            {
+                return $"https://{this.Endpoint}/databases";
+            }
+        }
+
         /// <summary>
         /// The tenant.
         /// </summary>
@@ -176,12 +184,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 if (formattedCorpusPath.Equals("/"))
                 {
-                    return $"https://{this.Endpoint}?{ApiVersion}";
+                    return $"{this.Baseuri}?{ApiVersion}";
                 }
                 if (formattedCorpusPath.Equals($"/{DatabasesManifest}")
                    || formattedCorpusPath.Equals(DatabasesManifest))
                 {
-                    return $"https://{this.Endpoint}?{ApiVersion}";
+                    return $"{this.Baseuri}?{ApiVersion}";
                 }
 
                 formattedCorpusPath = formattedCorpusPath.TrimStart('/');
@@ -192,11 +200,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     //paths[1] : filename
                     if (paths[1].EndsWith(".manifest.cdm.json"))
                     {
-                        return $"https://{this.Endpoint}/{paths[0]}?{ApiVersion}";
+                        return $"{this.Baseuri}/{paths[0]}?{ApiVersion}";
                     }
                     else if (paths[1].EndsWith(".cdm.json"))
                     {
-                        return $"https://{this.Endpoint}/{paths[0]}/tables/{paths[1].Replace(".cdm.json", "")}?{ApiVersion}";
+                        return $"{this.Baseuri}/{paths[0]}/tables/{paths[1].Replace(".cdm.json", "")}?{ApiVersion}";
                     }
                     else
                     {
@@ -209,11 +217,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     //paths[1] : filename
                     if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
                     {
-                        return $"https://{this.Endpoint}/{paths[0]}/relationships?{ApiVersion}";
+                        return $"{this.Baseuri}/{paths[0]}/relationships?{ApiVersion}";
                     }
                     else if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("entitydefinition"))
                     {
-                        return $"https://{this.Endpoint}/{paths[0]}/tables?{ApiVersion}";
+                        return $"{this.Baseuri}/{paths[0]}/tables?{ApiVersion}";
                     }
                     else
                     {
@@ -227,7 +235,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     //paths[1] : filename
                     if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
                     {
-                        return $"https://{this.Endpoint}/{paths[0]}/relationships/{paths[3]}?{ApiVersion}";
+                        return $"{this.Baseuri}/{paths[0]}/relationships/{paths[3]}?{ApiVersion}";
                     }
                     else
                     {
@@ -320,7 +328,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 throw new Exception($"Syms adapter: Conversion from corpus path {folderCorpusPath} to adpater is failed. Path must be in format : <databasename>/.");
             }
 
-            var url = $"https://{this.Endpoint}/{paths[0]}/tables?{ApiVersion}";
+            var url = $"{this.Baseuri}/{paths[0]}/tables?{ApiVersion}";
             string continuationToken = null;
             do
             {
@@ -495,7 +503,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 endpoint = endpoint.Replace("https://", "");
             }
 
-            return $"{endpoint.TrimEnd('/')}/databases";
+            return $"{endpoint.TrimEnd('/')}";
         }
 
         private async Task<AuthenticationResult> GenerateBearerToken()

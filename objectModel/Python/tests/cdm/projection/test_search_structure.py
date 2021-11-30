@@ -4,7 +4,7 @@
 import os
 import unittest
 
-from cdm.objectmodel import CdmCorpusDefinition
+from cdm.objectmodel import CdmCorpusDefinition, CdmTypeAttributeDefinition
 from cdm.resolvedmodel import ResolvedAttribute
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
@@ -66,37 +66,37 @@ class SearchStructureUnitTest(unittest.TestCase):
         pc = ProjectionContext(proj_dir, None)
 
         p1 = ProjectionAttributeState(corpus.ctx)
-        p1._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '1', '1', None)
+        p1._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '1'), '1', None)
         p2 = ProjectionAttributeState(corpus.ctx)
-        p2._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '2', '2', None)
+        p2._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '2'), '2', None)
         p4 = ProjectionAttributeState(corpus.ctx)
-        p4._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '4', '4', None)
+        p4._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '4'), '4', None)
         p5 = ProjectionAttributeState(corpus.ctx)
-        p5._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '5', '5', None)
+        p5._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '5'), '5', None)
         p6 = ProjectionAttributeState(corpus.ctx)
-        p6._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '6', '6', None)
+        p6._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '6'), '6', None)
         p7 = ProjectionAttributeState(corpus.ctx)
-        p7._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '7', '7', None)
+        p7._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '7'), '7', None)
         p8 = ProjectionAttributeState(corpus.ctx)
-        p8._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '8', '8', None)
+        p8._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '8'), '8', None)
         p9 = ProjectionAttributeState(corpus.ctx)
-        p9._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '9', '9', None)
+        p9._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '9'), '9', None)
         p10 = ProjectionAttributeState(corpus.ctx)
-        p10._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '10', '10', None)
+        p10._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '10'), '10', None)
         p11 = ProjectionAttributeState(corpus.ctx)
-        p11._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '11', '11', None)
+        p11._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '11'), '11', None)
         p12 = ProjectionAttributeState(corpus.ctx)
-        p12._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '12', '12', None)
+        p12._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '12'), '12', None)
         p13 = ProjectionAttributeState(corpus.ctx)
-        p13._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '13', '13', None)
+        p13._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '13'), '13', None)
         p14 = ProjectionAttributeState(corpus.ctx)
-        p14._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '14', '14', None)
+        p14._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '14'), '14', None)
         p15 = ProjectionAttributeState(corpus.ctx)
-        p15._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '15', '15', None)
+        p15._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '15'), '15', None)
         p16 = ProjectionAttributeState(corpus.ctx)
-        p16._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '16', '16', None)
+        p16._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '16'), '16', None)
         p17 = ProjectionAttributeState(corpus.ctx)
-        p17._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, '17', '17', None)
+        p17._current_resolved_attribute = ResolvedAttribute(proj_dir._res_opt, CdmTypeAttributeDefinition(corpus.ctx, '17'), '17', None)
 
         p1._previous_state_list = []
         p2._previous_state_list = []

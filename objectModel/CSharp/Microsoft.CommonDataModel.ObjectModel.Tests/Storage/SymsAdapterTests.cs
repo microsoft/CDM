@@ -130,27 +130,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             string corpusPathDatabases1 = "/";
             string corpusPathDatabases2 = DatabasesManifest;
             string corpusPathDatabases3 = $"/{DatabasesManifest}";
-            string adapterPathDatabases = $"https://{adapter.Endpoint}?{ApiVersion}";
+            string adapterPathDatabases = $"https://{adapter.Endpoint}/databases?{ApiVersion}";
             Assert.IsTrue(string.Equals(adapterPathDatabases, adapter.CreateAdapterPath(corpusPathDatabases1)));
             Assert.IsTrue(string.Equals(adapterPathDatabases, adapter.CreateAdapterPath(corpusPathDatabases2)));
             Assert.IsTrue(string.Equals(adapterPathDatabases, adapter.CreateAdapterPath(corpusPathDatabases3)));
 
             string entityName = "testEntityName";
             string corpusPathEntity = $"{databaseName}/{entityName}.cdm.json";
-            string adapterPathEntity = $"https://{adapter.Endpoint}/{databaseName}/tables/{entityName}?{ApiVersion}";
+            string adapterPathEntity = $"https://{adapter.Endpoint}/databases/{databaseName}/tables/{entityName}?{ApiVersion}";
             Assert.IsTrue(string.Equals(adapterPathEntity, adapter.CreateAdapterPath(corpusPathEntity)));
 
             string corpusPathEntities = $"{databaseName}/{databaseName}.manifest.cdm.json/entitydefinition";
-            string adapterPathEntities = $"https://{adapter.Endpoint}/{databaseName}/tables?{ApiVersion}";
+            string adapterPathEntities = $"https://{adapter.Endpoint}/databases/{databaseName}/tables?{ApiVersion}";
             Assert.IsTrue(string.Equals(adapterPathEntities, adapter.CreateAdapterPath(corpusPathEntities)));
 
             string relationshipName = "testRelationshipName";
             string corpusPathRelationship = $"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationshipName}";
-            string adapterPathRelationship = $"https://{adapter.Endpoint}/{databaseName}/relationships/{relationshipName}?{ApiVersion}";
+            string adapterPathRelationship = $"https://{adapter.Endpoint}/databases/{databaseName}/relationships/{relationshipName}?{ApiVersion}";
             Assert.IsTrue(string.Equals(adapterPathRelationship, adapter.CreateAdapterPath(corpusPathRelationship)));
 
             string corpusPathRelationships = $"{databaseName}/{databaseName}.manifest.cdm.json/relationships";
-            string adapterPathRelationships = $"https://{adapter.Endpoint}/{databaseName}/relationships?{ApiVersion}";
+            string adapterPathRelationships = $"https://{adapter.Endpoint}/databases/{databaseName}/relationships?{ApiVersion}";
             Assert.IsTrue(string.Equals(adapterPathRelationships, adapter.CreateAdapterPath(corpusPathRelationships)));
         }
 

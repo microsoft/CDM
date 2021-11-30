@@ -124,7 +124,10 @@ class PersistenceLayerTest(unittest.TestCase):
         manifest_read_databases = await corpus.fetch_object_async('syms:/databases.manifest.cdm.json')
         self.assertIsNotNone(manifest_read_databases)
         self.assertEqual('databases.manifest.cdm.json', manifest_read_databases.manifest_name)
-        self.assertEqual(manifest_read_databases.sub_manifests[0].manifest_name, manifest_expected.manifest_name)
+
+        if not any(db.manifest_name == manifest_expected.manifest_name for db in
+                   manifest_read_databases.sub_manifests):
+            self.fail('Database {} does not exist'.format(manifest_expected.manifest_name))
 
         manifest_actual = await corpus.fetch_object_async('syms:/{}/{}.manifest.cdm.json'.format(manifest_expected.manifest_name, manifest_expected.manifest_name),
                                                      manifest_read_databases, None, True)
@@ -192,13 +195,13 @@ class PersistenceLayerTest(unittest.TestCase):
     
         corpus.storage.unmount('cdm')
         corpus.storage.default_namespace = 'localInput'
-    
+
         manifest = await corpus.fetch_object_async('default.manifest.cdm.json')
         manifest.manifest_name = SymsTestHelper.DATABASE_NAME
         await self.run_syms_save_manifest(manifest)
         await self.run_syms_fetch_manifest(corpus, manifest, 'default.manifest.cdm.json')
         await self.run_syms_fetch_document(corpus, manifest)
-    
+
         manifest_modified = await corpus.fetch_object_async('defaultmodified.manifest.cdm.json')
         manifest_modified.manifest_name = SymsTestHelper.DATABASE_NAME
         manifest_modified.entities[0].set_last_file_modified_time(datetime.datetime.now(datetime.timezone.utc))

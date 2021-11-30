@@ -103,27 +103,31 @@ class SymsStorageAdapterTestCase(unittest.TestCase):
         corpus_path_databases1 = '/'
         corpus_path_databases2 = self.databases_manifest
         corpus_path_databases3 = '/{}'.format(self.databases_manifest)
-        adapter_path_databases = 'https://{}?{}'.format(adapter.endpoint, self.api_version)
+        adapter_path_databases = 'https://{}/databases?{}'.format(adapter.endpoint, self.api_version)
         self.assertTrue(adapter_path_databases == adapter.create_adapter_path(corpus_path_databases1))
         self.assertTrue(adapter_path_databases == adapter.create_adapter_path(corpus_path_databases2))
         self.assertTrue(adapter_path_databases == adapter.create_adapter_path(corpus_path_databases3))
-    
+
         entity_name = 'testEntityName'
         corpus_path_entity = '{}/{}.cdm.json'.format(database_name, entity_name)
-        adapter_path_entity = 'https://{}/{}/tables/{}?{}'.format(adapter.endpoint, database_name, entity_name, self.api_version)
+        adapter_path_entity = 'https://{}/databases/{}/tables/{}?{}'.format(adapter.endpoint, database_name, entity_name,
+                                                                  self.api_version)
         self.assertTrue(adapter_path_entity == adapter.create_adapter_path(corpus_path_entity))
-    
+
         corpus_path_entities = '{}/{}.manifest.cdm.json/entitydefinition'.format(database_name, database_name)
-        adapter_path_entities = 'https://{}/{}/tables?{}'.format(adapter.endpoint, database_name, self.api_version)
+        adapter_path_entities = 'https://{}/databases/{}/tables?{}'.format(adapter.endpoint, database_name, self.api_version)
         self.assertTrue(adapter_path_entities == adapter.create_adapter_path(corpus_path_entities))
-    
+
         relationship_name = 'testRelationshipName'
-        corpus_path_relationship = '{}/{}.manifest.cdm.json/relationships/{}'.format(database_name, database_name, relationship_name)
-        adapter_path_relationship = 'https://{}/{}/relationships/{}?{}'.format(adapter.endpoint, database_name, relationship_name, self.api_version)
+        corpus_path_relationship = '{}/{}.manifest.cdm.json/relationships/{}'.format(database_name, database_name,
+                                                                                     relationship_name)
+        adapter_path_relationship = 'https://{}/databases/{}/relationships/{}?{}'.format(adapter.endpoint, database_name,
+                                                                               relationship_name, self.api_version)
         self.assertTrue(adapter_path_relationship == adapter.create_adapter_path(corpus_path_relationship))
-    
+
         corpus_path_relationships = '{}/{}.manifest.cdm.json/relationships'.format(database_name, database_name)
-        adapter_path_relationships = 'https://{}/{}/relationships?{}'.format(adapter.endpoint, database_name, self.api_version)
+        adapter_path_relationships = 'https://{}/databases/{}/relationships?{}'.format(adapter.endpoint, database_name,
+                                                                             self.api_version)
         self.assertTrue(adapter_path_relationships == adapter.create_adapter_path(corpus_path_relationships))
 
     async def run_fetch_all_files_async_test(self, adapter: SymsAdapter):

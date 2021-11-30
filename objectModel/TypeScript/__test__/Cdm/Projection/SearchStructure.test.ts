@@ -3,6 +3,7 @@
 
 import {
     CdmCorpusDefinition,
+    CdmTypeAttributeDefinition,
     ProjectionAttributeState,
     ProjectionContext,
     ProjectionDirective,
@@ -73,37 +74,37 @@ describe('Cdm/Projection/SearchStructureUnitTest', () => {
         const pc: ProjectionContext = new ProjectionContext(projDir, undefined);
 
         const p1: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p1.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '1', '1', undefined);
+        p1.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '1'), '1', undefined);
         const p2: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p2.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '2', '2', undefined);
+        p2.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '2'), '2', undefined);
         const p4: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p4.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '4', '4', undefined);
+        p4.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '4'), '4', undefined);
         const p5: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p5.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '5', '5', undefined);
+        p5.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '5'), '5', undefined);
         const p6: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p6.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '6', '6', undefined);
+        p6.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '6'), '6', undefined);
         const p7: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p7.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '7', '7', undefined);
+        p7.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '7'), '7', undefined);
         const p8: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p8.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '8', '8', undefined);
+        p8.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '8'), '8', undefined);
         const p9: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p9.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '9', '9', undefined);
+        p9.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '9'), '9', undefined);
         const p10: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p10.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '10', '10', undefined);
+        p10.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '10'), '10', undefined);
         const p11: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p11.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '11', '11', undefined);
+        p11.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '11'), '11', undefined);
         const p12: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p12.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '12', '12', undefined);
+        p12.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '12'), '12', undefined);
         const p13: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p13.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '13', '13', undefined);
+        p13.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '13'), '13', undefined);
         const p14: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p14.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '14', '14', undefined);
+        p14.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '14'), '14', undefined);
         const p15: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p15.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '15', '15', undefined);
+        p15.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '15'), '15', undefined);
         const p16: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p16.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '16', '16', undefined);
+        p16.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '16'), '16', undefined);
         const p17: ProjectionAttributeState = new ProjectionAttributeState(corpus.ctx);
-        p17.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, '17', '17', undefined);
+        p17.currentResolvedAttribute = new ResolvedAttribute(projDir.resOpt, new CdmTypeAttributeDefinition(corpus.ctx, '17'), '17', undefined);
 
         p1.previousStateList = [];
         p2.previousStateList = [];

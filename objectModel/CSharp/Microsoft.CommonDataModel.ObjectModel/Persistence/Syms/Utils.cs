@@ -668,7 +668,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Convert syms data type to CDM data type.
         /// </summary>
-        public static CdmDataFormat SymsDataTypeToCDMDataFormat(TypeInfo typeInfo)
+        internal static CdmDataFormat SymsDataTypeToCdmDataFormat(TypeInfo typeInfo)
         {
             switch (typeInfo.TypeName.ToLower())
             {
@@ -681,11 +681,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 case "string":
                     if (typeInfo.Length == 1)
                         return CdmDataFormat.Char;
-                    else if (typeInfo.Length > 1)
+                    if (typeInfo.Properties.ContainsKey("guid") && typeInfo.Properties["guid"].ToObject<bool>() == true)
                         return CdmDataFormat.Guid;
-                    if (typeInfo.Properties.ContainsKey("json"))
+                    if (typeInfo.Properties.ContainsKey("json") && typeInfo.Properties["json"].ToObject<bool>() == true)
                         return CdmDataFormat.Json;
-                    else if (typeInfo.Properties.ContainsKey("dateTimeOffset"))
+                    if (typeInfo.Properties.ContainsKey("dateTimeOffset") && typeInfo.Properties["dateTimeOffset"].ToObject<bool>() == true)
                         return CdmDataFormat.DateTimeOffset;
                     return CdmDataFormat.String;
                 case "char":
@@ -699,7 +699,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 case "date":
                     return CdmDataFormat.Date;
                 case "timestamp":
-                    if (typeInfo.Properties.ContainsKey("dateTime"))
+                    if (typeInfo.Properties.ContainsKey("dateTime") && typeInfo.Properties["dateTime"].ToObject<bool>() == true)
                         return CdmDataFormat.DateTime;
                     return CdmDataFormat.Time;
                 case "decimal":
@@ -712,9 +712,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         }
 
         /// <summary>
-        /// Convert syms data type to CDM data type.
+        /// Convert CDM data type to SyMS data type.
         /// </summary>
-        public static TypeInfo CDMDataFormatToSymsDataType(CdmDataFormat cdmDataFormat, TypeInfo typeInfo)
+        internal static TypeInfo CdmDataFormatToSymsDataType(CdmDataFormat cdmDataFormat, TypeInfo typeInfo)
         {
             switch (cdmDataFormat)
             {

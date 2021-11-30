@@ -101,7 +101,7 @@ export class DocumentPersistence {
                 if (isResolvedDoc) {
                     Logger.warning(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.WarnPersistUnsupportedJsonSemVer, CdmDocumentDefinition.currentJsonSchemaSemanticVersion, document.jsonSchemaSemanticVersion);
                 } else {
-                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistUnsupportedJsonSemVer, CdmDocumentDefinition.currentJsonSchemaSemanticVersion);
+                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistUnsupportedJsonSemVer, CdmDocumentDefinition.currentJsonSchemaSemanticVersion, document.jsonSchemaSemanticVersion);
                 }
             }
         } else {

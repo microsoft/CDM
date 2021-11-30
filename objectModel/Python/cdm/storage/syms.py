@@ -43,6 +43,7 @@ class SymsAdapter(NetworkAdapter, StorageAdapterBase):
 
         if endpoint:
             self._endpoint = self._format_endpoint(endpoint)  # type: Optional[str]
+            self._base_uri = 'https://{}/databases'.format(self._endpoint)
             self.client_id = kwargs.get('client_id', None)  # type: Optional[str]
             self.secret = kwargs.get('secret', None)  # type: Optional[str]
             self.token_provider = kwargs.get('token_provider', None)  # type: Optional[TokenProvider]
@@ -55,6 +56,10 @@ class SymsAdapter(NetworkAdapter, StorageAdapterBase):
     @property
     def endpoint(self) -> str:
         return self._endpoint
+
+    @property
+    def base_uri(self) -> str:
+        return self._base_uri
 
     @endpoint.setter
     def endpoint(self, value: str):
@@ -74,9 +79,9 @@ class SymsAdapter(NetworkAdapter, StorageAdapterBase):
         formatted_corpus_path = self._format_corpus_path(corpus_path)
         if formatted_corpus_path is not None:
             if formatted_corpus_path == '/':
-                return 'https://{}?{}'.format(self.endpoint, self.API_VERSION)
+                return '{}?{}'.format(self._base_uri, self.API_VERSION)
             if formatted_corpus_path == '/' + self.DATABASE_MANIFEST or formatted_corpus_path == self.DATABASE_MANIFEST:
-                return 'https://{}?{}'.format(self.endpoint, self.API_VERSION)
+                return '{}?{}'.format(self._base_uri, self.API_VERSION)
 
             formatted_corpus_path = StringUtils.trim_start(formatted_corpus_path, '/')
             paths = formatted_corpus_path.split('/')
@@ -84,25 +89,25 @@ class SymsAdapter(NetworkAdapter, StorageAdapterBase):
                 # paths[0]: databasename
                 # paths[1]: filename
                 if paths[1].endswith('.manifest.cdm.json'):
-                     return 'https://{}/{}?{}'.format(self.endpoint, paths[0], self.API_VERSION)
+                     return '{}/{}/?{}'.format(self._base_uri, paths[0], self.API_VERSION)
                 if paths[1].endswith('.cdm.json'):
-                    return 'https://{}/{}/tables/{}?{}'.format(self.endpoint, paths[0], paths[1].replace('.cdm.json', ''), self.API_VERSION)
+                    return '{}/{}/tables/{}?{}'.format(self._base_uri, paths[0], paths[1].replace('.cdm.json', ''), self.API_VERSION)
                 else:
                     raise Exception('Syms adapter: Failed to convert to adapter path from corpus path. Invalid corpus path :' + corpus_path + '. Supported file format are manifest.cdm.json and .cdm.json')
             elif len(paths) == 3: # 3 level is supported for relationship and entitydefinitions
                 # paths[0]: database name
                 # paths[1]: filename
                 if paths[1].endswith('.manifest.cdm.json') and paths[2] == 'relationships':
-                    return 'https://{}/{}/relationships?{}'.format(self.endpoint, paths[0], self.API_VERSION)
+                    return '{}/{}/relationships?{}'.format(self._base_uri, paths[0], self.API_VERSION)
                 elif paths[1].endswith('.manifest.cdm.json') and paths[2] == 'entitydefinition':
-                    return 'https://{}/{}/tables?{}'.format(self.endpoint, paths[0], self.API_VERSION)
+                    return '{}/{}/tables?{}'.format(self._base_uri, paths[0], self.API_VERSION)
                 else:
                     raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition.')
             elif len(paths) == 4: # 4 level is supported for relationship
                 # paths[0]: databasename
                 # paths[1]: filename
                 if paths[1].endswith('.manifest.cdm.json') and paths[2] == 'relationships':
-                    return 'https://{}/{}/relationships/{}?{}'.format(self.endpoint, paths[0], paths[3], self.API_VERSION)
+                    return '{}/{}/relationships/{}?{}'.format(self._base_uri, paths[0], paths[3], self.API_VERSION)
                 else:
                     raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. + Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>.')
 
@@ -159,7 +164,7 @@ class SymsAdapter(NetworkAdapter, StorageAdapterBase):
         if len(paths) != 2:
             raise Exception('Syms adapter: Conversion from corpus path {folderCorpusPath} to adpater is failed. Path must be in format : <databasename>/.')
 
-        url = 'https://{}/{}/tables?{}'.format(self.endpoint, paths[0], self.API_VERSION)
+        url = '{}/{}/tables?{}'.format(self._base_uri, paths[0], self.API_VERSION)
         continuation_token = None
         results = []
 
@@ -263,7 +268,7 @@ class SymsAdapter(NetworkAdapter, StorageAdapterBase):
     def _format_endpoint(self, endpoint: str) -> str:
         if endpoint.startswith('https://'):
             endpoint = endpoint.replace('https://', '');
-        return '{}/databases'.format(StringUtils.trim_end(endpoint, '/'))
+        return '{}'.format(StringUtils.trim_end(endpoint, '/'))
 
     def _generate_bearer_token(self) -> Optional[dict]:
         self._build_context()

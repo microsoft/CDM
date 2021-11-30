@@ -236,8 +236,8 @@ def trim_start(input: str, word_to_remove: str) -> str:
         return input[len(word_to_remove):] if input.startswith(word_to_remove) else input
 
 def AdlsConfig(ns: str, host_name: str, container_name: str):
-    if not host_name.endswith(".dfs.core.windows.net"):
-        host_name = host_name + ".dfs.core.windows.net"
+    if not host_name.endswith('.dfs.core.windows.net'):
+        host_name = host_name + '.dfs.core.windows.net'
 
     json = '{ "adapters": [ { "type": "adls", "namespace": "' + ns + '", "config": { "hostname": "' + host_name+  '", "root": "' + container_name + '" }} ]}'
     return json
@@ -248,8 +248,8 @@ def check_if_syms_adapter(adapter) -> bool:
     return False
 
 def try_get_dbname(path: str, db_name: str) -> bool:
-    db_name = ""
-    if path.startswith("/"):
+    db_name = ''
+    if path.startswith('/'):
         path = trim_start(path, '/')
         paths = path.split('/')
         if len(paths) > 1:
@@ -258,33 +258,33 @@ def try_get_dbname(path: str, db_name: str) -> bool:
         return False
 
 def syms_path_to_adls_adapter_path(syms_path: str) ->str:
-    if not syms_path.startswith("abfss://") or syms_path.count("abfss://") != 1:
+    if not syms_path.startswith('abfss://') or syms_path.count('abfss://') != 1:
         return None
-    if syms_path.endswith("/"):
+    if syms_path.endswith('/'):
         syms_path = syms_path.rsplit('/', 1)[0]
-    paths = syms_path.replace("abfss://", "," ).replace("@",",").replace("/",",").split(',')
+    paths = syms_path.replace('abfss://', ',' ).replace('@',',').replace('/',',').split(',')
     if len(paths) > 2:
-        ret_value = "https://{}/{}".format(paths[2], paths[1])
+        ret_value = 'https://{}/{}'.format(paths[2], paths[1])
         for val in paths[3:]:
-            if val == "":
+            if val == '':
                 return None
-            ret_value = "{}/{}".format(ret_value, val)
+            ret_value = '{}/{}'.format(ret_value, val)
         return ret_value
     return None
 
 def adls_adapter_path_to_syms_path(adls_path: str)-> str:
-    if not adls_path.startswith("https://") or adls_path.count("https://") != 1:
+    if not adls_path.startswith('https://') or adls_path.count('https://') != 1:
         return None
 
-    if adls_path.endswith("/"):
+    if adls_path.endswith('/'):
         adls_path = adls_path.rsplit('/', 1)[0]
-    paths = adls_path.replace("https://", ",").replace("/",",").split(',')
+    paths = adls_path.replace('https://', ',').replace('/',',').split(',')
     if len(paths) > 2:
-        ret_value = "abfss://{}@{}".format(paths[2], paths[1])
+        ret_value = 'abfss://{}@{}'.format(paths[2], paths[1])
         for val in paths[3:]:
-            if val == "":
+            if val == '':
                 return None
-            ret_value = "{}/{}".format(ret_value, val)
+            ret_value = '{}/{}'.format(ret_value, val)
         return ret_value
     return None
 
@@ -294,14 +294,14 @@ def syms_path_to_corpus_path(syms_path: str, strg_mgr: 'StorageManager') -> str:
     if corpus_path == None:
         path_tuple = create_and_mount_adls_adapter_from_adls_path(strg_mgr, adls_path)
         if path_tuple == None:
-            raise Exception("Couldn't found adls adapter which can map to adls path : '{}'.Path recieved from syms : {}. Tried to generate new adls adapter but failed.".format(adls_path, syms_path))
+            raise Exception('Couldn\'t found adls adapter which can map to adls path : \'{}\'.Path recieved from syms : {}. Tried to generate new adls adapter but failed.'.format(adls_path, syms_path))
         #Try again
         corpus_path = strg_mgr.adapter_path_to_corpus_path(adls_path)
     return corpus_path
 
 def corpus_path_to_syms_path(corpus_path: str, strg_mgr: 'StorageManager')-> str:
     path_tuple = StorageUtils.split_namespace_path(corpus_path)
-    if path_tuple[0] != "":
+    if path_tuple[0] != '':
         adls_path = strg_mgr.corpus_path_to_adapter_path(corpus_path)
         if adls_path is not None:
             syms_path = adls_adapter_path_to_syms_path(adls_path)
@@ -310,34 +310,34 @@ def corpus_path_to_syms_path(corpus_path: str, strg_mgr: 'StorageManager')-> str
     return None
 
 def split_storage_name_fs_from_adls_path(path: str) -> Tuple[str, str]:
-    if not path.startswith("https://") or path.count("https://") != 1:
+    if not path.startswith('https://') or path.count('https://') != 1:
         return None
 
     if path.endswith('/'):
         path = path.rsplit('/', 1)[0]
 
-    paths = path.replace("https://", "," ).replace("/",",").split(',')
+    paths = path.replace('https://', ',' ).replace('/',',').split(',')
     if len(paths) > 2:
-        if paths[1].endswith(".dfs.core.windows.net"):
-            return (paths[1].replace(".dfs.core.windows.net", ""), paths[2])
+        if paths[1].endswith('.dfs.core.windows.net'):
+            return (paths[1].replace('.dfs.core.windows.net', ''), paths[2])
     return None
 
 def split_storage_name_fs_from_syms_path(path: str)-> Tuple[str, str]:
-    if not path.startswith("abfss://") or path.count("abfss://") != 1:
+    if not path.startswith('abfss://') or path.count('abfss://') != 1:
         return None
 
     if path.endswith('/'):
         path = path.rsplit('/', 1)[0]
 
-    paths = path.replace("abfss://", "," ).replace("@", ",").replace("/",",").split(',')
+    paths = path.replace('abfss://', ',' ).replace('@', ',').replace('/',',').split(',')
     if len(paths) > 2:
-        if paths[2].endswith(".dfs.core.windows.net"):
-            return (paths[2].replace(".dfs.core.windows.net", ""), paths[1])
+        if paths[2].endswith('.dfs.core.windows.net'):
+            return (paths[2].replace('.dfs.core.windows.net', ''), paths[1])
     return None
 
 def create_source_trait(ctx: 'CdmCorpusContext', trait_name: str, trait_arg_name: str, trait_arg_value: str = None)-> 'CdmTraitReference':
     if trait_arg_value == None:
-       trait_arg_value = "adlsadapter:/"
+       trait_arg_value = 'adlsadapter:/'
 
     source_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, trait_name, True)
     source_trait.simple_named_reference = False
@@ -347,10 +347,10 @@ def create_source_trait(ctx: 'CdmCorpusContext', trait_name: str, trait_arg_name
     return source_trait
 
 def create_syms_absolute_path(root: str, path: str)-> str:
-    if not root.startswith("abfss://"):
+    if not root.startswith('abfss://'):
         return None
-    if not path.startswith("abfss://"):
-        path = "{}/{}".format(root.rsplit('/', 1)[0], trim_start(path, '/'))
+    if not path.startswith('abfss://'):
+        path = '{}/{}'.format(root.rsplit('/', 1)[0], trim_start(path, '/'))
     return path
 
 def try_get_unique_ns(strg_mgr: 'StorageManager')-> str:
@@ -362,7 +362,7 @@ def try_get_unique_ns(strg_mgr: 'StorageManager')-> str:
         while True:
             with lock:
                 ns_name_index += 1
-            ns = "adls{}".format(ns_name_index)
+            ns = 'adls{}'.format(ns_name_index)
             if None == strg_mgr.fetch_adapter(ns):
                     return ns # lucky got it!!
             count = count + 1
@@ -389,7 +389,7 @@ def extract_table_name_from_entity_path(enitity_path: str)-> str:
        return None
     paths = corpus_path.split('/')
     if len(paths) > 0:
-       if not paths[len(paths) - 1].endswith(".cdm.json"):
+       if not paths[len(paths) - 1].endswith('.cdm.json'):
            return paths[len(paths) - 1]
     return None
 
@@ -399,87 +399,87 @@ def format_corpus_path(corpus_path: str)-> str:
         return None
     corpus_path = path_tuple[1]
     if len(corpus_path) > 0 and corpus_path[0] != '/':
-        corpus_path = "/{}".format(corpus_path)
+        corpus_path = '/{}'.format(corpus_path)
     return corpus_path
 
-def syms_data_type_to_CDM_data_format(type_info: 'TypeInfo')-> 'CdmDataFormat':
-    if type_info.type_name == "byte":
+def syms_data_type_to_cdm_data_format(type_info: 'TypeInfo')-> 'CdmDataFormat':
+    if type_info.type_name == 'byte':
         return CdmDataFormat.BYTE
-    elif type_info.type_name == "binary":
+    elif type_info.type_name == 'binary':
         return CdmDataFormat.BINARY
-    elif type_info.type_name == "float":
+    elif type_info.type_name == 'float':
         return CdmDataFormat.FLOAT
-    elif type_info.type_name == "string":
+    elif type_info.type_name == 'string':
         if type_info.length == 1:
             return CdmDataFormat.CHAR
         elif type_info.length > 1:
             return CdmDataFormat.GUID
-        if "json" in type_info.properties:
+        if 'json' in type_info.properties and type_info.properties['json'] == True:
             return CdmDataFormat.JSON
-        elif "dateTimeOffset" in type_info.properties:
+        if 'dateTimeOffset' in type_info.properties and type_info.properties['dateTimeOffset'] == True:
             return CdmDataFormat.DATE_TIME_OFFSET
         return CdmDataFormat.STRING
-    elif type_info.type_name == "char":
+    elif type_info.type_name == 'char':
         return CdmDataFormat.STRING
-    elif type_info.type_name == "long":
+    elif type_info.type_name == 'long':
         return CdmDataFormat.INT64
-    elif type_info.type_name == "integer":
+    elif type_info.type_name == 'integer':
         return CdmDataFormat.INT32
-    elif type_info.type_name == "double":
+    elif type_info.type_name == 'double':
         return CdmDataFormat.DOUBLE
-    elif type_info.type_name == "date":
+    elif type_info.type_name == 'date':
         return CdmDataFormat.DATE
-    elif type_info.type_name == "timestamp":
-        if "dateTime" in type_info.properties:
+    elif type_info.type_name == 'timestamp':
+        if 'dateTime' in type_info.properties and type_info.properties['dateTime'] == True:
             return CdmDataFormat.DateTime
         return CdmDataFormat.TIME
-    elif type_info.type_name == "decimal":
+    elif type_info.type_name == 'decimal':
         return CdmDataFormat.DECIMAL
-    elif type_info.type_name == "boolean":
+    elif type_info.type_name == 'boolean':
         return CdmDataFormat.BOOLEAN
     else:
         return CdmDataFormat.UNKNOWN
 
 def cdm_data_format_to_syms_data_type(cdm_data_format: CdmDataFormat, type_info: TypeInfo)-> 'TypeInfo':
     if cdm_data_format == CdmDataFormat.BYTE:
-        type_info.type_name = "byte"
+        type_info.type_name = 'byte'
     elif cdm_data_format == CdmDataFormat.BINARY:
-        type_info.type_name = "binary"
+        type_info.type_name = 'binary'
     elif cdm_data_format == CdmDataFormat.FLOAT:
-        type_info.type_name = "float"
+        type_info.type_name = 'float'
     elif cdm_data_format == CdmDataFormat.CHAR:
-        type_info.type_name = "string"
+        type_info.type_name = 'string'
         type_info.length = 1
     elif cdm_data_format == CdmDataFormat.STRING:
-        type_info.type_name = "string"
+        type_info.type_name = 'string'
     elif cdm_data_format == CdmDataFormat.GUID:
-        type_info.type_name = "string"
-        type_info.properties["guid"] = True
+        type_info.type_name = 'string'
+        type_info.properties['guid'] = True
     elif cdm_data_format == CdmDataFormat.JSON:
-        type_info.type_name = "string"
-        type_info.properties["json"] = True
+        type_info.type_name = 'string'
+        type_info.properties['json'] = True
     elif cdm_data_format == CdmDataFormat.DATE_TIME_OFFSET:
-        type_info.type_name = "string"
-        type_info.properties["dateTimeOffset"] = True
+        type_info.type_name = 'string'
+        type_info.properties['dateTimeOffset'] = True
     elif cdm_data_format == CdmDataFormat.INT32:
-        type_info.type_name = "integer"
+        type_info.type_name = 'integer'
     elif cdm_data_format == CdmDataFormat.INT16:
-        type_info.type_name = "long"
+        type_info.type_name = 'long'
     elif cdm_data_format == CdmDataFormat.INT64:
-        type_info.type_name = "integer"
+        type_info.type_name = 'integer'
     elif cdm_data_format == CdmDataFormat.DOUBLE:
-        type_info.type_name = "double"
+        type_info.type_name = 'double'
     elif cdm_data_format == CdmDataFormat.DATE:
-        type_info.type_name = "date"
+        type_info.type_name = 'date'
     elif cdm_data_format == CdmDataFormat.DATE_TIME:
-         type_info.type_name = "timestamp"
-         type_info.properties["dateTime"] = True
+         type_info.type_name = 'timestamp'
+         type_info.properties['dateTime'] = True
     elif cdm_data_format == CdmDataFormat.TIME:
-         type_info.type_name = "timestamp"
+         type_info.type_name = 'timestamp'
     elif cdm_data_format == CdmDataFormat.DECIMAL:
-         type_info.type_name = "decimal"
+         type_info.type_name = 'decimal'
     elif cdm_data_format == CdmDataFormat.BOOLEAN:
-         type_info.type_name = "boolean"
+         type_info.type_name = 'boolean'
     else:
         return None
     return type_info
@@ -487,8 +487,8 @@ def cdm_data_format_to_syms_data_type(cdm_data_format: CdmDataFormat, type_info:
 async def get_syms_model(adapter: 'StorageAdapter', database_response: str, doc_path: str)-> 'SymsManifestContent':
     from cdm.persistence.syms.models.query_artifacts_response import QueryArtifactsResponse
     db = DatabaseEntity().deserialize(json.loads(database_response))
-    entities = await adapter.read_async("/" + db.name + "/" + db.name + ".manifest.cdm.json/entitydefinition")
-    relationships = await adapter.read_async(doc_path + "/relationships")
+    entities = await adapter.read_async('/' + db.name + '/' + db.name + '.manifest.cdm.json/entitydefinition')
+    relationships = await adapter.read_async(doc_path + '/relationships')
 
     return SymsManifestContent(
             database = db,
@@ -500,16 +500,16 @@ async def get_syms_model(adapter: 'StorageAdapter', database_response: str, doc_
 
 async def create_or_update_database(database_entity: 'DatabaseEntity', adapter: 'StorageAdapter'):
     content = str(database_entity.serialize()).replace('False', 'false').replace('True', 'true')
-    await adapter.write_async("{}/{}.manifest.cdm.json".format(database_entity.name, database_entity.name), content)
+    await adapter.write_async('{}/{}.manifest.cdm.json'.format(database_entity.name, database_entity.name), content)
 
 async def create_or_update_table_entity(table_entity: 'TableEntity', adapter: 'StorageAdapter'):
     content = str(table_entity.serialize()).replace('False', 'false').replace('True', 'true')
-    await adapter.write_async("{}/{}.cdm.json".format(table_entity.properties.namespace.database_name, table_entity.name), content)
+    await adapter.write_async('{}/{}.cdm.json'.format(table_entity.properties.namespace.database_name, table_entity.name), content)
 
 async def create_or_update_relationship_entity(relationship_entity: 'RelationshipEntity', adapter: 'StorageAdapter'):
     database_name = relationship_entity.properties.namespace.database_name
     content = str(relationship_entity.serialize()).replace('False', 'false').replace('True', 'true')
-    await adapter.write_async("{}/{}.manifest.cdm.json/relationships/{}".format(database_name, database_name, relationship_entity.name), content)
+    await adapter.write_async('{}/{}.manifest.cdm.json/relationships/{}'.format(database_name, database_name, relationship_entity.name), content)
 
 async def create_or_update_syms_entities(syms_manifest_content: 'SymsManifestContent', adapter: 'StorageAdapter'):
     failed_updated_tables = {}
@@ -527,7 +527,7 @@ async def create_or_update_syms_entities(syms_manifest_content: 'SymsManifestCon
             except Exception as e:
                 failed_removed_tables[remove_table] = str(e)
             if len(failed_removed_tables) > 0:
-                error_mesg += "Failed removed tables : " + str(failed_removed_tables)
+                error_mesg += 'Failed removed tables : ' + str(failed_removed_tables)
 
     if syms_manifest_content.removed_relationships is not None:
         for remove_relationship in syms_manifest_content.removed_relationships:
@@ -536,7 +536,7 @@ async def create_or_update_syms_entities(syms_manifest_content: 'SymsManifestCon
             except Exception as e:
                 failed_removed_relationships[remove_relationship] = str(e)
         if len(failed_removed_relationships) > 0:
-           error_mesg += "Failed removed relationships :" + str(failed_removed_relationships)
+           error_mesg += 'Failed removed relationships :' + str(failed_removed_relationships)
 
     if syms_manifest_content.entities is not None:
         for table in syms_manifest_content.entities:
@@ -545,7 +545,7 @@ async def create_or_update_syms_entities(syms_manifest_content: 'SymsManifestCon
             except Exception as e:
                 failed_updated_tables[table.name] = str(e)
         if len(failed_updated_tables) > 0:
-            error_mesg += "Failed updated tables : " + str(failed_updated_tables)
+            error_mesg += 'Failed updated tables : ' + str(failed_updated_tables)
 
     if syms_manifest_content.relationships is not None:
         for relationship in syms_manifest_content.relationships:
@@ -554,16 +554,16 @@ async def create_or_update_syms_entities(syms_manifest_content: 'SymsManifestCon
             except Exception as e:
                 failed_updated_relationships[relationship.name] = str(e)
         if len(failed_updated_relationships) > 0:
-            error_mesg += "Failed updated relationships : " + str(failed_updated_relationships)
+            error_mesg += 'Failed updated relationships : ' + str(failed_updated_relationships)
 
     if error_mesg != '':
         raise Exception (error_mesg)
 
 async def remove_table_entity(table_name: str, database_name: str, adapter: 'StorageAdapter'):
-    await adapter.write_async("{}/{}.cdm.json".format(database_name, table_name), None)
+    await adapter.write_async('{}/{}.cdm.json'.format(database_name, table_name), None)
 
 async def remove_relationship_entity(relationship: str, database_name: str, adapter: 'StorageAdapter'):
-    await adapter.write_async("{}/{}.manifest.cdm.json/relationships/{}".format(database_name, database_name, relationship), None)
+    await adapter.write_async('{}/{}.manifest.cdm.json/relationships/{}'.format(database_name, database_name, relationship), None)
 
 def is_entity_added_or_modified(entity: CdmLocalEntityDeclarationDefinition, existing_syms_tables)-> bool:
     if existing_syms_tables == None or len(existing_syms_tables) == 0 or not entity.entity_name in existing_syms_tables:

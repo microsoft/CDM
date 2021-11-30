@@ -364,11 +364,15 @@ public class ResolveOptions {
    * @return Document to be used as starting point when resolving the CdmObject passed as argument.
    */
   private static CdmDocumentDefinition fetchDocument(CdmObject obj) {
-      if (obj == null || obj.getOwner() == null) {
+      if (obj == null) {
           return null;
       }
 
-      return obj.getOwner().getInDocument();
+      if (obj.getInDocument() != null) {
+        return obj.getInDocument();
+      }
+
+      return obj.getOwner() != null ? obj.getOwner().getInDocument() : null;
   }
 
   /**
