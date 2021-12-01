@@ -20,10 +20,10 @@ def fetch_document(obj: 'CdmObject') -> Optional['CdmDocumentDefinition']:
     if obj.object_type == CdmObjectType.DOCUMENT_DEF:
         return obj
 
-    if obj.owner is None:
-        return None
+    if obj.in_document:
+        return obj.in_document
 
-    return obj.owner.in_document
+    return obj.owner.in_document if obj.owner else None
 
 
 class ResolveOptions:

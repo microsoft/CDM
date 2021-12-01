@@ -99,7 +99,7 @@ public class DocumentPersistence {
           String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersion + " at maximum.";
           message += " Trying to load a document with version " + doc.getJsonSchemaSemanticVersion() + ".";
           if (isResolvedDoc) {
-            Logger.warning(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistUnsupportedJsonSemVer);
+            Logger.warning(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistUnsupportedJsonSemVer, jsonSemanticVersion, doc.getJsonSchemaSemanticVersion());
           } else {
             Logger.error(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.ErrPersistUnsupportedJsonSemVer, jsonSemanticVersion, doc.getJsonSchemaSemanticVersion());
           }

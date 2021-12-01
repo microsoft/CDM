@@ -242,7 +242,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             var manifestReadDatabases = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/databases.manifest.cdm.json");
             Assert.IsNotNull(manifestReadDatabases);
             Assert.AreEqual("databases.manifest.cdm.json", manifestReadDatabases.ManifestName);
-            Assert.AreEqual(manifestReadDatabases.SubManifests[0].ManifestName, manifestExpected.ManifestName);
+
+            if (!manifestReadDatabases.SubManifests.AllItems.Exists(item => item.ManifestName == manifestExpected.ManifestName))
+            {
+                Assert.Fail($"Database {manifestExpected.ManifestName} does not exist.");
+            }
 
             var manifestActual = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/{manifestExpected.ManifestName}/{manifestExpected.ManifestName}.manifest.cdm.json", manifestReadDatabases, null, true);
             await manifestActual.SaveAsAsync($"localActOutput:/{filename}{threadnumber}");
