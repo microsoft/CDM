@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;net462</TargetFrameworks>
-    <version>1.4.2</version>
+    <version>1.4.3</version>
     <Description>The CSharp implementation of the Microsoft Common Data Model Object Model.</Description>
 
     <Authors>Microsoft</Authors>
@@ -10,13 +10,11 @@
     <Platforms>AnyCPU;x64</Platforms>
     <RepositoryUrl>https://commondatamodel.visualstudio.com/CDM/_git/CDM.ObjectModel</RepositoryUrl>
     <PackageProjectUrl>https://commondatamodel.visualstudio.com/CDM</PackageProjectUrl>
-
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="NLog" Version="4.6.7" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
@@ -55,7 +53,11 @@
     <EmbeddedResource Remove="..\..\..\schemaDocuments\cdmfoundation\*.manifest.cdm.json" />
 
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <Compile Include="..\StrongNameKey\AssemblyRef.cs" Link="AssemblyRef.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Update="Resx\LogMessages.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -63,12 +65,12 @@
       <DependentUpon>LogMessages.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-  
+
   <ItemGroup>
     <EmbeddedResource Update="Resx\LogMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  
+
 </Project>

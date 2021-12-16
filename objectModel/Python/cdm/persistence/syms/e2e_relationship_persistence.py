@@ -19,7 +19,7 @@ class E2ERelationshipPersistence:
             if not (relationship_entity.name == None or relationship_entity.name == ''):
                 relationship.name = relationship_entity.name
 
-            if relationship_properties.relationship_type == RelationshipType.manytomany:
+            if relationship_properties.relationship_type == RelationshipType.manytoone or relationship_properties.relationship_type == RelationshipType.onetoone:
                 relationship.from_entity =  "{}.cdm.json/{}".format(relationship_properties.from_table_name, relationship_properties.from_table_name)
                 relationship.to_entity = "{}.cdm.json/{}".format(relationship_properties.to_table_name, relationship_properties.to_table_name)
                 relationship.from_entity_attribute = columnRelationshipInformation.from_column_name
@@ -57,7 +57,7 @@ class E2ERelationshipPersistence:
         to_table_name = utils.extract_table_name_from_entity_path(instance.to_entity),
         properties = properties,
         publish_status = PublishStatus.published,
-        relationship_type = RelationshipType.manytomany,
+        relationship_type = RelationshipType.manytoone,
         column_relationship_informations = column_relationship_informations)
 
         relationship_name = instance.name
