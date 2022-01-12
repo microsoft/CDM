@@ -11,7 +11,8 @@ import {
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     cdmObjectType,
-    cdmRelationshipDiscoveryStyle
+    cdmRelationshipDiscoveryStyle,
+    copyOptions
 } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
@@ -268,15 +269,15 @@ describe('Cdm/Relationship/Relationship', () => {
      */
     it('testExtendsEntityAndReplaceAsForeignKey', async (done) => {
         const testName = 'TestExtendsEntityAndReplaceAsForeignKey';
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnProjFKWithoutSourceEntity]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName, undefined, false, expectedLogCodes);
 
         const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
         await corpus.calculateEntityGraphAsync(manifest);
         // Check if the warning was logged.
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnProjFKWithoutSourceEntity, true);
-
         await manifest.populateManifestRelationshipsAsync();
+
         expect(manifest.relationships.length)
             .toEqual(0);
         done();
@@ -362,10 +363,12 @@ describe('Cdm/Relationship/Relationship', () => {
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/main.manifest.cdm.json');
         const manifestNoToEnt: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/mainNoToEnt.manifest.cdm.json');
         const fromEnt: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/fromEnt.cdm.json/fromEnt');
-        await fromEnt.inDocument.saveAsAsync(tempFromFilePath);
+        const options: copyOptions = new copyOptions();
+        options.isTopLevelDocument = false;
+        await fromEnt.inDocument.saveAsAsync(tempFromFilePath, false, options);
 
         const reloadFromEntity = async () => {
-            await fromEnt.inDocument.saveAsAsync(tempFromFilePath);
+            await fromEnt.inDocument.saveAsAsync(tempFromFilePath, false, options);
             // fetch again to reset the cache
             await corpus.fetchObjectAsync<CdmEntityDefinition>(tempFromEntityPath, undefined, false, true);
         };

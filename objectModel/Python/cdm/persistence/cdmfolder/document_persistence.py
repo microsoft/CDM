@@ -84,14 +84,12 @@ class DocumentPersistence:
             if data.jsonSchemaSemanticVersion:
                 document.json_schema_semantic_version = data.jsonSchemaSemanticVersion
                 if DocumentPersistence._compare_json_semantic_version(ctx, document.json_schema_semantic_version) > 0:
-                    message = 'This ObjectModel version supports json semantic version {} at maximum.'.format(DocumentPersistence.json_semantic_version)
-                    message += ' Trying to load a document with version {}.'.format(document.json_schema_semantic_version)
                     if is_resolved_doc:
                         logger.warning(ctx, _TAG, DocumentPersistence.from_data.__name__, None,
-                                       CdmLogCode.WARN_PERSIST_UNSUPPORTED_JSON_SEM_VER, document.json_schema_semantic_version)
+                                       CdmLogCode.WARN_PERSIST_UNSUPPORTED_JSON_SEM_VER, DocumentPersistence.json_semantic_version, document.json_schema_semantic_version)
                     else:
                         logger.error(ctx, _TAG, DocumentPersistence.from_data.__name__, None,
-                                     CdmLogCode.ERR_PERSIST_UNSUPPORTED_JSON_SEM_VER, document.json_schema_semantic_version)
+                                     CdmLogCode.ERR_PERSIST_UNSUPPORTED_JSON_SEM_VER, DocumentPersistence.json_semantic_version, document.json_schema_semantic_version)
             else:
                 logger.warning(ctx, _TAG, DocumentPersistence.from_data.__name__, document.at_corpus_path, CdmLogCode.WARN_PERSIST_JSON_SEM_VER_MANDATORY)
 

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition, CdmFolderDefinition, CdmEntityDefinition
 from cdm.storage import LocalAdapter
-from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
+from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet, CopyOptions
 from tests.common import TestHelper
 
 if TYPE_CHECKING:
@@ -149,7 +149,9 @@ class CommonTest(unittest.TestCase):
 
     async def save_actual_entity_and_validate_with_expected(self, expected_path: str, actual_resolved_entity_def: CdmEntityDefinition, update_expected_output: bool = False) -> None:
         """Runs validation to test actual output vs expected output for attributes collection vs attribute context."""
-        await actual_resolved_entity_def.in_document.save_as_async(actual_resolved_entity_def.in_document.name)
+        co = CopyOptions()
+        co._is_top_level_document = False
+        await actual_resolved_entity_def.in_document.save_as_async(actual_resolved_entity_def.in_document.name, options=co)
         actual_path = actual_resolved_entity_def.ctx.corpus.storage.corpus_path_to_adapter_path(actual_resolved_entity_def.in_document.at_corpus_path)
 
         with open(actual_path, 'r', encoding='utf-8') as actual_file:

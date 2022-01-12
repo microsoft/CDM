@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
-import { configObjectType } from './StorageAdapter';
+import { configObjectType, StorageAdapterBase } from '../internal';
 import { StorageAdapterConfigCallback } from './StorageAdapterConfigCallback';
-import { StorageAdapterBase } from './StorageAdapterBase'
 
 /**
  * Network adapter is an abstract class that contains logic for adapters dealing with data across network.

@@ -6,9 +6,9 @@ import {
   CdmCorpusDefinition,
   CdmEntityDefinition,
   CdmTraitReference,
-  CdmTraitReferenceBase,
   CdmTypeAttributeDefinition
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 /**
@@ -43,7 +43,7 @@ describe('Cdm/Projection/ProjectionAddSupportingAttributeTest', (): void => {
 it('testCombineOpsProj', async () => {
     const testName: string = 'testCombineOpsProj';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -79,7 +79,7 @@ it('testCombineOpsProj', async () => {
   it('testConditionalProj', async () => {
     const testName: string = 'testConditionalProj';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     // for (const resOpt of resOptsCombinations) {
     //   await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -130,7 +130,7 @@ it('testCombineOpsProj', async () => {
   it('testEntityAttribute', async () => {
     const testName: string = 'testEntityAttribute';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -176,7 +176,7 @@ it('testCombineOpsProj', async () => {
   it('testEntityAttributeProj', async () => {
     const testName: string = 'testEntityAttributeProj';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -209,7 +209,7 @@ it('testCombineOpsProj', async () => {
   it('testExtendsEntity', async () => {
     const testName: string = 'testExtendsEntity';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -243,7 +243,7 @@ it('testCombineOpsProj', async () => {
   it('testExtendsEntityProj', async () => {
     const testName: string = 'testExtendsEntityProj';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -277,7 +277,7 @@ it('testCombineOpsProj', async () => {
   it('testNestedProj', async () => {
     const testName: string = 'testNestedProj';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -302,7 +302,7 @@ it('testCombineOpsProj', async () => {
   it('TestNestedTypeAttributeProj', async () => {
     const testName: string = 'testNestedTAProj';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -328,7 +328,7 @@ it('testCombineOpsProj', async () => {
   it('testTypeAttribute', async () => {
     const testName: string = 'testTypeAttribute';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     // for (const resOpt of resOptsCombinations) {
     //   await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -354,7 +354,7 @@ it('testCombineOpsProj', async () => {
   it('testTypeAttributeProj', async () => {
     const testName: string = 'testTypeAttributeProj';
     const entityName: string = 'NewPerson';
-    const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+    const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
     for (const resOpt of resOptsCombinations) {
       await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

@@ -30,9 +30,14 @@ public class ReferencedEntityDeclarationPersistence {
       final String location) {
     final CdmEntityDeclarationDefinition referencedEntity = ctx.getCorpus()
         .makeObject(CdmObjectType.ReferencedEntityDeclarationDef, obj.getName());
+    referencedEntity.setEntityName(obj.getName());
     final String corpusPath = ctx.getCorpus().getStorage().adapterPathToCorpusPath(location);
 
-    referencedEntity.setEntityName(obj.getName());
+    if (corpusPath == null) {
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, location, referencedEntity.getEntityName());
+      return CompletableFuture.completedFuture(null);
+    }
+
     referencedEntity.setEntityPath(corpusPath + "/" + obj.getSource());
     referencedEntity.setExplanation(obj.getDescription());
     referencedEntity.setLastFileModifiedTime(obj.getLastFileModifiedTime());

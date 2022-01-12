@@ -18,6 +18,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 public class ManifestResolutionTest {
     /**
@@ -73,9 +76,8 @@ public class ManifestResolutionTest {
     @Test
     public void testResolvingManifestNotInFolder() {
        try {
-            final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.getStorage().mount("local", new LocalAdapter("C:\\path"));
-            cdmCorpus.getStorage().setDefaultNamespace("local");
+            final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrResolveManifestFailed));
+            final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvingManifestNotInFolder", false, expectedLogCodes);
 
             CdmManifestDefinition manifest = cdmCorpus.makeObject(CdmObjectType.ManifestDef, "test");
             CdmEntityDefinition entity = cdmCorpus.makeObject(CdmObjectType.EntityDef, "entity");
@@ -86,7 +88,7 @@ public class ManifestResolutionTest {
             manifest.getEntities().add(entity);
             manifest.createResolvedManifestAsync("resolved", null).join();
 
-           TestHelper.assertCdmLogCodeEquality(cdmCorpus, CdmLogCode.ErrResolveManifestFailed, true);
+            TestHelper.assertCdmLogCodeEquality(cdmCorpus, CdmLogCode.ErrResolveManifestFailed, true);
        } catch (Exception e) {
             Assert.fail("Exception should not be thrown when resolving a manifest that is not in a folder.");
        }
@@ -123,7 +125,8 @@ public class ManifestResolutionTest {
     public void testResolvingManifestWithSameName()
     {
         try {
-            final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvingManifestWithSameName");
+            final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrResolveManifestExists));
+            final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvingManifestWithSameName", null, false, expectedLogCodes);
 
             final CdmManifestDefinition manifest = corpus.makeObject(CdmObjectType.ManifestDef, "test");
             corpus.getStorage().getNamespaceFolders().get("local").getDocuments().add(manifest);

@@ -152,6 +152,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestTelemetryKustoClient");
 
+            // TODO: need to investigate why only Java not failing if using event callback from GetLocalCorpus() 
+            // set callback to receive error and warning logs.
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    // Do nothing
+                }
+            }, CdmStatusLevel.Progress);
+
+
             string tenantId = Environment.GetEnvironmentVariable("KUSTO_TENANTID");
             string clientId = Environment.GetEnvironmentVariable("KUSTO_CLIENTID");
             string secret = Environment.GetEnvironmentVariable("KUSTO_SECRET");
@@ -178,15 +189,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             corpus.TelemetryClient = new TelemetryKustoClient(corpus.Ctx, kustoConfig);
 
             corpus.AppId = "CDM Integration Test";
-
-            // set callback to receive error and warning logs.
-            corpus.SetEventCallback(new EventCallback
-            {
-                Invoke = (level, message) =>
-                {
-                    // Do nothing
-                }
-            }, CdmStatusLevel.Progress);
 
             return corpus;
         }

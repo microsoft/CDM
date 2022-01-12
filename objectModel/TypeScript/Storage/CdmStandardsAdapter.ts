@@ -3,7 +3,7 @@
 
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { configObjectType } from '../internal';
 
 /**
  * An adapter pre-configured to read the standard schema files published by CDM.

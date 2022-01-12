@@ -196,4 +196,4 @@ export class ResolvedAttribute {
     }
 }
 
-export type ResolutionTarget = (CdmAttribute | ResolvedAttributeSet | string);
+export type ResolutionTarget = (CdmAttribute | ResolvedAttributeSet);

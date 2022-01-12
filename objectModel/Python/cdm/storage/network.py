@@ -95,7 +95,7 @@ class NetworkAdapter:
         if response and ((response.is_successful and not has_failed) or response.status_code in self.avoid_retry_codes):
             return None
 
-        return random.randint(0, 2**retry_number) * self.DEFAULT_SHORTEST_WAIT_TIME
+        return random.randint(0, 2**retry_number - 1) * self.DEFAULT_SHORTEST_WAIT_TIME
 
     def update_network_config(self, config: str) -> None:
         configs_json = json.loads(config)

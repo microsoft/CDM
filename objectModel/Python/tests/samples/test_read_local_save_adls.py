@@ -15,7 +15,7 @@ from tests.adls_test_helper import AdlsTestHelper
 
 
 def IfRunTestsFlagNotSet():
-    return (os.environ.get("SAMPLE_RUNTESTS") is None or os.environ.get("ADLS_RUNTESTS") is None)
+    return os.environ.get('SAMPLE_RUNTESTS') is not '1' or os.environ.get('ADLS_RUNTESTS') is not '1'
 
 class ReadLocalSaveAdlsTest(unittest.TestCase):
     tests_subpath = 'Samples'

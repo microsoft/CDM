@@ -193,6 +193,9 @@ export class traitToPropertyMap {
             case 'primaryKey':
                 const attRef: ArgumentValue = this.fetchTraitReferenceArgumentValue(this.fetchTraitReference('is.identifiedBy', fromProperty), 'attribute');
                 if (attRef) {
+                    if (typeof attRef === 'string' || attRef instanceof String) {
+                        return attRef;
+                    }
                     return (attRef as CdmObject).fetchObjectDefinitionName();
                 }
                 break;

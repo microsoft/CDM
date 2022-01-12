@@ -174,7 +174,7 @@ public class ProjectionOMTestUtil {
         setExpectedOutputPath(TestHelper.getExpectedOutputFolderPath(testsSubPath, getTestName()));
         setActualOutputPath(TestHelper.getActualOutputFolderPath(testsSubPath, getTestName()));
 
-        setCorpus(ProjectionTestUtils.getLocalCorpus(testsSubPath, getTestName()));
+        setCorpus(TestHelper.getLocalCorpus(testsSubPath, getTestName()));
         getCorpus().getStorage().mount(LOCAL_OUTPUT_STORAGE_NS, new LocalAdapter(getActualOutputPath()));
         getCorpus().getStorage().setDefaultNamespace(LOCAL_OUTPUT_STORAGE_NS);
 

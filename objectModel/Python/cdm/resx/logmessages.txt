@@ -28,6 +28,7 @@ ERR_PERSIST_DOC_FETCH_ERROR: There was an error while trying to fetch the entity
 ERR_PERSIST_DOC_NAME_LOAD_FAILURE: Failed to load '{0}', as it's not an acceptable file name. File must be named '{1}'.
 ERR_PERSIST_ENTITY_PATH_NOT_FOUND: Entity path not set in entity declaration for entity '{0}'.
 ERR_PERSIST_ENTITY_ATTR_UNSUPPORTED: The EntityAttribute {0} is projection based. Resolution guidance is not supported with a projection.
+ERR_PERSIST_MODEL_JSON_REF_ENTITY_INVALID_LOCATION: The model.json location '{0}' for the entity '{1}' could not be understood by any storage adapter.
 ERR_PERSIST_ENTITY_DECLARATION_MISSING: Invalid entity declaration type defined for entity '{0}'.
 ERR_PERSIST_MODELJSON_ENTITY_PARSING_ERROR: There was an error while trying to parse model.json entity.
 ERR_PERSIST_FAILURE: Failed to persist '{0}', as it's not an acceptable file name. File must be named '{1}'.
@@ -56,6 +57,26 @@ ERR_PERSIST_NULL_DOC_NAME: Document name cannot be null or empty.
 ERR_PERSIST_OBJECT_NOT_FOUND: Could not get object from path {0}
 ERR_PERSIST_PROJ_INVALID_OPS_TYPE: Invalid operation type '{0}'.
 ERR_PERSIST_PROJ_UNSUPPORTED_PROP: Unsupported '{0}' property type should be '{1}'.
+ERR_PERSIST_SYMS_ADLS_ADAPTER_MISSING: Location mentioned in document with name {0} is not mounted.
+ERR_PERSIST_SYMS_ADLS_ADAPTER_NOT_MOUNTED: Appropriate adls adapter for path {0} is not mounted. Tried creating new one but failed.
+ERR_PERSIST_SYMS_ATTR_CONVERSION_Failure: Syms to CDM conversion failed for attribute {0} for entity {1}.
+ERR_PERSIST_SYMS_ATTR_CONVERSION_Error: Syms to CDM conversion failed for entity {0} because data column was not recieved from syms.
+ERR_PERSIST_SYMS_ENTITY_FETCH_ERROR: Error while fetching CDM entity document from path '{0}'
+ERR_PERSIST_SYMS_ENTITY_PATH_NULL: Entity path for entity {0} is null.
+ERR_PERSIST_SYMS_PARTITION_NOT_SUPPORTED: SyMS includes a spark partition for table '{0}' which is currently not supported by CDM.
+ERR_PERSIST_SYMS_ENTITY_FETCH_ERROR: Error while fetching CDM entity document from path '{0}'
+ERR_PERSIST_SYMS_ENTITY_DECL_CONVERSION_FAILURE: Syms conversion failed for entity '{0}'.
+ERR_PERSIST_SYMS_ENTITY_DECL_CONVERSION_EXCEPTION: Syms conversion failed for entity '{0}'. Reason '{1}'
+ERR_PERSIST_SYMS_MULTIPLE_OR_ZERO_TABLE_DEFINITION: Cdm entity document {0} either has zero or multiple entity definitions for SyMS table.
+ERR_PERSIST_SYMS_INVALID_DB_PROP_OBJECT: Database properties object received from syms either was empty or didn't have source location
+ERR_PERSIST_SYMS_INVALID_DB_OBJECT: Database object receieved from syms was either null or not with type as DATABASE.
+ERR_PERSIST_SYMS_STORAGE_SOURCE_TRAIT_ERROR: {0} trait must be defined. It must have argument name {1} value in format 'namespace:/' and mounted to adls apapter.
+ERR_PERSIST_SYMS_TABLE_FORMAT_TYPE_NOT_SUPPORTED: Encountered unknown format type for table {0}. Supported format type is csv.
+ERR_PERSIST_SYMS_TABLE_INVALID_DATA_LOCATION: Syms table {0} data location should either be folder or .csv file.
+ERR_PERSIST_SYMS_TABLE_MISSING_DATA_LOCATION: Syms table {0} data location is empty.
+ERR_PERSIST_SYMS_UNKNOWN_DATA_FORMAT: Encountered unknown CDM data format for attribute {0} which can not be mapped to syMS.
+ERR_PERSIST_SYMS_UNSUPPORTED_CDM_CONVERSION: Document '{0}' can not be saved in SyMS as it has multiple databases to saved.
+ERR_PERSIST_SYMS_UNSUPPORTED_MANIFEST: Document '{0}' is not supported for save. Use 'databaseName/databaseName.manifest.cdm.json' to save SyMS database.
 ERR_PROJ_UNSUPPORTED_SOURCE: Unsupported source type '{0}' in operation '{1}'.
 ERR_PERSIST_UNSUPPORTED_JSON_SEM_VER: This ObjectModel version supports json semantic version {0} at maximum. Trying to load a document with version {1}.
 ERR_PERSIST_INVALID_MAX_CARDINALITY: Invalid maximum cardinality {0}. Value must be greater than or equal to 0 and less than maxCardinality.
@@ -67,7 +88,7 @@ ERR_PROJ_RENAME_FORMAT_IS_NOT_SET: RenameFormat should be set for this operation
 ERR_PROJ_SOURCE_ERROR: Source can only be another projection in a type attribute.
 ERR_PROJ_STRING_ERROR: Unable to get number for string '{0}'. Using default value '{1}'.
 ERR_PROJ_UNSUPPORTED_ATTR_GROUPS: Array expansion operation does not support attribute groups.
-ERR_REL_MAX_RESOLVED_ATTR_REACHED: Maximum number of resolved attributes reached for the entity  {0}.
+ERR_REL_MAX_RESOLVED_ATTR_REACHED: Maximum number of resolved attributes reached for the entity: {0}.
 ERR_RESOLUTION_FAILURE: Parameter '{0}' has the dataType of '{1}' but the value '{2}' doesn't resolve to a known {3} reference
 ERR_RESOLVE_ENTITY_FAILURE: Failed to resolve entity {0}
 ERR_RESOLVE_NEW_ENTITY_NAME_NOT_SET: New entity name not provided for resolved entity.
@@ -82,7 +103,7 @@ ERR_STORAGE_INVALID_PATH_FORMAT: The path should not start with './' or '.\'and 
 ERR_STORAGE_MISSING_JSON_CONFIG: Missing JSON config for the namespace {0}.
 ERR_STORAGE_MISSING_NAMESPACE: The namespace is missing for one of the adapters.
 ERR_STORAGE_MISSING_TYPE_JSON_CONFIG: Missing type in Json config for the namespace {0}.
-ERR_STORAGE_NAMESPACE_MISMATCH: The namespace '{0}' found on the path '{1}' does not match the namespace found on the object '{2}' which has namespace '{3}'."
+ERR_STORAGE_NAMESPACE_MISMATCH: The namespace '{0}' found on the path '{1}' does not match the namespace found on the object '{2}' which has namespace '{3}'.
 ERR_STORAGE_NAMESPACE_NOT_REGISTERED: The namespace {0} has not been registered
 ERR_STORAGE_NULL_ADAPTER: The adapter cannot be null.
 ERR_STORAGE_NULL_ADAPTER_CONFIG: Adapter config cannot be null or empty.
@@ -109,8 +130,8 @@ ERR_VALDN_MISSING_LANGUAGE_TAG: A 'defaultValue' property is empty or one of its
 ERR_REL_UNDEFINED: Trying to create relationship to an entity not defined
 WARN_DEPRECATED_RESOLUTION_GUIDANCE: Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview.
 WARN_PARTITION_GLOB_AND_REGEX_PRESENT: The Data Partition Pattern contains both a glob pattern ({0}) and a regular expression ({1}) set, the glob pattern will be used.
-WARN_DOC_IMPORT_NOT_LOADED: Import document {0} not loaded. This might cause an unexpected output.
-WARN_PARTITION_FILE_FETCH_FAILED: Failed to fetch all files in the folder location '{0}' described by a partition pattern. Exception {1}
+WARN_DOC_IMPORT_NOT_LOADED: Import document {0} not loaded. This may cause unexpected behavior of the model.
+WARN_PARTITION_FILE_FETCH_FAILED: Failed to fetch all files in the folder location '{0}' described by a partition pattern. Exception: {1}
 WARN_LINK_ENT_IDENT_ARGS_NOT_SUPPORTED: Trait 'is.linkedEntity.identifier' is not accepting arguments, skipping relationship recording for attribute '{0}' in entity '{1}'.
 WARN_PARTITION_INVALID_ARGUMENTS: Invalid set of arguments provided for data partition corresponding to location {0}
 WARN_PERSIST_CUSTOM_EXT_NOT_SUPPORTED: Custom extensions are not supported in referenced entity '{0}'.
@@ -126,6 +147,9 @@ WARN_PERSIST_UNSUPPORTED_JSON_SEM_VER: This ObjectModel version supports json se
 WARN_PERSIST_ENTITY_MISSING: Entity {0} is not inside a document or its owner is not a document.
 WARN_PERSIST_ENUM_NOT_FOUND: Could not find an enum value for {0}.
 WARN_PERSIST_PARTITION_NAME_NULL: Data partition name must be set when exporting to model.json. Defaulting to empty string.
+WARN_PERSIST_SYMS_ENTITY_MISSING: Entity {0} is not inside a document or its owner is not a document.
+WARN_PERSIST_SYMS_ENTITY_SKIPPED: Entity {0} has been skipped. This may occur if entity format type not supported.
+WARN_PERSIST_SYMS_PROJ_NOT_EXIST: Projection exist only for logical entities.
 WARN_PROJ_CREATE_FOREIGN_KEY_TRAITS: Found an attribute without owner while creating relationship traits for attribute {0}.
 WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY: Found ReplaceAsForeignKey operation for attribute '{0}' without a source entity. This operation is only supported on an entity typed attribute.
 WARN_PROJ_ADD_ARTIFACT_ATTR_NOT_SUPPORTED: Operation AddArtifactAttribute is not supported on {0} yet.

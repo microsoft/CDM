@@ -29,7 +29,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestAllOperations";
             string entityName = testName;
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             corpus.SetEventCallback(new EventCallback
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>

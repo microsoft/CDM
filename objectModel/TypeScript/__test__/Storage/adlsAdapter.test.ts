@@ -4,9 +4,8 @@
 import { Stopwatch } from 'ts-stopwatch';
 
 import { azureCloudEndpoint } from '../../Enums/azureCloudEndpoint';
-import { CdmCorpusDefinition, CdmDocumentDefinition, CdmManifestDefinition, cdmStatusLevel } from '../../internal';
+import { CdmCorpusDefinition, CdmDocumentDefinition, CdmManifestDefinition, cdmStatusLevel, StorageAdapterCacheContext } from '../../internal';
 import { ADLSAdapter } from '../../Storage';
-import { StorageAdapterCacheContext } from '../../Storage/StorageAdapterBase';
 import { TokenProvider } from '../../Utilities/Network';
 import { adlsTestHelper } from '../adlsTestHelper';
 import { testHelper } from '../testHelper';
@@ -107,7 +106,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
 
     const testSubpath: string = 'Storage';
 
-    const adlsIt: jest.It = (process.env['ADLS_RUNTESTS']) ? it : it.skip;
+    const adlsIt: jest.It = process.env['ADLS_RUNTESTS'] === '1' ? it : it.skip;
 
     /**
      * The tests declared with "adlsIt" will run only if the ADLS environment variables are setup.

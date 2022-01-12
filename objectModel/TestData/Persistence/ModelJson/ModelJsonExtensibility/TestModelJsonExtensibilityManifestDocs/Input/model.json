@@ -1,0 +1,92 @@
+{
+  "name": "sample",
+  "description": "sample description",
+  "version": "1.0",
+  "pbi:mashup": {
+    "fastCombine": true,
+    "document": "sample document query",
+    "queriesMetadata": {
+      "Orders": {
+        "queryId": "88bc570c-047d-460f-8eed-c0ef17649afd",
+        "queryName": "Orders",
+        "loadEnabled": true
+      }
+    }
+  },
+  "pbi:timezone": "Pacific Standard Time",
+  "manifest:extension": true,
+  "entities": [
+    {
+      "$type": "ReferenceEntity",
+      "name": "Orders",
+      "description": "",
+      "source": "Orders",
+      "modelId": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612",
+      "annotations": [
+        {
+          "name": "pbi:EntityTypeDisplayHint",
+          "value": "LinkedEntity"
+        }
+      ]
+    },
+    {
+      "$type": "LocalEntity",
+      "pbi:mashup": {
+        "fastCombine": true,
+        "allowNativeQueries": true
+      },
+      "name": "sampleEntity",
+      "description": "Sample entity description",
+      "pbi:dataCategory": "BusinessUnit",
+      "pbi:refreshPolicy": {
+        "$type": "FullRefreshPolicy",
+        "location": "sample location"
+      },
+      "partitions": [
+        {
+          "name": "Sample Partition",
+          "refreshTime": "2018-11-14T19:37:55.4375154+00:00",
+          "location": "http://contoso.com/data-partition.csv",
+          "pbi:partitionDataQuery": "<sample partition query>",
+          "pbi:refreshBookmark": "2018-12-19T09:05:03.2374986+00:00",
+          "pbi:source": {
+            "$type": "RangePolicyPartitionSource",
+            "start": "2018-12-19T10:05:03.2374986+00:00",
+            "end": "2018-12-19T10:05:03.2374986+00:00"
+          }
+        }
+      ],
+      "attributes": [
+        {
+          "name": "sampleAttribute",
+          "description": "this is a sample attribute",
+          "pbi:dataCategory": "Identity.Service.Facebook",
+          "dataType": "string"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "Orders",
+        "attributeName": "productId"
+      },
+      "toAttribute": {
+        "entityName": "sampleEntity",
+        "attributeName": "sampleAttribute"
+      }
+    }
+  ],
+  "referenceModels": [
+    {
+      "id": "<workspaceId>/<ModelId>",
+      "location": "sample location"
+    },
+    {
+      "id": "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612",
+      "location": "http://contoso.com/entity.model.json"
+    }
+  ]
+}

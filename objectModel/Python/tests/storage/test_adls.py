@@ -17,7 +17,7 @@ from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
 
 def IfRunTestsFlagNotSet():
-    return (os.environ.get("ADLS_RUNTESTS") is None)
+    return os.environ.get('ADLS_RUNTESTS') is not '1'
 
 class FakeTokenProvider(TokenProvider):
     def get_token(self) -> str:

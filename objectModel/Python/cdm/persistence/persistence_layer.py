@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import importlib
+import json
 from collections import OrderedDict
 from typing import Any, Optional, TYPE_CHECKING
 
@@ -22,6 +23,8 @@ class PersistenceLayer:
     MODEL_JSON_EXTENSION = 'model.json'
     CDM_FOLDER = 'CdmFolder'
     MODEL_JSON = 'ModelJson'
+    SYMS = 'Syms'
+    SYMS_DATABASES = 'databases.manifest.cdm.json'
 
     def __init__(self, corpus: 'CdmCorpusDefinition'):
         self._TAG = PersistenceLayer.__name__
@@ -115,7 +118,33 @@ class PersistenceLayer:
             return None
 
         try:
-            if doc_name_lower.endswith(PersistenceLayer.MANIFEST_EXTENSION) or doc_name_lower.endswith(
+            from cdm.persistence.syms import utils
+            if utils.check_if_syms_adapter(adapter):
+                from cdm.persistence.syms import ManifestDatabasesPersistence
+                from cdm.persistence.syms.types import SymsDatabasesResponse
+                if doc_name_lower == self.SYMS_DATABASES:
+                    from cdm.persistence.syms.models.query_artifacts_response import QueryArtifactsResponse
+                    databases = QueryArtifactsResponse()
+                    databases = databases.deserialize(json.loads(json_data))
+
+                    doc_content = ManifestDatabasesPersistence.from_object(self._ctx, doc_name, folder._namespace,
+                                                                  folder._folder_path,
+                                                                  databases)
+                elif self.MANIFEST_EXTENSION in doc_name_lower:
+                    from cdm.persistence.syms import ManifestPersistence
+                    manifest_content = await utils.get_syms_model(adapter, json_data, doc_path)
+                    doc_content = ManifestPersistence.from_object(self._ctx, doc_name, folder._namespace,
+                                                                           folder._folder_path,
+                                                                           manifest_content)
+                elif self.CDM_EXTENSION in doc_name_lower:
+                    from cdm.persistence.syms.models import TableEntity
+                    from cdm.persistence.syms import DocumentPersistence
+                    table = TableEntity(None, None).deserialize(json.loads(json_data))
+                    doc_content = DocumentPersistence.from_object(self._ctx, doc_name, folder._namespace,
+                                                                           folder._folder_path,
+                                                                           table)
+
+            elif doc_name_lower.endswith(PersistenceLayer.MANIFEST_EXTENSION) or doc_name_lower.endswith(
                     PersistenceLayer.FOLIO_EXTENSION):
                 from cdm.persistence.cdmfolder import ManifestPersistence
                 from cdm.persistence.cdmfolder.types import ManifestContent
@@ -210,9 +239,11 @@ class PersistenceLayer:
         an option will cause us to also save any linked documents."""
 
         # find out if the storage adapter is able to write.
-        namespace = doc._namespace
-        if namespace is None:
-            namespace = self._corpus.storage.default_namespace
+        namespace = StorageUtils.split_namespace_path(new_name)[0]
+        if not namespace:
+            namespace = doc._namespace
+            if not namespace:
+                namespace = self._corpus.storage.default_namespace
 
         adapter = self._corpus.storage.fetch_adapter(namespace)
         if adapter is None:
@@ -230,8 +261,24 @@ class PersistenceLayer:
             return None
 
         # what kind of document is requested?
-        # check file extensions using a case-insensitive ordinal string comparison.
-        persistence_type = self.MODEL_JSON if new_name.lower().endswith(self.MODEL_JSON_EXTENSION) else self.CDM_FOLDER
+        persistence_type = ''
+        from cdm.persistence.syms import utils
+        if utils.check_if_syms_adapter(adapter):
+            if new_name == self.SYMS_DATABASES:
+                logger.error(self._ctx, self._TAG, self._save_document_as_async.__name__, doc.at_corpus_path,
+                             CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_MANIFEST, new_name)
+                return False
+            elif not new_name.lower().endswith(self.MANIFEST_EXTENSION) and new_name.lower().endswith(self.CDM_EXTENSION):
+                logger.error(self._ctx, self._TAG, self._save_document_as_async.__name__, doc.at_corpus_path,
+                             CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_CDM_CONVERSION, new_name)
+                return False
+            persistence_type = self.SYMS
+            options.persistence_type_name = self.SYMS
+        else:
+            if new_name.lower().endswith(self.MODEL_JSON_EXTENSION):
+                persistence_type = self.MODEL_JSON
+            else:
+                persistence_type = self.CDM_FOLDER
 
         if persistence_type == self.MODEL_JSON and new_name.lower() != self.MODEL_JSON_EXTENSION:
             logger.error(self._ctx, self._TAG, self._save_document_as_async.__name__, doc.at_corpus_path, CdmLogCode.ERR_PERSIST_FAILURE,
@@ -248,6 +295,9 @@ class PersistenceLayer:
                 if persistence_type == self.CDM_FOLDER:
                     from cdm.persistence.cdmfolder import ManifestPersistence
                     persisted_doc = ManifestPersistence.to_data(doc, res_opt, options)
+                elif persistence_type == self.SYMS:
+                    from cdm.persistence.syms.manifest_persistence import ManifestPersistence
+                    persisted_doc = await ManifestPersistence.convert_manifest_to_syms(doc, adapter, new_name, res_opt, options)
                 else:
                     if new_name != self.MODEL_JSON_EXTENSION:
                         logger.error(self._ctx, self._TAG, self._save_document_as_async.__name__, doc.at_corpus_path,
@@ -256,8 +306,12 @@ class PersistenceLayer:
                     from cdm.persistence.modeljson import ManifestPersistence
                     persisted_doc = await ManifestPersistence.to_data(doc, res_opt, options)
             elif new_name.lower().endswith(PersistenceLayer.CDM_EXTENSION):
-                from cdm.persistence.cdmfolder import DocumentPersistence
-                persisted_doc = DocumentPersistence.to_data(doc, res_opt, options)
+                if persistence_type == self.CDM_FOLDER:
+                    from cdm.persistence.cdmfolder import DocumentPersistence
+                    persisted_doc = DocumentPersistence.to_data(doc, res_opt, options)
+                elif persistence_type == self.SYMS:
+                    from cdm.persistence.syms.document_persistence import DocumentPersistence
+                    persisted_doc = await DocumentPersistence.convert_doc_to_syms_table(self._ctx, doc, adapter, new_name, res_opt, options)
             else:
                 # Could not find a registered persistence class to handle this document type.
                 logger.error(self._ctx, self._TAG, self._save_document_as_async.__name__, doc.at_corpus_path,
@@ -281,13 +335,20 @@ class PersistenceLayer:
 
         # ask the adapter to make it happen
         try:
-            content = persisted_doc.encode()
-            await adapter.write_async(new_path, content)
+            if persistence_type == self.SYMS:
+                from cdm.persistence.syms import utils
+                if new_name.lower().endswith(self.MANIFEST_EXTENSION):
+                    await utils.create_or_update_syms_entities(persisted_doc, adapter)
+                elif new_name.lower().endswith(self.CDM_EXTENSION):
+                    await utils.create_or_update_table_entity(persisted_doc, adapter)
+            else:
+                content = persisted_doc.encode()
+                await adapter.write_async(new_path, content)
 
             doc._file_system_modified_time = await adapter.compute_last_modified_time_async(new_path)
 
             # Write the adapter's config.
-            if options._is_top_level_document:
+            if options._is_top_level_document and persistence_type != self.SYMS:
                 await self._corpus.storage.save_adapters_config_async('/config.json', adapter)
 
                 # The next document won't be top level, so reset the flag.

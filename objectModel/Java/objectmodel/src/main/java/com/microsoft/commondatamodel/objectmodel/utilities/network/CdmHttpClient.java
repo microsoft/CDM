@@ -140,7 +140,7 @@ public class CdmHttpClient {
 
         // Set timeout.
         final RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout((int) cdmHttpRequest.getTimeout().toMillis()).build();
+                .setSocketTimeout((int) cdmHttpRequest.getTimeout().toMillis()).build();
         httpRequest.setConfig(requestConfig);
 
         // Some requests might not have any content, so check for it.
@@ -159,8 +159,8 @@ public class CdmHttpClient {
         for (int retryNumber = 0; retryNumber <= cdmHttpRequest.getNumberOfRetries(); retryNumber++) {
             boolean hasFailed = false;
             CdmHttpResponse cdmHttpResponse = null;
+            final Instant startTime = java.time.Instant.now();
             try {
-                final Instant startTime = java.time.Instant.now();
                 if (ctx != null)
                 {
                     Logger.debug(ctx, TAG, "sendAsyncHelper",
@@ -196,24 +196,22 @@ public class CdmHttpClient {
                     }
                 }
             } catch (final Exception exception) {
+                final Instant endTime = java.time.Instant.now();
                 hasFailed = true;
+
+                if (exception instanceof ConnectTimeoutException && ctx != null) {
+                    Logger.debug(ctx, TAG, "sendAsyncHelper",
+                            null, Logger.format("Request {0} timeout after {1} ms.", cdmHttpRequest.getRequestId(), Duration.between(startTime, endTime).toMillis()));
+                }
 
                 // Only throw an exception if another retry is not expected anymore.
                 if (callback == null || retryNumber == cdmHttpRequest.getNumberOfRetries()) {
                     if (retryNumber != 0) {
                         throw new CdmNumberOfRetriesExceededException();
+                    } else if (exception instanceof ConnectTimeoutException) {
+                        throw new CdmTimedOutException(exception.getMessage());
                     } else {
-                        if (exception instanceof ConnectTimeoutException) {
-                            if (ctx != null)
-                            {
-                                Logger.debug(ctx, TAG, "sendAsyncHelper",
-                                        null, Logger.format("Request {0} timeout after {1} s.", cdmHttpRequest.getRequestId(), cdmHttpRequest.getTimeout().getSeconds()));
-                            }
-
-                            throw new CdmTimedOutException(exception.getMessage());
-                        } else {
-                            throw new RuntimeException(exception);
-                        }
+                        throw new RuntimeException(exception);
                     }
                 }
             }
@@ -245,13 +243,11 @@ public class CdmHttpClient {
                 // CDM Http Response exists, could be successful or bad (e.g. 403/404), it is up to caller to deal with it.
                 if (cdmHttpResponse != null) {
                     return cdmHttpResponse;
+                } else if (retryNumber < cdmHttpRequest.getNumberOfRetries()) {
+                    throw new CdmTimedOutException("Request timeout.");
                 } else {
-                    if (retryNumber == 0) {
-                        return null;
-                    } else {
-                        // If response doesn't exist repeatedly, just throw that the number of retries has exceeded (we don't have any other information).
-                        throw new CdmNumberOfRetriesExceededException();
-                    }
+                    // If response doesn't exist repeatedly, just throw that the number of retries has exceeded (we don't have any other information).
+                    throw new CdmNumberOfRetriesExceededException();
                 }
             }
         }

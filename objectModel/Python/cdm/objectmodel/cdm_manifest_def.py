@@ -404,7 +404,6 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                     return False
         return True
 
-
     async def _fetch_document_definition(self, relative_path: str) -> CdmDocumentDefinition:
         """Helper that fixes a path from local to absolute.Gets the object from that path.
         Created from SaveDirtyLink in order to be able to save docs in parallel.
@@ -418,7 +417,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
-        obj_at = await self.ctx.corpus.fetch_object_async(doc_path, None, res_opt)
+        obj_at = await self.ctx.corpus.fetch_object_async(doc_path, None, res_opt=res_opt)
         if obj_at is None:
             logger.error(self.ctx, self._TAG, self._fetch_document_definition.__name__, self.at_corpus_path, CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, doc_path)
             return None
@@ -443,23 +442,28 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         if self.imports:
             for imp in self.imports:
                 links.add(imp.corpus_path)
-        for entity_def in self.entities:
-            if entity_def.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
-                links.add(entity_def.entity_path)
-            if entity_def.data_partitions:
-               for partition in entity_def.data_partitions:
-                    if partition.specialized_schema:
-                       links.add(entity_def.entity_path)
-            if entity_def.data_partition_patterns:
-                for pattern in entity_def.data_partition_patterns:
-                    if pattern.specialized_schema:
-                       links.add(pattern.specialized_schema)
+        if self.entities:
+            # only the local entity declarations please
+            for entity_def in self.entities:
+                if entity_def.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
+                    links.add(entity_def.entity_path)
+                # also, partitions can have their own schemas
+                if entity_def.data_partitions:
+                    for partition in entity_def.data_partitions:
+                        if partition.specialized_schema:
+                            links.add(partition.specialized_schema)
+                # so can patterns
+                if entity_def.data_partition_patterns:
+                    for pattern in entity_def.data_partition_patterns:
+                        if pattern.specialized_schema:
+                            links.add(pattern.specialized_schema)
 
-        docs = list() # type: List[CdmDocumentDefinition]
+        # Get all Cdm documents sequentially
+        docs = list()  # type: List[CdmDocumentDefinition]
         for link in links:
             doc = await self._fetch_document_definition(link)
             if not doc:
-               return False
+                return False
             
             docs.append(doc)
 
@@ -468,12 +472,14 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         for d in docs:
             tasks.append(loop.create_task(self._save_document_if_dirty(d, options)))
 
-        await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
 
         if self.sub_manifests:
             for sub_declaration in self.sub_manifests:
-                sub_manifest = await self._fetch_document_definition(sub_declaration.definition)  # type: CdmManifestDefinition
-                if not sub_manifest or not await self._save_document_if_dirty(sub_manifest, options):
+                sub_manifest = await self._fetch_document_definition(sub_declaration.definition)
+                if not sub_manifest or not isinstance(sub_manifest,
+                                                      CdmManifestDefinition) or not await self._save_document_if_dirty(
+                        sub_manifest, options):
                     return False
 
         return True

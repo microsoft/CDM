@@ -15,10 +15,10 @@ import {
     cdmLogCode,
     Logger,
     resolveOptions,
-    StringUtils,
+    StorageAdapterBase,
+    StorageAdapterCacheContext,
     VisitCallback
 } from '../internal';
-import {StorageAdapterBase , StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 
 /**
@@ -184,7 +184,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public async fileStatusCheckAsync(): Promise<void> {
 
-        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
         let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
         try {
             const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);

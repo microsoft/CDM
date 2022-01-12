@@ -54,7 +54,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         [TestMethod]
         public void TestBuildTree()
         {
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, "TestBuildTree");
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestBuildTree");
 
             ProjectionContext pc = BuildFakeTree(corpus);
 
@@ -72,37 +72,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             ProjectionContext pc = new ProjectionContext(projDir, null);
             {
                 ProjectionAttributeState p1 = new ProjectionAttributeState(corpus.Ctx);
-                p1.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "1", "1", null);
+                p1.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "1"), "1", null);
                 ProjectionAttributeState p2 = new ProjectionAttributeState(corpus.Ctx);
-                p2.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "2", "2", null);
+                p2.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "2"), "2", null);
                 ProjectionAttributeState p4 = new ProjectionAttributeState(corpus.Ctx);
-                p4.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "4", "4", null);
+                p4.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "4"), "4", null);
                 ProjectionAttributeState p5 = new ProjectionAttributeState(corpus.Ctx);
-                p5.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "5", "5", null);
+                p5.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "5"), "5", null);
                 ProjectionAttributeState p6 = new ProjectionAttributeState(corpus.Ctx);
-                p6.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "6", "6", null);
+                p6.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "6"), "6", null);
                 ProjectionAttributeState p7 = new ProjectionAttributeState(corpus.Ctx);
-                p7.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "7", "7", null);
+                p7.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "7"), "7", null);
                 ProjectionAttributeState p8 = new ProjectionAttributeState(corpus.Ctx);
-                p8.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "8", "8", null);
+                p8.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "8"), "8", null);
                 ProjectionAttributeState p9 = new ProjectionAttributeState(corpus.Ctx);
-                p9.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "9", "9", null);
+                p9.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "9"), "9", null);
                 ProjectionAttributeState p10 = new ProjectionAttributeState(corpus.Ctx);
-                p10.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "10", "10", null);
+                p10.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "10"), "10", null);
                 ProjectionAttributeState p11 = new ProjectionAttributeState(corpus.Ctx);
-                p11.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "11", "11", null);
+                p11.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "11"), "11", null);
                 ProjectionAttributeState p12 = new ProjectionAttributeState(corpus.Ctx);
-                p12.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "12", "12", null);
+                p12.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "12"), "12", null);
                 ProjectionAttributeState p13 = new ProjectionAttributeState(corpus.Ctx);
-                p13.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "13", "13", null);
+                p13.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "13"), "13", null);
                 ProjectionAttributeState p14 = new ProjectionAttributeState(corpus.Ctx);
-                p14.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "14", "14", null);
+                p14.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "14"), "14", null);
                 ProjectionAttributeState p15 = new ProjectionAttributeState(corpus.Ctx);
-                p15.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "15", "15", null);
+                p15.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "15"), "15", null);
                 ProjectionAttributeState p16 = new ProjectionAttributeState(corpus.Ctx);
-                p16.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "16", "16", null);
+                p16.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "16"), "16", null);
                 ProjectionAttributeState p17 = new ProjectionAttributeState(corpus.Ctx);
-                p17.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, "17", "17", null);
+                p17.CurrentResolvedAttribute = new ResolvedAttribute(projDir.ResOpt, new CdmTypeAttributeDefinition(corpus.Ctx, "17"), "17", null);
 
                 p1.PreviousStateList = new List<ProjectionAttributeState>();
                 p2.PreviousStateList = new List<ProjectionAttributeState>();

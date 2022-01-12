@@ -2,11 +2,10 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from datetime import datetime
-from typing import cast, Dict, List, Optional, Set, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 import warnings
 
 from cdm.enums import CdmLogCode
-from cdm.utilities.string_utils import StringUtils
 
 from cdm.enums import CdmObjectType, ImportsLoadStrategy
 from cdm.utilities import CopyOptions, ImportInfo, logger, ResolveOptions
@@ -19,9 +18,9 @@ from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinitio
 from ._import_priorities import ImportPriorities
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDataTypeDefinition, CdmImport, CdmFolderDefinition, CdmObject, \
-        CdmObjectDefinition, CdmTraitDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.objectmodel import CdmCorpusContext, CdmImport, CdmFolderDefinition, CdmObject, \
+    CdmObjectDefinition, CdmCorpusDefinition
+    from cdm.utilities import VisitCallback
 
 
 class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
@@ -43,7 +42,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         # the document json schema semantic version.
         self.json_schema_semantic_version = self.current_json_schema_semantic_version  # type: str
-        
+
         # the document version.
         self.document_version = None  # type: Optional[str]
 
@@ -149,7 +148,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             logger.error(self.ctx, self._TAG, self._index_if_needed.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_MISSING_DOC, self.name)
             return False
 
-        corpus = self.folder._corpus
+        corpus = self.folder._corpus  # type: CdmCorpusDefinition
         needs_indexing = corpus._document_library._mark_document_for_indexing(self)
 
         if not needs_indexing:
@@ -331,7 +330,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                 ctx._relative_path = obj._declared_path
 
                 if obj._offset_attribute_promise(obj.named_reference) < 0:
-                    res_new = obj._fetch_resolved_reference(res_opt)
+                    res_new = obj.fetch_object_definition(res_opt)
 
                     if not res_new:
 
@@ -631,13 +630,16 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             from .cdm_entity_def import CdmEntityDefinition
             from .cdm_manifest_def import CdmManifestDefinition
 
+            if not await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name,
+                                                                         save_referenced):
+                return False
             # Log the telemetry if the document is a manifest
             if isinstance(self, CdmManifestDefinition):
                 for entity in self.entities:
                     if isinstance(entity, CdmLocalEntityDeclarationDefinition):
                         entity.reset_last_file_modified_old_time()
                 for relationship in self.relationships:
-                    relationship.reset_last_file_modified_old_time()               
+                    relationship.reset_last_file_modified_old_time()
                 logger._ingest_manifest_telemetry(self, self.ctx, CdmDocumentDefinition.__name__,
                                                   self.save_as_async.__name__, self.at_corpus_path)
 
@@ -648,19 +650,41 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                         logger._ingest_entity_telemetry(obj, self.ctx, CdmDocumentDefinition.__name__,
                                                         self.save_as_async.__name__, obj.at_corpus_path)
 
-            return await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name, save_referenced)
+            return True
 
     async def _save_linked_documents_async(self, options: 'CopyOptions') -> bool:
+        docs = []
+        if not options:
+            options = CopyOptions()
+
         # the only linked documents would be the imports
         if self.imports:
             for imp in self.imports:
                 # get the document object from the import
-                doc_imp = await self.ctx.corpus.fetch_object_async(imp.corpus_path, self)
-                if doc_imp and doc_imp._is_dirty:
-                    # save it with the same name
-                    if not await doc_imp.save_as_async(doc_imp.name, True, options):
-                        logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IMPORT_SAVING_FAILURE, doc_imp.name)
+                doc_path = self.ctx.corpus.storage.create_absolute_corpus_path(imp.corpus_path, self)
+                if not doc_path:
+                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path,
+                                 CdmLogCode.ERR_VALDN_INVALID_CORPUS_PATH, imp.corpus_path)
+                    return False
+                try:
+                    obj_at = await self.ctx.corpus.fetch_object_async(doc_path)
+                    if not obj_at:
+                        logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path,
+                                     CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, imp.corpus_path)
                         return False
+                    doc_imp = obj_at.in_document
+                    if doc_imp is not None and doc_imp._is_dirty:
+                        docs.append(doc_imp)
+                except Exception as e:
+                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path,
+                                 CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, imp.corpus_path + ' ' + str(e))
+                    return False
+
+            for doc_imp in docs:
+                # save it with the same name
+                if not await doc_imp.save_as_async(doc_imp.name, True, options):
+                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IMPORT_SAVING_FAILURE, doc_imp.name)
+                    return False
         return True
 
     def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObjectDefinition']:

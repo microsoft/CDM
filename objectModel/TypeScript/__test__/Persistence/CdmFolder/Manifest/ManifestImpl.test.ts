@@ -254,7 +254,8 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * ( '/' should be appended and a warning be sent through callback function)
      */
     it('TestPathThatDoesNotEndInSlash', () => {
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnStorageExpectedPathPrefix]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPathThatDoesNotEndInSlash', undefined, false, expectedLogCodes, true);
         const obj: CdmManifestDefinition = new CdmManifestDefinition(undefined, undefined);
         obj.folderPath = 'Mnp';
         obj.namespace = 'cdm';
@@ -271,7 +272,8 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * Checks behavior if objectPath is invalid.
      */
     it('TestPathRootInvalidObjectPath', () => {
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrStorageInvalidPathFormat]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPathRootInvalidObjectPath', undefined, false, expectedLogCodes, true);
 
         corpus.storage.createAbsoluteCorpusPath('./Abc');
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
@@ -291,7 +293,8 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * Checks behavior if FolderPath is invalid.
      */
     it('TestPathRootInvalidFolderPath', () => {
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrStorageInvalidPathFormat]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPathRootInvalidFolderPath', undefined, false, expectedLogCodes, true);
 
         let obj: CdmManifestDefinition = new CdmManifestDefinition(undefined, undefined);
         obj.namespace = 'cdm';

@@ -166,7 +166,9 @@ class ManifestImplTest(unittest.TestCase):
         This checks the behavior if FolderPath does not end with a /
         ('/' should be appended and a warning be sent through callback function)"""
 
-        corpus = CdmCorpusDefinition()
+        expected_log_codes = { CdmLogCode.WARN_STORAGE_EXPECTED_PATH_PREFIX }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_path_that_does_not_end_in_slash', expected_codes=expected_log_codes, no_input_and_output_folder=True)
+
         manifest = CdmManifestDefinition(None, None)
         manifest._namespace = 'cdm'
         manifest._folder_path = 'Mnp'
@@ -178,7 +180,8 @@ class ManifestImplTest(unittest.TestCase):
     def test_path_root_invalid_object_path(self):
         """Tests absolute paths cannot be created with wrong parameters.
         Checks behavior if objectPath is invalid."""
-        corpus = CdmCorpusDefinition()
+        expected_log_codes = { CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_path_root_invalid_object_path', expected_codes=expected_log_codes, no_input_and_output_folder=True)
 
         corpus.storage.create_absolute_corpus_path('./Abc')
         TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
@@ -198,7 +201,8 @@ class ManifestImplTest(unittest.TestCase):
     def test_path_root_invalid_folder_path(self):
         """"Tests absolute paths cannot be created with wrong parameters.
         Checks behavior if FolderPath is invalid."""
-        corpus = CdmCorpusDefinition()
+        expected_log_codes = { CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_path_root_invalid_folder_path', expected_codes=expected_log_codes, no_input_and_output_folder=True)
 
         manifest = CdmManifestDefinition(None, None)
         manifest._namespace = 'cdm'

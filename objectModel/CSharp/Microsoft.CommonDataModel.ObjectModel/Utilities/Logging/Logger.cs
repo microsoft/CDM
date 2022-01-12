@@ -54,7 +54,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         public static void Warning(CdmCorpusContext ctx, string className, string method, string corpusPath, CdmLogCode code, params string[] args)
         {
             // Get message from resource for the code enum.
-            string message = GetMessagefromResourceFile(code, args);
+            string message = GetMessageFromResourceFile(code, args);
 
             Log(CdmStatusLevel.Warning, ctx, className, message, method, Console.WriteLine, corpusPath, code, true);
         }
@@ -71,7 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         public static void Error(CdmCorpusContext ctx, string className, string method, string corpusPath, CdmLogCode code, params string[] args)
         {
             // Get message from resource for the code enum.
-            string message = GetMessagefromResourceFile(code, args);
+            string message = GetMessageFromResourceFile(code, args);
 
             Log(CdmStatusLevel.Error, ctx, className, message, method, Console.Error.WriteLine, corpusPath, code, true);
         }
@@ -169,7 +169,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// </summary>
         /// <param name="code">The code, denotes the code enum for a message.</param>
         /// <param name="args">The args, denotes the arguments inserts into the messages.</param>
-        private static string GetMessagefromResourceFile(CdmLogCode code, params string[] args)
+        private static string GetMessageFromResourceFile(CdmLogCode code, params string[] args)
         {
             StringBuilder builder = new StringBuilder(resManager.GetString(code.ToString()));
 

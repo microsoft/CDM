@@ -8,13 +8,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
 {
     [TestClass]
     public class TraitToPropertyMapTests
     {
+        private readonly string testsSubpath = Path.Combine("Utilities", "TraitToPropertyMap");
+
         /// <summary>
         /// Test trait to data format when unknown data format trait is in an attribute.
         /// </summary>
@@ -71,6 +75,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             Assert.AreEqual("Fax", property["displayText"]);
             Assert.IsNull(property["attributeValue"]);
             Assert.IsNull(property["displayOrder"]);
+        }
+
+        /// <summary>
+        /// Test fetching primary key.
+        /// </summary>
+        [TestMethod]
+        public async Task TestFetchPrimaryKey()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestFetchPrimaryKey));
+            var doc = await corpus.FetchObjectAsync<CdmDocumentDefinition>("Account.cdm.json");
+
+            if (doc == null)
+            {
+                Assert.Fail($"Unable to load acccount.cdm.json. Please inspect error log for additional details.");
+            }
+
+            var entity = (CdmEntityDefinition)doc.Definitions[0];
+            try
+            {
+                var pk = entity.PrimaryKey;
+            }
+            catch (Exception e)
+            {
+                Assert.Fail($"Exception occur while reading primary key for entity account. {e.Message}");
+            }
         }
 
         /// <summary>

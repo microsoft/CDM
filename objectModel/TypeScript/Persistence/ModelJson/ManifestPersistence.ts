@@ -170,7 +170,6 @@ export class ManifestPersistence {
                     entitySchemaByName.set(entity.entityName, entity.entityPath);
                 } else {
                     Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistModelJsonEntityParsingError);
-                    return;
                 }
             }
         }
@@ -271,9 +270,9 @@ export class ManifestPersistence {
         ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.entities && instance.entities.length > 0) {
-            result.entities = [];
-            const promises: Promise<void>[] = instance.entities.allItems.map(
-                async (entity: CdmEntityDeclarationDefinition) => {
+            async function createPromise(instance) {
+                result.entities = [];
+                for (const entity of instance.entities.allItems) {
                     let element: LocalEntity | ReferenceEntity;
                     if (isLocalEntityDeclarationDefinition(entity)) {
                         element = await ModelJson.LocalEntityDeclarationPersistence.toData(
@@ -293,7 +292,7 @@ export class ManifestPersistence {
                             entity.entityPath);
 
                         if (!entityLocation) {
-                            Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonInvalidEntityPath, entity.entityName);
+                            Logger.error(instance.ctx, ManifestPersistence.TAG, ManifestPersistence.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonInvalidEntityPath, entity.entityName);
                             element = undefined;
                         }
 
@@ -309,7 +308,7 @@ export class ManifestPersistence {
                             if (referenceEntity.modelId !== undefined) {
                                 const savedLocation: string = referenceModels.get(referenceEntity.modelId);
                                 if (savedLocation !== undefined && savedLocation !== entityLocation) {
-                                    Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonModelIdDuplication);
+                                    Logger.error(instance.ctx, ManifestPersistence.TAG, ManifestPersistence.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonModelIdDuplication);
                                     element = undefined;
                                 } else if (savedLocation === undefined) {
                                     referenceModels.set(referenceEntity.modelId, entityLocation);
@@ -330,11 +329,12 @@ export class ManifestPersistence {
                     if (element) {
                         result.entities.push(element);
                     } else {
-                        Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.entityName);
-                    }
+                        Logger.error(instance.ctx, ManifestPersistence.TAG, ManifestPersistence.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.entityName);
+                    }                    
                 }
-            );
-            await Promise.all(promises);
+                return result.entities;
+            }
+            await createPromise(instance);
         }
 
         if (referenceModels.size > 0) {

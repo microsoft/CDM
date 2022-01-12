@@ -139,12 +139,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// <returns> Document to be used as starting point when resolving the CdmObject passed as argument.</returns>
         internal static CdmDocumentDefinition FetchDocument(CdmObject obj)
         {
-            if (obj == null || obj.Owner == null)
+            if (obj == null)
             {
                 return null;
             }
 
-            return obj.Owner.InDocument;
+            if (obj.InDocument != null)
+            {
+                return obj.InDocument;
+            }
+
+            return obj.Owner?.InDocument;
         }
 
         /// <summary>

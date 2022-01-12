@@ -16,6 +16,7 @@ import {
     cdmStatusLevel,
     CdmDataTypeReference
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { CdmOperationAddArtifactAttribute } from 'Cdm/Projections/CdmOperationAddArtifactAttribute';
 
@@ -48,7 +49,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
      it('TestAddEntAttrOnEntAttrProj', async () => {
         const testName: string = 'TestAddEntAttrOnEntAttrProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CdmOperationAddArtifactAttribute | Operation AddArtifactAttribute is not supported on an entity attribute yet.') === -1) {
@@ -66,7 +67,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         it('TestAddAttrGrpOnEntAttrProj', async () => {
         const testName: string = 'TestAddAttrGrpOnEntAttrProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CdmOperationAddArtifactAttribute | Operation AddArtifactAttribute is not supported on an attribute group yet.') === -1) {
@@ -84,7 +85,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
      it('TestAddTypeAttrOnTypeAttrProj', async () => {
         const testName: string = 'TestAddTypeAttrOnTypeAttrProj';
         const entityName: string = 'Person';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -107,7 +108,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     it('TestCombineOpsNestedProj', async () => {
         const testName: string = 'TestCombineOpsNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -151,7 +152,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     it('TestConditionalProj', async () => {
         const testName: string = 'TestConditionalProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -200,7 +201,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
      */
     it('TestConditionalProjUsingObjectModel', async () => {
         const testName: string = 'TestConditionalProjUsingObjectModel';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         // Create an entity.
@@ -271,7 +272,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     it('TestExtendsEntityProj', async () => {
         const testName: string = 'TestExtendsEntityProj';
         const entityName: string = 'Child';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -303,7 +304,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     it('TestMultipleOpProj', async () => {
         const testName: string = 'TestMultipleOpProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -339,7 +340,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     it('TestInsertAtTop', async () => {
         const testName: string = 'TestInsertAtTop';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -374,7 +375,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     it('TestNestedProj', async () => {
         const testName: string = 'TestNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

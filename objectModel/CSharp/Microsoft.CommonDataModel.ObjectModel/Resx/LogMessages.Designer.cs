@@ -547,6 +547,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The model.json location &apos;{0}&apos; for the entity &apos;{1}&apos; could not be understood by any storage adapter..
+        /// </summary>
+        internal static string ErrPersistModelJsonRefEntityInvalidLocation {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonRefEntityInvalidLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while trying to convert model.json attribute to cdm attribute..
         /// </summary>
         internal static string ErrPersistModelJsonToAttrConversionFailure {
@@ -691,6 +700,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File extension {0} is incompatible with file type {1}..
+        /// </summary>
+        internal static string ErrPersistSymsIncompatibleFileToType {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsIncompatibleFileToType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database object receieved from syms was either null or not with type as DATABASE..
         /// </summary>
         internal static string ErrPersistSymsInvalidDbObject {
@@ -736,7 +754,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} trait must be defined. It must have argument name {1} value in format  &apos;&lt;namespace&gt;:/&apos; and mounted to adls apapter..
+        ///   Looks up a localized string similar to {0} trait must be defined. It must have argument name {1} value in format &apos;&lt;namespace&gt;:/&apos; and mounted to adls apapter..
         /// </summary>
         internal static string ErrPersistSymsStorageSourceTraitError {
             get {
@@ -745,7 +763,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Encountered unknown format type for table {0}. Supported format type is csv ..
+        ///   Looks up a localized string similar to Encountered unknown format type for table {0}. Supported format types are &apos;CSV&apos; and &apos;parquet&apos;..
         /// </summary>
         internal static string ErrPersistSymsTableFormatTypeNotSupported {
             get {
@@ -813,6 +831,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrPersistSymsUnsupportedManifest {
             get {
                 return ResourceManager.GetString("ErrPersistSymsUnsupportedManifest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown format type recevied from SyMS. Supported types are &apos;CSV&apos; and &apos;parquet&apos;..
+        /// </summary>
+        internal static string ErrPersistSymsUnsupportedTableFormat {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsUnsupportedTableFormat", resourceCulture);
             }
         }
         
@@ -932,16 +959,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
                 return ResourceManager.GetString("ErrResolveFolderNotFound", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create the resolved manifest &apos;{0}&apos; because a manifest with that name already exists.
+        ///   Looks up a localized string similar to Cannot create resolved manifest &apos;{0}&apos; because a manifest with that name already exists in folder &apos;{1}&apos;.
         /// </summary>
         internal static string ErrResolveManifestExists {
             get {
                 return ResourceManager.GetString("ErrResolveManifestExists", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Cannot resolve the manifest &apos;{0}&apos; because it has not been added to a folder.
         /// </summary>

@@ -26,7 +26,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The dictionary of registered namespace <-> adapters.
         /// </summary>
-        public IDictionary<string, StorageAdapter> NamespaceAdapters { get; set; }
+        public IDictionary<string, StorageAdapterBase> NamespaceAdapters { get; set; }
 
         internal IDictionary<string, CdmFolderDefinition> NamespaceFolders { get; set; }
 
@@ -64,7 +64,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public StorageManager(CdmCorpusDefinition corpus)
         {
             this.Corpus = corpus;
-            this.NamespaceAdapters = new Dictionary<string, StorageAdapter>();
+            this.NamespaceAdapters = new Dictionary<string, StorageAdapterBase>();
             this.NamespaceFolders = new Dictionary<string, CdmFolderDefinition>();
             this.systemDefinedNamespaces = new HashSet<string>();
             
@@ -121,7 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// Mounts a namespace to the specified adapter.
         /// </summary>
-        public void Mount(string nameSpace, StorageAdapter adapter)
+        public void Mount(string nameSpace, StorageAdapterBase adapter)
         {
             using (Logger.EnterScope(nameof(StorageManager), Ctx, nameof(Mount)))
             {
@@ -190,7 +190,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// Allow replacing a storage adapter with another one for testing, leaving folders intact.
         /// </summary>
-        internal void SetAdapter(string nameSpace, StorageAdapter adapter)
+        internal void SetAdapter(string nameSpace, StorageAdapterBase adapter)
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
@@ -213,7 +213,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         /// <param name="nameSpace"></param>
         /// <returns>The adapter.</returns>
-        public StorageAdapter FetchAdapter(string nameSpace)
+        public StorageAdapterBase FetchAdapter(string nameSpace)
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
@@ -270,7 +270,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 // keep trying adapters until one of them likes what it sees
                 if (this.NamespaceAdapters != null)
                 {
-                    foreach (KeyValuePair<string, StorageAdapter> kv in this.NamespaceAdapters)
+                    foreach (KeyValuePair<string, StorageAdapterBase> kv in this.NamespaceAdapters)
                     {
                         result = kv.Value.CreateCorpusPath(adapterPath);
                         if (result != null)
@@ -319,7 +319,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     nameSpace = this.DefaultNamespace;
 
                 // get the adapter registered for this namespace
-                StorageAdapter namespaceAdapter = this.FetchAdapter(nameSpace);
+                StorageAdapterBase namespaceAdapter = this.FetchAdapter(nameSpace);
                 if (namespaceAdapter == null)
                 {
                     Logger.Error(this.Ctx, Tag, nameof(CorpusPathToAdapterPath), null, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);
@@ -466,7 +466,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         /// <param name="name">The name of a file.</param>
         /// <param name="adapter">The adapter used to save the config to a file.</param>
-        public async Task SaveAdaptersConfigAsync(string name, StorageAdapter adapter)
+        public async Task SaveAdaptersConfigAsync(string name, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync(name, FetchConfig());
         }
@@ -543,7 +543,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 }
                 else
                 {
-                    var adapter = Activator.CreateInstance(adapterType) as StorageAdapter;
+                    var adapter = Activator.CreateInstance(adapterType) as StorageAdapterBase;
                     adapter.UpdateConfig(configs.ToString());
                     this.Mount(nameSpace, adapter);
                 }

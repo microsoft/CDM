@@ -26,14 +26,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         private const string foundationJsonPath = "cdm:/foundations.cdm.json";
 
         /// <summary>
-        /// The log codes that are allowed to be logged without failing the test
-        /// </summary>
-        private static ReadOnlySet<string> allowedLogs = new ReadOnlySet<string>(new HashSet<string>
-        { 
-            CdmLogCode.WarnDeprecatedResolutionGuidance.ToString()
-        });
-
-        /// <summary>
         /// Resolves an entity
         /// </summary>
         /// <param name="corpus">The corpus</param>
@@ -115,29 +107,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             await ValidateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity, updateExpectedOutput);
 
             return resolvedEntity;
-        }
-
-        /// <summary>
-        /// Creates a corpus
-        /// </summary>
-        public static CdmCorpusDefinition GetLocalCorpus(string testsSubpath, string testName)
-        {
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
-
-            corpus.SetEventCallback(new EventCallback
-            {
-                Invoke = (status, message) =>
-                {
-                    var events = corpus.Ctx.Events;
-                    var lastLog = events[events.Count - 1];
-                    if (!lastLog.ContainsKey("code") || !allowedLogs.Contains(lastLog["code"]))
-                    {
-                        Assert.Fail(message);
-                    }
-                }
-            }, CdmStatusLevel.Warning);
-
-            return corpus;
         }
 
         /// <summary>

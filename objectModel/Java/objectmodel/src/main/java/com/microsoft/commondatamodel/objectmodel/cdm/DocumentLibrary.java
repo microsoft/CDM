@@ -4,7 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -294,7 +294,7 @@ public class DocumentLibrary {
 
         if (objectPath.startsWith("/")) {
             final CdmFolderDefinition namespaceFolder = this.corpus.getStorage().fetchRootFolder(nameSpace);
-            final StorageAdapter namespaceAdapter = this.corpus.getStorage().fetchAdapter(nameSpace);
+            final StorageAdapterBase namespaceAdapter = this.corpus.getStorage().fetchAdapter(nameSpace);
 
             if (namespaceFolder == null || namespaceAdapter == null) {
                 Logger.error(this.corpus.getCtx(), TAG, "loadFolderOrDocumentAsync", objectPath, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);

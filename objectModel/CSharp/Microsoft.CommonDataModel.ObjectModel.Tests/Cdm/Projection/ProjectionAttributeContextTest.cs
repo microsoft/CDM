@@ -29,7 +29,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityStringReference";
             string entityName = "TestEntStrRef";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -43,7 +43,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityEntityReference";
             string entityName = "TestEntEntRef";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -57,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityProjection";
             string entityName = testName;
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -71,7 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityNestedProjection";
             string entityName = "NestedProjection";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -85,7 +85,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityAttributeStringReference";
             string entityName = "TestEntAttrStrRef";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -99,7 +99,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityAttributeEntityReference";
             string entityName = "TestEntAttrEntRef";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -113,7 +113,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityAttributeProjection";
             string entityName = "TestEntAttrProj";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -127,7 +127,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityAttributeNestedProjection";
             string entityName = "NestedProjection";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
         }
@@ -141,7 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityTrait";
             string entityName = testName;
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
 
@@ -167,7 +167,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityExtendsTrait";
             string entityName = "ExtendsTrait";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
 
@@ -193,7 +193,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestProjectionTrait";
             string entityName = testName;
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
 
@@ -219,7 +219,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestProjectionExtendsTrait";
             string entityName = "ExtendsTrait";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
 

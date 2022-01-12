@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -53,9 +54,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         {
             try
             {
-                var cdmCorpus = new CdmCorpusDefinition();
-                cdmCorpus.Storage.Mount("local", new LocalAdapter("C:\\path"));
-                cdmCorpus.Storage.DefaultNamespace = "local";
+                var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrResolveManifestFailed };
+                var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestResolvingManifestNotInFolder), expectedCodes: expectedLogCodes, noInputAndOutputFolder: true);
 
                 var manifest = cdmCorpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "test");
                 var entity = cdmCorpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, "entity");
@@ -101,7 +101,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         [TestMethod]
         public async Task TestResolvingManifestWithSameName()
         {
-            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolvingManifestWithSameName");
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrResolveManifestExists };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolvingManifestWithSameName", expectedCodes: expectedLogCodes);
 
             var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "test");
             corpus.Storage.NamespaceFolders["local"].Documents.Add(manifest);

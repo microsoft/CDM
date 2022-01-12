@@ -7,15 +7,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
@@ -61,6 +59,27 @@ public class EntityResolutionTest {
 
     Assert.assertEquals(document, entity.getOwner());
     Assert.assertEquals(entity, entity.getAttributes().get(0).getOwner(), "Entity's attribute's owner should have remained unchanged (same as the owning entity)");
+  }
+
+  /**
+   * Test that entity references that do not point to valid entities are reported as an error instead of triggering an exception
+   */
+  @Test
+  public void testEntRefNonexistent() throws InterruptedException
+  {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.WarnResolveObjectFailed, CdmLogCode.ErrResolveReferenceFailure));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntRefNonexistent", null, false, expectedLogCodes);
+    CdmFolderDefinition folder = corpus.getStorage().getNamespaceFolders().get("local");
+    CdmDocumentDefinition doc = new CdmDocumentDefinition(corpus.getCtx(), "someDoc.cdm.json");
+    folder.getDocuments().add(doc);
+    CdmEntityDefinition entity = new CdmEntityDefinition(corpus.getCtx(), "someEntity");
+    CdmEntityAttributeDefinition entAtt = new CdmEntityAttributeDefinition(corpus.getCtx(), "entityAtt");
+    entAtt.setEntity(new CdmEntityReference(corpus.getCtx(), "nonExistingEntity", true));
+    entity.getAttributes().add(entAtt);
+    doc.getDefinitions().add(entity);
+
+    CdmEntityDefinition resolvedEnt = entity.createResolvedEntityAsync("resolvedSomeEntity").join();
+    Assert.assertNotNull(resolvedEnt);
   }
 
   /**
@@ -193,7 +212,8 @@ public class EntityResolutionTest {
    */
   @Test
   public void TestResolvedAttributeLimit() throws InterruptedException, ExecutionException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvedAttributeLimit");
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrRelMaxResolvedAttrReached));
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvedAttributeLimit", null, false, expectedLogCodes);
 
     CdmEntityDefinition mainEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/mainEntity.cdm.json/mainEntity").join();
     ResolveOptions resOpt = new ResolveOptions(mainEntity.getInDocument(), null);

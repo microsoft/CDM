@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { AttributeReference } from 'Persistence/ModelJson/types';
 import {
     CdmAttributeGroupDefinition,
     CdmAttributeGroupReference,
@@ -91,7 +92,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         // Check that the trait 'is.identifiedBy' is created with the correct argument.
         const isIdentifiedBy1: CdmTraitReferenceBase = typeAttribute.appliedTraits.allItems[1];
         expect(isIdentifiedBy1.namedReference).toEqual('is.identifiedBy');
-        expect((isIdentifiedBy1 as CdmTraitReference).arguments.allItems[0].value).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
+        expect(((isIdentifiedBy1 as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference).namedReference).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
 
         // Read from a resolved entity schema.
         const resolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership_Resolved.cdm.json/TeamMembership', null, resOpt);

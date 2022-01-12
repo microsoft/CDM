@@ -5,15 +5,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -219,7 +214,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
         [TestMethod]
         public async Task TestMissingPersistenceFormat()
         {
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMissingPersistenceFormat");
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrPersistClassMissing };
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMissingPersistenceFormat", expectedCodes:expectedLogCodes);
+
             CdmFolderDefinition folder = corpus.Storage.FetchRootFolder(corpus.Storage.DefaultNamespace);
 
             CdmManifestDefinition manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "someManifest");
@@ -245,7 +242,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             var manifestReadDatabases = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/databases.manifest.cdm.json");
             Assert.IsNotNull(manifestReadDatabases);
             Assert.AreEqual("databases.manifest.cdm.json", manifestReadDatabases.ManifestName);
-            Assert.AreEqual(manifestReadDatabases.SubManifests[0].ManifestName, manifestExpected.ManifestName);
+
+            if (!manifestReadDatabases.SubManifests.AllItems.Exists(item => item.ManifestName == manifestExpected.ManifestName))
+            {
+                Assert.Fail($"Database {manifestExpected.ManifestName} does not exist.");
+            }
 
             var manifestActual = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/{manifestExpected.ManifestName}/{manifestExpected.ManifestName}.manifest.cdm.json", manifestReadDatabases, null, true);
             await manifestActual.SaveAsAsync($"localActOutput:/{filename}{threadnumber}");

@@ -209,7 +209,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestExtendsEntityAndReplaceAsForeignKey()
         {
             var testName = "TestExtendsEntityAndReplaceAsForeignKey";
-            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnProjFKWithoutSourceEntity };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName, expectedCodes: expectedLogCodes);
 
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
 
@@ -312,11 +313,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
             CdmManifestDefinition manifestNoToEnt = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/mainNoToEnt.manifest.cdm.json");
             CdmEntityDefinition fromEnt = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/fromEnt.cdm.json/fromEnt");
-            await fromEnt.InDocument.SaveAsAsync(tempFromFilePath);
+            await fromEnt.InDocument.SaveAsAsync(tempFromFilePath, options: new CopyOptions() { IsTopLevelDocument = false });
 
             async Task reloadFromEntity()
             {
-                await fromEnt.InDocument.SaveAsAsync(tempFromFilePath);
+                await fromEnt.InDocument.SaveAsAsync(tempFromFilePath, options: new CopyOptions() { IsTopLevelDocument = false });
                 // fetch again to reset the cache
                 await corpus.FetchObjectAsync<CdmEntityDefinition>(tempFromEntityPath, null, false, true);
             }

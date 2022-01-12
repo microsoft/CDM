@@ -213,10 +213,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return null;
         }
 
-        internal static CdmTraitReference CreateCsvTrait(IDictionary<string, JToken> obj, CdmCorpusContext ctx)
+        internal static CdmTraitReference CreatePartitionTrait(IDictionary<string, JToken> obj, CdmCorpusContext ctx, FormatType formatType)
         {
-            var csvFormatTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.partition.format.CSV", true);
-            csvFormatTrait.SimpleNamedReference = false;
+            CdmTraitReference formatTrait;
+            if (formatType == FormatType.Csv)
+            {
+                formatTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.partition.format.CSV", true);
+            }
+            else if (formatType == FormatType.Parquet)
+            {
+                formatTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.partition.format.parquet", true);
+            }
+            else
+            {
+                // error
+                return null;
+            }
+
+            formatTrait.SimpleNamedReference = false;
 
             if (obj != null)
             {
@@ -224,88 +238,88 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 {
                     var columnHeadersArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "columnHeaders");
                     columnHeadersArg.Value = obj["header"];
-                    csvFormatTrait.Arguments.Add(columnHeadersArg);
+                    formatTrait.Arguments.Add(columnHeadersArg);
                 }
                 if (obj.ContainsKey("csvStyle"))
                 {
                     var csvStyleArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "csvStyle");
                     csvStyleArg.Value = obj["csvStyle"];
-                    csvFormatTrait.Arguments.Add(csvStyleArg);
+                    formatTrait.Arguments.Add(csvStyleArg);
                 }
                 if (obj.ContainsKey("field.delim"))
                 {
                     var delimiterArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "delimiter");
                     delimiterArg.Value = obj["field.delim"];
-                    csvFormatTrait.Arguments.Add(delimiterArg);
+                    formatTrait.Arguments.Add(delimiterArg);
                 }
                 if (obj.ContainsKey("quoteStyle"))
                 {
                     var quoteStyleArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "quoteStyle");
                     quoteStyleArg.Value = obj["quoteStyle"];
-                    csvFormatTrait.Arguments.Add(quoteStyleArg);
+                    formatTrait.Arguments.Add(quoteStyleArg);
                 }
                 if (obj.ContainsKey("quote"))
                 {
                     var quoteArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "quote");
                     quoteArg.Value = obj["quote"];
-                    csvFormatTrait.Arguments.Add(quoteArg);
+                    formatTrait.Arguments.Add(quoteArg);
                 }
                 if (obj.ContainsKey("encoding"))
                 {
                     var encodingArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "encoding");
                     encodingArg.Value = obj["encoding"];
-                    csvFormatTrait.Arguments.Add(encodingArg);
+                    formatTrait.Arguments.Add(encodingArg);
                 }
                 if (obj.ContainsKey("escape"))
                 {
                     var escapeArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "escape");
                     escapeArg.Value = obj["escape"];
-                    csvFormatTrait.Arguments.Add(escapeArg);
+                    formatTrait.Arguments.Add(escapeArg);
                 }
                 if (obj.ContainsKey("newline"))
                 {
                     var newlineArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "newline");
                     newlineArg.Value = obj["newline"];
-                    csvFormatTrait.Arguments.Add(newlineArg);
+                    formatTrait.Arguments.Add(newlineArg);
                 }
                 if (obj.ContainsKey("skipLines"))
                 {
                     var skipLinesArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "skipLines");
                     skipLinesArg.Value = obj["skipLines"];
-                    csvFormatTrait.Arguments.Add(skipLinesArg);
+                    formatTrait.Arguments.Add(skipLinesArg);
                 }
                 if (obj.ContainsKey("inferSchema"))
                 {
                     var inferSchemaArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "inferSchema");
                     inferSchemaArg.Value = obj["inferSchema"];
-                    csvFormatTrait.Arguments.Add(inferSchemaArg);
+                    formatTrait.Arguments.Add(inferSchemaArg);
                 }
                 if (obj.ContainsKey("timestampFormat"))
                 {
                     var timestampFormatArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "timestampFormat");
                     timestampFormatArg.Value = obj["timestampFormat"];
-                    csvFormatTrait.Arguments.Add(timestampFormatArg);
+                    formatTrait.Arguments.Add(timestampFormatArg);
                 }
                 if (obj.ContainsKey("ignoreTrailingWhiteSpace"))
                 {
                     var ignoreTrailingWhiteSpaceArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "ignoreTrailingWhiteSpace ");
                     ignoreTrailingWhiteSpaceArg.Value = obj["ignoreTrailingWhiteSpace"];
-                    csvFormatTrait.Arguments.Add(ignoreTrailingWhiteSpaceArg);
+                    formatTrait.Arguments.Add(ignoreTrailingWhiteSpaceArg);
                 }
                 if (obj.ContainsKey("ignoreLeadingWhiteSpace"))
                 {
                     var ignoreLeadingWhiteSpaceArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "ignoreLeadingWhiteSpace");
                     ignoreLeadingWhiteSpaceArg.Value = obj["ignoreLeadingWhiteSpace"];
-                    csvFormatTrait.Arguments.Add(ignoreLeadingWhiteSpaceArg);
+                    formatTrait.Arguments.Add(ignoreLeadingWhiteSpaceArg);
                 }
                 if (obj.ContainsKey("multiLine"))
                 {
                     var multilineArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "multiLine");
                     multilineArg.Value = obj["multiLine"];
-                    csvFormatTrait.Arguments.Add(multilineArg);
+                    formatTrait.Arguments.Add(multilineArg);
                 }
             }
-            return csvFormatTrait;
+            return formatTrait;
         }
 
         /// <summary>
@@ -345,7 +359,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// check if adapter is syms.
         /// </summary>
-        internal static bool CheckIfSymsAdapter(StorageAdapter adapter)
+        internal static bool CheckIfSymsAdapter(StorageAdapterBase adapter)
         {
             if (adapter.GetType().ToString().Equals("Microsoft.CommonDataModel.ObjectModel.Storage.SymsAdapter")
                 || adapter.GetType().ToString().Equals("Microsoft.CommonDataModel.ObjectModel.Adapter.Syms"))
@@ -654,7 +668,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Convert syms data type to CDM data type.
         /// </summary>
-        public static CdmDataFormat SymsDataTypeToCDMDataFormat(TypeInfo typeInfo)
+        internal static CdmDataFormat SymsDataTypeToCdmDataFormat(TypeInfo typeInfo)
         {
             switch (typeInfo.TypeName.ToLower())
             {
@@ -667,11 +681,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 case "string":
                     if (typeInfo.Length == 1)
                         return CdmDataFormat.Char;
-                    else if (typeInfo.Length > 1)
+                    if (typeInfo.Properties.ContainsKey("guid") && typeInfo.Properties["guid"].ToObject<bool>() == true)
                         return CdmDataFormat.Guid;
-                    if (typeInfo.Properties.ContainsKey("json"))
+                    if (typeInfo.Properties.ContainsKey("json") && typeInfo.Properties["json"].ToObject<bool>() == true)
                         return CdmDataFormat.Json;
-                    else if (typeInfo.Properties.ContainsKey("dateTimeOffset"))
+                    if (typeInfo.Properties.ContainsKey("dateTimeOffset") && typeInfo.Properties["dateTimeOffset"].ToObject<bool>() == true)
                         return CdmDataFormat.DateTimeOffset;
                     return CdmDataFormat.String;
                 case "char":
@@ -685,7 +699,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 case "date":
                     return CdmDataFormat.Date;
                 case "timestamp":
-                    if (typeInfo.Properties.ContainsKey("dateTime"))
+                    if (typeInfo.Properties.ContainsKey("dateTime") && typeInfo.Properties["dateTime"].ToObject<bool>() == true)
                         return CdmDataFormat.DateTime;
                     return CdmDataFormat.Time;
                 case "decimal":
@@ -698,9 +712,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         }
 
         /// <summary>
-        /// Convert syms data type to CDM data type.
+        /// Convert CDM data type to SyMS data type.
         /// </summary>
-        public static TypeInfo CDMDataFormatToSymsDataType(CdmDataFormat cdmDataFormat, TypeInfo typeInfo)
+        internal static TypeInfo CdmDataFormatToSymsDataType(CdmDataFormat cdmDataFormat, TypeInfo typeInfo)
         {
             switch (cdmDataFormat)
             {
@@ -771,7 +785,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Convert to SyMs object to CDM object.
         /// </summary>
-        internal static async Task<SymsManifestContent> GetSymsModel(StorageAdapter adapter, string databaseResponse, string docPath)
+        internal static async Task<SymsManifestContent> GetSymsModel(StorageAdapterBase adapter, string databaseResponse, string docPath)
         {
             var database = JsonConvert.DeserializeObject<DatabaseEntity>(databaseResponse);
             var entities = await adapter.ReadAsync($"/{database.Name}/{database.Name}.manifest.cdm.json/entitydefinition");
@@ -791,7 +805,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Create or update Database. Throws exception on failure.
         /// </summary>
-        internal static async Task CreateOrUpdateDatabase(DatabaseEntity databaseEntity, StorageAdapter adapter)
+        internal static async Task CreateOrUpdateDatabase(DatabaseEntity databaseEntity, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync($"{databaseEntity.Name}/{databaseEntity.Name}.manifest.cdm.json", JsonConvertSerializeObject(databaseEntity));
         }
@@ -799,7 +813,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Create or update Syms Table Entity. Throws exception on failure.
         /// </summary>
-        internal static async Task CreateOrUpdateTableEntity(TableEntity tableEntity, StorageAdapter adapter)
+        internal static async Task CreateOrUpdateTableEntity(TableEntity tableEntity, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync($"{((TableProperties)tableEntity.Properties).NamespaceProperty.DatabaseName}/{tableEntity.Name}.cdm.json",
                                                 JsonConvertSerializeObject(tableEntity));
@@ -808,7 +822,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Create or update Syms RelationshipEntity. Throws exception on failure.
         /// </summary>
-        internal static async Task CreateOrUpdateRelationshipEntity(RelationshipEntity relationshipEntity, StorageAdapter adapter)
+        internal static async Task CreateOrUpdateRelationshipEntity(RelationshipEntity relationshipEntity, StorageAdapterBase adapter)
         {
             string databaseName = ((RelationshipProperties)relationshipEntity.Properties).NamespaceProperty.DatabaseName;
             await adapter.WriteAsync($"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationshipEntity.Name}",
@@ -818,7 +832,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Create or update Syms Table Entity. Throws exception on failure.
         /// </summary>
-        private static async Task CreateOrUpdateTableEntity(TableEntity tableEntity, string databaseName, StorageAdapter adapter)
+        private static async Task CreateOrUpdateTableEntity(TableEntity tableEntity, string databaseName, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync($"{databaseName}/{tableEntity.Name}.cdm.json",
                                                 JsonConvertSerializeObject(tableEntity));
@@ -827,7 +841,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Create or update Syms RelationshipEntity. Throws exception on failure.
         /// </summary>
-        private static async Task CreateOrUpdateRelationshipEntity(RelationshipEntity relationshipEntity, string databaseName, StorageAdapter adapter)
+        private static async Task CreateOrUpdateRelationshipEntity(RelationshipEntity relationshipEntity, string databaseName, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync($"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationshipEntity.Name}",
                 JsonConvertSerializeObject(relationshipEntity));
@@ -836,7 +850,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Remove Table Entity. Throws exception on failure.
         /// </summary>
-        private static async Task RemoveTableEntity(string tableName, string databaseName, StorageAdapter adapter)
+        private static async Task RemoveTableEntity(string tableName, string databaseName, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync($"{databaseName}/{tableName}.cdm.json", null);
         }
@@ -844,7 +858,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Remove Relationship Entity. Throws exception on failure.
         /// </summary>
-        private static async Task RemoveRelationshipEntity(string relationship, string databaseName, StorageAdapter adapter)
+        private static async Task RemoveRelationshipEntity(string relationship, string databaseName, StorageAdapterBase adapter)
         {
             await adapter.WriteAsync($"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationship}", null);
         }
@@ -884,7 +898,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Create or add/update or remove Syms Entities. Throws exception on failure.
         /// </summary>
-        internal static async Task CreateOrUpdateSymsEntities(SymsManifestContent symsManifestContent, StorageAdapter adapter)
+        internal static async Task CreateOrUpdateSymsEntities(SymsManifestContent symsManifestContent, StorageAdapterBase adapter)
         {
             string errorMesg = string.Empty;
 
@@ -907,7 +921,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Invoke specific functions to update Syms database through syms adapter.
         /// </summary>
-        private static async Task<string> InvokeMethod<T>(Func<T, string, StorageAdapter, Task> func, List<T> entities, string dBName, StorageAdapter adapter)
+        private static async Task<string> InvokeMethod<T>(Func<T, string, StorageAdapterBase, Task> func, List<T> entities, string dBName, StorageAdapterBase adapter)
         {
             ConcurrentDictionary<string, string> errorMesgsHash = new ConcurrentDictionary<string, string>();
             string errorMesgs = string.Empty;

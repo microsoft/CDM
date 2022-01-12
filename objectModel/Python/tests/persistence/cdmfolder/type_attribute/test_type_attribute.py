@@ -60,7 +60,7 @@ class TypeAttributeTest(unittest.TestCase):
         # check that the trait "is.identifiedBy" is created with the correct argument.
         is_identified_by1 = type_attribute.applied_traits[1]  # type: CdmTraitReference
         self.assertEqual('is.identifiedBy', is_identified_by1.named_reference)
-        self.assertEqual('TeamMembership/(resolvedAttributes)/teamMembershipId', is_identified_by1.arguments[0].value)
+        self.assertEqual('TeamMembership/(resolvedAttributes)/teamMembershipId', is_identified_by1.arguments[0].value.named_reference)
 
         # read from a resolved entity schema
         resolved_entity = await corpus.fetch_object_async('local:/TeamMembership_Resolved.cdm.json/TeamMembership', res_opt=res_opt)

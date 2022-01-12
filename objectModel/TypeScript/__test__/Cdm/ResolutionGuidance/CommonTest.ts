@@ -166,9 +166,9 @@ export class CommonTest {
      * Runs validation to test actual output vs expected output for attributes collection vs attribute context.
      */
     protected static async saveActualEntityAndValidateWithExpected(expectedPath: string, actualResolvedEntityDef: CdmEntityDefinition): Promise<void> {
-        const newCopyOptionss: copyOptions = new copyOptions;
-        newCopyOptionss.isTopLevelDocument = false;
-        await actualResolvedEntityDef.inDocument.saveAsAsync(actualResolvedEntityDef.inDocument.name, false, newCopyOptionss);
+        const options: copyOptions = new copyOptions();
+        options.isTopLevelDocument = false;
+        await actualResolvedEntityDef.inDocument.saveAsAsync(actualResolvedEntityDef.inDocument.name, false, options);
         const actualPath: string = actualResolvedEntityDef.ctx.corpus.storage.corpusPathToAdapterPath(actualResolvedEntityDef.inDocument.atCorpusPath);
         const actualCtx = JSON.parse(fs.readFileSync(actualPath, 'utf8'));
         const expectedCtx = JSON.parse(fs.readFileSync(expectedPath, 'utf8'));

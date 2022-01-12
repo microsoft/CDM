@@ -41,13 +41,6 @@ public class ProjectionTestUtils {
     private static final String foundationJsonPath = "cdm:/foundations.cdm.json";
 
     /**
-     * The log codes that are allowed to be logged without failing the test
-     */
-    private static HashSet<String> allowedLogs = new HashSet<>(
-        Arrays.asList(CdmLogCode.WarnDeprecatedResolutionGuidance.name())
-    );
-
-    /**
      * Resolves an entity
      * @param corpus The corpus
      * @param inputEntity The entity to resolve
@@ -248,23 +241,6 @@ public class ProjectionTestUtils {
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
-    }
-
-    /**
-     * Creates a corpus
-     */
-    public static CdmCorpusDefinition getLocalCorpus(final String testsSubpath, final String testName) throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, testName);
-
-        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-            EventList events = corpus.getCtx().getEvents();
-            Map<String, String> lastEvent = events.get(events.size() - 1);
-            if (!lastEvent.containsKey("code") || !allowedLogs.contains(lastEvent.get("code"))) {
-                Assert.fail(message);
-            }
-        }, CdmStatusLevel.Warning);
-
-        return corpus;
     }
 
     /**

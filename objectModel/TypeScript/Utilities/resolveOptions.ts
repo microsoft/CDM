@@ -112,18 +112,7 @@ export class resolveOptions {
         this.depthInfo = new DepthInfo();
         this.inCircularReference = false;
         this.currentlyResolvingEntities = new Set();
-
-        if (!parameter) {
-            return;
-        }
-
-        if (parameter instanceof CdmDocumentDefinition) {
-            this.wrtDoc = parameter;
-        } else if (parameter instanceof CdmObjectBase) {
-            if (parameter && parameter.owner) {
-                this.wrtDoc = parameter.owner.inDocument;
-            }
-        }
+        this.wrtDoc = this.fetchDocument(parameter);
 
         // provided or default to 'avoid one to many relationship nesting and to use foreign keys for many to one refs'.
         // this is for back compat with behavior before the corpus has a default directive property
@@ -176,5 +165,24 @@ export class resolveOptions {
         resOptCopy.usedResolutionGuidance = this.usedResolutionGuidance;
 
         return resOptCopy;
+    }
+
+    /**
+     * Fetches the document that contains the owner of the CdmObject.
+     */
+    private fetchDocument(obj: CdmObject): CdmDocumentDefinition {
+        if (!obj) {
+            return undefined;
+        }
+
+        if (obj instanceof CdmDocumentDefinition) {
+            return obj;
+        }
+
+        if (obj.inDocument) {
+            return obj.inDocument;
+        }
+
+        return obj.owner?.inDocument;
     }
 }

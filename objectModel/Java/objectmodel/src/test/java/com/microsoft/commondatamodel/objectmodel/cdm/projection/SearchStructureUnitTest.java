@@ -3,7 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
@@ -54,7 +56,7 @@ public class SearchStructureUnitTest {
      */
     @Test
     public void testBuildTree() throws InterruptedException {
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, "testBuildTree");
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testBuildTree");
 
         ProjectionContext pc = buildFakeTree(corpus);
 
@@ -71,37 +73,37 @@ public class SearchStructureUnitTest {
         ProjectionContext pc = new ProjectionContext(projDir, null);
 
         ProjectionAttributeState p1 = new ProjectionAttributeState(corpus.getCtx());
-        p1.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "1", "1", null));
+        p1.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "1"), "1", null));
         ProjectionAttributeState p2 = new ProjectionAttributeState(corpus.getCtx());
-        p2.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "2", "2", null));
+        p2.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "2"), "2", null));
         ProjectionAttributeState p4 = new ProjectionAttributeState(corpus.getCtx());
-        p4.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "4", "4", null));
+        p4.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "4"), "4", null));
         ProjectionAttributeState p5 = new ProjectionAttributeState(corpus.getCtx());
-        p5.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "5", "5", null));
+        p5.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "5"), "5", null));
         ProjectionAttributeState p6 = new ProjectionAttributeState(corpus.getCtx());
-        p6.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "6", "6", null));
+        p6.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "6"), "6", null));
         ProjectionAttributeState p7 = new ProjectionAttributeState(corpus.getCtx());
-        p7.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "7", "7", null));
+        p7.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "7"), "7", null));
         ProjectionAttributeState p8 = new ProjectionAttributeState(corpus.getCtx());
-        p8.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "8", "8", null));
+        p8.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "8"), "8", null));
         ProjectionAttributeState p9 = new ProjectionAttributeState(corpus.getCtx());
-        p9.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "9", "9", null));
+        p9.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "9"), "9", null));
         ProjectionAttributeState p10 = new ProjectionAttributeState(corpus.getCtx());
-        p10.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "10", "10", null));
+        p10.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "10"), "10", null));
         ProjectionAttributeState p11 = new ProjectionAttributeState(corpus.getCtx());
-        p11.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "11", "11", null));
+        p11.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "11"), "11", null));
         ProjectionAttributeState p12 = new ProjectionAttributeState(corpus.getCtx());
-        p12.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "12", "12", null));
+        p12.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "12"), "12", null));
         ProjectionAttributeState p13 = new ProjectionAttributeState(corpus.getCtx());
-        p13.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "13", "13", null));
+        p13.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "13"), "13", null));
         ProjectionAttributeState p14 = new ProjectionAttributeState(corpus.getCtx());
-        p14.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "14", "14", null));
+        p14.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "14"), "14", null));
         ProjectionAttributeState p15 = new ProjectionAttributeState(corpus.getCtx());
         p15.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "15", "15", null));
         ProjectionAttributeState p16 = new ProjectionAttributeState(corpus.getCtx());
-        p16.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "16", "16", null));
+        p16.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "16"), "16", null));
         ProjectionAttributeState p17 = new ProjectionAttributeState(corpus.getCtx());
-        p17.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), "17", "17", null));
+        p17.setCurrentResolvedAttribute(new ResolvedAttribute(projDir.getResOpt(), new CdmTypeAttributeDefinition(corpus.getCtx(), "17"), "17", null));
 
         p1.setPreviousStateList(new ArrayList<>());
         p2.setPreviousStateList(new ArrayList<>());

@@ -25,7 +25,7 @@ describe('Samples.ReadLocalSaveAdlsTests', () => {
     const testName: string = 'TestReadLocalSaveAdls';
     let rootRelativePath: string;
 
-    const sampleIt: jest.It = (process.env['SAMPLE_RUNTESTS'] &&process.env['ADLS_RUNTESTS']) ? it : it.skip;
+    const sampleIt: jest.It = (process.env['SAMPLE_RUNTESTS'] === '1' && process.env['ADLS_RUNTESTS'] === '1') ? it : it.skip;
 
     sampleIt('TestReadLocalSaveAdls', async (done) => {
         jest.setTimeout(100000);

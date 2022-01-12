@@ -11,6 +11,7 @@ import {
     CdmTraitReference,
     CdmAttributeGroupReference,
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 /**
@@ -42,7 +43,7 @@ describe('Cdm/Projection/TestProjectionMap', () => {
      it('TestEntityAttribute', async () => {
         const testName: string = 'TestEntityAttribute';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -120,7 +121,7 @@ describe('Cdm/Projection/TestProjectionMap', () => {
     it('TestTypeAttribute', async () => {
         const testName: string = 'TestTypeAttribute';
         const entityName: string = 'Person';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

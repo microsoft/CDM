@@ -151,7 +151,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             string jsonData = null;
             DateTimeOffset? fsModifiedTime = null;
             string docPath = folder.FolderPath + docName;
-            StorageAdapter adapter = this.Corpus.Storage.FetchAdapter(folder.Namespace);
+            StorageAdapterBase adapter = this.Corpus.Storage.FetchAdapter(folder.Namespace);
 
             try
             {
@@ -513,7 +513,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
         /// <summary>
         /// Convert to SyMs object from Manifest object.
         /// </summary>
-        internal static async Task<SymsManifestContent> ConvertManifestToSyms(CdmManifestDefinition doc, StorageAdapter adapter, string path,
+        internal static async Task<SymsManifestContent> ConvertManifestToSyms(CdmManifestDefinition doc, StorageAdapterBase adapter, string path,
             ResolveOptions resOpt, CopyOptions options)
         {
             DatabaseEntity databaseEntity = null;
@@ -551,7 +551,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
         /// <summary>
         /// Convert to SyMs table object from CDM object.
         /// </summary>
-        internal static async Task<TableEntity> ConvertDocToSymsTable(CdmCorpusContext ctx, CdmDocumentDefinition doc, StorageAdapter adapter, string name,
+        internal static async Task<TableEntity> ConvertDocToSymsTable(CdmCorpusContext ctx, CdmDocumentDefinition doc, StorageAdapterBase adapter, string name,
             ResolveOptions resOpt, CopyOptions options)
         {
             TableEntity existingTableEntity = JsonConvert.DeserializeObject<TableEntity>(await adapter.ReadAsync(name));

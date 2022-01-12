@@ -6,6 +6,7 @@ import {
     CdmTraitReference,
     CdmTypeAttributeDefinition,
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 /**
@@ -23,7 +24,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityStringReference', async () => {
         const testName: string = 'TestEntityStringReference';
         const entityName: string = 'TestEntStrRef';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -34,7 +35,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityEntityReference', async () => {
         const testName: string = 'TestEntityEntityReference';
         const entityName: string = 'TestEntEntRef';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -45,7 +46,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityProjection', async () => {
         const testName: string = 'TestEntityProjection';
         const entityName: string = testName;
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -56,7 +57,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityNestedProjection', async () => {
         const testName: string = 'TestEntityNestedProjection';
         const entityName: string = 'NestedProjection';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -67,7 +68,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityAttributeStringReference', async () => {
         const testName: string = 'TestEntityAttributeStringReference';
         const entityName: string = 'TestEntAttrStrRef';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -78,7 +79,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityAttributeEntityReference', async () => {
         const testName: string = 'TestEntityAttributeEntityReference';
         const entityName: string = 'TestEntAttrEntRef';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -89,7 +90,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityAttributeProjection', async () => {
         const testName: string = 'TestEntityAttributeProjection';
         const entityName: string = 'TestEntAttrProj';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -100,7 +101,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityAttributeNestedProjection', async () => {
         const testName: string = 'TestEntityAttributeNestedProjection';
         const entityName: string = 'NestedProjection';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
@@ -111,7 +112,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityTrait', async () => {
         const testName: string = 'TestEntityTrait';
         const entityName: string = testName;
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 
@@ -138,7 +139,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityExtendsTrait', async () => {
         const testName: string = 'TestEntityExtendsTrait';
         const entityName: string = 'ExtendsTrait';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 
@@ -165,7 +166,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestProjectionTrait', async () => {
         const testName: string = 'TestProjectionTrait';
         const entityName: string = testName;
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 
@@ -192,7 +193,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestProjectionExtendsTrait', async () => {
         const testName: string = 'TestProjectionExtendsTrait';
         const entityName: string = 'ExtendsTrait';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 

@@ -19,6 +19,9 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 public class ManifestImplTest {
   /**
@@ -226,8 +229,9 @@ public class ManifestImplTest {
    * ('/' should be appended and a warning be sent through callback function)
    */
   @Test
-  public void testPathThatDoesNotEndInSlash() {
-    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+  public void testPathThatDoesNotEndInSlash() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.WarnStorageExpectedPathPrefix));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPathThatDoesNotEndInSlash", false, expectedLogCodes, true);
 
     CdmManifestDefinition manifest = new CdmManifestDefinition(null, null);
     manifest.setNamespace("cdm");
@@ -243,8 +247,9 @@ public class ManifestImplTest {
    * Checks behavior if objectPath is invalid.
    */
   @Test
-  public void testPathRootInvalidObjectPath() {
-    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+  public void testPathRootInvalidObjectPath() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrStorageInvalidPathFormat));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPathRootInvalidObjectPath", false, expectedLogCodes, true);
 
     corpus.getStorage().createAbsoluteCorpusPath("./Abc");
     TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
@@ -267,8 +272,9 @@ public class ManifestImplTest {
    * Checks behavior if FolderPath is invalid.
    */
   @Test
-  public void testPathRootInvalidFolderPath() {
-    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+  public void testPathRootInvalidFolderPath() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrStorageInvalidPathFormat));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPathRootInvalidFolderPath", false, expectedLogCodes, true);
 
     CdmManifestDefinition manifest = new CdmManifestDefinition(null, null);
     manifest.setNamespace("cdm");

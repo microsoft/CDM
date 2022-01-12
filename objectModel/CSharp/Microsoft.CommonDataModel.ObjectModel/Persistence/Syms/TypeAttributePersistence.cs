@@ -25,12 +25,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             var typeAttribute = ctx.Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, obj.Name);
             var properties = obj.OriginDataTypeName.Properties;
 
-            typeAttribute.DataFormat = Utils.SymsDataTypeToCDMDataFormat(obj.OriginDataTypeName);
-
-            if (obj.OriginDataTypeName.Length > 0 && typeAttribute.DataFormat == CdmDataFormat.String)
-            {
-                typeAttribute.DataFormat = CdmDataFormat.Guid;
-            }
+            typeAttribute.DataFormat = Utils.SymsDataTypeToCdmDataFormat(obj.OriginDataTypeName);
 
             if (obj.OriginDataTypeName.Scale != 0 || obj.OriginDataTypeName.Precision != 0)
             {
@@ -167,7 +162,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             }
 
             var dataFormat = instance.GetProperty("dataFormat");
-            originDataTypeName = Utils.CDMDataFormatToSymsDataType(dataFormat, originDataTypeName);
+            originDataTypeName = Utils.CdmDataFormatToSymsDataType(dataFormat, originDataTypeName);
             if (originDataTypeName.TypeName == null)
             {
                 Logger.Error(ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistSymsUnknownDataFormat, instance.DisplayName);

@@ -15,6 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarat
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
@@ -31,6 +32,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -343,6 +346,19 @@ public class ModelJsonTest extends ModelJsonTestBase {
     // Verify that the attributes' data types were correctly loaded as "date" and "time"
     Assert.assertEquals(((CdmTypeAttributeDefinition) entity.getAttributes().get(0)).fetchDataFormat(), CdmDataFormat.Date);
     Assert.assertEquals(((CdmTypeAttributeDefinition) entity.getAttributes().get(1)).fetchDataFormat(), CdmDataFormat.Time);
+  }
+
+  /**
+   * Test model.json is correctly created without an entity when the location is not recognized
+   */
+  @Test
+  public void testIncorrectModelLocation() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.ErrStorageInvalidAdapterPath, CdmLogCode.ErrPersistModelJsonEntityParsingError, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation));
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testIncorrectModelLocation", null, false, expectedLogCodes);
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("model.json").join();
+    Assert.assertNotNull(manifest);
+    Assert.assertEquals(manifest.getEntities().size(), 0);
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, true);
   }
 
   private void handleOutput(

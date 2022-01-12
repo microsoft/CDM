@@ -13,3 +13,4 @@ class CopyOptions:
         
         # Turn simple named string object references into objects with a relative path.
         self._is_top_level_document = True
+        self.persistence_type_name = ''

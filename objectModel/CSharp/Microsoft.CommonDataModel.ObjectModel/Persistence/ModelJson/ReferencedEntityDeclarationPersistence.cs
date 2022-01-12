@@ -22,10 +22,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         public static async Task<CdmReferencedEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, ReferenceEntity obj, string location)
         {
             var referencedEntity = ctx.Corpus.MakeObject<CdmReferencedEntityDeclarationDefinition>(CdmObjectType.ReferencedEntityDeclarationDef, obj.Name);
+            referencedEntity.EntityName = obj.Name;
 
             var corpusPath = ctx.Corpus.Storage.AdapterPathToCorpusPath(location);
 
-            referencedEntity.EntityName = obj.Name;
+            if (corpusPath == null)
+            {
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, location, referencedEntity.EntityName);
+                return null;
+            }
+
             referencedEntity.EntityPath = $"{corpusPath}/{obj.Source}";
             referencedEntity.Explanation = obj.Description;
             referencedEntity.LastFileModifiedTime = obj.LastFileModifiedTime;
@@ -33,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             await Utils.ProcessAnnotationsFromData(ctx, obj, referencedEntity.ExhibitsTraits);
 
-            if(obj.IsHidden == true)
+            if (obj.IsHidden == true)
             {
                 var isHiddenTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.hidden", true);
                 isHiddenTrait.IsFromProperty = true;
@@ -83,7 +89,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, referenceEntity, instance.ExhibitsTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
-            
+
             var isHiddenTrait = t2pm.FetchTraitReference("is.hidden");
             if (isHiddenTrait != null)
             {

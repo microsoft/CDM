@@ -37,12 +37,7 @@ async def resolve_environment(tests_sub_path: str, test_name: str, manifest_name
     :param manifest_name: The name of the manifest to be used.
     :return:
     """
-    test_input_path = TestHelper.get_input_folder_path(tests_sub_path, test_name)
-
-    corpus = CdmCorpusDefinition()
-    corpus.ctx.report_at_level = CdmStatusLevel.WARNING
-    corpus.storage.mount('local', LocalAdapter(test_input_path))
-    corpus.storage.default_namespace = 'local'
+    corpus = TestHelper.get_local_corpus(tests_sub_path, test_name)
 
     manifest = await corpus.fetch_object_async('local:/{}.manifest.cdm.json'.format(manifest_name))
     directives = AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'})

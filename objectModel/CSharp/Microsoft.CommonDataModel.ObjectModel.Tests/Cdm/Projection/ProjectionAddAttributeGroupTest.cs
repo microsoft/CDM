@@ -41,7 +41,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestCombineOpsNestedProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -68,7 +68,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestCombineOpsProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -101,7 +101,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestConditionalProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -140,7 +140,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         public async Task TestConditionalProjUsingObjectModel()
         {
             string testName = "TestConditionalProjUsingObjectModel";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity.
@@ -205,7 +205,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestEntityAttribute";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -232,7 +232,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         public async Task TestEntityAttributeProjUsingObjectModel()
         {
             string testName = "TestEntityAttributeProjUsingObjectModel";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
@@ -275,7 +275,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         public async Task TestEntityProjUsingObjectModel()
         {
             string testName = "TestEntityProjUsingObjectModel";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
@@ -317,7 +317,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestExtendsEntityProj";
             string entityName = "Child";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -345,7 +345,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestMultipleOpProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -382,7 +382,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestNestedProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
@@ -412,7 +412,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestTypeAttributeProj";
             string entityName = "Person";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {

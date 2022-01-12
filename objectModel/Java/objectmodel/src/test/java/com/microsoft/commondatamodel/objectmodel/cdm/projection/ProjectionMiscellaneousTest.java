@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
@@ -48,7 +49,7 @@ public class ProjectionMiscellaneousTest {
     public void testInvalidOperationType() throws InterruptedException {
         String testName = "testInvalidOperationType";
 
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (!message.contains("ProjectionPersistence | Invalid operation type 'replaceAsForeignKey11111'. | fromData")) {
                 Assert.fail(message);
@@ -72,7 +73,7 @@ public class ProjectionMiscellaneousTest {
     public void testZeroMinimumCardinality() throws InterruptedException {
         String testName = "testZeroMinimumCardinality";
 
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (!message.contains("CardinalitySettings | Invalid minimum cardinality -1.")) {
@@ -130,7 +131,7 @@ public class ProjectionMiscellaneousTest {
         String testName = "testCircularEntityAttributes";
         String entityName = "A";
 
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync(entityName + ".cdm.json/" + entityName).join();
 
@@ -188,7 +189,7 @@ public class ProjectionMiscellaneousTest {
         String testName = "testMaxDepthOnPolymorphicEntity";
         String entityName = "A";
 
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync(entityName + ".cdm.json/" + entityName).join();
 
@@ -246,7 +247,7 @@ public class ProjectionMiscellaneousTest {
     public void testRunSequentially() throws InterruptedException {
         String testName = "testRunSequentially";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
@@ -269,7 +270,7 @@ public class ProjectionMiscellaneousTest {
     public void testRunSequentiallyAndSourceInput() throws InterruptedException {
         String testName = "testRunSequentiallyAndSourceInput";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();

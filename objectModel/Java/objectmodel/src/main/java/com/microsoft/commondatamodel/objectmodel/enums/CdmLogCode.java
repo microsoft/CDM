@@ -40,6 +40,7 @@ public enum CdmLogCode
     ErrPersistEntityPathNotFound,
     ErrPersistEntityAttrUnsupported,
     ErrPersistEntityDeclarationMissing,
+    ErrPersistModelJsonRefEntityInvalidLocation,
     ErrPersistModelJsonEntityParsingError,
     ErrPersistFailure,
     ErrPersistFilePersistError,

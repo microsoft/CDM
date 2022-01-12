@@ -26,7 +26,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     relationship.Name = relationshipEntity.Name;
                 }
 
-                if (relationshipProperties.RelationshipType == RelationshipType.MANYTOONE)
+                if (relationshipProperties.RelationshipType == RelationshipType.MANYTOONE ||
+                    relationshipProperties.RelationshipType == RelationshipType.ONETOONE)
                 {
                     relationship.FromEntity = $"{relationshipProperties.FromTableName}.cdm.json/{relationshipProperties.FromTableName}";
                     relationship.ToEntity = $"{relationshipProperties.ToTableName}.cdm.json/{relationshipProperties.ToTableName}";
