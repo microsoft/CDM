@@ -211,26 +211,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <summary>
         /// Creates a data partition object using the input. Should be called by a DataPartitionPattern object.
+        /// This function doesn't check if the data partition exists.
         /// </summary>
         internal void CreateDataPartitionFromPattern(string filePath, CdmTraitCollection exhibitsTraits, Dictionary<string, List<string>> args, string schema, DateTimeOffset? modifiedTime)
         {
-            var existingPartition = this.DataPartitions.AllItems.Find(x => x.Location == filePath);
+            var newPartition = this.Ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef);
+            newPartition.Location = filePath;
+            newPartition.SpecializedSchema = schema;
+            newPartition.LastFileModifiedTime = modifiedTime;
+            newPartition.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
 
-            if (existingPartition == null)
-            {
-                var newPartition = this.Ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef);
-                newPartition.Location = filePath;
-                newPartition.SpecializedSchema = schema;
-                newPartition.LastFileModifiedTime = modifiedTime;
-                newPartition.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+            foreach (var trait in exhibitsTraits)
+                newPartition.ExhibitsTraits.Add(trait);
+            foreach (KeyValuePair<string, List<string>> entry in args)
+                newPartition.Arguments[entry.Key] = entry.Value;
 
-                foreach (var trait in exhibitsTraits)
-                    newPartition.ExhibitsTraits.Add(trait);
-                foreach (KeyValuePair<string, List<string>> entry in args)
-                    newPartition.Arguments[entry.Key] = entry.Value;
-
-                this.DataPartitions.Add(newPartition);
-            }
+            this.DataPartitions.Add(newPartition);
         }
 
         /// <summary>

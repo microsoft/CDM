@@ -4,12 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.persistence;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.TestStorageAdapter;
@@ -19,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 import org.testng.Assert;
@@ -88,6 +85,41 @@ public class PersistenceLayerTest {
     serializedManifest = allDocs.get("/" + newManifestFromModelJsonName);
     expectedOutputManifest = TestHelper.getExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.getName());
     TestHelper.assertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
+  }
+
+  /**
+   * Test setting SaveConfigFile to false and checking if the file is not saved.=
+   */
+  @Test
+  public void testNotSavingConfigFile() throws InterruptedException, IOException {
+    String testName = "testNotSavingConfigFile";
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(this.testsSubpath, testName);
+
+    // Load manifest from input folder.
+    CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("default.manifest.cdm.json").join();
+
+    // Move manifest to output folder.
+    CdmFolderDefinition outputFolder = corpus.getStorage().fetchRootFolder("output");
+    for (CdmEntityDeclarationDefinition entityDec : manifest.getEntities()) {
+      CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync(entityDec.getEntityPath(), manifest).join();
+      outputFolder.getDocuments().add(entity.getInDocument());
+    }
+
+    outputFolder.getDocuments().add(manifest);
+
+    // Make sure the output folder is empty.
+    TestHelper.deleteFilesFromActualOutput(TestHelper.getActualOutputFolderPath(testsSubpath, testName));
+
+    // Save manifest to output folder.
+    CopyOptions copyOptions = new CopyOptions();
+    copyOptions.setSaveConfigFile(false);
+
+    manifest.saveAsAsync("default.manifest.cdm.json", false, copyOptions).join();
+
+    // Compare the result.
+    TestHelper.assertFolderFilesEquality(
+            TestHelper.getExpectedOutputFolderPath(testsSubpath, testName),
+            TestHelper.getActualOutputFolderPath(testsSubpath, testName));
   }
 
   /**

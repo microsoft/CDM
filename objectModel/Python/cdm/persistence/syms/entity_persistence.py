@@ -35,8 +35,17 @@ class EntityPersistence:
             if "cdm:version" in te_properties.properties:
                 entity.version = te_properties.properties["cdm:version"]
             if "cdm:traits" in te_properties.properties:
-                utils.add_list_to_cdm_collection(entity.exhibits_traits, utils.create_trait_reference_array(ctx,
-                                                            te_properties.properties["cdm:traits"]))
+                trait_list = utils.create_trait_reference_array(ctx,
+                                                   te_properties.properties["cdm:traits"])
+                trait_dict = dict()
+                for t in entity.exhibits_traits:
+                    trait_dict.update({t.named_reference:t})
+
+                for trait in trait_list:
+                    if trait.named_reference in trait_dict:
+                        entity.exhibits_traits.remove(trait.named_reference)
+
+                utils.add_list_to_cdm_collection(entity.exhibits_traits, trait_list)
 
         if te_properties.storage_descriptor is not None and te_properties.storage_descriptor.columns is not None:
             for attribute in te_properties.storage_descriptor.columns:

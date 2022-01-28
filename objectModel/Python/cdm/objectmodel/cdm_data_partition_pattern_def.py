@@ -134,6 +134,13 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                      ) else 'regular expression', self.glob_pattern if self.glob_pattern and not self.glob_pattern.isspace() else self.regular_expression, e)
 
                     if reg:
+                        # a set to check if the data partition exists
+                        data_partition_path_set = set()
+                        if self.owner is not None and cast('CdmLocalEntityDeclarationDefinition', self.owner).data_partitions is not None:
+                            for data_partition in cast('CdmLocalEntityDeclarationDefinition', self.owner).data_partitions:
+                                data_partition_location_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(data_partition.location, self.in_document)
+                                data_partition_path_set.add(data_partition_location_full_path)
+
                         for fi in file_info_list:
                             m = reg.fullmatch(fi)
                             if m:
@@ -162,8 +169,11 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                     logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH)
                                     return
                                 last_modified_time = await adapter.compute_last_modified_time_async(path_tuple[1])
-                                cast('CdmLocalEntityDeclarationDefinition', self.owner)._create_partition_from_pattern(
-                                    location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
+
+                                if (full_path not in data_partition_path_set):
+                                    cast('CdmLocalEntityDeclarationDefinition', self.owner)._create_partition_from_pattern(
+                                        location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
+                                    data_partition_path_set.add(full_path)
 
                     # update modified times.
             self.last_file_status_check_time = datetime.now(timezone.utc)

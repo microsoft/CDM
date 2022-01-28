@@ -1438,7 +1438,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             // delete the resolved entity if we created one here
                             if (!isResolvedEntity)
                             {
-                                resEntity.InDocument.Folder.Documents.Remove(resEntity.InDocument.Name);
+                                (resEntity.InDocument.Owner as CdmFolderDefinition).Documents.Remove(resEntity.InDocument.Name);
                             }
                         }
                     }

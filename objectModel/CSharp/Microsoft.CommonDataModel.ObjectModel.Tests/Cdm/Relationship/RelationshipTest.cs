@@ -313,11 +313,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
             CdmManifestDefinition manifestNoToEnt = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/mainNoToEnt.manifest.cdm.json");
             CdmEntityDefinition fromEnt = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/fromEnt.cdm.json/fromEnt");
-            await fromEnt.InDocument.SaveAsAsync(tempFromFilePath, options: new CopyOptions() { IsTopLevelDocument = false });
+            await fromEnt.InDocument.SaveAsAsync(tempFromFilePath, options: new CopyOptions() { SaveConfigFile = false });
 
             async Task reloadFromEntity()
             {
-                await fromEnt.InDocument.SaveAsAsync(tempFromFilePath, options: new CopyOptions() { IsTopLevelDocument = false });
+                await fromEnt.InDocument.SaveAsAsync(tempFromFilePath, options: new CopyOptions() { SaveConfigFile = false });
                 // fetch again to reset the cache
                 await corpus.FetchObjectAsync<CdmEntityDefinition>(tempFromEntityPath, null, false, true);
             }

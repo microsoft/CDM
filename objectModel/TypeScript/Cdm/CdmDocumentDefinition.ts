@@ -53,9 +53,13 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         return cdmObjectType.documentDef;
     }
 
+    /**
+     * @deprecated Use atCorpusPath instead.
+     */
     public get corpusPath(): string {
         return `${this.namespace || this.folder.namespace}:${this.folderPath}${this.name}`;
     }
+
     public name: string;
     /**
      * @deprecated Only for internal use.
@@ -71,10 +75,21 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public readonly imports: CdmImportCollection;
     public definitions: CdmDefinitionCollection;
     public importSetKey: string;
+    
     /**
      * @deprecated Use owner property instead.
      */
-    public folder: CdmFolderDefinition;
+    public get folder(): CdmFolderDefinition {
+        return this.owner as CdmFolderDefinition;
+    }
+
+    /**
+     * @deprecated Use owner property instead.
+     */
+    public set folder(value: CdmFolderDefinition) {
+        this.owner = value;
+    }
+
     /**
      * @internal
      */
@@ -618,14 +633,14 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     }
 
     public getFolder(): CdmFolderDefinition {
-        return this.folder;
+        return this.owner as CdmFolderDefinition;
     }
 
     public get atCorpusPath(): string {
-        if (!this.folder) {
+        if (!this.owner) {
             return `NULL:/${this.name}`;
         } else {
-            return `${this.folder.atCorpusPath}${this.name}`;
+            return `${this.owner.atCorpusPath}${this.name}`;
         }
     }
 
@@ -719,12 +734,12 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public async indexIfNeeded(resOpt: resolveOptions, loadImports: boolean = false): Promise<boolean> {
         // let bodyCode = () =>
         {
-            if (!this.folder) {
+            if (!this.owner) {
                 Logger.error(this.ctx, this.TAG, this.indexIfNeeded.name, this.atCorpusPath, cdmLogCode.ErrValdnMissingDoc, this.name);
                 return false;
             }
 
-            const corpus: CdmCorpusDefinition = this.folder.corpus;
+            const corpus: CdmCorpusDefinition = (this.owner as CdmFolderDefinition).corpus;
             const needsIndexing = corpus.documentLibrary.markDocumentForIndexing(this);
 
             if (!needsIndexing) {

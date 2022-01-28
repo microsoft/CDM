@@ -86,7 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets or sets the document folder.
         /// </summary>
         [Obsolete("Use the Owner property instead")]
-        public CdmFolderDefinition Folder { get; set; }
+        public CdmFolderDefinition Folder { get => this.Owner as CdmFolderDefinition; set => this.Owner = value; }
 
         /// <summary>
         /// Gets the document definitions.
@@ -612,13 +612,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             get
             {
-                if (this.Folder == null)
+                if (this.Owner == null)
                 {
                     return $"NULL:/{this.Name}";
                 }
                 else
                 {
-                    return this.Folder.AtCorpusPath + this.Name;
+                    return this.Owner.AtCorpusPath + this.Name;
                 }
             }
         }
@@ -721,13 +721,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal async Task<bool> IndexIfNeeded(ResolveOptions resOpt, bool loadImports = false)
         {
-            if (this.Folder == null)
+            if (this.Owner == null)
             {
                 Logger.Error(this.Ctx, Tag, nameof(IndexIfNeeded), this.AtCorpusPath, CdmLogCode.ErrValdnMissingDoc, this.Name);
                 return false;
             }
 
-            var corpus = this.Folder.Corpus;
+            var corpus = (this.Owner as CdmFolderDefinition).Corpus;
             var needsIndexing = corpus.documentLibrary.MarkDocumentForIndexing(this);
 
             if (!needsIndexing)

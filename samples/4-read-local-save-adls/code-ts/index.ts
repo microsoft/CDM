@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as cdm from "../../../objectModel/TypeScript";
-import { cdmStatusLevel } from "../../../objectModel/TypeScript/internal";
+import * as cdm from 'cdm.objectmodel';
 
 /**
  * --------------------------------------------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ async function runSample() {
     const cdmCorpus: cdm.types.CdmCorpusDefinition = new cdm.types.CdmCorpusDefinition();
 
     // set callback to receive error and warning logs.
-    cdmCorpus.setEventCallback( (level, message) => { console.log(message) }, cdmStatusLevel.warning);
+    cdmCorpus.setEventCallback( (level, message) => { console.log(message) }, cdm.types.cdmStatusLevel.warning);
 
     cdmCorpus.storage.defaultNamespace = 'local';
 

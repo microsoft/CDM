@@ -577,7 +577,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (folder == null)
                 {
-                    folder = this.InDocument.Folder;
+                    folder = this.InDocument.Owner as CdmFolderDefinition;
                 }
 
                 string fileName = (string.IsNullOrEmpty(newDocName)) ? $"{newEntName}.cdm.json" : newDocName;
@@ -658,6 +658,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // add a import of the source document 
                 origDoc = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.Imports.Add(origDoc, "resolvedFrom");
+
                 docRes.DocumentVersion = this.InDocument.DocumentVersion;
                 // make the empty entity
                 CdmEntityDefinition entResolved = docRes.Definitions.Add(entName);

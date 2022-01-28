@@ -309,7 +309,7 @@ export class PersistenceLayer {
                 doc._fileSystemModifiedTime = await adapter.computeLastModifiedTimeAsync(newPath);
 
                 // write the adapter's config.
-                if (options.isTopLevelDocument) {
+                if (options.saveConfigFile !== false && options.isTopLevelDocument) {
                     await this.corpus.storage.saveAdaptersConfigAsync('/config.json', adapter);
 
                     // the next documentwon't be top level, so reset the flag

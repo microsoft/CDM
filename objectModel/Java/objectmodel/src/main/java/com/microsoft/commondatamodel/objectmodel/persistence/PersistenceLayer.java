@@ -358,7 +358,7 @@ public class PersistenceLayer {
 
                     doc.setFileSystemModifiedTime(adapter.computeLastModifiedTimeAsync(newPath).join());
 
-                    if (options.isTopLevelDocument()) {
+                    if (!Boolean.FALSE.equals(options.getSaveConfigFile()) && options.isTopLevelDocument()) {
                         this.corpus.getStorage().saveAdapterConfigAsync("/config.json", adapter).join();
                         // The next document won't be top level, so reset the flag.
                         options.setTopLevelDocument(false);

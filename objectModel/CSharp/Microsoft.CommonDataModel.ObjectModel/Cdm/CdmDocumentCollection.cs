@@ -142,7 +142,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             document.FolderPath = this.Owner.FolderPath;
-            document.Folder = this.Owner;
+            document.Owner = this.Owner;
             document.Namespace = this.Owner.Namespace;
             MakeDocumentDirty(); // set the document to dirty so it will get saved in the new folder location if saved
             this.Owner.Corpus.AddDocumentObjects(this.Owner, document);

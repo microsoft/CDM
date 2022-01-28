@@ -6,13 +6,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -26,6 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             var properties = obj.OriginDataTypeName.Properties;
 
             typeAttribute.DataFormat = Utils.SymsDataTypeToCdmDataFormat(obj.OriginDataTypeName);
+            typeAttribute.IsNullable = obj.OriginDataTypeName.IsNullable;
 
             if (obj.OriginDataTypeName.Scale != 0 || obj.OriginDataTypeName.Precision != 0)
             {

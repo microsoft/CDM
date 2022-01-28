@@ -537,7 +537,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           return null;
         }
 
-        if (this.getFolder() == null) {
+        if (this.getOwner() == null) {
           Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveManifestFailed, this.manifestName);
           return null;
         }
@@ -555,7 +555,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 .createAbsoluteCorpusPath(this.getAtCorpusPath(), this);
         final String sourceManifestFolderPath = this.getCtx().getCorpus()
                 .getStorage()
-                .createAbsoluteCorpusPath(this.getFolder().getAtCorpusPath(), this);
+                .createAbsoluteCorpusPath(this.getOwner().getAtCorpusPath(), this);
 
         int resolvedManifestPathSplit = innerNewManifestName.lastIndexOf("/") + 1;
         CdmFolderDefinition resolvedManifestFolder;
@@ -616,7 +616,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             return null;
           }
 
-          if (entDef.getInDocument().getFolder() == null) {
+          if (entDef.getInDocument().getOwner() == null) {
             Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocIsNotFolder, entDef.getEntityName());
             return null;
           }
@@ -625,7 +625,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           String sourceEntityFullPath = this.getCtx()
                   .getCorpus()
                   .getStorage()
-                  .createAbsoluteCorpusPath(entDef.getInDocument().getFolder().getAtCorpusPath(), this);
+                  .createAbsoluteCorpusPath(entDef.getInDocument().getOwner().getAtCorpusPath(), this);
           String f = "";
           if (sourceEntityFullPath.startsWith(sourceManifestFolderPath)) {
             f = sourceEntityFullPath.substring(sourceManifestFolderPath.length());

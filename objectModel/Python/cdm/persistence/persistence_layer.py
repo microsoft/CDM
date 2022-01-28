@@ -273,7 +273,6 @@ class PersistenceLayer:
                              CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_CDM_CONVERSION, new_name)
                 return False
             persistence_type = self.SYMS
-            options.persistence_type_name = self.SYMS
         else:
             if new_name.lower().endswith(self.MODEL_JSON_EXTENSION):
                 persistence_type = self.MODEL_JSON
@@ -348,7 +347,7 @@ class PersistenceLayer:
             doc._file_system_modified_time = await adapter.compute_last_modified_time_async(new_path)
 
             # Write the adapter's config.
-            if options._is_top_level_document and persistence_type != self.SYMS:
+            if options.save_config_file is not False and options._is_top_level_document and persistence_type != self.SYMS:
                 await self._corpus.storage.save_adapters_config_async('/config.json', adapter)
 
                 # The next document won't be top level, so reset the flag.

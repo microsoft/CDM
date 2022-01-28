@@ -123,6 +123,47 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.Name);
             TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
         }
+
+        /// <summary>
+        /// Test setting SaveConfigFile to false and checking if the file is not saved.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestNotSavingConfigFile()
+        {
+            var testName = nameof(TestNotSavingConfigFile);
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            // Load manifest from input folder.
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("default.manifest.cdm.json");
+
+            // Move manifest to output folder.
+            var outputFolder = corpus.Storage.FetchRootFolder("output");
+            foreach (var entityDec in manifest.Entities)
+            {
+                var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>(entityDec.EntityPath, manifest);
+                outputFolder.Documents.Add(entity.InDocument);
+            }
+
+            outputFolder.Documents.Add(manifest);
+
+            // Make sure the output folder is empty.
+            TestHelper.DeleteFilesFromActualOutput(TestHelper.GetActualOutputFolderPath(testsSubpath, testName));
+
+            // Save manifest to output folder.
+            var copyOptions = new CopyOptions()
+            {
+                SaveConfigFile = false
+            };
+
+            await manifest.SaveAsAsync("default.manifest.cdm.json", false, copyOptions);
+
+            // Compare the result.
+            TestHelper.AssertFolderFilesEquality(
+                TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName),
+                TestHelper.GetActualOutputFolderPath(testsSubpath, testName));
+        }
+
         /// <summary>/// 
         /// Test that saving a model.json that isn't named exactly as such fails to save. 
         /// </summary>
@@ -267,6 +308,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
                 var doc = await corpus.FetchObjectAsync<CdmDocumentDefinition>($"syms:/{manifestExpected.ManifestName}/{ent.EntityName}.cdm.json");
                 Assert.IsNotNull(doc);
                 Assert.IsTrue(string.Equals($"{ent.EntityName}.cdm.json", doc.Name));
+                await doc.SaveAsAsync($"localActOutput:/{doc.Name}");
+
+                var docLocal = await corpus.FetchObjectAsync<CdmDocumentDefinition>(doc.Name);
+                await docLocal.SaveAsAsync($"localExpOutput:/{doc.Name}");
+
+                var actualContent = TestHelper.GetActualOutputFileContent(testsSubpath, nameof(TestSymsSavingAndFetchingDocument), doc.Name);
+                var expectedContent = TestHelper.GetExpectedOutputFileContent(testsSubpath, nameof(TestSymsSavingAndFetchingDocument), doc.Name);
+                TestHelper.AssertSameObjectWasSerialized(actualContent, expectedContent);
             }
         }
 

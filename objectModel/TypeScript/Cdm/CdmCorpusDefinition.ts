@@ -1290,7 +1290,7 @@ export class CdmCorpusDefinition {
 
                 // delete the resolved entity if we created one here
                 if (!isResolvedEntity) {
-                    resEntity.inDocument.folder.documents.remove(resEntity.inDocument.name);
+                    (resEntity.inDocument.owner as CdmFolderDefinition).documents.remove(resEntity.inDocument.name);
                 }
             }
 

@@ -681,12 +681,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 case "string":
                     if (typeInfo.Length == 1)
                         return CdmDataFormat.Char;
-                    if (typeInfo.Properties.ContainsKey("guid") && typeInfo.Properties["guid"].ToObject<bool>() == true)
-                        return CdmDataFormat.Guid;
-                    if (typeInfo.Properties.ContainsKey("json") && typeInfo.Properties["json"].ToObject<bool>() == true)
-                        return CdmDataFormat.Json;
-                    if (typeInfo.Properties.ContainsKey("dateTimeOffset") && typeInfo.Properties["dateTimeOffset"].ToObject<bool>() == true)
-                        return CdmDataFormat.DateTimeOffset;
+                    if (typeInfo.Properties != null)
+                    {
+                        if (typeInfo.Properties.ContainsKey("guid") && typeInfo.Properties["guid"].ToObject<bool>() == true)
+                            return CdmDataFormat.Guid;
+                        if (typeInfo.Properties.ContainsKey("json") && typeInfo.Properties["json"].ToObject<bool>() == true)
+                            return CdmDataFormat.Json;
+                        if (typeInfo.Properties.ContainsKey("dateTimeOffset") && typeInfo.Properties["dateTimeOffset"].ToObject<bool>() == true)
+                            return CdmDataFormat.DateTimeOffset;
+                    }
                     return CdmDataFormat.String;
                 case "char":
                     return CdmDataFormat.String;
@@ -694,13 +697,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     return CdmDataFormat.Int64;
                 case "integer":
                     return CdmDataFormat.Int32;
+                case "short":
+                    return CdmDataFormat.Int16;
                 case "double":
                     return CdmDataFormat.Double;
                 case "date":
                     return CdmDataFormat.Date;
                 case "timestamp":
-                    if (typeInfo.Properties.ContainsKey("dateTime") && typeInfo.Properties["dateTime"].ToObject<bool>() == true)
-                        return CdmDataFormat.DateTime;
+                    if (typeInfo.Properties != null)
+                    {
+                        if (typeInfo.Properties.ContainsKey("dateTime") && typeInfo.Properties["dateTime"].ToObject<bool>() == true)
+                            return CdmDataFormat.DateTime;
+                    }
                     return CdmDataFormat.Time;
                 case "decimal":
                     return CdmDataFormat.Decimal;
@@ -751,6 +759,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     break;
                 case CdmDataFormat.Int32:
                     typeInfo.TypeName = "integer";
+                    break;
+                case CdmDataFormat.Int16:
+                    typeInfo.TypeName = "short";
                     break;
                 case CdmDataFormat.Double:
                     typeInfo.TypeName = "double";

@@ -1,0 +1,2158 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/EpisodeOfCare.cdm.json",
+      "moniker": ""
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EpisodeOfCare",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            "1.0"
+          ]
+        },
+        {
+          "traitReference": "is.CDM.attributeGroup",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "attributeGroupSet",
+                "constantValues": [
+                  [
+                    "/core/wellKnownCDSAttributeGroups.cdm.json/cdsCreationModificationDatesAndIds"
+                  ],
+                  [
+                    "/core/wellKnownCDSAttributeGroups.cdm.json/cdsOwnershipInfo"
+                  ],
+                  [
+                    "/core/wellKnownCDSAttributeGroups.cdm.json/cdsTimeZoneInfo"
+                  ],
+                  [
+                    "/core/wellKnownCDSAttributeGroups.cdm.json/cdsVersionTracking"
+                  ],
+                  [
+                    "/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/EpisodeOfCare.cdm.json/EpisodeOfCare/hasAttributes/attributesAddedAtThisScope"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.identifiedBy",
+          "arguments": [
+            "EpisodeOfCare/hasAttributes/episodeOfCareId"
+          ]
+        },
+        {
+          "traitReference": "means.entityState",
+          "arguments": [
+            "EpisodeOfCare/hasAttributes/stateCode"
+          ]
+        },
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Episode of Care"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "An association between a patient and an organization / healthcare provider(s) during which time encounters may occur."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDS.sourceNamed",
+          "arguments": [
+            "msemr_episodeofcare"
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "createdOn",
+          "appliedTraits": [
+            "is.dataFormat.date",
+            "means.measurement.date",
+            "is.dataFormat.time",
+            "means.measurement.time",
+            "means.measurement.date.creation",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Created On"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Date and time when the record was created."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "createdon"
+              ]
+            }
+          ],
+          "dataFormat": "DateTimeOffset"
+        },
+        {
+          "name": "createdBy",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "means.userId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Created By"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Shows who created the record."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/service/User.cdm.json/User",
+                        "systemUserId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "createdby"
+              ]
+            }
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "modifiedOn",
+          "appliedTraits": [
+            "is.dataFormat.date",
+            "means.measurement.date",
+            "is.dataFormat.time",
+            "means.measurement.time",
+            "means.measurement.date.modify",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Modified On"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Date and time when the record was modified."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "modifiedon"
+              ]
+            }
+          ],
+          "dataFormat": "DateTimeOffset"
+        },
+        {
+          "name": "modifiedBy",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "means.userId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Modified By"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Shows who last updated the record."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/service/User.cdm.json/User",
+                        "systemUserId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "modifiedby"
+              ]
+            }
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "createdOnBehalfBy",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "means.userId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Created By (Delegate)"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Shows who created the record on behalf of another user."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/service/User.cdm.json/User",
+                        "systemUserId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "createdonbehalfby"
+              ]
+            }
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "modifiedOnBehalfBy",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "means.userId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Modified By (Delegate)"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Shows who last updated the record on behalf of another user."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/service/User.cdm.json/User",
+                        "systemUserId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "modifiedonbehalfby"
+              ]
+            }
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "overriddenCreatedOn",
+          "appliedTraits": [
+            "is.dataFormat.date",
+            "means.measurement.date",
+            "is.dataFormat.time",
+            "means.measurement.time",
+            "means.measurement.date.creation",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Record Created On"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Date and time that the record was migrated."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "overriddencreatedon"
+              ]
+            }
+          ],
+          "dataFormat": "DateTimeOffset"
+        },
+        {
+          "name": "importSequenceNumber",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Import Sequence Number"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Unique identifier of the data import or data migration that created this record."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "importsequencenumber"
+              ]
+            },
+            {
+              "traitReference": "is.constrained",
+              "arguments": [
+                {
+                  "name": "minimumValue",
+                  "value": "-2147483648"
+                },
+                {
+                  "name": "maximumValue",
+                  "value": "2147483647"
+                }
+              ]
+            }
+          ],
+          "dataFormat": "Int32"
+        },
+        {
+          "name": "ownerId",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "systemrequired"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Owner"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Owner Id"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/service/User.cdm.json/User",
+                        "systemUserId"
+                      ],
+                      [
+                        "/core/applicationCommon/Team.cdm.json/Team",
+                        "teamId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "ownerid"
+              ]
+            },
+            "is.CDS.owner"
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "ownerIdType",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "entityName/exhibitsTraits/means.entityName",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "systemrequired"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Owner Type"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The type of owner, either User or Team."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.linkedEntity.name",
+            "is.readOnly",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "owneridtype"
+              ]
+            },
+            "is.CDS.owner"
+          ],
+          "dataFormat": "String"
+        },
+        {
+          "name": "owningBusinessUnit",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Owning Business Unit"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Unique identifier for the business unit that owns the record"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+                        "businessUnitId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "owningbusinessunit"
+              ]
+            }
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "owningUser",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "means.userId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Owning User"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Unique identifier for the user that owns the record."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/service/User.cdm.json/User",
+                        "systemUserId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "owninguser"
+              ]
+            }
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "owningTeam",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Owning Team"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Unique identifier for the team that owns the record."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/Team.cdm.json/Team",
+                        "teamId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "owningteam"
+              ]
+            }
+          ],
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "timeZoneRuleVersionNumber",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Time Zone Rule Version Number"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "For internal use only."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "timezoneruleversionnumber"
+              ]
+            },
+            {
+              "traitReference": "is.constrained",
+              "arguments": [
+                {
+                  "name": "minimumValue",
+                  "value": "-1"
+                },
+                {
+                  "name": "maximumValue",
+                  "value": "2147483647"
+                }
+              ]
+            }
+          ],
+          "dataFormat": "Int32"
+        },
+        {
+          "name": "UTCConversionTimeZoneCode",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "UTC Conversion Time Zone Code"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Time zone code that was in use when the record was created."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "utcconversiontimezonecode"
+              ]
+            },
+            {
+              "traitReference": "is.constrained",
+              "arguments": [
+                {
+                  "name": "minimumValue",
+                  "value": "-1"
+                },
+                {
+                  "name": "maximumValue",
+                  "value": "2147483647"
+                }
+              ]
+            }
+          ],
+          "dataFormat": "Int32"
+        },
+        {
+          "name": "versionNumber",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            "is.dataFormat.big",
+            "means.measurement.version",
+            "is.CDS.standard",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Version Number"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Version Number"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "versionnumber"
+              ]
+            }
+          ],
+          "dataFormat": "Int64"
+        },
+        {
+          "name": "episodeOfCareId",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            {
+              "traitReference": "is.identifiedBy",
+              "arguments": [
+                "EpisodeOfCare/hasAttributes/episodeOfCareId"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "systemrequired"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Episode of Care"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Unique identifier for entity instances"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_episodeofcareid"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "1"
+              ]
+            }
+          ],
+          "dataFormat": "Guid",
+          "sourceOrdering": 1
+        },
+        {
+          "name": "stateCode",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            {
+              "traitReference": "does.haveDefault",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                    "entityShape": "listLookupValues",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Active",
+                        "0",
+                        "0"
+                      ],
+                      [
+                        "en",
+                        "Inactive",
+                        "1",
+                        "1"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.constrainedList",
+            {
+              "traitReference": "means.entityState",
+              "arguments": [
+                "EpisodeOfCare/hasAttributes/stateCode"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "systemrequired"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Status"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Status of the Episode of Care"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "statecode"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "24"
+              ]
+            }
+          ],
+          "dataFormat": "Int32",
+          "sourceOrdering": 24
+        },
+        {
+          "name": "stateCode_display",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "means.reference.displayText",
+            "is.readOnly",
+            {
+              "traitReference": "is.addedInSupportOf",
+              "arguments": [
+                "stateCode"
+              ]
+            }
+          ],
+          "dataFormat": "String"
+        },
+        {
+          "name": "statusCode",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            {
+              "traitReference": "does.haveDefault",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                    "entityShape": "listLookupCorrelatedValues",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Active",
+                        "1",
+                        "0",
+                        "0"
+                      ],
+                      [
+                        "en",
+                        "Inactive",
+                        "2",
+                        "1",
+                        "1"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.constrainedList",
+            {
+              "traitReference": "is.correlatedWith",
+              "arguments": [
+                "stateCode"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Status Reason"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Reason for the status of the Episode of Care"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "statuscode"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "26"
+              ]
+            }
+          ],
+          "dataFormat": "Int32",
+          "sourceOrdering": 26
+        },
+        {
+          "name": "statusCode_display",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "means.reference.displayText",
+            "is.readOnly",
+            {
+              "traitReference": "is.addedInSupportOf",
+              "arguments": [
+                "statusCode"
+              ]
+            }
+          ],
+          "dataFormat": "String"
+        },
+        {
+          "name": "description",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Description"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The name of the custom entity."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_description"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "33"
+              ]
+            },
+            {
+              "traitReference": "is.constrained",
+              "arguments": [
+                {
+                  "name": "maximumLength",
+                  "value": "100"
+                }
+              ]
+            }
+          ],
+          "dataFormat": "String",
+          "sourceOrdering": 33
+        },
+        {
+          "name": "careManager",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Care Manager"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The practitioner that is the care manager/care coordinator for this patient."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/Contact.cdm.json/Contact",
+                        "contactId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_caremanager"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "34"
+              ]
+            }
+          ],
+          "dataFormat": "Guid",
+          "sourceOrdering": 34
+        },
+        {
+          "name": "endDateTime",
+          "appliedTraits": [
+            "is.dataFormat.date",
+            "means.measurement.date",
+            "is.dataFormat.time",
+            "means.measurement.time",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "End Date/Time"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The interval during which the managing organization assumes the defined responsibility."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_enddatetime"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "35"
+              ]
+            }
+          ],
+          "dataFormat": "DateTimeOffset",
+          "sourceOrdering": 35
+        },
+        {
+          "name": "identifier",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Episode Of Care Number"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The EpisodeOfCare may be known by different identifiers for different contexts of use, such as when an external agency is tracking the Episode for funding purposes."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_identifier"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "36"
+              ]
+            },
+            {
+              "traitReference": "is.constrained",
+              "arguments": [
+                {
+                  "name": "maximumLength",
+                  "value": "100"
+                }
+              ]
+            }
+          ],
+          "dataFormat": "String",
+          "sourceOrdering": 36
+        },
+        {
+          "name": "organization",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Organization"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The organization that has assumed the specific responsibilities for the specified duration."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account",
+                        "accountId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_organization"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "37"
+              ]
+            }
+          ],
+          "dataFormat": "Guid",
+          "sourceOrdering": 37
+        },
+        {
+          "name": "patient",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            {
+              "traitReference": "is.CDS.lookup",
+              "arguments": [
+                "single"
+              ]
+            },
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Patient"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The patient who is the focus of this episode of care."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/core/applicationCommon/foundationCommon/crmCommon/Contact.cdm.json/Contact",
+                        "contactId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_patient"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "38"
+              ]
+            }
+          ],
+          "dataFormat": "Guid",
+          "sourceOrdering": 38
+        },
+        {
+          "name": "startDateTime",
+          "appliedTraits": [
+            "is.dataFormat.date",
+            "means.measurement.date",
+            "is.dataFormat.time",
+            "means.measurement.time",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Start Date/Time"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "The interval during which the managing organization assumes the defined responsibility."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_startdatetime"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "39"
+              ]
+            }
+          ],
+          "dataFormat": "DateTimeOffset",
+          "sourceOrdering": 39
+        },
+        {
+          "name": "status",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            {
+              "traitReference": "does.haveDefault",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                    "entityShape": "listLookupValues",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Cancelled",
+                        "935000005",
+                        "5"
+                      ],
+                      [
+                        "en",
+                        "Entered in Error",
+                        "935000006",
+                        "6"
+                      ],
+                      [
+                        "en",
+                        "Planned",
+                        "935000000",
+                        "0"
+                      ],
+                      [
+                        "en",
+                        "Waitlist",
+                        "935000001",
+                        "1"
+                      ],
+                      [
+                        "en",
+                        "Active",
+                        "935000002",
+                        "2"
+                      ],
+                      [
+                        "en",
+                        "On Hold",
+                        "935000003",
+                        "3"
+                      ],
+                      [
+                        "en",
+                        "Finished",
+                        "935000004",
+                        "4"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.constrainedList",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "none"
+              ]
+            },
+            {
+              "traitReference": "is.localized.displayedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Status"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "localizedTable",
+                    "constantValues": [
+                      [
+                        "en",
+                        "Current status of episode."
+                      ]
+                    ]
+                  }
+                }
+              ]
+            },
+            "is.nullable",
+            {
+              "traitReference": "is.CDS.sourceNamed",
+              "arguments": [
+                "msemr_status"
+              ]
+            },
+            {
+              "traitReference": "is.CDS.ordered",
+              "arguments": [
+                "40"
+              ]
+            }
+          ],
+          "dataFormat": "Int32",
+          "sourceOrdering": 40
+        },
+        {
+          "name": "status_display",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "means.reference.displayText",
+            "is.readOnly",
+            {
+              "traitReference": "is.addedInSupportOf",
+              "arguments": [
+                "status"
+              ]
+            }
+          ],
+          "dataFormat": "String"
+        }
+      ]
+    }
+  ]
+}

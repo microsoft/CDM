@@ -11,7 +11,7 @@ from cdm.objectmodel import CdmArgumentValue, CdmAttribute, CdmCorpusContext, \
     CdmObjectReference, CdmTraitReference, CdmTraitGroupReference, CdmCollection, CdmLocalEntityDeclarationDefinition
 from cdm.utilities import JObject, IdentifierRef, ResolveOptions, CopyOptions, StorageUtils
 from cdm.persistence.syms.types import SymsManifestContent
-from cdm.persistence.syms.models import DatabaseEntity, RelationshipEntity, TableEntity, TypeInfo
+from cdm.persistence.syms.models import DatabaseEntity, RelationshipEntity, TableEntity, TypeInfo, FormatType
 from .attribute_group_reference_persistence import AttributeGroupReferencePersistence
 from .data_type_reference_persistence import DataTypeReferencePersistence
 from .entity_attribute_persistence import EntityAttributePersistence
@@ -156,81 +156,89 @@ def cardinality_settings_from_data(data: CardinalitySettings, attribute: CdmAttr
 
     return data
 
-def create_csv_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext') -> 'CdmTraitReference':
-    csv_format_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.partition.format.CSV')
-    csv_format_trait.simple_named_reference = False
+def create_partition_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext',format_type: FormatType) -> 'CdmTraitReference':
+    format_trait = None
+    if format_type == FormatType.csv:
+        format_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.partition.format.CSV', True)
+    elif format_type == FormatType.parquet:
+        format_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.partition.format.parquet', True)
+    else:
+        # error
+        return None
+
+    format_trait.simple_named_reference = False
     if obj is not None:
         if obj.get('header') is not None:
             column_headers_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'columnHeaders')
             column_headers_arg.value = str(obj.get('header')).lower()
-            csv_format_trait.arguments.append(column_headers_arg)
+            format_trait.arguments.append(column_headers_arg)
 
         if obj.get('csvStyle') is not None:
             csv_style_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'csvStyle')
             csv_style_arg.value = obj.get('csvStyle')
-            csv_format_trait.arguments.append(csv_style_arg)
+            format_trait.arguments.append(csv_style_arg)
 
         if obj.get('field.delim') is not None:
             delimiter_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'delimiter')
             delimiter_arg.value = obj.get('field.delim')
-            csv_format_trait.arguments.append(delimiter_arg)
+            format_trait.arguments.append(delimiter_arg)
 
         if obj.get('quoteStyle') is not None:
             quote_style_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'quoteStyle')
             quote_style_arg.value = obj.get('quoteStyle')
-            csv_format_trait.arguments.append(quote_style_arg)
+            format_trait.arguments.append(quote_style_arg)
 
         if obj.get('quote') is not None:
             quote_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'quote')
             quote_arg.value = obj.get('quote')
-            csv_format_trait.arguments.append(quote_arg)
+            format_trait.arguments.append(quote_arg)
 
         if obj.get('encoding') is not None:
             encoding_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'encoding')
             encoding_arg.value = obj.get('encoding')
-            csv_format_trait.arguments.append(encoding_arg)
+            format_trait.arguments.append(encoding_arg)
 
         if obj.get('escape') is not None:
             escape_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'escape')
             escape_arg.value = obj.get('escape')
-            csv_format_trait.arguments.append(escape_arg)
+            format_trait.arguments.append(escape_arg)
 
         if obj.get('newline') is not None:
             newline_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'newline')
             newline_arg.value = obj.get('newline')
-            csv_format_trait.arguments.append(newline_arg)
+            format_trait.arguments.append(newline_arg)
 
         if obj.get('skipLines') is not None:
             skiplines_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'skipLines')
             skiplines_arg.value = obj.get('skipLines')
-            csv_format_trait.arguments.append(skiplines_arg)
+            format_trait.arguments.append(skiplines_arg)
 
         if obj.get('inferSchema') is not None:
             infer_schema_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'inferSchema')
             infer_schema_arg.value = obj.get('inferSchema')
-            csv_format_trait.arguments.append(infer_schema_arg)
+            format_trait.arguments.append(infer_schema_arg)
 
         if obj.get('timestampFormat') is not None:
             timestampformat_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'timestampFormat')
             timestampformat_arg.value = obj.get('timestampFormat')
-            csv_format_trait.arguments.append(timestampformat_arg)
+            format_trait.arguments.append(timestampformat_arg)
 
         if obj.get('ignoreTrailingWhiteSpace') is not None:
             ignore_trailing_white_space_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'ignoreTrailingWhiteSpace')
             ignore_trailing_white_space_arg.value = obj.get('skipLines')
-            csv_format_trait.arguments.append(ignore_trailing_white_space_arg)
+            format_trait.arguments.append(ignore_trailing_white_space_arg)
 
         if obj.get('ignoreLeadingWhiteSpace') is not None:
             ignore_leading_white_space_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'ignoreLeadingWhiteSpace')
             ignore_leading_white_space_arg.value = obj.get('ignoreLeadingWhiteSpace')
-            csv_format_trait.arguments.append(ignore_leading_white_space_arg)
+            format_trait.arguments.append(ignore_leading_white_space_arg)
 
         if obj.get('multiLine') is not None:
             multiline_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'multiLine')
             multiline_arg.value = obj.get('multiLine')
-            csv_format_trait.arguments.append(multiline_arg)
+            format_trait.arguments.append(multiline_arg)
 
-    return csv_format_trait
+    return format_trait
 
 def trim_start(input: str, word_to_remove: str) -> str:
         return input[len(word_to_remove):] if input.startswith(word_to_remove) else input
@@ -412,12 +420,13 @@ def syms_data_type_to_cdm_data_format(type_info: 'TypeInfo')-> 'CdmDataFormat':
     elif type_info.type_name == 'string':
         if type_info.length == 1:
             return CdmDataFormat.CHAR
-        elif type_info.length > 1:
-            return CdmDataFormat.GUID
-        if 'json' in type_info.properties and type_info.properties['json'] == True:
-            return CdmDataFormat.JSON
-        if 'dateTimeOffset' in type_info.properties and type_info.properties['dateTimeOffset'] == True:
-            return CdmDataFormat.DATE_TIME_OFFSET
+        if type_info.properties is not None:
+            if 'guid' in type_info.properties and type_info.properties['guid'] == True:
+                return CdmDataFormat.GUID
+            if 'json' in type_info.properties and type_info.properties['json'] == True:
+                return CdmDataFormat.JSON
+            if 'dateTimeOffset' in type_info.properties and type_info.properties['dateTimeOffset'] == True:
+                return CdmDataFormat.DATE_TIME_OFFSET
         return CdmDataFormat.STRING
     elif type_info.type_name == 'char':
         return CdmDataFormat.STRING
@@ -425,13 +434,16 @@ def syms_data_type_to_cdm_data_format(type_info: 'TypeInfo')-> 'CdmDataFormat':
         return CdmDataFormat.INT64
     elif type_info.type_name == 'integer':
         return CdmDataFormat.INT32
+    elif type_info.type_name == 'short':
+        return CdmDataFormat.INT16
     elif type_info.type_name == 'double':
         return CdmDataFormat.DOUBLE
     elif type_info.type_name == 'date':
         return CdmDataFormat.DATE
     elif type_info.type_name == 'timestamp':
-        if 'dateTime' in type_info.properties and type_info.properties['dateTime'] == True:
-            return CdmDataFormat.DateTime
+        if type_info.properties is not None:
+            if 'dateTime' in type_info.properties and type_info.properties['dateTime'] == True:
+                return CdmDataFormat.DateTime
         return CdmDataFormat.TIME
     elif type_info.type_name == 'decimal':
         return CdmDataFormat.DECIMAL
@@ -464,9 +476,9 @@ def cdm_data_format_to_syms_data_type(cdm_data_format: CdmDataFormat, type_info:
     elif cdm_data_format == CdmDataFormat.INT32:
         type_info.type_name = 'integer'
     elif cdm_data_format == CdmDataFormat.INT16:
-        type_info.type_name = 'long'
+        type_info.type_name = 'short'
     elif cdm_data_format == CdmDataFormat.INT64:
-        type_info.type_name = 'integer'
+        type_info.type_name = 'long'
     elif cdm_data_format == CdmDataFormat.DOUBLE:
         type_info.type_name = 'double'
     elif cdm_data_format == CdmDataFormat.DATE:

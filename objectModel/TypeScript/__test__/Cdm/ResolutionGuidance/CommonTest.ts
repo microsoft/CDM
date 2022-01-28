@@ -167,7 +167,7 @@ export class CommonTest {
      */
     protected static async saveActualEntityAndValidateWithExpected(expectedPath: string, actualResolvedEntityDef: CdmEntityDefinition): Promise<void> {
         const options: copyOptions = new copyOptions();
-        options.isTopLevelDocument = false;
+        options.saveConfigFile = false;
         await actualResolvedEntityDef.inDocument.saveAsAsync(actualResolvedEntityDef.inDocument.name, false, options);
         const actualPath: string = actualResolvedEntityDef.ctx.corpus.storage.corpusPathToAdapterPath(actualResolvedEntityDef.inDocument.atCorpusPath);
         const actualCtx = JSON.parse(fs.readFileSync(actualPath, 'utf8'));

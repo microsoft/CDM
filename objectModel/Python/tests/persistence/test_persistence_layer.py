@@ -1,18 +1,16 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
-import asyncio
 import datetime
-import multiprocessing
 import os
 import unittest
 
 from cdm.enums import CdmStatusLevel, CdmObjectType, CdmLogCode
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition
 from cdm.storage import LocalAdapter
+from cdm.utilities import CopyOptions
 
 from tests.common import async_test, TestHelper
 from tests.mock_storage_adapter import MockStorageAdapter
-from cdm.storage.syms import SymsAdapter
 from tests.syms_test_helper import SymsTestHelper
 
 class PersistenceLayerTest(unittest.TestCase):
@@ -33,6 +31,38 @@ class PersistenceLayerTest(unittest.TestCase):
             self.fail('Error should not be thrown when input json is invalid.')
 
         self.assertIsNone(invalid_manifest)
+
+    @async_test
+    async def test_not_saving_config_file(self):
+        """Test setting SaveConfigFile to false and checking if the file is not saved."""
+
+        test_name = 'test_not_saving_config_file'
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
+
+        # Load manifest from input folder.
+        manifest = await corpus.fetch_object_async('default.manifest.cdm.json')
+
+        # Move manifest to output folder.
+        output_folder = corpus.storage.fetch_root_folder('output')
+        for entity_dec in manifest.entities:
+            entity = await corpus.fetch_object_async(entity_dec.entity_path, manifest)
+            output_folder.documents.append(entity.in_document)
+
+        output_folder.documents.append(manifest)
+
+        # Make sure the output folder is empty.
+        TestHelper.delete_files_from_actual_output(TestHelper.get_actual_output_folder_path(self.test_subpath, test_name))
+
+        # Save manifest to output folder.
+        copy_options = CopyOptions()
+        copy_options.save_config_file = False
+
+        await manifest.save_as_async("default.manifest.cdm.json", False, copy_options)
+
+        # Compare the result.
+        TestHelper.compare_folder_files_equality(
+            TestHelper.get_expected_output_folder_path(self.test_subpath, test_name),
+            TestHelper.get_actual_output_folder_path(self.test_subpath, test_name))
 
     @async_test
     async def test_loading_invalid_model_json_name(self):
@@ -147,6 +177,19 @@ class PersistenceLayerTest(unittest.TestCase):
             doc = await corpus.fetch_object_async('syms:/{}/{}.cdm.json'.format(manifest_expected.manifest_name, ent.entity_name))
             self.assertIsNotNone(doc)
             self.assertTrue(doc.name == '{}.cdm.json'.format(ent.entity_name))
+
+            await doc.save_as_async('localActOutput:/{}'.format(doc.name))
+
+            doc_local = await corpus.fetch_object_async(doc.name)
+            await doc_local.save_as_async('localExpOutput:/{}'.format(doc.name))
+            actual_content = TestHelper.get_actual_output_data(self.test_subpath, 'TestSymsSavingAndFetchingDocument',
+                                                               doc.name)
+            expected_content = TestHelper.get_expected_output_data(self.test_subpath,
+                                                                   'TestSymsSavingAndFetchingDocument',
+                                                                   doc.name)
+            ret = TestHelper.compare_same_object(actual_content, expected_content)
+            if ret is not '':
+                self.fail(ret)
 
     async def run_syms_smart_adls_adapter_mount_logic(self):
         syms_adapter = SymsTestHelper.create_adapter_with_clientid()

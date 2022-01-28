@@ -252,7 +252,7 @@ class RelationshipTest(unittest.TestCase):
         manifest_no_to_ent = await corpus.fetch_object_async('local:/mainNoToEnt.manifest.cdm.json')  # type: CdmManifestDefinition
         from_ent = await corpus.fetch_object_async('local:/fromEnt.cdm.json/fromEnt')  # type: CdmEntityDefinition
         co = CopyOptions()
-        co._is_top_level_document = False
+        co.save_config_file = False
         await from_ent.in_document.save_as_async(temp_from_file_path, options=co)
 
         async def reload_from_entity():

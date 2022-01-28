@@ -12,7 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
+
     internal class ParameterValue
     {
         public CdmParameterDefinition Parameter { get; set; }
