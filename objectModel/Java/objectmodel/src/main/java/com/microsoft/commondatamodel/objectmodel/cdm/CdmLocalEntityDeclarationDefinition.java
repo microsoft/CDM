@@ -302,6 +302,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
   /**
    * Creates a data partition object using the input, should be called by CdmDataPartitionPatternDefinition object.
+   * This function doesn't check if the data partition exists.
    */
   void createDataPartitionFromPattern(
       final String filePath,
@@ -309,10 +310,6 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
       final Map<String, List<String>> args,
       final String schema,
       final OffsetDateTime modifiedTime) {
-    final Optional<CdmDataPartitionDefinition> existingPartition =
-            getDataPartitions().getAllItems().stream().filter(x -> x.getLocation().equals(filePath)).findFirst();
-
-    if (!existingPartition.isPresent()) {
       final CdmDataPartitionDefinition newPartition = getCtx().getCorpus().makeObject(CdmObjectType.DataPartitionDef);
 
       newPartition.setLocation(filePath);
@@ -329,7 +326,6 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
       }
 
       this.dataPartitions.add(newPartition);
-    }
   }
 
   /**

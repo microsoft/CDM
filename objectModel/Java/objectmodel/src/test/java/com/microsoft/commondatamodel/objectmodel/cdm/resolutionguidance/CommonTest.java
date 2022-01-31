@@ -223,7 +223,7 @@ public class CommonTest {
         return CompletableFuture.runAsync(() -> {
             try {
                 final CopyOptions options = new CopyOptions();
-                options.setTopLevelDocument(false);
+                options.setSaveConfigFile(false);
                 actualResolvedEntityDef.getInDocument().saveAsAsync(actualResolvedEntityDef.getInDocument().getName(), false, options);
                 final String actualPath = actualResolvedEntityDef.getCtx().getCorpus().getStorage().corpusPathToAdapterPath(actualResolvedEntityDef.getInDocument().getAtCorpusPath());
                 Assert.assertEquals(new String(Files.readAllBytes(new File(expectedPath).toPath()), StandardCharsets.UTF_8),

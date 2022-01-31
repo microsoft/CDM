@@ -245,6 +245,14 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                     }
 
                     if (regexPattern !== undefined) {
+                        const dataPartitionPathSet: Set<string> = new Set<string>();
+                        if (this.owner && (this.owner).dataPartitions) {
+                            for (const dataPartition of (this.owner).dataPartitions) {
+                                const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(dataPartition.location, this.inDocument);
+                                dataPartitionPathSet.add(fullPath);
+                            }
+                        }
+
                         for (const fi of fileInfoList) {
                             const m: RegExpExecArray = regexPattern.exec(fi);
                             if (m && m.length > 0 && m[0] === fi) {
@@ -273,8 +281,12 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                                     return;
                                 }
                                 const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(pathTuple[1]);
-                                (this.owner).createDataPartitionFromPattern(
-                                    locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
+
+                                if (!dataPartitionPathSet.has(fullPath)) {
+                                    (this.owner).createDataPartitionFromPattern(
+                                        locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
+                                    dataPartitionPathSet.add(fullPath);
+                                }
                             }
                         }
                     }

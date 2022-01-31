@@ -10,7 +10,8 @@ import {
     CdmManifestDefinition,
     cdmObjectType,
     cdmStatusLevel,
-    CdmTypeAttributeDefinition
+    CdmTypeAttributeDefinition,
+    copyOptions
 } from '../../internal';
 import { LocalAdapter, RemoteAdapter } from '../../Storage';
 import { testHelper } from '../testHelper';
@@ -42,6 +43,41 @@ describe('Persistence.PersistenceLayerTest', () => {
         expect(invalidManifest)
             .toBeUndefined();
         done();
+    });
+
+    /**
+     * Test setting SaveConfigFile to false and checking if the file is not saved.
+     */
+    it('testNotSavingConfigFile', async () => {
+        const testName = 'testNotSavingConfigFile';
+        const corpus = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        // Load manifest from input folder.
+        const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>("default.manifest.cdm.json");
+
+        // Move manifest to output folder.
+        const outputFolder = corpus.storage.fetchRootFolder("output");
+        for (const entityDec of manifest.entities)
+        {
+            var entity = await corpus.fetchObjectAsync<CdmEntityDefinition>(entityDec.entityPath, manifest);
+            outputFolder.documents.push(entity.inDocument);
+        }
+
+        outputFolder.documents.push(manifest);
+
+        // Make sure the output folder is empty.
+        testHelper.deleteFilesFromActualOutput(testHelper.getActualOutputFolderPath(testsSubpath, testName));
+
+        // Save manifest to output folder.
+        var co = new copyOptions();
+        co.saveConfigFile = false;
+
+        await manifest.saveAsAsync("default.manifest.cdm.json", false, co);
+
+        // Compare the result.
+        testHelper.assertFolderFilesEquality(
+            testHelper.getExpectedOutputFolderPath(testsSubpath, testName),
+            testHelper.getActualOutputFolderPath(testsSubpath, testName));
     });
 
     /**

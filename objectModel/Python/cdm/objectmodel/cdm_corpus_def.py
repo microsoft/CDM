@@ -171,7 +171,7 @@ class CdmCorpusDefinition:
 
                     # delete the resolved entity if we created one here
                     if not is_resolved_entity:
-                        res_entity.in_document.folder.documents.remove(res_entity.in_document.name)
+                        res_entity.in_document.owner.documents.remove(res_entity.in_document.name)
 
             for sub_manifest_def in curr_manifest.sub_manifests:
                 sub_manifest = await self.fetch_object_async(sub_manifest_def.definition,

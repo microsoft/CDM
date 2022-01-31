@@ -53,21 +53,22 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
     def _create_partition_from_pattern(self, file_path: str, exhibits_traits: 'CdmTraitCollection',
                                        args: Dict[str, List[str]], schema: str, modified_time: datetime) -> None:
-        """Create a data partition object using the input, should be called by DataPartitionPattern object."""
-        existing_partition = next((x for x in self.data_partitions if x.location == file_path), None)
+        """
+        Create a data partition object using the input, should be called by DataPartitionPattern object.
+        This function doesn't check if the data partition exists.
+        """
 
-        if not existing_partition:
-            new_partition = self.ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF)
-            new_partition.location = file_path
-            new_partition.specialized_schema = schema
-            new_partition.last_file_modified_time = modified_time
-            new_partition.last_file_status_check_time = datetime.now(timezone.utc)
+        new_partition = self.ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF)
+        new_partition.location = file_path
+        new_partition.specialized_schema = schema
+        new_partition.last_file_modified_time = modified_time
+        new_partition.last_file_status_check_time = datetime.now(timezone.utc)
 
-            for trait in exhibits_traits:
-                new_partition.exhibits_traits.append(trait)
+        for trait in exhibits_traits:
+            new_partition.exhibits_traits.append(trait)
 
-            new_partition.arguments = args.copy()
-            self.data_partitions.append(new_partition)
+        new_partition.arguments = args.copy()
+        self.data_partitions.append(new_partition)
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""

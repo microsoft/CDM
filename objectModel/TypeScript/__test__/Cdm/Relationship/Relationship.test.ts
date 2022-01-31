@@ -364,7 +364,7 @@ describe('Cdm/Relationship/Relationship', () => {
         const manifestNoToEnt: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/mainNoToEnt.manifest.cdm.json');
         const fromEnt: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/fromEnt.cdm.json/fromEnt');
         const options: copyOptions = new copyOptions();
-        options.isTopLevelDocument = false;
+        options.saveConfigFile = false;
         await fromEnt.inDocument.saveAsAsync(tempFromFilePath, false, options);
 
         const reloadFromEntity = async () => {

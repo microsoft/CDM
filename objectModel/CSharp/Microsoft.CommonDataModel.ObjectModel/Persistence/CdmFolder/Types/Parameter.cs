@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public string Explanation { get; set; }
         public string Name { get; set; }
         public JToken DefaultValue { get; set; }
-
         public bool? Required { get; set; }
         public string Direction { get; set; }
         public JToken DataType { get; set; }

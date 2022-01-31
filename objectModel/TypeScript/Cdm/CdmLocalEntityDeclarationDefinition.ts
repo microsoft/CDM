@@ -226,6 +226,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     /**
      * @internal
      * Creates a data partition object using the input, should be called by DataPartitionPattern object
+     * This function doesn't check if the data partition exists.
      */
     public createDataPartitionFromPattern(
         filePath: string,
@@ -233,24 +234,19 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         args: Map<string, string[]>,
         schema: string,
         modifiedTime: Date): void {
-        const existingPartition: CdmDataPartitionDefinition =
-            this.dataPartitions.allItems.find((x: CdmDataPartitionDefinition) => x.location === filePath);
+        const newPartition: CdmDataPartitionDefinition = this.ctx.corpus.MakeObject(cdmObjectType.dataPartitionDef);
+        newPartition.location = filePath;
+        newPartition.specializedSchema = schema;
+        newPartition.lastFileModifiedTime = modifiedTime;
+        newPartition.lastFileStatusCheckTime = new Date();
 
-        if (!existingPartition) {
-            const newPartition: CdmDataPartitionDefinition = this.ctx.corpus.MakeObject(cdmObjectType.dataPartitionDef);
-            newPartition.location = filePath;
-            newPartition.specializedSchema = schema;
-            newPartition.lastFileModifiedTime = modifiedTime;
-            newPartition.lastFileStatusCheckTime = new Date();
-
-            for (const trait of exhibitsTraits) {
-                newPartition.exhibitsTraits.push(trait);
-            }
-
-            newPartition.arguments = new Map(args);
-
-            this.dataPartitions.push(newPartition);
+        for (const trait of exhibitsTraits) {
+            newPartition.exhibitsTraits.push(trait);
         }
+
+        newPartition.arguments = new Map(args);
+
+        this.dataPartitions.push(newPartition);
     }
 
     public setLastFileModifiedTime(value : Date): void {

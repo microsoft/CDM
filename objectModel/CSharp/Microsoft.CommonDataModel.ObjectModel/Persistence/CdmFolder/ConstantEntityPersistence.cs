@@ -24,6 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             constantEntity.EntityShape = EntityReferencePersistence.FromData(ctx, obj["entityShape"]);
             return constantEntity;
         }
+
         public static ConstantEntity ToData(CdmConstantEntityDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
             return new ConstantEntity

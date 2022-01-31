@@ -35,6 +35,7 @@ class TypeAttributePersistence:
         properties = obj.origin_data_type_name.properties
 
         type_attribute.data_format = utils.syms_data_type_to_cdm_data_format(obj.origin_data_type_name)
+        type_attribute.is_nullable = obj.origin_data_type_name.is_nullable
 
         if obj.origin_data_type_name.scale != 0 or obj.origin_data_type_name.precision != 0:
             numeric_traits = ctx.corpus.make_ref(CdmObjectType.TRAIT_REF, 'is.data_format.numeric.shaped', True)

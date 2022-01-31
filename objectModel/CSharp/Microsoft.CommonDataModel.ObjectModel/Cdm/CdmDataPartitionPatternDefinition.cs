@@ -256,6 +256,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         if (regexPattern != null)
                         {
+                            // a hashset to check if the data partition exists
+                            HashSet<string> dataPartitionPathHashSet = new HashSet<string>();
+                            if (this.Owner != null && (this.Owner as CdmLocalEntityDeclarationDefinition).DataPartitions != null)
+                            {
+                                foreach (var dataPartition in (this.Owner as CdmLocalEntityDeclarationDefinition).DataPartitions.AllItems)
+                                {
+                                    var fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(dataPartition.Location, this.InDocument);
+                                    dataPartitionPathHashSet.Add(fullPath);
+                                }
+                            }
+
                             foreach (var fi in fileInfoList)
                             {
                                 Match m = regexPattern.Match(fi);
@@ -299,7 +310,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     try
                                     {
                                         DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
-                                        (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+
+                                        if (!dataPartitionPathHashSet.Contains(fullPath))
+                                        {
+                                            (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+                                            dataPartitionPathHashSet.Add(fullPath);
+                                        }
                                     }
                                     catch (Exception e)
                                     {

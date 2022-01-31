@@ -46,9 +46,6 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # the document version.
         self.document_version = None  # type: Optional[str]
 
-        # the document folder.
-        self.folder = None  # type: Optional[CdmFolderDefinition]
-
         # --- internal ---
 
         self._currently_indexing = False
@@ -72,10 +69,18 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
     @property
     def at_corpus_path(self) -> str:
-        if self.folder is None:
+        if self.owner is None:
             return 'NULL:/{}'.format(self.name)
 
-        return self.folder.at_corpus_path + self.name
+        return self.owner.at_corpus_path + self.name
+
+    @property
+    def folder(self) -> Optional['CdmFolderDefinition']:
+        return self.owner
+
+    @folder.setter
+    def folder(self, folder: Optional['CdmFolderDefinition']):
+        self.owner = folder
 
     @property
     def folder_path(self) -> str:
@@ -144,11 +149,11 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         return copy
 
     async def _index_if_needed(self, res_opt: 'ResolveOptions', load_imports: bool = False) -> bool:
-        if not self.folder:
+        if not self.owner:
             logger.error(self.ctx, self._TAG, self._index_if_needed.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_MISSING_DOC, self.name)
             return False
 
-        corpus = self.folder._corpus  # type: CdmCorpusDefinition
+        corpus = self.owner._corpus  # type: CdmCorpusDefinition
         needs_indexing = corpus._document_library._mark_document_for_indexing(self)
 
         if not needs_indexing:

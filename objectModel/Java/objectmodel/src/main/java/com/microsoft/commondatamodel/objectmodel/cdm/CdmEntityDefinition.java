@@ -412,7 +412,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         }
 
         final ResolveOptions finalResOpt = tmpResOpt;
-        final CdmFolderDefinition folder = folderDef != null ? folderDef : this.getInDocument().getFolder();
+        final CdmFolderDefinition folder = folderDef != null ? folderDef : (CdmFolderDefinition) this.getInDocument().getOwner();
         // if the wrtDoc needs to be indexed (like it was just modified) then do that first
         if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt, true).join()) {
           Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);

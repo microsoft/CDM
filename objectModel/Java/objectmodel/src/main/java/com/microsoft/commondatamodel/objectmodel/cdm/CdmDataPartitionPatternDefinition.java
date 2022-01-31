@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -322,6 +323,15 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             }
 
             if (regexPattern != null) {
+              // a hashset to check if the data partition exists
+              HashSet<String> dataPartitionPathHashSet = new HashSet<>();
+              if (getOwner() != null && ((CdmLocalEntityDeclarationDefinition) getOwner()).getDataPartitions() != null) {
+                for (final CdmDataPartitionDefinition dataPartition : ((CdmLocalEntityDeclarationDefinition) getOwner()).getDataPartitions()) {
+                  final String fullPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(dataPartition.getLocation(), this.getInDocument());
+                  dataPartitionPathHashSet.add(fullPath);
+                }
+              }
+
               for (final String fi : fileInfoList) {
                 final Matcher m = regexPattern.matcher(fi);
 
@@ -353,8 +363,12 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                   }
                   final OffsetDateTime lastModifiedTime =
                           adapter.computeLastModifiedTimeAsync(pathTuple.getRight()).join();
-                  ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
-                          locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
+
+                  if (!dataPartitionPathHashSet.contains(fullPath)) {
+                    ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
+                      locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
+                    dataPartitionPathHashSet.add(fullPath);
+                  }
                 }
               }
             }

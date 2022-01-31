@@ -11,27 +11,26 @@ using System.Runtime.CompilerServices;
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Common;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
     using System;
-    using System.Linq;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
-    using Microsoft.CommonDataModel.ObjectModel.Enums;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
-    using Newtonsoft.Json.Linq;
-    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
-    using System.Collections.ObjectModel;
 
     public class PersistenceLayer
     {
@@ -446,7 +445,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     doc._fileSystemModifiedTime = await adapter.ComputeLastModifiedTimeAsync(newPath);
 
                     // Write the adapter's config.
-                    if (options.IsTopLevelDocument && persistenceType != Syms)
+                    if (options.SaveConfigFile != false && options.IsTopLevelDocument && persistenceType != Syms)
                     {
                         await this.Corpus.Storage.SaveAdaptersConfigAsync("/config.json", adapter);
 

@@ -132,7 +132,7 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
     }
 
     document.setFolderPath(this.getOwner().getFolderPath());
-    document.setFolder(this.getOwner());
+    document.setOwner(this.getOwner());
     document.setNamespace(this.getOwner().getNamespace());
     document.setNeedsIndexing(true);
     // Set the document to dirty so it will get saved in the new folder location if saved.

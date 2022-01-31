@@ -13,6 +13,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
     using System.Collections.Generic;
+    using System.Linq;
 
     class EntityPersistence
     {
@@ -53,7 +54,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 }
                 if (teProperties.Properties.ContainsKey("cdm:traits"))
                 {
-                    Utils.AddListToCdmCollection(entity.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, teProperties.Properties["cdm:traits"]));
+                    var traitList = Utils.CreateTraitReferenceList(ctx, teProperties.Properties["cdm:traits"]);
+                    var traitDic = entity.ExhibitsTraits.ToDictionary(x => x.NamedReference, x => x);
+                    foreach (var trait in traitList)
+                    {
+                        if (traitDic.ContainsKey(trait.NamedReference))
+                        {
+                            entity.ExhibitsTraits.Remove(trait.NamedReference);
+                        }
+                    }
+                    Utils.AddListToCdmCollection(entity.ExhibitsTraits, traitList);
                 }
             }
 

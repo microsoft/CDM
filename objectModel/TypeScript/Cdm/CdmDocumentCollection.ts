@@ -108,7 +108,7 @@ export class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
             (document.owner as CdmFolderDefinition).documents.remove(document.name);
         }
         document.folderPath = this.owner.folderPath;
-        document.folder = this.owner;
+        document.owner = this.owner;
         document.namespace = this.owner.namespace;
         this.makeDocumentDirty(); // set the document to dirty so it will get saved in the new folder location if saved
         this.owner.corpus.addDocumentObjects(this.owner, document);

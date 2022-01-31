@@ -162,7 +162,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 return undefined;
             }
 
-            if (!this.folder) {
+            if (!this.owner) {
                 Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveManifestFailed, this.manifestName);
                 return undefined;
             }
@@ -176,7 +176,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             }
 
             const sourceManifestPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.atCorpusPath, this);
-            const sourceManifestFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.folder.atCorpusPath, this);
+            const sourceManifestFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.owner.atCorpusPath, this);
 
             const resolvedManifestPathSplit: number = newManifestName.lastIndexOf('/') + 1;
             let resolvedManifestFolder: CdmFolderDefinition;
@@ -232,13 +232,13 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                     return undefined;
                 }
 
-                if (!entDef.inDocument.folder) {
+                if (!entDef.inDocument.owner) {
                     Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrDocIsNotFolder, entDef.entityName);
                     return undefined;
                 }
 
                 // get the path from this manifest to the source entity. This will be the {f} replacement value
-                const sourceEntityFullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.inDocument.folder.atCorpusPath, this);
+                const sourceEntityFullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.inDocument.owner.atCorpusPath, this);
                 let f: string = '';
                 if (sourceEntityFullPath.startsWith(sourceManifestFolderPath)) {
                     f = sourceEntityFullPath.substr(sourceManifestFolderPath.length, sourceEntityFullPath.length - sourceManifestFolderPath.length);

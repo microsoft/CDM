@@ -174,7 +174,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     return null;
                 }
-                if (this.Folder == null)
+                if (this.Owner == null)
                 {
                     Logger.Error(this.Ctx as ResolveContext,Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveManifestFailed, this.ManifestName);
                     return null;
@@ -188,7 +188,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     newEntityDocumentNameFormat = newEntityDocumentNameFormat + "/{n}.cdm.json";
 
                 string sourceManifestPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.AtCorpusPath, this);
-                string sourceManifestFolderPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Folder.AtCorpusPath, this);
+                string sourceManifestFolderPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Owner.AtCorpusPath, this);
 
                 int resolvedManifestPathSplit = newManifestName.LastIndexOf("/") + 1;
                 CdmFolderDefinition resolvedManifestFolder;
@@ -249,13 +249,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (entDef == null)
                         Logger.Error(this.Ctx, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveEntityFailure, entityPath);
 
-                    if (entDef.InDocument.Folder == null)
+                    if (entDef.InDocument.Owner == null)
                     {
                         Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrDocIsNotFolder, entDef.EntityName);
                         return null;
                     }
                     // get the path from this manifest to the source entity. this will be the {f} replacement value
-                    string sourceEntityFullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.InDocument.Folder.AtCorpusPath, this);
+                    string sourceEntityFullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.InDocument.Owner.AtCorpusPath, this);
                     string f = "";
                     if (sourceEntityFullPath.StartsWith(sourceManifestFolderPath))
                     {

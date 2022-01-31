@@ -9,6 +9,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public bool? RemoveSingleRowLocalizedTableTraits { get; set; }
 
         /// <summary>
+        /// Determines if the config.json file should be saved when calling SaveAsAsync.
+        /// </summary>
+        public bool? SaveConfigFile { get; set; }
+
+        /// <summary>
         /// A value that helps us to figure out is the document that is using this object top level.
         /// </summary>
         internal bool IsTopLevelDocument { get; set; }

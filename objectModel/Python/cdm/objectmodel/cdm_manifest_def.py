@@ -111,7 +111,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             if self.entities is None:
                 return None
 
-            if not self.folder:
+            if not self.owner:
                 logger.error(
                     self.ctx,
                     self._TAG,
@@ -129,7 +129,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 new_entity_document_name_format = new_entity_document_name_format + '/{n}.cdm.json'
 
             source_manifest_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.at_corpus_path, self)
-            source_manifest_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.folder.at_corpus_path, self)
+            source_manifest_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.owner.at_corpus_path, self)
 
             resolved_manifest_path_split = new_manifest_name.rfind('/') + 1
             resolved_manifest_folder = None
@@ -177,12 +177,12 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 if ent_def is None:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, None, CdmLogCode.ERR_RESOLVE_ENTITY_FAILURE, entity_path)
 
-                if not ent_def.in_document.folder:
+                if not ent_def.in_document.owner:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IS_NOT_FOLDERformat, ent_def.entity_name)
                     return None
 
                 # get the path from this manifest to the source entity. this will be the {f} replacement value
-                source_entity_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.in_document.folder.at_corpus_path, self)
+                source_entity_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.in_document.owner.at_corpus_path, self)
                 f = ''
                 if source_entity_full_path.startswith(source_manifest_folder_path):
                     f = source_entity_full_path[len(source_manifest_folder_path):]

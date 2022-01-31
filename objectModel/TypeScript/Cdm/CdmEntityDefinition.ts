@@ -588,7 +588,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 }
 
                 if (!folder) {
-                    folder = this.inDocument.folder;
+                    folder = this.inDocument.owner as CdmFolderDefinition;
                 }
 
                 const fileName: string = (newDocName === undefined || newDocName === '') ? `${newEntName}.cdm.json` : newDocName;

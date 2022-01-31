@@ -1474,8 +1474,8 @@ public class CdmCorpusDefinition {
 
               // delete the resolved entity if we created one here
               if (!isResolvedEntity) {
-                resEntity.getInDocument()
-                        .getFolder()
+                ((CdmFolderDefinition) resEntity.getInDocument()
+                        .getOwner())
                         .getDocuments()
                         .remove(resEntity.getInDocument().getName());
               }

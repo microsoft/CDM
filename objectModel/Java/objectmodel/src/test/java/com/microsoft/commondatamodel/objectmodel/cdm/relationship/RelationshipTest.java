@@ -350,7 +350,7 @@ public class RelationshipTest {
 
   private CompletableFuture<Void> reloadFromEntity(CdmCorpusDefinition corpus, CdmEntityDefinition fromEnt, String tempFromFilePath, String tempFromEntityPath) {
       final CopyOptions options = new CopyOptions();
-      options.setTopLevelDocument(false);
+      options.setSaveConfigFile(false);
       fromEnt.getInDocument().saveAsAsync(tempFromFilePath, false, options).join();
       // fetch gain to reset the cache
       corpus.<CdmEntityDefinition>fetchObjectAsync(tempFromEntityPath, null, null, true).join();
@@ -404,7 +404,7 @@ public class RelationshipTest {
         final CdmEntityDefinition fromEnt = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/fromEnt.cdm.json/fromEnt").join();
 
         final CopyOptions options = new CopyOptions();
-        options.setTopLevelDocument(false);
+        options.setSaveConfigFile(false);
         fromEnt.getInDocument().saveAsAsync(tempFromFilePath, false, options).join();
 
         try {

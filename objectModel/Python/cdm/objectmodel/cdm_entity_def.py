@@ -318,7 +318,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED)
                 return None
 
-            folder = folder or self.in_document.folder
+            folder = folder or self.in_document.owner  # type: CdmFolderDefinition
             file_name = new_doc_name or new_ent_name + PersistenceLayer.CDM_EXTENSION
             orig_doc = self.in_document.at_corpus_path
 

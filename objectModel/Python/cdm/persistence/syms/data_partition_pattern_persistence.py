@@ -3,19 +3,19 @@
 
 import dateutil.parser
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.objectmodel import CdmCorpusContext, CdmDataPartitionPatternDefinition
-from cdm.utilities import CopyOptions, ResolveOptions, time_utils, copy_data_utils
+from cdm.utilities import logger
+from cdm.persistence.syms.models import FormatType
 
 from . import utils
-from cdm.persistence.syms.models import ColumnRelationshipInformation, DataColumn, DataSource, DatabaseEntity, \
-    DatabaseProperties, FormatInfo, Namespace, PartitionInfo, PartitionInfoNamespace, PartitionInfoProperties, \
-    RelationshipEntity, RelationshipProperties, ScalarTypeInfo, SchemaEntity, StorageDescriptor, TableEntity, \
-    TableNamespace, TablePartitioning, TableProperties, TypeInfo
+from cdm.persistence.syms.models import StorageDescriptor
+
+_TAG = 'DataPartitionPatternPersistence'
 
 class DataPartitionPatternPersistence:
     @staticmethod
-    def from_data(ctx: CdmCorpusContext, data, name: str, syms_root_path: str) -> CdmDataPartitionPatternDefinition:
+    def from_data(ctx: CdmCorpusContext, data, name: str, syms_root_path: str, format_type: FormatType) -> CdmDataPartitionPatternDefinition:
         data_partition_pattern = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, name)
         if isinstance(data, StorageDescriptor):
             sd = data
@@ -23,19 +23,31 @@ class DataPartitionPatternPersistence:
             syms_path = utils.create_syms_absolute_path(syms_root_path, sd.source.location)
             data_partition_pattern.root_location = utils.syms_path_to_corpus_path(syms_path, ctx.corpus.storage)
 
-            data_partition_pattern.glob_pattern = "/**/*.csv"
-            data_partition_pattern.exhibits_traits.append(utils.create_csv_trait(sd.format.properties, ctx))
+            if format_type == FormatType.csv:
+                data_partition_pattern.glob_pattern = '/**/*.csv'
+            elif format_type == FormatType.parquet:
+                data_partition_pattern.glob_pattern = '/**/*.parquet'
+            else:
+                logger.error(ctx, _TAG, DataPartitionPatternPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_TABLE_FORMAT)
+                return None
+
+            trait = utils.create_partition_trait(sd.format.properties, ctx, format_type)
+            if trait is not None:
+                data_partition_pattern.exhibits_traits.append(trait)
+            else:
+                logger.error(ctx, _TAG, DataPartitionPatternPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_TABLE_FORMAT)
+                return None
 
             if properties is not None:
-                if "cdm:name"in properties:
-                    data_partition_pattern.Name = data.properties["cdm:name"]
-                if "cdm:lastFileStatusCheckTime"in properties:
-                    data_partition_pattern.LastFileStatusCheckTime = dateutil.parser.parse(data.properties["cdm:lastFileStatusCheckTime"].ToString())
-                if "cdm:lastFileModifiedTime"in properties:
-                    data_partition_pattern.LastFileModifiedTime = dateutil.parser.parse(data.properties["cdm:lastFileModifiedTime"].ToString())
-                if "cdm:traits"in properties:
+                if 'cdm:name' in properties:
+                    data_partition_pattern.Name = data.properties['cdm:name']
+                if 'cdm:lastFileStatusCheckTime' in properties:
+                    data_partition_pattern.LastFileStatusCheckTime = dateutil.parser.parse(data.properties['cdm:lastFileStatusCheckTime'].ToString())
+                if 'cdm:lastFileModifiedTime' in properties:
+                    data_partition_pattern.LastFileModifiedTime = dateutil.parser.parse(data.properties['cdm:lastFileModifiedTime'].ToString())
+                if 'cdm:traits' in properties:
                     utils.add_list_to_cdm_collection(data_partition_pattern.exhibits_traits,
-                                                     utils.create_trait_reference_array(ctx, data.properties["cdm:traits"]))
+                                                     utils.create_trait_reference_array(ctx, data.properties['cdm:traits']))
         else:
             data_partition_pattern.name = data.name
             data_partition_pattern.root_location = data.rootLocation

@@ -34,7 +34,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   private boolean needsIndexing;
   private CdmDefinitionCollection definitions;
   private CdmImportCollection imports;
-  private CdmFolderDefinition folder;
   private String folderPath;
   private String namespace;
   private boolean importsIndexed;
@@ -173,7 +172,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    */
   @Deprecated
   public CdmFolderDefinition getFolder() {
-    return this.folder;
+    return (CdmFolderDefinition) this.getOwner();
   }
 
   /**
@@ -183,7 +182,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    */
   @Deprecated
   public void setFolder(final CdmFolderDefinition folder) {
-    this.folder = folder;
+    this.setOwner(folder);
   }
 
   public CdmImportCollection getImports() {
@@ -423,12 +422,12 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    */
   @Deprecated
   public CompletableFuture<Boolean> indexIfNeededAsync(final ResolveOptions resOpt, final boolean finalLoadImports) {
-    if (this.getFolder() == null) {
+    if (this.getOwner() == null) {
       Logger.error(this.getCtx(), TAG, "indexIfNeededAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnMissingDoc, this.name);
       return CompletableFuture.completedFuture(false);
     }
 
-    final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
+    final CdmCorpusDefinition corpus = ((CdmFolderDefinition) this.getOwner()).getCorpus();
     boolean needsIndexing = corpus.documentLibrary.markDocumentForIndexing(this);
 
     if (!needsIndexing) {
@@ -574,10 +573,10 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   @Override
   public String getAtCorpusPath() {
-    if (this.folder == null) {
+    if (this.getOwner() == null) {
       return "NULL:/" + this.name;
     } else {
-      return this.folder.getAtCorpusPath() + this.name;
+      return this.getOwner().getAtCorpusPath() + this.name;
     }
   }
 

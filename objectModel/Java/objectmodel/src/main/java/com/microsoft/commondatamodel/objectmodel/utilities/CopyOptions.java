@@ -11,6 +11,7 @@ public class CopyOptions {
    */
   private Boolean isStringRefs;
   private Boolean isRemoveSingleRowLocalizedTableTraits;
+  private Boolean saveConfigFile;
 
   /**
    * A value that helps us to figure out is the document that is using this object top level.
@@ -20,6 +21,7 @@ public class CopyOptions {
   public CopyOptions() {
     this.isTopLevelDocument = true;
     this.isStringRefs = false;
+    this.saveConfigFile = null;
   }
 
   public Boolean getIsStringRefs() {
@@ -36,6 +38,21 @@ public class CopyOptions {
 
   public void setIsRemoveSingleRowLocalizedTableTraits(final Boolean isRemoveSingleRowLocalizedTableTraits) {
     this.isRemoveSingleRowLocalizedTableTraits = isRemoveSingleRowLocalizedTableTraits;
+  }
+
+  /**
+   * Determines if the config.json file should be saved when calling SaveAsAsync.
+   */
+  public Boolean getSaveConfigFile() {
+    return this.saveConfigFile;
+  }
+
+  /**
+   * Determines if the config.json file should be saved when calling SaveAsAsync.
+   * @param saveConfigFile
+   */
+  public void setSaveConfigFile(Boolean saveConfigFile) {
+    this.saveConfigFile = saveConfigFile;
   }
 
   /**
