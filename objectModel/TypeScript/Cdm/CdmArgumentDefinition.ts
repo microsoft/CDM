@@ -89,7 +89,7 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            if (!this.value) {
+            if (this.value === null || this.value === undefined || this.value = NaN) {
                 let missingFields: string[] = ['value'];
                 Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
