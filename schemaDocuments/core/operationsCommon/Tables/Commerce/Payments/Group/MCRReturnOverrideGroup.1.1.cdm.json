@@ -1,0 +1,110 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Group/MCRPriceOverrideMarkUpGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRReturnOverrideGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRAllowAlternatePayment",
+          "dataType": "MCRAllowAlternatePayment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRMaxCostAdjustment",
+          "dataType": "MCRMaxCostAdjustment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRMaxCreditAdjustment",
+          "dataType": "MCRMaxCreditAdjustment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceOverrideRefRecID",
+          "dataType": "MCRPriceOverrideMakUpGroupRefRecId",
+          "displayName": "Price override RefRecId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MCRPriceOverrideMarkUpGroup"
+          },
+          "name": "Relationship_MCRPriceOverrideMarkUpGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Return override permissions"
+    },
+    {
+      "dataTypeName": "MCRAllowAlternatePayment",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRMaxCostAdjustment",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRMaxCreditAdjustment",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRPriceOverrideMakUpGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

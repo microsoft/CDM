@@ -1,0 +1,112 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetPlanLayout.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanElementDefinition.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanLayoutElement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Layout",
+          "dataType": "BudgetPlanLayoutRecId",
+          "displayName": "Layout",
+          "description": ""
+        },
+        {
+          "name": "ElementDefinition",
+          "dataType": "BudgetPlanElementDefinitionRecId",
+          "displayName": "Element",
+          "description": ""
+        },
+        {
+          "name": "IsEditable",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Editable",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "dataType": "BudgetPlanLayoutElementOrdinal",
+          "description": ""
+        },
+        {
+          "name": "InWorksheet",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Available in worksheet",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanLayout"
+          },
+          "name": "Relationship_LayoutRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanElementDefinition"
+          },
+          "name": "Relationship_ElementDefinitionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Layout elements"
+    },
+    {
+      "dataTypeName": "BudgetPlanLayoutRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanElementDefinitionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BudgetPlanLayoutElementOrdinal",
+      "extendsDataType": "integer"
+    }
+  ]
+}

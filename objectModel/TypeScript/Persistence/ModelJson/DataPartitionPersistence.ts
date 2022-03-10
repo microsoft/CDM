@@ -110,7 +110,7 @@ export class DataPartitionPersistence {
             Logger.warning(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.WarnPersistPartitionLocMissing, result.name);
         }
 
-        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (isHiddenTrait) {
             result.isHidden = true;

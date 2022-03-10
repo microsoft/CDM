@@ -103,6 +103,10 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
             return false;
         }
 
+        if (this.mergeInto !== undefined && this.mergeInto.visit(`${path}/mergeInto/`, preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren && postChildren(this, path)) {
             return true;
         }

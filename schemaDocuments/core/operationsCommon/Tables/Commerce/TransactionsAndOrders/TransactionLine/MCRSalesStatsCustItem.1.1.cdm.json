@@ -1,0 +1,296 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResConfiguration.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResColor.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResSize.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/TransactionHeader/MCRSalesStatsCustTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRSalesStatsCustItem",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AvgInvoicedQty",
+          "dataType": "QtyAverage",
+          "isNullable": true,
+          "displayName": "Average invoiced qty.",
+          "description": ""
+        },
+        {
+          "name": "AvgOrderedQty",
+          "dataType": "QtyAverage",
+          "isNullable": true,
+          "displayName": "Average order qty.",
+          "description": ""
+        },
+        {
+          "name": "ConfigId",
+          "dataType": "EcoResConfigurationName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "InventColorId",
+          "dataType": "EcoResColorName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventVersionId",
+          "dataType": "EcoResVersionName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSizeId",
+          "dataType": "EcoResSizeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "MaxOrderedQty",
+          "dataType": "QtyHighest",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinOrderedQty",
+          "dataType": "QtyLowest",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderFrequency",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Order frequency",
+          "description": ""
+        },
+        {
+          "name": "OrderModeFrequency",
+          "dataType": "MCRSalesQtyModeFrequency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderQtyMode",
+          "dataType": "MCROrderQtyMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductTotalInvoiceAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Product total invoiced",
+          "description": ""
+        },
+        {
+          "name": "TotalInvoicedQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Total invoiced qty.",
+          "description": ""
+        },
+        {
+          "name": "TotalOrderedQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Total order qty.",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResConfiguration"
+          },
+          "name": "Relationship_ConfigIDRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResColor"
+          },
+          "name": "Relationship_InventColorIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResSize"
+          },
+          "name": "Relationship_InventSizeIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRSalesStatsCustTable"
+          },
+          "name": "Relationship_MCRSalesStatsCustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales item statistics"
+    },
+    {
+      "dataTypeName": "QtyAverage",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EcoResConfigurationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResColorName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResVersionName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResSizeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "QtyHighest",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "QtyLowest",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Counter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRSalesQtyModeFrequency",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCROrderQtyMode",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -211,18 +211,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // Create an AlterTraits operation
             CdmOperationAlterTraits alterTraitsOp_1 = corpus.MakeObject<CdmOperationAlterTraits>(CdmObjectType.OperationAlterTraitsDef);
-            alterTraitsOp_1.TraitsToAdd = new List<CdmTraitReferenceBase>();
+            alterTraitsOp_1.TraitsToAdd = new CdmCollection<CdmTraitReferenceBase>(corpus.Ctx, alterTraitsOp_1, CdmObjectType.TraitRef);
             alterTraitsOp_1.TraitsToAdd.Add(corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "means.TraitG100", true));
             alterTraitsOp_1.TraitsToAdd.Add(corpus.MakeRef<CdmTraitGroupReference>(CdmObjectType.TraitGroupRef, "JobTitleBase", true));
-            alterTraitsOp_1.TraitsToRemove = new List<CdmTraitReferenceBase>();
+            alterTraitsOp_1.TraitsToRemove = new CdmCollection<CdmTraitReferenceBase>(corpus.Ctx, alterTraitsOp_1, CdmObjectType.TraitRef);
             alterTraitsOp_1.TraitsToRemove.Add(corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "means.TraitG300", true));
             projection.Operations.Add(alterTraitsOp_1);
 
             CdmOperationAlterTraits alterTraitsOp_2 = corpus.MakeObject<CdmOperationAlterTraits>(CdmObjectType.OperationAlterTraitsDef);
-            alterTraitsOp_2.TraitsToAdd = new List<CdmTraitReferenceBase>();
             var traitG4 = corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "means.TraitG4", true);
             traitG4.Arguments.Add("precision", "5");
             traitG4.Arguments.Add("scale", "15");
+            alterTraitsOp_2.TraitsToAdd = new CdmCollection<CdmTraitReferenceBase>(corpus.Ctx, alterTraitsOp_2, CdmObjectType.TraitRef);
             alterTraitsOp_2.TraitsToAdd.Add(traitG4);
             alterTraitsOp_2.ApplyTo = new List<string>() { "name" };
             projection.Operations.Add(alterTraitsOp_2);
@@ -399,7 +399,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             CdmTraitReference traitG4_2 = (CdmTraitReference)resolvedEntityWithNormalized.Attributes[2].AppliedTraits.Item("means.TraitG4");
             Assert.IsNotNull(traitG4_2);
             Assert.AreEqual("8", traitG4_2.Arguments.FetchValue("precision"));
-            Assert.IsNull(traitG4_2.Arguments.FetchValue("scale"));
+            Assert.AreEqual("", traitG4_2.Arguments.FetchValue("scale"));
         }
 
         /// <summary>

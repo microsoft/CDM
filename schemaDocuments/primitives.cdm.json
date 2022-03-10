@@ -1,5 +1,5 @@
 {
-  "documentVersion": "2.2",
+  "documentVersion": "2.3",
   "$schema": "./schema.cdm.json",
   "jsonSchemaSemanticVersion": "1.0.0",
   "imports": [
@@ -49,6 +49,16 @@
     },
     {
       "traitName": "is.dataFormat.small",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.signed",
+      "explanation": "indicates the capability to represent values less than zero.",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.unsigned",
+      "explanation": "indicates the capability to represent only values zero and greater.",
       "extendsTrait": "is.dataFormat"
     },
     {
@@ -102,7 +112,19 @@
       "explanation": "Whole numbers, assumed to correspond with a 32 bit signed int",
       "extendsDataType": "any",
       "exhibitsTraits": [
-        "is.dataFormat.integer"
+        "is.dataFormat.integer",
+        "is.dataFormat.signed",
+        "is.dataFormat.numeric"
+      ]
+    },
+    {
+      "dataTypeName": "unsignedInteger",
+      "explanation": "Assumed to correspond with a 32 bit unsigned int",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.integer",
+        "is.dataFormat.unsigned",
+        "is.dataFormat.numeric"
       ]
     },
     {
@@ -463,7 +485,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.2"
+              "value": "2.3"
             }
           ]
         }
@@ -640,9 +662,53 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.2"
+              "value": "2.3"
             }
           ]
+        }
+      ]
+    },
+    {
+      "explanation": "An entity that contains file information.",
+      "entityName": "FileInfo",
+      "hasAttributes": [
+        {
+          "dataType": "fileName",
+          "name": "fileName"
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "2.3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "has.fileList",
+      "extendsTrait": "has",
+      "explanation": "Has a list of files associated with.",
+      "hasParameters": [
+        {
+          "name": "fileList",
+          "required": true,
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "FileInfo"
+                ]
+              }
+            ]
+          },
+          "explanation": "a reference to the constant entity holding the list of files and related information."
         }
       ]
     },
@@ -725,6 +791,47 @@
           "dataType": "string"
         }
       ]
+    },
+    {
+      "traitName": "means.timestamp",
+      "extendsTrait": "means",
+      "hasParameters": [
+        {
+          "name": "units",
+          "dataType": "string",
+          "explanation": "The unit of measure used for storing the offset"
+        },
+        {
+          "name": "offsetFromDate",
+          "dataType": "dateTime",
+          "explanation": "the point in time from which the timestamp offset is calculated"
+        },
+        {
+          "name": "hasUTC",
+          "dataType": "boolean",
+          "explanation": "whether or not the current timestamp reflects UTC support or not"
+        }
+      ]
+    },
+    {
+      "traitName": "means.timestamp.parquet.milli",
+      "extendsTrait": {
+        "traitReference": "means.timestamp",
+        "arguments": [
+          {
+            "name": "units",
+            "value": "milliseconds"
+          },
+          {
+            "name": "offsetFromDate",
+            "value": "January 1st 0000 00:00:00.0000"
+          },
+          {
+            "name": "hasUTC",
+            "value": "true"
+          }
+        ]
+      }
     }
   ]
 }

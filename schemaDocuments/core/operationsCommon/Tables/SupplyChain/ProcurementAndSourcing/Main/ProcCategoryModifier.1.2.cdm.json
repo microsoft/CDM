@@ -1,0 +1,99 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProcCategoryModifier",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Category",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "IsCriterionGroupInherited",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inherit criteria group",
+          "description": ""
+        },
+        {
+          "name": "IsProductAttributesInherited",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inherit product attributes",
+          "description": ""
+        },
+        {
+          "name": "IsQuestionnairiesInherited",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inherit questionnaires",
+          "description": ""
+        },
+        {
+          "name": "IsVendorsInherited",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inherit vendors from parent category:",
+          "description": ""
+        },
+        {
+          "name": "IsReturnPolicyInherited",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inherit return location from parent category",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Procurement category modifier"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

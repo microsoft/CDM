@@ -21,8 +21,5 @@ class CdmObjectSimple(CdmObject):
         """Returns the resolved object reference."""
         return None
 
-    def fetch_object_definition_name(self) -> Optional[str]:
-        return None
-
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         return False

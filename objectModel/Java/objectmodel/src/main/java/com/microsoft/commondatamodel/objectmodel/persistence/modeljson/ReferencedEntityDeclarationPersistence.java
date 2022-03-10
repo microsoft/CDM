@@ -87,19 +87,20 @@ public class ReferencedEntityDeclarationPersistence {
     referenceEntity.setLastFileModifiedTime(instance.getLastFileModifiedTime());
     referenceEntity.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
 
-    Utils.processTraitsAndAnnotationsToData(instance.getCtx(), referenceEntity, instance.getExhibitsTraits());
-    final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
+    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), referenceEntity, instance.getExhibitsTraits()).thenCompose(v -> {
+      final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
-    final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
-    if (isHiddenTrait != null) {
-      referenceEntity.setHidden(true);
-    }
+      final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
+      if (isHiddenTrait != null) {
+        referenceEntity.setHidden(true);
+      }
 
-    final CdmTraitReference propertiesTrait = t2pm.fetchTraitReference("is.propertyContent.multiTrait");
-    if (propertiesTrait != null) {
-      referenceEntity.setModelId(propertiesTrait.getArguments().get(0).getValue().toString());
-    }
+      final CdmTraitReference propertiesTrait = t2pm.fetchTraitReference("is.propertyContent.multiTrait");
+      if (propertiesTrait != null) {
+        referenceEntity.setModelId(propertiesTrait.getArguments().get(0).getValue().toString());
+      }
 
-    return CompletableFuture.completedFuture(referenceEntity);
+      return CompletableFuture.completedFuture(referenceEntity);
+    });
   }
 }

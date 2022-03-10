@@ -86,6 +86,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren?.Invoke(this, path) == true)
                 return false;
 
+            if (this.SupportingAttribute != null && this.SupportingAttribute.Visit($"{path}/supportingAttribute/", preChildren, postChildren))
+                return true;
+
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
 

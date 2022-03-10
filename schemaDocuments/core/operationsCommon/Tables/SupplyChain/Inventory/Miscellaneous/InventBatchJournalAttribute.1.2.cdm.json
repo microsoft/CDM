@@ -1,0 +1,98 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventBatchJournal.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventBatchJournalAttribute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AttributeId",
+          "dataType": "InventBatchJournalAttributeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AttributePage",
+          "dataType": "InventBatchJournalAttributePage",
+          "description": ""
+        },
+        {
+          "name": "InventBatchJournal",
+          "dataType": "InventBatchJournalRecId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventBatchJournal"
+          },
+          "name": "Relationship_InventBatchJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Inventory batch merge selected batch attributes"
+    },
+    {
+      "dataTypeName": "InventBatchJournalAttributeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventBatchJournalAttributePage",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventBatchJournalRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

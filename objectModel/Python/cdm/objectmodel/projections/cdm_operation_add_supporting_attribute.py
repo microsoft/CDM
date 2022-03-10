@@ -62,6 +62,9 @@ class CdmOperationAddSupportingAttribute(CdmOperationBase):
         if pre_children and pre_children(self, path):
             return False
 
+        if self.supporting_attribute and self.supporting_attribute.visit('{}/supportingAttribute/'.format(path), pre_children, post_children):
+            return True
+
         if post_children and post_children(self, path):
             return True
 

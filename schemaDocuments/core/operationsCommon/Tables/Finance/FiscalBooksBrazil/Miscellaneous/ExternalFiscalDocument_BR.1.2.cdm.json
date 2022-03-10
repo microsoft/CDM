@@ -1,0 +1,147 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ExternalFiscalDocument_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Direction",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentAccessKey",
+          "dataType": "EFDocAccessKey_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentAccountNum",
+          "dataType": "FiscalDocumentAccountNumber_BR",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentAccountType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentIssuer",
+          "dataType": "integer",
+          "displayName": "Issuer",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentNumber",
+          "dataType": "FiscalDocumentNumber_BR",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentSeries",
+          "dataType": "FiscalDocumentSeries_BR",
+          "description": ""
+        },
+        {
+          "name": "IssueDate",
+          "dataType": "FiscalDocumentDate_BR",
+          "description": ""
+        },
+        {
+          "name": "Model",
+          "dataType": "TaxFiscalDocuModel_BR",
+          "description": ""
+        },
+        {
+          "name": "RetailFiscalPrinterSerialNumber",
+          "dataType": "RetailFiscalPrinterSerialNumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailTerminalNumber",
+          "dataType": "RetailTerminalNumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "External invoice information"
+    },
+    {
+      "dataTypeName": "EFDocAccessKey_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentAccountNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentSeries_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentDate_BR",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxFiscalDocuModel_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFiscalPrinterSerialNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalNumber_BR",
+      "extendsDataType": "integer"
+    }
+  ]
+}

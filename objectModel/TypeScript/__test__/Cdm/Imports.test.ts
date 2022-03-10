@@ -4,9 +4,12 @@
 import {
     CdmCorpusDefinition,
     CdmDocumentDefinition,
+    CdmManifestDefinition,
     resolveOptions,
     importsLoadStrategy,
-    cdmLogCode
+    cdmLogCode,
+    copyOptions,
+    cdmRelationshipDiscoveryStyle
 } from '../../internal';
 import { LocalAdapter } from '../../Storage';
 import { testHelper } from '../testHelper';
@@ -234,5 +237,35 @@ describe('Cdm/ImportsTest', () => {
             .toEqual(1);
         expect(document.importPriorities.importPriority.size)
             .toEqual(2);
+    });
+
+    /**
+     * Testing that import for elevated purpose traits for relationships are added.
+     */
+    it('TestImportsForRelElevatedPurposeTraits', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestImportsForRelElevatedPurposeTraits');
+        var rootManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+        var subManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>(rootManifest.subManifests.allItems[0].definition);
+
+        await corpus.calculateEntityGraphAsync(rootManifest);
+        await rootManifest.populateManifestRelationshipsAsync(cdmRelationshipDiscoveryStyle.exclusive);
+
+        // Assert having relative path
+        expect(rootManifest.imports.allItems[0].corpusPath)
+            .toEqual('specialized/Gold.cdm.json');
+        expect(subManifest.imports.allItems[0].corpusPath)
+            .toEqual('/Lead.cdm.json');
+
+        corpus.storage.fetchRootFolder('output').documents.push(rootManifest);
+        corpus.storage.fetchRootFolder('output').documents.push(subManifest);
+        var co = new copyOptions();
+        co.saveConfigFile = false;
+        await rootManifest.saveAsAsync('output:/default.manifest.cdm.json', false, co);
+        await subManifest.saveAsAsync('output:/default-submanifest.manifest.cdm.json', false, co);
+
+        // Compare the result.
+        testHelper.assertFolderFilesEquality(
+            testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestImportsForRelElevatedPurposeTraits'),
+            testHelper.getActualOutputFolderPath(testsSubpath, 'TestImportsForRelElevatedPurposeTraits'));
     });
 });

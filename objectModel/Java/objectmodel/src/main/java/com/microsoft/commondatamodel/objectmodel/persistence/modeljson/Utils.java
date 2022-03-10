@@ -40,6 +40,14 @@ public class Utils {
     }
   };
 
+  private static final Map<String, String> traitToAnnotationMap = new LinkedHashMap<String, String>() {
+    private static final long serialVersionUID = 1863481726936L;
+
+    {
+      put("is.CDM.entityVersion", "version");
+    }
+  };
+
   public static final Set<String> ignoredTraits = new LinkedHashSet<String>() {
     private static final long serialVersionUID = 1987129612639L;
 
@@ -117,71 +125,70 @@ public class Utils {
     });
   }
 
-  static void processTraitsAndAnnotationsToData(
+  public static CompletableFuture<Void> processTraitsAndAnnotationsToData(
       final CdmCorpusContext ctx,
       final MetadataObject obj,
       final CdmTraitCollection traits) {
-        if (traits == null) {
-          return;
-        }
-  
-        final List<Annotation> annotations = new ArrayList<>();
-        final List<JsonNode> extensions = new ArrayList<>();
-  
-        for (final CdmTraitReferenceBase trait : traits) {
-          if (ExtensionHelper.traitRefIsExtension(trait)) {
-            // Safe to cast since extensions can only be trait refs, not trait group refs
-            ExtensionHelper.processExtensionTraitToObject((CdmTraitReference) trait, obj);
-            continue;
+    return CompletableFuture.runAsync(() -> {
+      if (traits == null) {
+        return;
+      }
+
+      final List<Annotation> annotations = new ArrayList<>();
+      final List<JsonNode> extensions = new ArrayList<>();
+
+      for (final CdmTraitReferenceBase trait : traits) {
+        if (ExtensionHelper.traitRefIsExtension(trait)) {
+          // Safe to cast since extensions can only be trait refs, not trait group refs
+          ExtensionHelper.processExtensionTraitToObject((CdmTraitReference) trait, obj);
+        } else if ("is.modelConversion.otherAnnotations".equals(trait.getNamedReference())) {
+          // Safe to cast since "is.modelConversion.otherAnnotations" is a trait, not trait group
+          final Object traitArgument = ((CdmTraitReference) trait).getArguments().get(0).getValue();
+          Iterable<?> traitArguments = new ArrayList<>();
+          if (traitArgument instanceof List<?>) {
+            traitArguments = (ArrayList<?>) traitArgument;
+          } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
+            traitArguments = (JsonNode) traitArgument;
+          } else {
+            Logger.warning(ctx, TAG, "processTraitsAndAnnotationsToData", null, CdmLogCode.WarnAnnotationTypeNotSupported);
           }
-  
-          if ("is.modelConversion.otherAnnotations".equals(trait.getNamedReference())) {
-            // Safe to cast since "is.modelConversion.otherAnnotations" is a trait, not trait group
-            final Object traitArgument = ((CdmTraitReference)trait).getArguments().get(0).getValue();
-            Iterable<?> traitArguments = new ArrayList<>();
-            if (traitArgument instanceof List<?>) {
-              traitArguments = (ArrayList<?>) traitArgument;
-            } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
-              traitArguments =  (JsonNode) traitArgument;
+          for (final Object annotation : traitArguments) {
+            if (annotation instanceof JsonNode) {
+              final JsonNode jAnnotation = (JsonNode) annotation;
+              annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
+            } else if (annotation instanceof NameValuePair) {
+              Annotation element = new Annotation();
+              element.setName(((NameValuePair) annotation).getName());
+              element.setValue(((NameValuePair) annotation).getValue());
+              annotations.add(element);
             } else {
               Logger.warning(ctx, TAG, "processTraitsAndAnnotationsToData", null, CdmLogCode.WarnAnnotationTypeNotSupported);
             }
-            for (final Object annotation : traitArguments) {
-              if (annotation instanceof JsonNode) {
-                final JsonNode jAnnotation = (JsonNode) annotation;
-                annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
-              } else if (annotation instanceof NameValuePair) {
-                Annotation element = new Annotation();
-                element.setName(((NameValuePair)annotation).getName());
-                element.setValue(((NameValuePair)annotation).getValue());
-                annotations.add(element);
-              } else {
-                Logger.warning(ctx, TAG, "processTraitsAndAnnotationsToData", null, CdmLogCode.WarnAnnotationTypeNotSupported);
-              }
-            }
-          } else if (!ignoredTraits.contains(trait.getNamedReference())
-                  && !trait.getNamedReference().startsWith("is.dataFormat")
-                  && !(modelJsonPropertyTraits.contains(trait.getNamedReference())
-                  && trait instanceof CdmTraitReference && ((CdmTraitReference)trait).isFromProperty())
-          ) {
-            final Object extension = trait instanceof CdmTraitGroupReference ?
-                    TraitGroupReferencePersistence.toData((CdmTraitGroupReference) trait, null, null)
-                    : TraitReferencePersistence.toData((CdmTraitReference) trait, null, null);
-            extensions.add(JMapper.MAP.valueToTree(extension));
           }
+        } else if (trait instanceof CdmTraitReference && traitToAnnotationMap.containsKey(trait.getNamedReference())) {
+          Annotation element = ArgumentPersistence.toData(((CdmTraitReference) trait).getArguments().get(0), null, null).join();
+          element.setName(convertTraitToAnnotation(trait.getNamedReference()));
+          annotations.add(element);
+        } else if (!ignoredTraits.contains(trait.getNamedReference())
+                && !trait.getNamedReference().startsWith("is.dataFormat")
+                && !(modelJsonPropertyTraits.contains(trait.getNamedReference())
+                && trait instanceof CdmTraitReference && ((CdmTraitReference) trait).isFromProperty())
+        ) {
+          final Object extension = trait instanceof CdmTraitGroupReference ?
+                  TraitGroupReferencePersistence.toData((CdmTraitGroupReference) trait, null, null)
+                  : TraitReferencePersistence.toData((CdmTraitReference) trait, null, null);
+          extensions.add(JMapper.MAP.valueToTree(extension));
         }
-  
-        if (!annotations.isEmpty()) {
-          obj.setAnnotations(annotations);
-        }
-  
-        if (!extensions.isEmpty()) {
-          obj.setTraits(extensions);
-        }
-  }
+      }
 
-  private static String traitToAnnotationName(final String traitName) {
-    return "is.CDM.entityVersion".equals(traitName) ? "version" : null;
+      if (!annotations.isEmpty()) {
+        obj.setAnnotations(annotations);
+      }
+
+      if (!extensions.isEmpty()) {
+        obj.setTraits(extensions);
+      }
+    });
   }
 
   static CdmTraitReference createCsvTrait(final CsvFormatSettings obj, final CdmCorpusContext ctx) {
@@ -261,6 +268,9 @@ public class Utils {
     return annotationToTraitMap.get(name);
   }
 
+  private static String convertTraitToAnnotation(final String name) {
+    return traitToAnnotationMap.get(name);
+  }
 
   
   /** 

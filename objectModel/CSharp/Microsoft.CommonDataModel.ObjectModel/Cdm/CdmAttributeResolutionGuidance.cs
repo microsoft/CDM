@@ -522,5 +522,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return result;
         }
 
+        /// <inheritdoc />
+        public override string FetchObjectDefinitionName()
+        {
+            return null;
+        }
     }
 }

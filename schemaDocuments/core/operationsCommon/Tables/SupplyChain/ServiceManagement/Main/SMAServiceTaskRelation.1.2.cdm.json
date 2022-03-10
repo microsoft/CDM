@@ -1,0 +1,173 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/WorksheetHeader/SMAAgreementTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/WorksheetHeader/SMAServiceOrderTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "SMAServiceTask.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/WorksheetLine/SMAAgreementLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/WorksheetLine/SMAServiceOrderLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SMAServiceTaskRelation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DescriptionExternal",
+          "dataType": "SMADescription",
+          "isNullable": true,
+          "displayName": "External note",
+          "description": ""
+        },
+        {
+          "name": "DescriptionInternal",
+          "dataType": "SMADescription",
+          "isNullable": true,
+          "displayName": "Internal note",
+          "description": ""
+        },
+        {
+          "name": "RelKeyId",
+          "dataType": "SMATableKeyId",
+          "displayName": "Relation",
+          "description": ""
+        },
+        {
+          "name": "RelTableId",
+          "dataType": "RefTableId",
+          "displayName": "Relation type",
+          "description": ""
+        },
+        {
+          "name": "ServiceTaskId",
+          "dataType": "SMAServiceTaskId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SMAAgreementTable"
+          },
+          "name": "Relationship_AgreementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceOrderTable"
+          },
+          "name": "Relationship_ServiceOrderTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceTask"
+          },
+          "name": "Relationship_ServiceTaskRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAAgreementLine"
+          },
+          "name": "Relationship_SMAAgreementLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceOrderLine"
+          },
+          "name": "Relationship_SMAServiceOrderLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Service task relations"
+    },
+    {
+      "dataTypeName": "SMADescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMATableKeyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMAServiceTaskId",
+      "extendsDataType": "string"
+    }
+  ]
+}

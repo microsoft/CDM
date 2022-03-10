@@ -1,9 +1,9 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-import asyncio, sys, os
+import asyncio
 from datetime import datetime, timezone
-from typing import cast, Dict, Iterable, Optional, Union, TYPE_CHECKING
+from typing import cast, Iterable, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle, ImportsLoadStrategy
 from cdm.utilities import AttributeResolutionDirectiveSet, logger, ResolveOptions, time_utils
@@ -16,10 +16,11 @@ from .cdm_file_status import CdmFileStatus
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_referenced_entity_declaration_def import CdmReferencedEntityDeclarationDefinition
 from .cdm_trait_collection import CdmTraitCollection
+from .cdm_import import CdmImport
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmE2ERelationship, CdmEntityDefinition, CdmEntityDeclarationDefinition, \
-        CdmFolderDefinition, CdmLocalEntityDeclarationDefinition, CdmManifestDeclarationDefinition, CdmObject, CdmTraitDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, CdmEntityDefinition,\
+        CdmEntityDeclarationDefinition, CdmFolderDefinition, CdmManifestDeclarationDefinition, CdmObject
     from cdm.utilities import CopyOptions, VisitCallback
 
 
@@ -249,13 +250,13 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                         await self._reload_async()
                         self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
                         self._file_system_modified_time = self.last_file_modified_time
-                    
+
                     for entity in self.entities:
                         await entity.file_status_check_async()
 
                     for sub_manifest in self.sub_manifests:
                         await sub_manifest.file_status_check_async()
-                        
+
                 finally:
                     context.dispose()
 
@@ -288,6 +289,16 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             return bool(from_ent_in_manifest and to_ent_in_manifest)
         return True
 
+    def _add_imports_for_elevated_traits(self, rel: 'CdmE2ERelationship') -> None:
+        """
+        Adding imports for elevated purpose traits for relationships.
+        The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+        """
+        for path in rel._get_elevated_trait_corpus_paths():
+            relative_path = self.ctx.corpus.storage.create_relative_corpus_path(path, self)
+            if self.imports.item(relative_path, check_moniker=False) is None:
+                self.imports.insert(0, CdmImport(self.ctx, relative_path, None))
+
     def _localize_rel_to_manifest(self, rel: 'CdmE2ERelationship') -> 'CdmE2ERelationship':
         rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, rel.name)  # type: CdmE2ERelationship
         rel_copy.to_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.to_entity, self)
@@ -317,6 +328,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                         cache_key = rel.create_cache_key()
                         if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
                             self.relationships.append(self._localize_rel_to_manifest(rel))
+                            self._add_imports_for_elevated_traits(rel)
                             rel_cache.add(cache_key)
 
                 incoming_rels = self.ctx.corpus.fetch_incoming_relationships(curr_entity)  # type: List[CdmE2ERelationship]
@@ -342,6 +354,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                         cache_key = in_rel.create_cache_key()
                         if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
                             self.relationships.append(self._localize_rel_to_manifest(in_rel))
+                            self._add_imports_for_elevated_traits(in_rel)
                             rel_cache.add(cache_key)
 
                         # if A points at B, A's base classes must point at B as well
@@ -359,6 +372,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                                     base_rel_cache_key = new_rel.create_cache_key()
                                     if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
                                         self.relationships.append(self._localize_rel_to_manifest(new_rel))
+                                        self._add_imports_for_elevated_traits(new_rel)
                                         rel_cache.add(base_rel_cache_key)
             if self.sub_manifests:
                 for sub_manifest_def in self.sub_manifests:
@@ -464,7 +478,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             doc = await self._fetch_document_definition(link)
             if not doc:
                 return False
-            
+
             docs.append(doc)
 
         tasks = list()
@@ -487,6 +501,9 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         if pre_children and pre_children(self, path_from):
             return False
+
+        if self.imports and self.imports._visit_array(path_from, pre_children, post_children):
+            return True
 
         if self.definitions and self.definitions._visit_array(path_from, pre_children, post_children):
             return True

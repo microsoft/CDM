@@ -146,15 +146,18 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
     if (this.getValue() != null) {
       if (this.getValue() instanceof CdmObject) {
         copy.setValue(((CdmObject) this.getValue()).copy(resOpt));
-      } else if (this.getValue() instanceof String){
-        copy.setValue(this.getValue());
       } else {
-        throw new RuntimeException("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
+        copy.setValue(this.getValue());
       }
     }
     copy.setResolvedParameter(this.resolvedParameter);
     copy.setExplanation(this.getExplanation());
     return copy;
+  }
+
+  @Override
+  public String fetchObjectDefinitionName() {
+    return this.name;
   }
 
   @Override

@@ -75,6 +75,11 @@ public class CdmImport extends CdmObjectSimple {
   }
 
   @Override
+  public String fetchObjectDefinitionName() {
+    return null;
+  }
+
+  @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.corpusPath)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("corpusPath"));

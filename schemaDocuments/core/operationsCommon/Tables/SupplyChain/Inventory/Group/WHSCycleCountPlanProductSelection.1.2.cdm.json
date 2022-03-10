@@ -1,0 +1,124 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSCycleCountPlan.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSCycleCountPlanProductSelection",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CycleCountPlanId",
+          "dataType": "WHSCycleCountPlanId",
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "WHSCycleCountPlanProductSelectionSequenceNumber",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "WHSCycleCountPlanProductSelectionDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductSelectionMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemQuery",
+          "dataType": "WHSItemQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductVariantQuery",
+          "dataType": "WHSProductVariantQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSCycleCountPlan"
+          },
+          "name": "Relationship_WHSCycleCountPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cycle count plan product selections"
+    },
+    {
+      "dataTypeName": "WHSCycleCountPlanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSCycleCountPlanProductSelectionSequenceNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSCycleCountPlanProductSelectionDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSItemQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSProductVariantQuery",
+      "extendsDataType": "binary"
+    }
+  ]
+}

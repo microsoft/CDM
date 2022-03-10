@@ -22,12 +22,11 @@ import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
+import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Annotation;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Model;
-import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
-import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.Assert;
@@ -315,6 +314,21 @@ public class ModelJsonTest extends ModelJsonTestBase {
     Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).join();
 
     Assert.assertEquals(obtainedModelJson.getEntities().get(0).getDescription(), "test description");
+  }
+
+  /**
+   * Tests that traits that convert into annotations are properly converted on load and save
+   */
+  @Test
+  public void testLoadingAndSavingCdmTraits() throws InterruptedException {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingAndSavingCdmTraits");
+    final CdmManifestDefinition manifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("model.json").join();
+    final CdmEntityDefinition entity = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("someEntity.cdm.json/someEntity").join();
+    Assert.assertNotNull(entity.getExhibitsTraits().item("is.CDM.entityVersion"));
+
+    Model manifestData = ManifestPersistence.toData(manifest, new ResolveOptions(manifest.getInDocument()), new CopyOptions()).join();
+    final Annotation versionAnnotation = manifestData.getEntities().get(0).getAnnotations().get(0);
+    Assert.assertEquals("<version>", versionAnnotation.getValue());
   }
 
   /**

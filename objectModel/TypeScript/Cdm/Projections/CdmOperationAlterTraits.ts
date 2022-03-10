@@ -6,9 +6,11 @@ import {
     CdmAttribute,
     CdmAttributeContext,
     cdmAttributeContextType,
+    CdmCollection,
     CdmCorpusContext,
     cdmLogCode,
     CdmObject,
+    CdmObjectBase,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
@@ -32,8 +34,8 @@ import {
 export class CdmOperationAlterTraits extends CdmOperationBase {
     private TAG: string = CdmOperationAlterTraits.name;
 
-    public traitsToAdd: CdmTraitReferenceBase[];
-    public traitsToRemove: CdmTraitReferenceBase[];
+    public traitsToAdd: CdmCollection<CdmTraitReferenceBase>;
+    public traitsToRemove: CdmCollection<CdmTraitReferenceBase>;
     public argumentsContainWildcards?: boolean;
     public applyTo: string[];
 
@@ -53,18 +55,18 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
 
         const copy: CdmOperationAlterTraits = !host ? new CdmOperationAlterTraits(this.ctx) : host as CdmOperationAlterTraits;
 
-        const traitsToAdd: CdmTraitReferenceBase[] = [];
-        if (this.traitsToAdd != undefined) {
-            this.traitsToAdd.forEach(trait => traitsToAdd.push(trait.copy(resOpt) as CdmTraitReferenceBase));
+        if (this.traitsToAdd && this.traitsToAdd.length > 0) {
+            for (const trait of this.traitsToAdd) {
+                copy.traitsToAdd.push(trait.copy() as CdmTraitReferenceBase);
+            }
         }
 
-        const traitsToRemove: CdmTraitReferenceBase[] = [];
-        if (this.traitsToRemove !== undefined) {
-            this.traitsToRemove.forEach(trait => traitsToRemove.push(trait.copy(resOpt) as CdmTraitReferenceBase));
+        if (this.traitsToRemove && this.traitsToRemove.length > 0) {
+            for (const trait of this.traitsToRemove) {
+                copy.traitsToRemove.push(trait.copy() as CdmTraitReferenceBase);
+            }
         }
-        
-        copy.traitsToAdd = traitsToAdd;
-        copy.traitsToRemove = traitsToRemove;
+
         copy.applyTo = this.applyTo ? this.applyTo.slice() : undefined;
         copy.argumentsContainWildcards = this.argumentsContainWildcards;
 
@@ -113,6 +115,14 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
 
         if (preChildren && preChildren(this, path)) {
             return false;
+        }
+
+        if (this.traitsToAdd !== undefined && CdmObjectBase.visitArray(this.traitsToAdd, `${path}/traitsToAdd/`, preChildren, postChildren)) {
+            return true;
+        }
+
+        if (this.traitsToRemove !== undefined && CdmObjectBase.visitArray(this.traitsToRemove, `${path}/traitsToRemove/`, preChildren, postChildren)) {
+            return true;
         }
 
         if (postChildren && postChildren(this, path)) {
@@ -233,10 +243,10 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
     private removeTraitsInNewAttribute(resOpt: resolveOptions, newResAttr: ResolvedAttribute): void {
         const traitNamesToRemove:Set<string> = new Set()
         if (this.traitsToRemove !== undefined) {
-            this.traitsToRemove.forEach(traitRef => {
+            for (const traitRef of this.traitsToRemove) {
                 const resolvedTraitSet = traitRef.fetchResolvedTraits(resOpt).deepCopy();
                 resolvedTraitSet.set.forEach(rt => traitNamesToRemove.add(rt.traitName));
-            } )
+            }
             traitNamesToRemove.forEach(traitName => newResAttr.resolvedTraits.remove(resOpt, traitName));
         }
     }

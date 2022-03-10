@@ -300,21 +300,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
                 // AddCountAttribute Operation
                 CdmOperationAddCountAttribute addCountAttributeOp = new CdmOperationAddCountAttribute(corpus.Ctx)
                 {
-                    CountAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef)
+                    CountAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "countAtt")
                 };
                 projection.Operations.Add(addCountAttributeOp);
 
                 // AddSupportingAttribute Operation
                 CdmOperationAddSupportingAttribute addSupportingAttributesOp = new CdmOperationAddSupportingAttribute(corpus.Ctx)
                 {
-                    SupportingAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef)
+                    SupportingAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "supportingAtt")
                 };
                 projection.Operations.Add(addSupportingAttributesOp);
 
                 // AddTypeAttribute Operation
                 CdmOperationAddTypeAttribute addTypeAttributeOp = new CdmOperationAddTypeAttribute(corpus.Ctx)
                 {
-                    TypeAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef)
+                    TypeAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "typeAtt")
                 };
                 projection.Operations.Add(addTypeAttributeOp);
 
@@ -338,7 +338,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
                 CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(corpus.Ctx)
                 {
                     Select = new List<string>(),
-                    MergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef)
+                    MergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "combineAtt")
                 };
                 combineAttributesOp.Select.Add("testAttribute1");
                 projection.Operations.Add(combineAttributesOp);

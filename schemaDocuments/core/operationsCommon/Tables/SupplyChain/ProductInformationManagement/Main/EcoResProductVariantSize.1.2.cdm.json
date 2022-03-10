@@ -1,0 +1,64 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResSize.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductVariantDimensionValue.1.2.cdm.json",
+      "moniker": "base_EcoResProductVariantDimensionValue"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductVariantSize",
+      "extendsEntity": "base_EcoResProductVariantDimensionValue/EcoResProductVariantDimensionValue",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Size",
+          "dataType": "EcoResSizeRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResSize"
+          },
+          "name": "Relationship_EcoResSizeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Product variants sizes"
+    },
+    {
+      "dataTypeName": "EcoResSizeRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

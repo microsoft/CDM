@@ -386,9 +386,13 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             # make a new document in given folder if provided or the same folder as the source entity
             folder.documents.remove(file_name)
             doc_res = folder.documents.append(file_name)
-            # add a import of the source document
+            # add an import of the source document
             orig_doc = self.ctx.corpus.storage.create_relative_corpus_path(orig_doc, doc_res)  # just in case we missed the prefix
             doc_res.imports.append(orig_doc, "resolvedFrom")
+
+            if self.in_document.imports.item('cdm:/foundations.cdm.json') is not None:
+                doc_res.imports.append('cdm:/foundations.cdm.json')
+
             doc_res.document_version = self.in_document.document_version
 
             # make the empty entity

@@ -7,12 +7,14 @@ import json
 import os
 
 from cdm.enums import CdmLogCode, CdmStatusLevel, CdmObjectType, CdmDataFormat
-from cdm.objectmodel import CdmDocumentDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition, \
+from cdm.objectmodel import CdmDocumentDefinition, CdmEntityDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition, \
     CdmCorpusDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.persistence.modeljson import ManifestPersistence
 from cdm.persistence.cdmfolder import ManifestPersistence as CdmManifestPersistence
 from cdm.storage import LocalAdapter
+from cdm.utilities.copy_options import CopyOptions
+from cdm.utilities.resolve_options import ResolveOptions
 
 from tests.common import async_test, TestHelper
 
@@ -173,6 +175,18 @@ class ModelJsonTest(unittest.TestCase):
         self.assertEqual('test description', obtained_model_json.entities[0].get('description'))
 
     @async_test
+    async def test_loading_and_saving_cdm_traits(self):
+        """Tests that traits that convert into annotations are properly converted on load and save"""
+        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_loading_and_saving_cdm_traits')
+        manifest = await cdm_corpus.fetch_object_async('model.json')  # type: CdmManifestDefinition
+        entity = await cdm_corpus.fetch_object_async('someEntity.cdm.json/someEntity')  # type: CdmEntityDefinition
+        self.assertIsNotNone(entity.exhibits_traits.item('is.CDM.entityVersion'))
+
+        manifestData = await ManifestPersistence.to_data(manifest, ResolveOptions(manifest.in_document), CopyOptions())
+        versionAnnotation = manifestData.entities[0]['annotations'][0]
+        self.assertEqual('<version>', versionAnnotation.value)
+
+    @async_test
     async def test_loading_and_saving_date_and_time_data_types(self):
         """Tests that the "date" and "time" data types are correctly loaded/saved from/to a model.json."""
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_loading_and_saving_date_and_time_data_types')
@@ -225,6 +239,7 @@ class ModelJsonTest(unittest.TestCase):
         expected_output = TestHelper.get_expected_output_data(self.tests_subpath, test_name, output_file_name, is_language_specific)
         error_msg = TestHelper.compare_same_object(expected_output, actual_output)
         self.assertEqual('', error_msg, error_msg)
+
 
 if __name__ == '__main__':
     unittest.main()

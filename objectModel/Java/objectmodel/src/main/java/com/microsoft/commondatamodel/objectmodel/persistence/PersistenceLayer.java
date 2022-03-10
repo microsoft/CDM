@@ -213,7 +213,11 @@ public class PersistenceLayer {
                     return null;
                 }
             } catch (final Exception e) {
-                Logger.error(ctx, TAG, "loadDocumentFromPathAsync", docPath, CdmLogCode.ErrPersistDocConversionFailure,  docName, e.getLocalizedMessage());
+                String errorMsg = e.getLocalizedMessage();
+                if (e.getCause() != null) {
+                    errorMsg += " InnerException: " + e.getCause().getLocalizedMessage();
+                }
+                Logger.error(ctx, TAG, "loadDocumentFromPathAsync", docPath, CdmLogCode.ErrPersistDocConversionFailure,  docName, errorMsg);
                 return null;
             }
 

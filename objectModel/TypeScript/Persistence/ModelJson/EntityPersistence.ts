@@ -77,7 +77,7 @@ export class EntityPersistence {
             schemas: undefined,
             'cdm:imports': undefined
         };
-        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.attributes !== undefined) {
             result.attributes = [];

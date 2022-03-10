@@ -1,0 +1,264 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxBookTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxPeriodHead.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxReportTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContactPerson",
+          "dataType": "ContactPersonName_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentNum",
+          "dataType": "DocumentNum_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ElectronicCode",
+          "dataType": "ElectronicCode_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FirstNum",
+          "dataType": "Num",
+          "isNullable": true,
+          "displayName": "First number",
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "LastNum",
+          "dataType": "Num",
+          "isNullable": true,
+          "displayName": "Last number",
+          "description": ""
+        },
+        {
+          "name": "NumMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PresentationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreviousDeclaration",
+          "dataType": "PreviousDeclaration_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplacementDeclaration",
+          "dataType": "ReplacementDeclaration_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reported",
+          "dataType": "Reported_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportedBy",
+          "dataType": "ReportedBy_ES",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportedDate",
+          "dataType": "ReportedDate_ES",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBookTable",
+          "dataType": "TaxBookTableRecId",
+          "description": ""
+        },
+        {
+          "name": "TaxPeriod",
+          "dataType": "TaxPeriod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Telephone",
+          "dataType": "Telephone_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThresholdAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Minimum amount of payments in cash",
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "To date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxBookTable"
+          },
+          "name": "Relationship_TaxBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxPeriodHead"
+          },
+          "name": "Relationship_TaxPeriodHeadRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "VAT reports"
+    },
+    {
+      "dataTypeName": "ContactPersonName_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentNum_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ElectronicCode_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Num",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PreviousDeclaration_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReplacementDeclaration_ES",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Reported_ES",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReportedBy_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReportedDate_ES",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxBookTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxPeriod",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Telephone_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

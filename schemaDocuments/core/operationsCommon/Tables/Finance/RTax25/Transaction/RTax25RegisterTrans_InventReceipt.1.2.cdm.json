@@ -1,0 +1,348 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterTrans_InventReceipt",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BalanceCostAmount",
+          "dataType": "CostAmountPosted",
+          "isNullable": true,
+          "displayName": "Outgoing remainder value",
+          "description": ""
+        },
+        {
+          "name": "BalanceQty",
+          "dataType": "InventQtyOnHand",
+          "isNullable": true,
+          "displayName": "Outgoing quantity remainder",
+          "description": ""
+        },
+        {
+          "name": "BatchDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Batch receipt date",
+          "description": ""
+        },
+        {
+          "name": "batchDescription",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Batch number",
+          "description": ""
+        },
+        {
+          "name": "BlockType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line type",
+          "description": ""
+        },
+        {
+          "name": "Corrected",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected",
+          "description": ""
+        },
+        {
+          "name": "DateFinancial",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Transaction date",
+          "description": ""
+        },
+        {
+          "name": "IncomingQty",
+          "dataType": "InventQtyOnHand",
+          "isNullable": true,
+          "displayName": "Quantity incoming remainder",
+          "description": ""
+        },
+        {
+          "name": "IncomingValue",
+          "dataType": "CostAmountPosted",
+          "isNullable": true,
+          "displayName": "Value incoming remainder",
+          "description": ""
+        },
+        {
+          "name": "IssuedAmount",
+          "dataType": "CostAmountPosted",
+          "isNullable": true,
+          "displayName": "Issued value",
+          "description": ""
+        },
+        {
+          "name": "IssuedCost",
+          "dataType": "CostAmountPosted",
+          "isNullable": true,
+          "displayName": "Issue price",
+          "description": ""
+        },
+        {
+          "name": "IssuedQty",
+          "dataType": "InventQtyConsumption",
+          "isNullable": true,
+          "displayName": "Issued quantity",
+          "description": ""
+        },
+        {
+          "name": "ItemName",
+          "dataType": "ItemNameDisplay",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalTransRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "RTax25Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInput",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manual data input",
+          "description": ""
+        },
+        {
+          "name": "ObjectDesc",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Accounting object",
+          "description": ""
+        },
+        {
+          "name": "PaymDesc",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Receipt condition",
+          "description": ""
+        },
+        {
+          "name": "ProfitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfitDesc",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Expense/income type",
+          "description": ""
+        },
+        {
+          "name": "ReceivedAmount",
+          "dataType": "CostAmountPosted",
+          "isNullable": true,
+          "displayName": "Receipt value",
+          "description": ""
+        },
+        {
+          "name": "ReceivedCost",
+          "dataType": "CostAmountPosted",
+          "isNullable": true,
+          "displayName": "Receipt price",
+          "description": ""
+        },
+        {
+          "name": "ReceivedQty",
+          "dataType": "InventQtyReceived",
+          "isNullable": true,
+          "displayName": "Receipt quantity",
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDescription",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Reason of operation",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTrans"
+          },
+          "name": "Relationship_InventTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RTax25RegisterJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax register line"
+    },
+    {
+      "dataTypeName": "CostAmountPosted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyOnHand",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQtyConsumption",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemNameDisplay",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25RegisterLineNum64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "someSource"
+        },
+        {
+            "entityName": "largeProjectionEntity",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "name",
+                    "entity": {
+                        "operations": [
+                            {
+                                "$type": "addArtifactAttribute",
+                                "newAttribute": {
+                                    "attributeGroupReference": {
+                                        "attributeGroupName": "attGroup",
+                                        "members": [
+                                            {
+                                                "name": "a0",
+                                                "dataType": "string"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        "source": "someSource"
+                    }
+                }
+            ]
+        }
+    ]
+}

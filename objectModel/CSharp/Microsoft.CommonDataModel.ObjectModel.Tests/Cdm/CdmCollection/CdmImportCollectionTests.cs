@@ -66,20 +66,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
             var importList = new List<CdmImport>()
             {
                 new CdmImport(document.Ctx, "CorpusPath1", "Moniker1"),
-                new CdmImport(document.Ctx, "CorpusPath2", "Moniker2")
+                new CdmImport(document.Ctx, "CorpusPath2", "Moniker2"),
+                new CdmImport(document.Ctx, "CorpusPath3", null),
             };
             document.Imports.AddRange(importList);
 
             Assert.IsTrue(document.IsDirty);
-            Assert.AreEqual(2, document.Imports.Count);
+            Assert.AreEqual(3, document.Imports.Count);
             Assert.AreEqual(importList[0], document.Imports[0]);
             Assert.AreEqual(importList[1], document.Imports[1]);
-            Assert.AreEqual("CorpusPath1", importList[0].CorpusPath);
-            Assert.AreEqual("Moniker1", importList[0].Moniker);
-            Assert.AreEqual(document.Ctx, importList[0].Ctx);
-            Assert.AreEqual("CorpusPath2", importList[1].CorpusPath);
-            Assert.AreEqual("Moniker2", importList[1].Moniker);
-            Assert.AreEqual(document.Ctx, importList[1].Ctx);
+            Assert.AreEqual("CorpusPath1", document.Imports[0].CorpusPath);
+            Assert.AreEqual("Moniker1", document.Imports.Item("CorpusPath1", "Moniker1").Moniker);
+            Assert.AreEqual(document.Ctx, document.Imports.Item("CorpusPath1", "Moniker1").Ctx);
+            Assert.AreEqual("CorpusPath2", document.Imports[1].CorpusPath);
+            Assert.IsNull(document.Imports.Item("CorpusPath2"));
+            Assert.IsNotNull(document.Imports.Item("CorpusPath2", checkMoniker: false));
+            Assert.IsNull(document.Imports.Item("CorpusPath2", checkMoniker: true));
+            Assert.IsNotNull(document.Imports.Item("CorpusPath2", "Moniker2", true));
+            Assert.IsNotNull(document.Imports.Item("CorpusPath2", "Moniker3", false));
+            Assert.AreEqual("Moniker2", document.Imports.Item("CorpusPath2", "Moniker2").Moniker);
+            Assert.AreEqual(document.Ctx, document.Imports.Item("CorpusPath2", "Moniker2").Ctx);
+            Assert.AreEqual(importList[2], document.Imports.Item("CorpusPath3"));
         }
     }
 }

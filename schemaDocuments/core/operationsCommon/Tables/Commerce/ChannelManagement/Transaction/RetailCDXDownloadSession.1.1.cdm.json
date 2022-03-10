@@ -1,0 +1,205 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailCDXDataGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Miscellaneous/RetailConnSchedule.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailConnSchedulerJobTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCDXDownloadSession",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrentRowVersion",
+          "dataType": "RetailCDXRowVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataFileOutputPath",
+          "dataType": "RetailCDXSharePath",
+          "isNullable": true,
+          "displayName": "Download path",
+          "description": ""
+        },
+        {
+          "name": "DataGroup",
+          "dataType": "RetailCDXDataGroupRefRecId",
+          "description": ""
+        },
+        {
+          "name": "JobID",
+          "dataType": "RetailConnJobId",
+          "description": ""
+        },
+        {
+          "name": "Message",
+          "dataType": "RetailCDXMonDataSyncMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RowsAffected",
+          "dataType": "RetailCDXRowsAffected",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Schedule",
+          "dataType": "RetailCDXScheduleRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Session",
+          "dataType": "RetailCDXSessionNumber",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SyncRowVersion",
+          "dataType": "RetailCDXRowVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FileSize",
+          "dataType": "RetailCDXFileSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CheckSum",
+          "dataType": "RetailCDXCheckSum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsScheduledFullPackage",
+          "dataType": "RetailCdxIsScheduledFullPackage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCDXDataGroup"
+          },
+          "name": "Relationship_RetailCDXDataGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnSchedule"
+          },
+          "name": "Relationship_RetailConnScheduleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnSchedulerJobTable"
+          },
+          "name": "Relationship_RetailConnSchedulerJobTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Commerce Data Exchange download sessions"
+    },
+    {
+      "dataTypeName": "RetailCDXRowVersion",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXSharePath",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCDXDataGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailConnJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCDXMonDataSyncMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCDXRowsAffected",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCDXScheduleRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXSessionNumber",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXFileSize",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXCheckSum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCdxIsScheduledFullPackage",
+      "extendsDataType": "integer"
+    }
+  ]
+}

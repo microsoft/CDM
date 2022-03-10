@@ -1,0 +1,227 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjCDSEstimateHoursImport",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaskId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Task ID",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "TransTxt",
+          "isNullable": true,
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "ProjectId",
+          "dataType": "ProjId",
+          "description": ""
+        },
+        {
+          "name": "CurrencyId",
+          "dataType": "ProjSalesCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRate",
+          "dataType": "ExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlannedCostAmount",
+          "dataType": "ProjCostPriceEmpl",
+          "isNullable": true,
+          "displayName": "Planned cost amount",
+          "description": ""
+        },
+        {
+          "name": "PlannedSalesAmount",
+          "dataType": "ProjSalesPriceEmpl",
+          "isNullable": true,
+          "displayName": "Planned sales amount",
+          "description": ""
+        },
+        {
+          "name": "Duration",
+          "dataType": "ProjQtyEmpl",
+          "isNullable": true,
+          "displayName": "Duration",
+          "description": ""
+        },
+        {
+          "name": "ModelId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjEmplForecastTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "SchedFromDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EstimateHoursImportId",
+          "dataType": "guid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResourceCategoryId",
+          "dataType": "PSASchedRoleId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCategoryId",
+          "dataType": "ProjTransactionCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project integration table for estimate hours"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjCostPriceEmpl",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjSalesPriceEmpl",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjQtyEmpl",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjEmplForecastTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SchedFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSASchedRoleId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransactionCategoryId",
+      "extendsDataType": "string"
+    }
+  ]
+}

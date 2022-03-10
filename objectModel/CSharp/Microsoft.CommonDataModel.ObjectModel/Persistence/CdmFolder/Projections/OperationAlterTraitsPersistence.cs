@@ -25,8 +25,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             CdmOperationAlterTraits alterTraitsOp = OperationBasePersistence.FromData<CdmOperationAlterTraits>(ctx, CdmObjectType.OperationAlterTraitsDef, obj);
-            alterTraitsOp.TraitsToAdd = Utils.CreateTraitReferenceList(ctx, obj["traitsToAdd"]);
-            alterTraitsOp.TraitsToRemove = Utils.CreateTraitReferenceList(ctx, obj["traitsToRemove"]);
+            if (obj["traitsToAdd"] != null)
+            {
+                alterTraitsOp.TraitsToAdd = new CdmCollection<CdmTraitReferenceBase>(ctx, alterTraitsOp, CdmObjectType.TraitRef);
+                Utils.AddListToCdmCollection(alterTraitsOp.TraitsToAdd, Utils.CreateTraitReferenceList(ctx, obj["traitsToAdd"]));
+            }
+            if (obj["traitsToRemove"] != null)
+            {
+                alterTraitsOp.TraitsToRemove = new CdmCollection<CdmTraitReferenceBase>(ctx, alterTraitsOp, CdmObjectType.TraitRef);
+                Utils.AddListToCdmCollection(alterTraitsOp.TraitsToRemove, Utils.CreateTraitReferenceList(ctx, obj["traitsToRemove"]));
+            }
             alterTraitsOp.ArgumentsContainWildcards = (bool?)obj["argumentsContainWildcards"];
 
             if (obj["applyTo"] is JValue)

@@ -1526,11 +1526,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 }
 
                                 // Fetch purpose traits
-                                ResolvedTraitSet resolvedTraitSet = null;
+                                Dictionary<CdmTraitReference, string> traitRefsAndCorpusPaths = null;
                                 CdmEntityAttributeDefinition entityAtt = owner.FetchObjectDefinition<CdmObjectDefinition>(resOpt) as CdmEntityAttributeDefinition;
                                 if (entityAtt?.Purpose != null)
                                 {
-                                    resolvedTraitSet = entityAtt.Purpose.FetchResolvedTraits(resOpt);
+                                    var resolvedTraitSet = entityAtt.Purpose.FetchResolvedTraits(resOpt);
+                                    if (resolvedTraitSet != null)
+                                    {
+                                        traitRefsAndCorpusPaths = FindElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
+                                    }
                                 }
 
                                 outRels = FindOutgoingRelationshipsForProjection(
@@ -1539,7 +1543,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     resOpt,
                                     resEntity,
                                     fromAtts,
-                                    resolvedTraitSet);
+                                    traitRefsAndCorpusPaths);
 
                                 wasProjectionPolymorphic = isPolymorphicSource;
                             }
@@ -1603,19 +1607,42 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Fetch resolved traits on purpose
+        /// Fetch resolved traits on purpose from attribute context (non-projection entity attribute)
         /// </summary>
         /// <param name="resOpt"></param>
         /// <param name="attributeCtx"></param>
-        internal ResolvedTraitSet FetchPurposeResolvedTraitsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx)
+        private Dictionary<CdmTraitReference, string> FetchPurposeTraitRefsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx)
         {
             CdmObjectDefinition def = attributeCtx.Definition?.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
             if (def?.ObjectType == CdmObjectType.EntityAttributeDef && (def as CdmEntityAttributeDefinition)?.Purpose != null)
             {
-                return (def as CdmEntityAttributeDefinition).Purpose.FetchResolvedTraits(resOpt);
+                var resolvedTraitSet = (def as CdmEntityAttributeDefinition).Purpose.FetchResolvedTraits(resOpt);
+                if (resolvedTraitSet != null)
+                {
+                    return FindElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
+                }
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Find the corpus path for each elevated trait.
+        /// </summary>
+        /// <param name="resOpt"></param>
+        /// <param name="resolvedTraitSet"></param>
+        private Dictionary<CdmTraitReference, string> FindElevatedTraitRefsAndCorpusPaths(ResolveOptions resOpt, ResolvedTraitSet resolvedTraitSet)
+        {
+            var traitRefsAndCorpusPaths = new Dictionary<CdmTraitReference, string>();
+            foreach (var resolvedTrait in resolvedTraitSet.Set)
+            {
+                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOpt, resolvedTrait);
+                if (traitRef != null && !string.IsNullOrWhiteSpace(resolvedTrait.Trait.InDocument?.AtCorpusPath))
+                {
+                    traitRefsAndCorpusPaths.Add(traitRef, resolvedTrait.Trait.InDocument.AtCorpusPath);
+                }
+            }
+            return traitRefsAndCorpusPaths;
         }
 
         /// <summary>
@@ -1627,14 +1654,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="resOpt"></param>
         /// <param name="resEntity"></param>
         /// <param name="fromAtts"></param>
-        /// <param name="toAttDict"></param>
+        /// <param name="traitRefsAndCorpusPaths"></param>
         internal List<CdmE2ERelationship> FindOutgoingRelationshipsForProjection(
             List<CdmE2ERelationship> outRels,
             CdmAttributeContext child,
             ResolveOptions resOpt,
             CdmEntityDefinition resEntity,
             List<CdmAttributeReference> fromAtts = null,
-            ResolvedTraitSet resolvedTraitSet = null)
+            Dictionary<CdmTraitReference, string> traitRefsAndCorpusPaths = null)
         {
             if (fromAtts != null)
             {
@@ -1663,17 +1690,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             ToEntityAttribute = tuple.Item2
                         };
 
-                        if (resolvedTraitSet != null)
-                        {
-                            resolvedTraitSet.Set.ForEach(rt =>
-                            {
-                                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOpt, rt);
-                                if (traitRef != null)
-                                {
-                                    newE2ERel.ExhibitsTraits.Add(traitRef);
-                                }
-                            });
-                        }
+                        this.AddTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);
 
                         outRels.Add(newE2ERel);
                     }
@@ -1764,7 +1781,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                     }
 
-                    var resolvedTraitSet = FetchPurposeResolvedTraitsFromAttCtx(resOpt, attributeCtx);
+                    var traitRefsAndCorpusPaths = FetchPurposeTraitRefsFromAttCtx(resOpt, attributeCtx);
 
                     foreach (var attributeTuple in toAttList)
                     {
@@ -1775,18 +1792,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             FromEntityAttribute = fromAtt,
                             ToEntityAttribute = attributeTuple.Item2
                         };
-
-                        if (resolvedTraitSet != null)
-                        {
-                            resolvedTraitSet.Set.ForEach(rt =>
-                            {
-                                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOpt, rt);
-                                if (traitRef != null)
-                                {
-                                    newE2ERel.ExhibitsTraits.Add(traitRef);
-                                }
-                            });
-                        }
+                        
+                        this.AddTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);
 
                         if (isResolvedEntity)
                         {
@@ -1824,6 +1831,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             return outRels;
+        }
+
+        private void AddTraitRefsAndCorpusPathsToRelationship(Dictionary<CdmTraitReference, string> traitRefsAndCorpusPaths, CdmE2ERelationship cdmE2ERel)
+        {
+            if (traitRefsAndCorpusPaths != null)
+            {
+                foreach (var pair in traitRefsAndCorpusPaths)
+                {
+                    cdmE2ERel.ExhibitsTraits.Add(pair.Key);
+                    cdmE2ERel.ElevatedTraitCorpusPaths.Add(pair.Value);
+                }
+            }
         }
 
         /// <summary>

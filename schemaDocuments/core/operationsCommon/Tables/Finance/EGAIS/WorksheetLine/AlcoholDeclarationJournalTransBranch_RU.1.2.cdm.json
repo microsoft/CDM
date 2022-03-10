@@ -1,0 +1,160 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/WorksheetHeader/AlcoholDeclarationJournalTable_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "AlcoholDeclarationJournalTrans_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Group/Branches_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AlcoholDeclarationJournalTransBranch_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AlcoholDeclarationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Approved",
+          "dataType": "Approved",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Approver",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BranchId",
+          "dataType": "BranchId_RU",
+          "description": ""
+        },
+        {
+          "name": "CorrectionNum",
+          "dataType": "AlcoholDeclarationCorrectionNum_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "AlcoholDeclarationJournalId_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AlcoholDeclarationJournalTable_RU"
+          },
+          "name": "Relationship_AlcoholDeclarationJournalTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AlcoholDeclarationJournalTrans_RU"
+          },
+          "name": "Relationship_AlcoholDeclarationJournalTrans_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Branches_RU"
+          },
+          "name": "Relationship_Branches_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Alcohol declaration journal lines by separate division"
+    },
+    {
+      "dataTypeName": "Approved",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BranchId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AlcoholDeclarationCorrectionNum_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AlcoholDeclarationJournalId_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -47,7 +47,7 @@ class TypeAttributePersistence:
             result.description = description
         result.dataType = TypeAttributePersistence._data_type_to_data(instance.data_format)
 
-        utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.applied_traits)
+        await utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.applied_traits)
 
         t2pm = TraitToPropertyMap(instance)
 

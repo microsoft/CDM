@@ -111,6 +111,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
         }
 
         /// <summary>
+        /// Tests data partition objects created by a partition pattern do not share the same trait with the partition pattern
+        /// </summary>
+        [TestMethod]
+        public async Task TestRefreshesDataPartitionPatternsWithTrait()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestRefreshesDataPartitionPatternsWithTrait));
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/patternManifest.manifest.cdm.json");
+
+            var partitionEntity = manifest.Entities.AllItems[0];
+            Assert.AreEqual(1, partitionEntity.DataPartitionPatterns.Count);
+            Assert.AreEqual(0, partitionEntity.DataPartitions.Count);
+
+            var traitDef = new CdmTraitDefinition(corpus.Ctx, "testTrait");
+            traitDef.Parameters.Add(new CdmParameterDefinition(corpus.Ctx, "argument value"));
+            var patternTraitRef = partitionEntity.DataPartitionPatterns[0].ExhibitsTraits.Add("testTrait") as CdmTraitReference;
+            patternTraitRef.Arguments.Add("int", 1);
+            patternTraitRef.Arguments.Add("bool", true);
+            patternTraitRef.Arguments.Add("string", "a");
+
+            await manifest.FileStatusCheckAsync();
+
+            Assert.AreEqual(2, partitionEntity.DataPartitions.Count);
+            patternTraitRef = partitionEntity.DataPartitionPatterns[0].ExhibitsTraits.Item("testTrait") as CdmTraitReference;
+            Assert.AreEqual(1, patternTraitRef.Arguments[0].Value);
+            Assert.IsTrue(patternTraitRef.Arguments[1].Value);
+            patternTraitRef.Arguments[0].Value = 3;
+            patternTraitRef.Arguments[1].Value = false;
+
+            var partitionTraitRef = partitionEntity.DataPartitions[0].ExhibitsTraits.Item("testTrait") as CdmTraitReference;
+            Assert.AreNotEqual(partitionTraitRef, patternTraitRef);
+            Assert.AreEqual(1, partitionTraitRef.Arguments[0].Value);
+            Assert.IsTrue(partitionTraitRef.Arguments[1].Value);
+            partitionTraitRef.Arguments[0].Value = 2;
+
+            Assert.AreEqual(1, (partitionEntity.DataPartitions[1].ExhibitsTraits.Item("testTrait") as CdmTraitReference).Arguments[0].Value);
+        }
+
+        /// <summary>
         /// Testing that error is handled when partition pattern contains a folder that does not exist
         /// </summary>
         [TestMethod]

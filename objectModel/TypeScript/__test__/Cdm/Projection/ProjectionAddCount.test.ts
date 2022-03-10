@@ -89,8 +89,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('date');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testCount');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -138,8 +138,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('date');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testCount');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -194,8 +194,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('date');
         expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testCount');
-        expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
 
         // Now resolve the entity with the 'structured' directive
         resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['structured']));
@@ -247,8 +247,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('email');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -273,8 +273,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual(6);
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
             .toEqual('name1');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
@@ -318,8 +318,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('email');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -345,8 +345,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual(1);
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -390,10 +390,10 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('email2');
         expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).name)
             .toEqual('personCount');
-        expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
-        expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).appliedTraits.allItems[2].namedReference)
-            .toEqual('indicates.expansionInfo.count');
+        expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
+        expect((resolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition).appliedTraits.item('indicates.expansionInfo.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -427,12 +427,12 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('email');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
         expect((resolvedEntity.attributes.allItems[6] as CdmTypeAttributeDefinition).name)
             .toEqual('anotherCount');
-        expect((resolvedEntity.attributes.allItems[6] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('firstName');
     });
@@ -462,8 +462,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('new_age');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('new_someCount');
-        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -529,8 +529,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('email');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 
     /**
@@ -555,8 +555,8 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual(6);
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
             .toEqual('name1');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
@@ -601,7 +601,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
             .toEqual('email');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('someCount');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[1].namedReference)
-            .toEqual('is.linkedEntity.array.count');
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.array.count'))
+            .not.toBeUndefined;
     });
 });

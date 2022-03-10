@@ -18,9 +18,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     {
         private static readonly string Tag = nameof(CdmOperationAlterTraits);
 
-        public List<CdmTraitReferenceBase> TraitsToAdd { get; set; }
+        public CdmCollection<CdmTraitReferenceBase> TraitsToAdd { get; set; }
 
-        public List<CdmTraitReferenceBase> TraitsToRemove { get; set; }
+        public CdmCollection<CdmTraitReferenceBase> TraitsToRemove { get; set; }
 
         public bool? ArgumentsContainWildcards { get; set; }
 
@@ -42,30 +42,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             var copy = host == null ? new CdmOperationAlterTraits(this.Ctx) : host as CdmOperationAlterTraits;
 
-            List<CdmTraitReferenceBase> traitsToAdd = null;
-            
-            if (this.TraitsToAdd != null)
+            if (this.TraitsToAdd?.Count > 0)
             {
-                traitsToAdd = new List<CdmTraitReferenceBase>();
-                this.TraitsToAdd.ForEach(trait => traitsToAdd.Add(trait.Copy(resOpt) as CdmTraitReferenceBase));
+                foreach (var trait in this.TraitsToAdd)
+                {
+                    copy.TraitsToAdd.Add(trait.Copy() as CdmTraitReferenceBase);
+                }
             }
 
-            List<CdmTraitReferenceBase> traitsToRemove = null;
-
-            if (this.TraitsToRemove != null)
+            if (this.TraitsToRemove?.Count > 0)
             {
-                traitsToRemove = new List<CdmTraitReferenceBase>();
-                this.TraitsToRemove.ForEach(trait => traitsToRemove.Add(trait.Copy(resOpt) as CdmTraitReferenceBase));
+                foreach (var trait in this.TraitsToRemove)
+                {
+                    copy.TraitsToRemove.Add(trait.Copy() as CdmTraitReferenceBase);
+                }
             }
-
 
             if (this.ApplyTo != null)
             {
                 copy.ApplyTo = new List<string>(this.ApplyTo);
             }
 
-            copy.TraitsToAdd = traitsToAdd;
-            copy.TraitsToRemove = traitsToRemove;
             copy.ArgumentsContainWildcards = this.ArgumentsContainWildcards;
 
             this.CopyProj(resOpt, copy);
@@ -121,6 +118,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 return false;
             }
+
+            if (this.TraitsToAdd != null && CdmObjectBase.VisitList(this.TraitsToAdd, $"{path}/traitsToAdd/", preChildren, postChildren))
+                return true;
+
+            if (this.TraitsToRemove != null && CdmObjectBase.VisitList(this.TraitsToRemove, $"{path}/traitsToRemove/", preChildren, postChildren))
+                return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;

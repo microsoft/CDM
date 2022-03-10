@@ -1,0 +1,97 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailStaffTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailStaffExtendedLogon",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExtraData",
+          "dataType": "Blobdata",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogOnKey",
+          "dataType": "RetailStaffExtendedLogOnKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogOnType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Staff",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogOnData",
+          "dataType": "RetailStaffExtendedLogOnData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStaffTable"
+          },
+          "name": "Relationship_RetailStaffTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Staff extended logon"
+    },
+    {
+      "dataTypeName": "Blobdata",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "RetailStaffExtendedLogOnKey",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailStaffExtendedLogOnData",
+      "extendsDataType": "string"
+    }
+  ]
+}

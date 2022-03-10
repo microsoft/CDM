@@ -51,6 +51,16 @@
       "extendsTrait": "is.dataFormat"
     },
     {
+      "traitName": "is.dataFormat.signed",
+      "explanation": "indicates the capability to represent values less than zero.",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.unsigned",
+      "explanation": "indicates the capability to represent only values zero and greater.",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
       "traitName": "is.dataFormat.floatingPoint",
       "extendsTrait": "is.dataFormat"
     },
@@ -101,7 +111,19 @@
       "explanation": "Whole numbers, assumed to correspond with a 32 bit signed int",
       "extendsDataType": "any",
       "exhibitsTraits": [
-        "is.dataFormat.integer"
+        "is.dataFormat.integer",
+        "is.dataFormat.signed",
+        "is.dataFormat.numeric"
+      ]
+    },
+    {
+      "dataTypeName": "unsignedInteger",
+      "explanation": "Assumed to correspond with a 32 bit unsigned int",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.integer",
+        "is.dataFormat.unsigned",
+        "is.dataFormat.numeric"
       ]
     },
     {
@@ -462,7 +484,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -639,7 +661,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -660,7 +682,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -768,7 +790,48 @@
           "dataType": "string"
         }
       ]
+    },
+    {
+      "traitName": "means.timestamp",
+      "extendsTrait": "means",
+      "hasParameters": [
+        {
+          "name": "units",
+          "dataType": "string",
+          "explanation": "The unit of measure used for storing the offset"
+        },
+        {
+          "name": "offsetFromDate",
+          "dataType": "dateTime",
+          "explanation": "the point in time from which the timestamp offset is calculated"
+        },
+        {
+          "name": "hasUTC",
+          "dataType": "boolean",
+          "explanation": "whether or not the current timestamp reflects UTC support or not"
+        }
+      ]
+    },
+    {
+      "traitName": "means.timestamp.parquet.milli",
+      "extendsTrait": {
+        "traitReference": "means.timestamp",
+        "arguments": [
+          {
+            "name": "units",
+            "value": "milliseconds"
+          },
+          {
+            "name": "offsetFromDate",
+            "value": "January 1st 0000 00:00:00.0000"
+          },
+          {
+            "name": "hasUTC",
+            "value": "true"
+          }
+        ]
+      }
     }
   ],
-  "documentVersion": "1.1"
+  "documentVersion": "1.2"
 }

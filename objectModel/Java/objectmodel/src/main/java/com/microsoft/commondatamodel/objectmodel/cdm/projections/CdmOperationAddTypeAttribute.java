@@ -104,6 +104,12 @@ public class CdmOperationAddTypeAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.getTypeAttribute() != null
+                && this.getTypeAttribute()
+                .visit(path + "/typeAttribute/", preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren != null && postChildren.invoke(this, path)) {
             return true;
         }

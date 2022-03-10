@@ -3,6 +3,7 @@
 
 import os
 import unittest
+from cdm.objectmodel.cdm_collection import CdmCollection
 
 from cdm.storage import LocalAdapter
 
@@ -46,7 +47,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'structured' ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['structured'])
 
         self.assertEqual(1, len(resolved_entity.attributes))
         self.validate_trait(resolved_entity.attributes[0], 'FavoriteTerm', True)
@@ -63,7 +64,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'structured' ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['structured'])
 
         self.assertEqual(5, len(resolved_entity.attributes))
         self.validate_trait(resolved_entity.attributes[0], 'name', True)
@@ -84,7 +85,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         att_group_reference = resolved_entity.attributes[0]  # type: CdmAttributeGroupReference
@@ -111,7 +112,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         # Include attributes: ["age", "phoneNumber", "name"]
@@ -137,7 +138,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'referenceOnly' ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Condition not met, no traits are added
@@ -148,7 +149,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
         self.validate_trait(resolved_entity.attributes[3], 'phoneNumber', False, True)
         self.validate_trait(resolved_entity.attributes[4], 'email', False, True)
 
-        resolved_entity2 = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'structured' ])
+        resolved_entity2 = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['structured'])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Condition met, new traits are added
@@ -178,18 +179,18 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
 
         # Create an AlterTraits operation
         alter_traits_op_1 = corpus.make_object(CdmObjectType.OPERATION_ALTER_TRAITS_DEF)  # type: CdmOperationAlterTraits
-        alter_traits_op_1.traits_to_add = []
+        alter_traits_op_1.traits_to_add = CdmCollection(corpus.ctx, alter_traits_op_1, CdmObjectType.TRAIT_REF)
         alter_traits_op_1.traits_to_add.append(corpus.make_ref(CdmObjectType.TRAIT_REF, "means.TraitG100", True))
         alter_traits_op_1.traits_to_add.append(corpus.make_ref(CdmObjectType.TRAIT_GROUP_REF, "JobTitleBase", True))
-        alter_traits_op_1.traits_to_remove = []
+        alter_traits_op_1.traits_to_remove = CdmCollection(corpus.ctx, alter_traits_op_1, CdmObjectType.TRAIT_REF)
         alter_traits_op_1.traits_to_remove.append(corpus.make_ref(CdmObjectType.TRAIT_REF, "means.TraitG300", True))
         projection.operations.append(alter_traits_op_1)
 
         alter_traits_op_2 = corpus.make_object(CdmObjectType.OPERATION_ALTER_TRAITS_DEF)  # type: CdmOperationAlterTraits
-        alter_traits_op_2.traits_to_add = []
         trait_g4 = corpus.make_ref(CdmObjectType.TRAIT_REF, "means.TraitG4", True)  # type: CdmTraitReference
         trait_g4.arguments.append('precision', '5')
         trait_g4.arguments.append('scale', '15')
+        alter_traits_op_2.traits_to_add = CdmCollection(corpus.ctx, alter_traits_op_2, CdmObjectType.TRAIT_REF)
         alter_traits_op_2.traits_to_add.append(trait_g4)
         alter_traits_op_2.apply_to = []
         alter_traits_op_2.apply_to.append('name')
@@ -243,7 +244,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         self.assertEqual(5, len(resolved_entity.attributes))
@@ -265,7 +266,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         self.assertEqual(5, len(resolved_entity.attributes))
@@ -286,7 +287,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Add attribute: ["newName" (InsertAtTop:false), "newName_1" (InsertAtTop:true)]
@@ -313,10 +314,10 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Create resolution options with the 'referenceOnly' directive.
-        resolved_entity_reference_only = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'referenceOnly' ])
+        resolved_entity_reference_only = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Condition not met, no trait is changed
@@ -327,7 +328,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
         self.assertEqual('15', trait_g4.arguments.fetch_value('scale'))
 
         # Create resolution options with the 'referenceOnly' directive.
-        resolved_entity_with_structured = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'structured' ])
+        resolved_entity_with_structured = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['structured'])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Condition met, alter traits on ["address", + { "means.TraitG4, "arguments": ["6", {"name": "scale","value": "20"}"] }]
@@ -338,7 +339,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
         self.assertEqual('20', trait_g4_1.arguments.fetch_value('scale'))
 
         # Create resolution options with the 'normalized' directive.
-        resolved_entity_with_normalized = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'normalized' ])
+        resolved_entity_with_normalized = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['normalized'])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Condition met, alter traits on ["address", + { "means.TraitG4, "arguments": ["8", null] }]
@@ -346,7 +347,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
         trait_g4_2 = resolved_entity_with_normalized.attributes[2].applied_traits.item('means.TraitG4')
         self.assertIsNotNone(trait_g4_2)
         self.assertEqual('8', trait_g4_2.arguments.fetch_value('precision'))
-        self.assertIsNone(trait_g4_2.arguments.fetch_value('scale'))
+        self.assertEqual('', trait_g4_2.arguments.fetch_value('scale'))
 
     def validate_trait(self, attribute: 'CdmTypeAttributeDefinition', expected_attr_name: str, have_trait_g4: bool = False, does_not_exist: bool = False) -> 'CdmAttributeGroupDefinition':
         """Validates trait for this test class

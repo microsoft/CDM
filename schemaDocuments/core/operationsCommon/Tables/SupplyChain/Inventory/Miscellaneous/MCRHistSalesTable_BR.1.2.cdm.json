@@ -1,0 +1,235 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustFineSetup_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustInterestSetup_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Parameter/FiscalDocumentType_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/SalesPurchOperationType_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRHistSalesTable_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CFPSId_BR",
+          "dataType": "CFPSId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustFinalUser_BR",
+          "dataType": "CustVendFinalUser_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FineCode_BR",
+          "dataType": "CustFineCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentType_BR",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestCode_BR",
+          "dataType": "CustInterestCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceRefRecID_BR",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Invoice reference",
+          "description": ""
+        },
+        {
+          "name": "MCRSalesTableCreatedDateTime",
+          "dataType": "DateTimeAccepted",
+          "isNullable": true,
+          "displayName": "Order Create",
+          "description": ""
+        },
+        {
+          "name": "SalesId",
+          "dataType": "SalesId",
+          "description": ""
+        },
+        {
+          "name": "SalesPurchOperationType_BR",
+          "dataType": "SalesPurchOperationTypeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeOnDlvAddress_BR",
+          "dataType": "TaxServiceCodeOnDlvAddress_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxServiceCode_BR",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustFineSetup_BR"
+          },
+          "name": "Relationship_CustFineSetup_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInterestSetup_BR"
+          },
+          "name": "Relationship_CustInterestSetup_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentType_BR"
+          },
+          "name": "Relationship_FiscalDocumentType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_InvoiceRefRecID_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesPurchOperationType_BR"
+          },
+          "name": "Relationship_SalesPurchOperationType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales order header information history for Brazil"
+    },
+    {
+      "dataTypeName": "CFPSId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendFinalUser_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustFineCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustInterestCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DateTimeAccepted",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesPurchOperationTypeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeOnDlvAddress_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

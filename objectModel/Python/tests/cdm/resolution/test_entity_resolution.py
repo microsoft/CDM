@@ -241,3 +241,13 @@ class EntityResolution(unittest.TestCase):
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
 
         await AttributeContextUtil.validate_attribute_context(self, expected_output_folder, 'Sales', resolved_entity)
+
+    @async_test
+    async def test_foundations_in_res_doc(self):
+        """
+        Test that foundations import is added to resolved doc if it exists in the unresolved doc
+        """
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_foundations_in_res_doc')
+        entity = await corpus.fetch_object_async('Entity.cdm.json/Entity')  # type: CdmEntityDefinition
+        resEntity = await entity.create_resolved_entity_async('resolvedEntity')
+        self.assertTrue(resEntity.in_document.imports.item('cdm:/foundations.cdm.json') is not None)

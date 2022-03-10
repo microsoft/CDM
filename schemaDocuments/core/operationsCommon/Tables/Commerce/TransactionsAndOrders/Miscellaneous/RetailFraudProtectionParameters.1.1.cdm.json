@@ -1,0 +1,120 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/KeyVaultCertificateTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailFraudProtectionParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IsEnabled",
+          "dataType": "RetailFraudProtectionIsEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AadAppId",
+          "dataType": "RetailFraudProtectionAadAppId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AadAppSecretName",
+          "dataType": "RetailFraudProtectionAppSecretName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DfpEndpointUri",
+          "dataType": "RetailFraudProtectionUri",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssessmentType",
+          "dataType": "RetailFraudProtectionAssessmentTypeEdt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_keyVaultSecretNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "RetailFraudProtectionIsEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailFraudProtectionAadAppId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFraudProtectionAppSecretName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFraudProtectionUri",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFraudProtectionAssessmentTypeEdt",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMOperatingUnit.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Main/HcmPositionForecast.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HcmPositionForecastDetail",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompLocation",
+          "dataType": "HcmCompLocationRecId",
+          "isNullable": true,
+          "displayName": "Compensation region",
+          "description": ""
+        },
+        {
+          "name": "Department",
+          "dataType": "OMDepartmentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "HrmDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Job",
+          "dataType": "HcmJobRecId",
+          "description": ""
+        },
+        {
+          "name": "PositionForecast",
+          "dataType": "HcmPositionForecastRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PositionType",
+          "dataType": "HcmPositionTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Title",
+          "dataType": "HcmTitleRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "OMOperatingUnit"
+          },
+          "name": "Relationship_DepartmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HcmPositionForecast"
+          },
+          "name": "Relationship_PositionForecastRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Forecast position details"
+    },
+    {
+      "dataTypeName": "HcmCompLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "OMDepartmentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HrmDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmJobRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmPositionTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmTitleRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

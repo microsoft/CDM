@@ -1,0 +1,1269 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/GanttColorTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventJournalTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventTransferTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/WorksheetHeader/ReqPO.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "PmfConsOrd.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/ProdGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/ProdBOM.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/ProdPool.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/WorksheetLine/ProdTableProj.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Transaction/ProjItemTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjLineProperty.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlanSched.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/WrkCtrProperty.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProdTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BackorderStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "BOM date",
+          "description": ""
+        },
+        {
+          "name": "BOMId",
+          "dataType": "BOMId",
+          "isNullable": true,
+          "displayName": "BOM number",
+          "description": ""
+        },
+        {
+          "name": "CalcDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Estimated",
+          "description": ""
+        },
+        {
+          "name": "CheckRoute",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Check route",
+          "description": ""
+        },
+        {
+          "name": "CollectRefLevel",
+          "dataType": "BOMLevel",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reference level",
+          "description": ""
+        },
+        {
+          "name": "CollectRefProdId",
+          "dataType": "ProdId",
+          "isNullable": true,
+          "displayName": "Reference production",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode_RU",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "InventSiteLinkedDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Density",
+          "dataType": "BOMMeasureDensity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Depth",
+          "dataType": "BOMMeasureDepth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvDate",
+          "dataType": "SalesShippingDate",
+          "isNullable": true,
+          "displayName": "Delivery",
+          "description": ""
+        },
+        {
+          "name": "DlvTime",
+          "dataType": "SchedTime",
+          "isNullable": true,
+          "displayName": "Time",
+          "description": ""
+        },
+        {
+          "name": "FinishedDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reported as finished",
+          "description": ""
+        },
+        {
+          "name": "GanttColorId",
+          "dataType": "GanttColorId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Height",
+          "dataType": "BOMMeasureHeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefId",
+          "dataType": "InventRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefTransId",
+          "dataType": "InventRefTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdProduction",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LatestSchedDate",
+          "dataType": "SchedDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LatestSchedDirection",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Direction",
+          "description": ""
+        },
+        {
+          "name": "LatestSchedTime",
+          "dataType": "SchedTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "ProdName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWBatchEst",
+          "dataType": "PdsCWBatchEst",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWBatchSched",
+          "dataType": "PdsCWBatchSched",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWBatchSize",
+          "dataType": "PdsCWBatchSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWBatchStup",
+          "dataType": "PdsCWBatchStup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWRemainInventPhysical",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "displayName": "CW report remainder as finished",
+          "description": ""
+        },
+        {
+          "name": "PmfBulkOrd",
+          "dataType": "PmfBulkOrd",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfCoByVarAllow",
+          "dataType": "PmfCoByVarAllow",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfConsOrdId",
+          "dataType": "PmfConsOrdId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfReworkBatch",
+          "dataType": "PmfReworkBatch",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfTotalCostAllocation",
+          "dataType": "PmfTotalCostAllocation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfYieldPct",
+          "dataType": "PmfYieldPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceGroup_RU",
+          "dataType": "CustPriceGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdGroupId",
+          "dataType": "ProdGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdId",
+          "dataType": "ProdId",
+          "description": ""
+        },
+        {
+          "name": "ProdLocked",
+          "dataType": "Locked",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdOrigId",
+          "dataType": "ProdOrigId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdPoolId",
+          "dataType": "ProdPoolId",
+          "isNullable": true,
+          "displayName": "Pool",
+          "description": ""
+        },
+        {
+          "name": "ProdPostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Ledger",
+          "description": ""
+        },
+        {
+          "name": "ProdPrio",
+          "dataType": "Priority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfitSet",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjCategoryId",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjCostAmount",
+          "dataType": "CostAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjCostPrice",
+          "dataType": "ItemCostPrice",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjLinePropertyId",
+          "dataType": "ProjLinePropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjLinkedToOrder",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Linked to order",
+          "description": ""
+        },
+        {
+          "name": "ProjPostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjSalesCurrencyId",
+          "dataType": "ProjSalesCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjSalesPrice",
+          "dataType": "ProjSalesPriceCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjSalesUnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTaxGroupId",
+          "dataType": "ProjTaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTaxItemGroupId",
+          "dataType": "ProjTaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTransId",
+          "dataType": "ProjItemTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PropertyId",
+          "dataType": "PropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyCalc",
+          "dataType": "ProdQtyCalc",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtySched",
+          "dataType": "ProdQtySched",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyStUp",
+          "dataType": "ProdQtyStUp",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Ended",
+          "description": ""
+        },
+        {
+          "name": "RefLookUp",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleasedDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Released",
+          "description": ""
+        },
+        {
+          "name": "RemainInventPhysical",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Report remainder as finished",
+          "description": ""
+        },
+        {
+          "name": "ReqPlanIdSched",
+          "dataType": "ReqPlanIdSched",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOId",
+          "dataType": "ReqPOId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reservation",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteId",
+          "dataType": "RouteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteJobs",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Jobs",
+          "description": ""
+        },
+        {
+          "name": "SchedDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Scheduled",
+          "description": ""
+        },
+        {
+          "name": "SchedEnd",
+          "dataType": "SchedToDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedFromTime",
+          "dataType": "SchedFromTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedStart",
+          "dataType": "SchedFromDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedToTime",
+          "dataType": "SchedToTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StUpDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Started",
+          "description": ""
+        },
+        {
+          "name": "Width",
+          "dataType": "BOMMeasureWidth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdWHSReleasePolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SkipCreateBOMLines",
+          "dataType": "ProdTableSkipCreateBOMLines",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SkipCreateRouteOperations",
+          "dataType": "ProdTableSkipCreateRouteOperations",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "GanttColorTable"
+          },
+          "name": "Relationship_GanttColorTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventJournalTable"
+          },
+          "name": "Relationship_InventJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferTable"
+          },
+          "name": "Relationship_InventTransferTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPO"
+          },
+          "name": "Relationship_PlannedOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PmfConsOrd"
+          },
+          "name": "Relationship_PmfConsOrdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PriceGroup_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdGroup"
+          },
+          "name": "Relationship_ProdGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdBOM"
+          },
+          "name": "Relationship_ProdLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdPool"
+          },
+          "name": "Relationship_ProdPoolRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTableProj"
+          },
+          "name": "Relationship_ProdTableProjRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_ProjectSalesCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_ProjectTaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_ProjectTaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjItemTrans"
+          },
+          "name": "Relationship_ProjItemTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjLineProperty"
+          },
+          "name": "Relationship_ProjLinePropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanSched"
+          },
+          "name": "Relationship_ReqPlanSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteTable"
+          },
+          "name": "Relationship_RouteTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesOrderLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrProperty"
+          },
+          "name": "Relationship_WrkCtrPropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Production orders"
+    },
+    {
+      "dataTypeName": "smmActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMLevel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProdId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteLinkedDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BOMMeasureDensity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BOMMeasureDepth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesShippingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "GanttColorId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BOMMeasureHeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventRefTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemIdProduction",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SchedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProdName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCWBatchEst",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWBatchSched",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWBatchSize",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWBatchStup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PmfBulkOrd",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PmfCoByVarAllow",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PmfConsOrdId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PmfReworkBatch",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PmfTotalCostAllocation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PmfYieldPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustPriceGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Locked",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProdOrigId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdPoolId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Priority",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemCostPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjLinePropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesPriceCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjItemTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdQtyCalc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdQtySched",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdQtyStUp",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReqPlanIdSched",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPOId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SchedToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedFromTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "SchedFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedToTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "BOMMeasureWidth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ProdTableSkipCreateBOMLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProdTableSkipCreateRouteOperations",
+      "extendsDataType": "integer"
+    }
+  ]
+}

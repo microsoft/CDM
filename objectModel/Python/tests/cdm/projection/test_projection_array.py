@@ -58,9 +58,9 @@ class ProjectionArrayTest(unittest.TestCase):
         ProjectionTestUtils.validate_expansion_info_trait(self, non_structured_resolved_entity.attributes[6], 'name3', 3, 'ThreePeople', 'name')
         ProjectionTestUtils.validate_expansion_info_trait(self, non_structured_resolved_entity.attributes[7], 'age3', 3, 'ThreePeople', 'age')
         ProjectionTestUtils.validate_expansion_info_trait(self, non_structured_resolved_entity.attributes[8], 'address3', 3, 'ThreePeople', 'address')
-        self.assertEqual("personCount", (non_structured_resolved_entity.attributes[9]).name)
-        self.assertEqual("indicates.expansionInfo.count", non_structured_resolved_entity.attributes[9].applied_traits[1].named_reference)
-        self.assertEqual("ThreePeople", non_structured_resolved_entity.attributes[9].applied_traits[1].arguments[0].value)
+        self.assertEqual('personCount', (non_structured_resolved_entity.attributes[9]).name)
+        self.assertIsNotNone(non_structured_resolved_entity.attributes[9].applied_traits.item('indicates.expansionInfo.count'))
+        self.assertEqual('ThreePeople', non_structured_resolved_entity.attributes[9].applied_traits.item('indicates.expansionInfo.count').arguments[0].value)
 
         # Original set of attributes: ["name", "age", "address"]
         # in structured form
@@ -92,16 +92,16 @@ class ProjectionArrayTest(unittest.TestCase):
         # addArtifactAttribute : "number of favorite terms"
         # alterTraits = { indicates.expansionInfo.count(expansionName: "{a}") , apply to "number of favorite terms" , "argumentsContainWildcards" : true }
         self.assertEqual(3, len(non_structured_resolved_entity.attributes))
-        self.assertEqual("Term 1", (non_structured_resolved_entity.attributes[0]).name)
-        self.assertEqual("Term 2", (non_structured_resolved_entity.attributes[1]).name)
-        self.assertEqual("number of favorite terms", (non_structured_resolved_entity.attributes[2]).name)
-        self.assertEqual("indicates.expansionInfo.count", non_structured_resolved_entity.attributes[2].applied_traits[1].named_reference)
-        self.assertEqual("Favorite Terms", non_structured_resolved_entity.attributes[2].applied_traits[1].arguments[0].value)
+        self.assertEqual('Term 1', (non_structured_resolved_entity.attributes[0]).name)
+        self.assertEqual('Term 2', (non_structured_resolved_entity.attributes[1]).name)
+        self.assertEqual('number of favorite terms', (non_structured_resolved_entity.attributes[2]).name)
+        self.assertIsNotNone(non_structured_resolved_entity.attributes[2].applied_traits.item('indicates.expansionInfo.count'))
+        self.assertEqual('Favorite Terms', non_structured_resolved_entity.attributes[2].applied_traits.item('indicates.expansionInfo.count').arguments[0].value)
 
         # Original set of attributes: ["Favorite Terms"]
         # in structured form
         # alterTraits = { is.dataFormat.list }
         structured_resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'structured' ])
         self.assertEqual(1, len(structured_resolved_entity.attributes))
-        self.assertEqual("Favorite Terms", (structured_resolved_entity.attributes[0]).name)
+        self.assertEqual('Favorite Terms', (structured_resolved_entity.attributes[0]).name)
         self.assertIsNotNone(structured_resolved_entity.attributes[0].applied_traits.item('is.dataFormat.list'))

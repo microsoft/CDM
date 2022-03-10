@@ -1,0 +1,169 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "JmgPayAgreementTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgPayCountTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdjustDays",
+          "dataType": "JmgAdjustDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "JmgDescription",
+          "description": ""
+        },
+        {
+          "name": "PayAgreement",
+          "dataType": "JmgPayAgreement",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayCountId",
+          "dataType": "JmgPayCountId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PaySpecType",
+          "dataType": "JmgPaySpecType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaySpecTypeOut",
+          "dataType": "JmgPaySpecType",
+          "isNullable": true,
+          "displayName": "Pay type out",
+          "description": ""
+        },
+        {
+          "name": "ProjPeriodId",
+          "dataType": "ProjPeriodId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TimeMax",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Maximum",
+          "description": ""
+        },
+        {
+          "name": "TimeMin",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Minimum",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayAgreementTable"
+          },
+          "name": "Relationship_JmgPayAgreementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_ProjPeriodTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Count unit"
+    },
+    {
+      "dataTypeName": "JmgAdjustDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgPayAgreement",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgPayCountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgPaySpecType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjPeriodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    }
+  ]
+}

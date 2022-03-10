@@ -1,0 +1,123 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResColor.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailColorGroupTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailColorGroupTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "color",
+          "dataType": "RetailColorId",
+          "description": ""
+        },
+        {
+          "name": "colorGroup",
+          "dataType": "RetailColorGroupId",
+          "description": ""
+        },
+        {
+          "name": "DisplayOrder",
+          "dataType": "RetailDisplayOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "noInBarcode",
+          "dataType": "RetailNoInBarcode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "weight",
+          "dataType": "RetailWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExtensionColorGroupDimensionGroupId",
+          "dataType": "RetailDimensionGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResColor"
+          },
+          "name": "Relationship_EcoResColorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailColorGroupTable"
+          },
+          "name": "Relationship_RetailColorGroupTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Color group lines"
+    },
+    {
+      "dataTypeName": "RetailColorId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailColorGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDisplayOrder",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailNoInBarcode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailWeight",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailDimensionGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

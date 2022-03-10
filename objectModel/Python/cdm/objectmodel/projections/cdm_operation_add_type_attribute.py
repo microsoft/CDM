@@ -65,6 +65,9 @@ class CdmOperationAddTypeAttribute(CdmOperationBase):
         if pre_children and pre_children(self, path):
             return False
 
+        if self.type_attribute and self.type_attribute.visit('{}/typeAttribute/'.format(path), pre_children, post_children):
+            return True
+
         if post_children and post_children(self, path):
             return True
 

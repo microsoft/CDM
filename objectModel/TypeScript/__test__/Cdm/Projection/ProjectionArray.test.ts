@@ -70,9 +70,9 @@ describe('Cdm/Projection/TestProjectionArray', () => {
         projectionTestUtils.validateExpansionInfoTrait(nonStructuredResolvedEntity.attributes.allItems[8] as CdmTypeAttributeDefinition, "address3", 3, "ThreePeople", "address");
         expect((nonStructuredResolvedEntity.attributes.allItems[9] as CdmTypeAttributeDefinition).name)
             .toEqual('personCount');
-        expect(nonStructuredResolvedEntity.attributes.allItems[9].appliedTraits.allItems[1].namedReference)
-            .toEqual('indicates.expansionInfo.count');  
-        expect((nonStructuredResolvedEntity.attributes.allItems[9].appliedTraits.allItems[1] as CdmTraitReference).arguments.allItems[0].value)
+        expect(nonStructuredResolvedEntity.attributes.allItems[9].appliedTraits.item('indicates.expansionInfo.count'))
+            .not.toBeUndefined()
+        expect((nonStructuredResolvedEntity.attributes.allItems[9].appliedTraits.item('indicates.expansionInfo.count') as CdmTraitReference).arguments.allItems[0].value)
             .toEqual('ThreePeople');
 
         // Original set of attributes: ["name", "age", "address"]
@@ -118,9 +118,9 @@ describe('Cdm/Projection/TestProjectionArray', () => {
             .toEqual('Term 2');
         expect((nonStructuredResolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('number of favorite terms');
-        expect(nonStructuredResolvedEntity.attributes.allItems[2].appliedTraits.allItems[1].namedReference)
-            .toEqual('indicates.expansionInfo.count');  
-        expect((nonStructuredResolvedEntity.attributes.allItems[2].appliedTraits.allItems[1] as CdmTraitReference).arguments.allItems[0].value)
+        expect(nonStructuredResolvedEntity.attributes.allItems[2].appliedTraits.item('indicates.expansionInfo.count'))
+            .not.toBeUndefined() 
+        expect((nonStructuredResolvedEntity.attributes.allItems[2].appliedTraits.item('indicates.expansionInfo.count') as CdmTraitReference).arguments.allItems[0].value)
             .toEqual('Favorite Terms');
 
         // Original set of attributes: ["Favorite Terms"]

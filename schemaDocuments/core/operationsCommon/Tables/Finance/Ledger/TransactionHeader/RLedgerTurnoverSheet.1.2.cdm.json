@@ -1,0 +1,234 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RLedgerTurnoverSheet",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeleteZero",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Delete zero line",
+          "description": ""
+        },
+        {
+          "name": "DimensionCriteria",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GroupKey",
+          "dataType": "KeyData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GroupKeyExp",
+          "dataType": "KeyData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MainAccountNum",
+          "dataType": "MainAccountRange",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MainAccountNumCorr",
+          "dataType": "MainAccountRange",
+          "isNullable": true,
+          "displayName": "Corr. account",
+          "description": ""
+        },
+        {
+          "name": "PackedCaller",
+          "dataType": "KeyData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedQuery",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrintRanges",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Print ranges",
+          "description": ""
+        },
+        {
+          "name": "ReportType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShowBalance",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Show balance",
+          "description": ""
+        },
+        {
+          "name": "ShowBalanceTrans",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Itemize balance",
+          "description": ""
+        },
+        {
+          "name": "ShowOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Show origin",
+          "description": ""
+        },
+        {
+          "name": "ShowSumAccount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Total accounts",
+          "description": ""
+        },
+        {
+          "name": "ShowTrans",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Show transactions",
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Turnover and balances statement report archive"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KeyData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "MainAccountRange",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

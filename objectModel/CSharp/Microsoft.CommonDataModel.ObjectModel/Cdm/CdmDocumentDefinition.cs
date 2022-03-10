@@ -628,9 +628,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (preChildren != null && preChildren.Invoke(this, pathFrom))
                 return false;
-            if (this.Definitions != null)
-                if (this.Definitions.VisitList(pathFrom, preChildren, postChildren))
-                    return true;
+            if (this.Imports != null && this.Imports.VisitList(pathFrom, preChildren, postChildren))
+                return true;
+            if (this.Definitions != null && this.Definitions.VisitList(pathFrom, preChildren, postChildren))
+                return true;
             if (postChildren != null && postChildren.Invoke(this, pathFrom))
                 return true;
             return false;

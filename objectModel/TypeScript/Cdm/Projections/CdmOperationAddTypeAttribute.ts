@@ -94,6 +94,10 @@ export class CdmOperationAddTypeAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.typeAttribute !== undefined && this.typeAttribute.visit(`${path}/typeAttribute/`, preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren && postChildren(this, path)) {
             return true;
         }

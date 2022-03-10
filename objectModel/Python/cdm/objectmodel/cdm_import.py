@@ -52,6 +52,9 @@ class CdmImport(CdmObjectSimple):
 
         return copy
 
+    def fetch_object_definition_name(self) -> Optional[str]:
+        return None
+
     def validate(self) -> bool:
         if not bool(self.corpus_path):
             missing_fields = ['corpus_path']

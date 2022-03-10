@@ -5,7 +5,6 @@ import {
     AttributeResolutionDirectiveSet,
     CdmCollection,
     CdmCorpusContext,
-    CdmObjectDefinition,
     CdmDocumentDefinition,
     CdmE2ERelationship,
     CdmEntityCollection,
@@ -13,10 +12,12 @@ import {
     CdmEntityDefinition,
     CdmFileStatus,
     CdmFolderDefinition,
+    CdmImport,
     CdmLocalEntityDeclarationDefinition,
+    cdmLogCode,
     CdmManifestDeclarationDefinition,
     CdmObject,
-    cdmLogCode,
+    CdmObjectDefinition,
     cdmObjectType,
     cdmRelationshipDiscoveryStyle,
     CdmTraitCollection,
@@ -85,6 +86,11 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         if (preChildren && preChildren(this, pathFrom)) {
             return false;
+        }
+        if (this.imports) {
+            if (this.imports.visitArray(pathFrom, preChildren, postChildren)) {
+                return true;
+            }
         }
         if (this.definitions) {
             if (this.definitions.visitArray(pathFrom, preChildren, postChildren)) {
@@ -322,6 +328,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                         const cacheKey: string = rel.createCacheKey();
                         if (!relCache.has(cacheKey) && this.isRelAllowed(rel, option)) {
                             this.relationships.push(this.localizeRelToManifest(rel));
+                            this.addImportsForElevatedTraits(rel);
                             relCache.add(cacheKey);
                         }
                     }
@@ -356,6 +363,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                         const cacheKey: string = inRel.createCacheKey();
                         if (!relCache.has(cacheKey) && this.isRelAllowed(inRel, option)) {
                             this.relationships.push(this.localizeRelToManifest(inRel));
+                            this.addImportsForElevatedTraits(inRel);
                             relCache.add(cacheKey);
                         }
 
@@ -375,6 +383,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                                     const baseRelCacheKey: string = newRel.createCacheKey();
                                     if (!relCache.has(baseRelCacheKey) && this.isRelAllowed(newRel, option)) {
                                         this.relationships.push(this.localizeRelToManifest(newRel));
+                                        this.addImportsForElevatedTraits(newRel);
                                         relCache.add(baseRelCacheKey);
                                     }
                                 }
@@ -648,4 +657,19 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             return true;
         }
     }
+
+    
+    /**
+     * Adding imports for elevated purpose traits for relationships.
+     * The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+     */
+    private addImportsForElevatedTraits(rel: CdmE2ERelationship): void {
+        for (const path of rel.getElevatedTraitCorpusPaths()) {
+            const relativePath: string = this.ctx.corpus.storage.createRelativeCorpusPath(path, this);
+            if (this.imports.item(relativePath, null, false) === undefined) {
+                this.imports.insert(0, new CdmImport(this.ctx, relativePath, undefined));
+            }
+        }
+    }
+
 }

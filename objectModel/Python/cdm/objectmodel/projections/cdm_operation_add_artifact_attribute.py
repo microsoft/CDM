@@ -67,12 +67,15 @@ class CdmOperationAddArtifactAttribute(CdmOperationBase):
         if pre_children and pre_children(self, path):
             return False
 
+        if self.new_attribute and self.new_attribute.visit('{}/newAttribute/'.format(path), pre_children, post_children):
+            return True
+
         if post_children and post_children(self, path):
             return True
 
         return False
 
-    def _append_projection_attribute_state(self, proj_ctx: 'ProjectionContext', proj_output_set: 'ProjectionAttributeStateSet', \
+    def _append_projection_attribute_state(self, proj_ctx: 'ProjectionContext', proj_output_set: 'ProjectionAttributeStateSet',
                                            attr_ctx: 'CdmAttributeContext') -> 'ProjectionAttributeStateSet':
         if self.insert_at_top is not True:
             self._add_all_previous_attribute_states(proj_ctx, proj_output_set)
@@ -100,7 +103,6 @@ class CdmOperationAddArtifactAttribute(CdmOperationBase):
             attr_ctx_new_attr_param._name = self.new_attribute.fetch_object_definition_name()
             attr_ctx_new_attr = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_new_attr_param)
             new_res_attr = self._create_new_resolved_attribute(proj_ctx, attr_ctx_new_attr, self.new_attribute)
-
 
             # Create a new projection attribute state for the new artifact attribute and add it to the output set
             # There is no previous state for the newly created attribute

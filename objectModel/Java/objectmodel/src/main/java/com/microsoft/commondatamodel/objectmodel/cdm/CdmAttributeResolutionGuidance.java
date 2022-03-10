@@ -31,8 +31,12 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
     this.setObjectType(CdmObjectType.AttributeResolutionGuidanceDef);
   }
 
-  
-  /** 
+  @Override
+  public String fetchObjectDefinitionName() {
+    return null;
+  }
+
+  /**
    * @param pathFrom Path From
    * @param preChildren Pre Children
    * @param postChildren Post Children

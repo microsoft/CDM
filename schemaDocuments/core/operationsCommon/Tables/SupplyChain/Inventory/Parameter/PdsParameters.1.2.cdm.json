@@ -1,0 +1,185 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/PdsComdPricingTemplate.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/PdsCostBasis.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscAdmName.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BaseRefDepth",
+          "dataType": "PdsBaseRefDepth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostBasisType",
+          "dataType": "PdsCostBasisType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionSet",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Dimension set",
+          "description": ""
+        },
+        {
+          "name": "KeepPriceCalc",
+          "dataType": "PdsComdKeepPriceCalc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceDiscJournalName",
+          "dataType": "PriceDiscJournalName",
+          "isNullable": true,
+          "displayName": "Trade agreement",
+          "description": ""
+        },
+        {
+          "name": "PricingTemplateId",
+          "dataType": "PdsComdPricingTemplateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_DimensionSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsComdPricingTemplate"
+          },
+          "name": "Relationship_PdsComdPricingTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsCostBasis"
+          },
+          "name": "Relationship_PdsCostBasisRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscAdmName"
+          },
+          "name": "Relationship_PriceDiscAdmNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Process distribution parameters"
+    },
+    {
+      "dataTypeName": "PdsBaseRefDepth",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsCostBasisType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsComdKeepPriceCalc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PriceDiscJournalName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsComdPricingTemplateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

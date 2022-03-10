@@ -324,8 +324,11 @@ public class TelemetryConfig {
       ClientCredentialParameters parameters = ClientCredentialParameters.builder(SCOPE).build();
       result = this.context.acquireToken(parameters).join();
     } catch (Exception ex) {
-        throw new RuntimeException
-          ("There was an error while acquiring Kusto authorization Token with client ID/secret authentication. Exception: ", ex);
+      String errorMsg = ex.getLocalizedMessage();
+      if (ex.getCause() != null) {
+        errorMsg += " InnerException: " + ex.getCause().getLocalizedMessage();
+      }
+      throw new RuntimeException("There was an error while acquiring Kusto authorization Token with client ID/secret authentication. " + errorMsg);
     }
 
     if (result == null || result.accessToken() == null) {

@@ -292,6 +292,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
               final String cacheKey = outgoingRel.createCacheKey();
               if (!relCache.contains(cacheKey) && isRelAllowed(outgoingRel, option)) {
                 this.getRelationships().add(localizeRelToManifest(outgoingRel));
+                this.addImportsForElevatedTraits(outgoingRel);
                 relCache.add(cacheKey);
               }
             }
@@ -327,6 +328,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
               final String cacheKey = inRel.createCacheKey();
               if (!relCache.contains(cacheKey) && isRelAllowed(inRel, option)) {
                 this.getRelationships().add(localizeRelToManifest(inRel));
+                this.addImportsForElevatedTraits(inRel);
                 relCache.add(cacheKey);
               }
 
@@ -347,6 +349,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                     final String baseRelCacheKey = newRel.createCacheKey();
                     if (!relCache.contains(baseRelCacheKey) && isRelAllowed(newRel, option)) {
                       this.getRelationships().add(localizeRelToManifest(newRel));
+                      this.addImportsForElevatedTraits(newRel);
                       relCache.add(baseRelCacheKey);
                     }
                   }
@@ -432,6 +435,10 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
     if (preChildren != null && preChildren.invoke(this, pathFrom)) {
       return false;
+    }
+
+    if (this.getImports() != null && this.getImports().visitList(pathFrom, preChildren, postChildren)) {
+      return true;
     }
 
     if (this.getDefinitions() != null && this.getDefinitions().visitList(pathFrom, preChildren, postChildren)) {
@@ -756,6 +763,19 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       return fromEntInManifest && toEntInManifest;
     } else {
       return true;
+    }
+  }
+
+  /**
+   * Adding imports for elevated purpose traits for relationships.
+   * The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+   */
+  private void addImportsForElevatedTraits(final CdmE2ERelationship rel) {
+    for (final String path : rel.getElevatedTraitCorpusPaths()) {
+      final String relativePath = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(path, this);
+      if (this.getImports().item(relativePath,null,false) == null) {
+        this.getImports().add(0, new CdmImport(this.getCtx(), relativePath, null));
+      }
     }
   }
 

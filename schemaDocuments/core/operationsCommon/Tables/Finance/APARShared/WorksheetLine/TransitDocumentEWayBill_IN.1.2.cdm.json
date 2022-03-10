@@ -1,0 +1,145 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxGSTEWayBillTypes_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TransitDocumentEWayBill_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Direction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "TaxGSTEWayBillDocumentDate_IN",
+          "isNullable": true,
+          "displayName": "Document date",
+          "description": ""
+        },
+        {
+          "name": "DocumentNo",
+          "dataType": "TaxGSTEWayBillDocumentNo_IN",
+          "isNullable": true,
+          "displayName": "Doc. no.",
+          "description": ""
+        },
+        {
+          "name": "EWayBillDate",
+          "dataType": "TaxGSTEWayBillDate_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EWayBillNo",
+          "dataType": "TaxGSTEWayBillNo_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EWayBillTypes",
+          "dataType": "TaxGSTEWayBillTypeRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VehicleNo",
+          "dataType": "TaxGSTEWayBillVehicleNo_IN",
+          "isNullable": true,
+          "displayName": "Vehicle No.",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGSTEWayBillTypes_IN"
+          },
+          "name": "Relationship_EwayBillTypes_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "E-Way bill"
+    },
+    {
+      "dataTypeName": "TaxGSTEWayBillDocumentDate_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxGSTEWayBillDocumentNo_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGSTEWayBillDate_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxGSTEWayBillNo_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGSTEWayBillTypeRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxGSTEWayBillVehicleNo_IN",
+      "extendsDataType": "string"
+    }
+  ]
+}

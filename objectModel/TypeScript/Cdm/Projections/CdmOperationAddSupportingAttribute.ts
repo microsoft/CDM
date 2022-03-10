@@ -95,6 +95,10 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.supportingAttribute !== undefined && this.supportingAttribute.visit(`${path}/supportingAttribute/`, preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren && postChildren(this, path)) {
             return true;
         }

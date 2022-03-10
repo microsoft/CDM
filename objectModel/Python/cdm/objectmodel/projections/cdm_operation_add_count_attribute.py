@@ -64,6 +64,9 @@ class CdmOperationAddCountAttribute(CdmOperationBase):
         if pre_children and pre_children(self, path):
             return False
 
+        if self.count_attribute and self.count_attribute.visit('{}/countAttribute/'.format(path), pre_children, post_children):
+            return True
+
         if post_children and post_children(self, path):
             return True
 

@@ -64,10 +64,10 @@ class CdmArgumentCollectionTests(unittest.TestCase):
         self.assertEqual(2, len(trait.arguments))
         self.assertFalse(trait._resolved_arguments)
         self.assertEqual('Arg1', trait.arguments[0].name)
-        self.assertEqual(123, trait.arguments[0].value)
+        self.assertEqual(123, trait.arguments.item('Arg1').value)
         self.assertEqual(trait, trait.arguments[0].owner)
         self.assertEqual('Arg2', trait.arguments[1].name)
-        self.assertEqual(valOfArg2, trait.arguments[1].value)
+        self.assertEqual(valOfArg2, trait.arguments.item('Arg2').value)
 
     @async_test
     def test_cdm_argument_collection_fetch_value_or_only_value(self):

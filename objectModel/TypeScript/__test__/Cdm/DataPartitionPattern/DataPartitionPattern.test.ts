@@ -9,7 +9,7 @@ import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntity
 import { CdmManifestDefinition } from '../../../Cdm/CdmManifestDefinition';
 import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
 import { cdmObjectType } from '../../../Enums/cdmObjectType';
-import { CdmEntityDefinition } from '../../../internal';
+import { CdmEntityDefinition, CdmParameterDefinition, CdmTraitDefinition, CdmTraitReference } from '../../../internal';
 import { CdmFolder } from '../../../Persistence';
 import { resolveContext } from '../../../Utilities/resolveContext';
 import { testHelper } from '../../testHelper';
@@ -112,6 +112,52 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe('partitions/testTooMany.csv');
         expect(tooManyPartition.arguments.size)
             .toBe(0);
+        done();
+    });
+
+    /**
+     * Tests data partition objects created by a partition pattern do not share the same trait with the partition pattern
+     */
+    it('TestRefreshesDataPartitionPatternsWithTrait', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRefreshesDataPartitionPatternsWithTrait');
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
+
+        const partitionEntity: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.dataPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(0);
+
+            
+        const traitDef = new CdmTraitDefinition(corpus.ctx, 'testTrait');
+        traitDef.parameters.allItems.push(new CdmParameterDefinition(corpus.ctx, 'argument value'));
+        let patternTraitRef = partitionEntity.dataPartitionPatterns.allItems[0].exhibitsTraits.push('testTrait') as CdmTraitReference;
+        patternTraitRef.arguments.push("int", 1);
+        patternTraitRef.arguments.push("bool", true);
+        patternTraitRef.arguments.push("string", 'a');
+        
+        await manifest.fileStatusCheckAsync();
+
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(2);
+        patternTraitRef = partitionEntity.dataPartitionPatterns.allItems[0].exhibitsTraits.item("testTrait") as CdmTraitReference;
+        expect(patternTraitRef.arguments.allItems[0].value)
+            .toBe(1);
+        expect(patternTraitRef.arguments.allItems[1].value)
+            .toBeTruthy();
+        patternTraitRef.arguments.allItems[0].value = 3;
+        patternTraitRef.arguments.allItems[1].value = false as unknown as object;
+
+        let partitionTraitRef = partitionEntity.dataPartitions.allItems[0].exhibitsTraits.item("testTrait") as CdmTraitReference;
+        expect(partitionTraitRef)
+            .not.toBe(patternTraitRef);
+        expect(partitionTraitRef.arguments.allItems[0].value)
+            .toBe(1);
+        expect(partitionTraitRef.arguments.allItems[1].value)
+            .toBeTruthy();
+        partitionTraitRef.arguments.allItems[0].value = 2;
+        expect((partitionEntity.dataPartitions.allItems[1].exhibitsTraits.item("testTrait") as CdmTraitReference).arguments.allItems[0].value)
+            .toBe(1);
         done();
     });
 

@@ -83,7 +83,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
         private static JToken IgnoreProperties(JToken obj)
         {
-            List<string> ignorePaths = new List<string>(new string[] { "properties.ObjectId", "properties.StorageDescriptor.ColumnSetEntityName" });
+            List<string> ignorePaths = new List<string>(new string[] {"properties.ObjectId", "properties.StorageDescriptor.ColumnSetEntityName"});
             string othersPath = "properties.Properties";
 
             foreach (var path in ignorePaths)
@@ -97,6 +97,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             if (obj.SelectToken(othersPath) != null && obj.SelectToken(othersPath)["spark.sql.sources.schema.part.0"] != null)
             {
                 obj.SelectToken(othersPath)["spark.sql.sources.schema.part.0"].Replace("");
+            }
+
+            if (obj.SelectToken(othersPath) != null && obj.SelectToken(othersPath)["spark.sql.sources.provider"] != null)
+            {
+                obj.SelectToken(othersPath)["spark.sql.sources.provider"].Replace("");
             }
 
             return obj;

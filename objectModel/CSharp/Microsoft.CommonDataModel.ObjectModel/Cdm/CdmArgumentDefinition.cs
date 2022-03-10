@@ -83,8 +83,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     copy.Value = ((CdmObject)this.Value).Copy(resOpt);
                 else
                 {
-                    // Value is a string or JValue
-                    copy.Value = (string)this.Value;
+                    copy.Value = this.Value;
                 }
             }
             copy.ResolvedParameter = this.ResolvedParameter;
@@ -102,6 +101,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return false;
             }
             return true;
+        }
+
+        public override string FetchObjectDefinitionName()
+        {
+            return this.Name;
         }
 
         internal CdmParameterDefinition GetParameterDef()

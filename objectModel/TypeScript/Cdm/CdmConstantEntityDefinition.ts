@@ -206,6 +206,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             const rasb: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder();
+            rasb.ras.attributeContext = under;
             let acpEnt: AttributeContextParameters;
             if (under) {
                 acpEnt = {

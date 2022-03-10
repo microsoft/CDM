@@ -97,6 +97,10 @@ export class CdmOperationAddArtifactAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.newAttribute !== undefined && this.newAttribute.visit(`${path}/newAttribute/`, preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren && postChildren(this, path)) {
             return true;
         }

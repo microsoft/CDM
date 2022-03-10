@@ -650,6 +650,11 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             if (preChildren && preChildren(this, pathFrom)) {
                 return false;
             }
+            if (this.imports) {
+                if (this.imports.visitArray(pathFrom, preChildren, postChildren)) {
+                    return true;
+                }
+            }
             if (this.definitions) {
                 if (this.definitions.visitArray(pathFrom, preChildren, postChildren)) {
                     return true;

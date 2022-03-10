@@ -585,6 +585,10 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     if (preChildren != null && preChildren.invoke(this, pathFrom)) {
       return false;
     }
+    if (this.getImports() != null && this.getImports()
+            .visitList(pathFrom, preChildren, postChildren)) {
+      return true;
+    }
     if (this.getDefinitions() != null && this.getDefinitions()
         .visitList(pathFrom, preChildren, postChildren)) {
       return true;

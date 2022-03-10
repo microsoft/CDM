@@ -211,5 +211,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreEqual(1, document.Imports.Count);
             Assert.AreEqual(2, document.ImportPriorities.ImportPriority.Count);
         }
+
+        /// <summary>
+        /// Testing that import for elevated purpose traits for relationships are added.
+        /// </summary>
+        [TestMethod]
+        public async Task TestImportsForRelElevatedPurposeTraits()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestImportsForRelElevatedPurposeTraits));
+            var rootManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+            var subManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>(rootManifest.SubManifests[0].Definition);
+
+            await corpus.CalculateEntityGraphAsync(rootManifest);
+            await rootManifest.PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive);
+
+            // Assert having relative path
+            Assert.AreEqual("specialized/Gold.cdm.json", rootManifest.Imports[0].CorpusPath);
+            Assert.AreEqual("/Lead.cdm.json", subManifest.Imports[0].CorpusPath);
+
+            corpus.Storage.FetchRootFolder("output").Documents.Add(rootManifest);
+            corpus.Storage.FetchRootFolder("output").Documents.Add(subManifest);
+
+            await rootManifest.SaveAsAsync("output:/default.manifest.cdm.json", false, new CopyOptions() { SaveConfigFile=false });
+            await subManifest.SaveAsAsync("output:/default-submanifest.manifest.cdm.json", false, new CopyOptions() { SaveConfigFile = false });
+
+
+            // Compare the result.
+            TestHelper.AssertFolderFilesEquality(
+                TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestImportsForRelElevatedPurposeTraits)),
+                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestImportsForRelElevatedPurposeTraits)));
+        }
     }
 }

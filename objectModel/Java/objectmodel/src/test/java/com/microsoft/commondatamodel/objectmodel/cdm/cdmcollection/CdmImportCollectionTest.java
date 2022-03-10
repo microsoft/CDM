@@ -68,18 +68,25 @@ public class CdmImportCollectionTest {
     final List<CdmImport> importList =
         new ArrayList<>(Arrays.asList(
             new CdmImport(document.getCtx(), "CorpusPath1", "Moniker1"),
-            new CdmImport(document.getCtx(), "CorpusPath2", "Moniker2")));
+            new CdmImport(document.getCtx(), "CorpusPath2", "Moniker2"),
+            new CdmImport(document.getCtx(), "CorpusPath3", null)));
     document.getImports().addAll(importList);
 
     Assert.assertTrue(document.isDirty());
-    Assert.assertEquals(2, document.getImports().getCount());
-    Assert.assertEquals(importList.get(0), document.getImports().get(0));
-    Assert.assertEquals(importList.get(1), document.getImports().get(1));
-    Assert.assertEquals("CorpusPath1", importList.get(0).getCorpusPath());
-    Assert.assertEquals("Moniker1", importList.get(0).getMoniker());
-    Assert.assertEquals(document.getCtx(), importList.get(0).getCtx());
-    Assert.assertEquals("CorpusPath2", importList.get(1).getCorpusPath());
-    Assert.assertEquals("Moniker2", importList.get(1).getMoniker());
-    Assert.assertEquals(document.getCtx(), importList.get(1).getCtx());
+    Assert.assertEquals(document.getImports().getCount(), 3);
+    Assert.assertEquals(document.getImports().get(0), importList.get(0));
+    Assert.assertEquals(document.getImports().get(1), importList.get(1));
+    Assert.assertEquals(document.getImports().get(0).getCorpusPath(), "CorpusPath1");
+    Assert.assertEquals(document.getImports().item("CorpusPath1", "Moniker1").getMoniker(), "Moniker1");
+    Assert.assertEquals(document.getImports().item("CorpusPath1", "Moniker1").getCtx(), document.getCtx());
+    Assert.assertEquals(document.getImports().get(1).getCorpusPath(), "CorpusPath2");
+    Assert.assertNull(document.getImports().item("CorpusPath2"));
+    Assert.assertNotNull(document.getImports().item("CorpusPath2", null, false));
+    Assert.assertNull(document.getImports().item("CorpusPath2", null, true));
+    Assert.assertNotNull(document.getImports().item("CorpusPath2", "Moniker2",true));
+    Assert.assertNotNull(document.getImports().item("CorpusPath2", "Moniker3", false));
+    Assert.assertEquals(document.getImports().item("CorpusPath2", "Moniker2").getMoniker(), "Moniker2");
+    Assert.assertEquals(document.getImports().item("CorpusPath2", "Moniker2").getCtx(), document.getCtx());
+    Assert.assertEquals(document.getImports().item("CorpusPath3"), importList.get(2));
   }
 }

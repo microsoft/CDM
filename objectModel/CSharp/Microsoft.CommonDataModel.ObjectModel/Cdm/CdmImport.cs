@@ -81,6 +81,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
+        public override string FetchObjectDefinitionName()
+        {
+            return null;
+        }
+
+        /// <inheritdoc />
         public override bool Validate()
         {
             if (string.IsNullOrWhiteSpace(this.CorpusPath))

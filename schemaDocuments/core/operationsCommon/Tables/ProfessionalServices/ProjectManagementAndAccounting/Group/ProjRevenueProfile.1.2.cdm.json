@@ -1,0 +1,309 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ProjCategory.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "ProjControl.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "ProjPeriodTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjRevenueProfile",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccruedLossCategoryId",
+          "dataType": "ProjCategoryCostId",
+          "isNullable": true,
+          "displayName": "Accrued loss",
+          "description": ""
+        },
+        {
+          "name": "CompletePrinciple",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Principle used for project completion calculations",
+          "description": ""
+        },
+        {
+          "name": "CostTemplate",
+          "dataType": "ProjControlId",
+          "isNullable": true,
+          "displayName": "Control Id for cost template",
+          "description": ""
+        },
+        {
+          "name": "CostLedgerStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post costs - expense",
+          "description": ""
+        },
+        {
+          "name": "PostWIPCost",
+          "dataType": "ProjActivateTrans",
+          "isNullable": true,
+          "displayName": "Accrue revenue - expense",
+          "description": ""
+        },
+        {
+          "name": "EmplLedgerStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post costs - hour",
+          "description": ""
+        },
+        {
+          "name": "PostWIPEmpl",
+          "dataType": "ProjActivateTrans",
+          "isNullable": true,
+          "displayName": "Accrue revenue - hour",
+          "description": ""
+        },
+        {
+          "name": "ForeseeableLosses",
+          "dataType": "ProjForeseablesLosses",
+          "isNullable": true,
+          "displayName": "Foreseeable losses for at-risk projects",
+          "description": ""
+        },
+        {
+          "name": "OnAccLedgerStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "On-account invoicing",
+          "description": ""
+        },
+        {
+          "name": "ItemLedgerStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post costs - item",
+          "description": ""
+        },
+        {
+          "name": "PostWIPItem",
+          "dataType": "ProjActivateTrans",
+          "isNullable": true,
+          "displayName": "Accrue revenue - item",
+          "description": ""
+        },
+        {
+          "name": "MatchingPrinciple",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Matching principle used for revenue recognition",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Name",
+          "description": ""
+        },
+        {
+          "name": "PeriodId",
+          "dataType": "ProjPeriodId",
+          "isNullable": true,
+          "displayName": "Period code used for cost and revenue profile",
+          "description": ""
+        },
+        {
+          "name": "ProductionCategoryId",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "displayName": "Production",
+          "description": ""
+        },
+        {
+          "name": "ProfitCategoryId",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "displayName": "Profit",
+          "description": ""
+        },
+        {
+          "name": "ProjRevenueProfileId",
+          "dataType": "ProjRevenueProfileId",
+          "displayName": "Project cost and revenue profile ID",
+          "description": ""
+        },
+        {
+          "name": "PostWIPFee",
+          "dataType": "ProjActivateTrans",
+          "isNullable": true,
+          "displayName": "Accrue revenue - fee",
+          "description": ""
+        },
+        {
+          "name": "SalesPriceMatchingPrinciple",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Matching principle used for sales price in revenue recognition",
+          "description": ""
+        },
+        {
+          "name": "SalesvalueCategoryId",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "displayName": "Sales value",
+          "description": ""
+        },
+        {
+          "name": "BillingMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Billing method",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategory_AccruedCostRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategory_ProductionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategory_ProfitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategory_SalesValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjControl"
+          },
+          "name": "Relationship_ProjControlRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_ProjPeriodIDRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project cost and revenue profiles"
+    },
+    {
+      "dataTypeName": "ProjCategoryCostId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjControlId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjActivateTrans",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjForeseablesLosses",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPeriodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjRevenueProfileId",
+      "extendsDataType": "string"
+    }
+  ]
+}

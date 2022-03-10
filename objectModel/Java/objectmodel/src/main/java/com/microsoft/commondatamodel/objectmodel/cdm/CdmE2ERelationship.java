@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
@@ -26,6 +27,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   private String toEntityAttribute;
   private OffsetDateTime lastFileModifiedTime;
   private OffsetDateTime lastFileModifiedOldTime;
+  private HashSet<String> elevatedTraitCorpusPaths;
 
   public CdmE2ERelationship(
       final CdmCorpusContext ctx,
@@ -39,6 +41,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     this.setObjectType(CdmObjectType.E2ERelationshipDef);
     this.lastFileModifiedTime = null;
     this.lastFileModifiedOldTime = null;
+    this.elevatedTraitCorpusPaths = new HashSet<>();
   }
 
   @Override
@@ -116,6 +119,11 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   public void setlastFileModifiedTime(OffsetDateTime lastFileModifiedTime) {
     this.setlastFileModifiedOldTime(lastFileModifiedTime);
     this.lastFileModifiedTime = lastFileModifiedTime;
+  }
+
+  @Deprecated
+  public HashSet<String> getElevatedTraitCorpusPaths() {
+    return this.elevatedTraitCorpusPaths;
   }
 
   @Override

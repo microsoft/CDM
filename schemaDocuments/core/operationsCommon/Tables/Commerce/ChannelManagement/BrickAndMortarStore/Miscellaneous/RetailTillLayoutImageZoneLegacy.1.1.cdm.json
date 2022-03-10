@@ -1,0 +1,65 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Parameter/RetailImages.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailTillLayoutZoneReferenceLegacy.1.1.cdm.json",
+      "moniker": "base_RetailTillLayoutZoneReferenceLegacy"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailTillLayoutImageZoneLegacy",
+      "extendsEntity": "base_RetailTillLayoutZoneReferenceLegacy/RetailTillLayoutZoneReferenceLegacy",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PictureId",
+          "dataType": "RetailPictureId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailImages"
+          },
+          "name": "Relationship_RetailImagesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Images"
+    },
+    {
+      "dataTypeName": "RetailPictureId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Miscellaneous/EP_FileSequenceNum_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/VendSettlement.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTransOpen.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendTransEPRemit_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "VendAccount",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "BankAccountId",
+          "dataType": "BankAccountID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Bank account",
+          "description": ""
+        },
+        {
+          "name": "BankInvoiceId",
+          "dataType": "EPBankInvoiceId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "SysDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "JournalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Journal number",
+          "description": ""
+        },
+        {
+          "name": "LayoutGroupId",
+          "dataType": "ConfLayoutGroupId_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemitDate",
+          "dataType": "SysDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Remittance date",
+          "description": ""
+        },
+        {
+          "name": "RemitOccCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetDate",
+          "dataType": "SysDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Return date",
+          "description": ""
+        },
+        {
+          "name": "RetOccCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendSettleRefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTransOpenRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EP_FileSequenceNum_BR"
+          },
+          "name": "Relationship_EP_FileSequenceNum_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendSettlement"
+          },
+          "name": "Relationship_VendSettlementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTransOpen"
+          },
+          "name": "Relationship_VendTransOpenRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic payment"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankAccountID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EPBankInvoiceId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfLayoutGroupId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

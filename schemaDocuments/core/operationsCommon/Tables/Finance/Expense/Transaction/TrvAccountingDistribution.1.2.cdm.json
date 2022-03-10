@@ -1,0 +1,150 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Transaction/AccountingDistribution.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvCashAdvance.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvAccountingDistribution",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingDistribution",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Accounting distribution",
+          "description": ""
+        },
+        {
+          "name": "AdvanceAmount",
+          "dataType": "TrvTransactionCurrencyAmount",
+          "isNullable": true,
+          "displayName": "Requested amount",
+          "description": ""
+        },
+        {
+          "name": "AdvanceAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdvanceCurrencyCode",
+          "dataType": "TrvCurrencyCode",
+          "isNullable": true,
+          "displayName": "Currency code",
+          "description": ""
+        },
+        {
+          "name": "CashAdvance",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Cash advance",
+          "description": ""
+        },
+        {
+          "name": "EqualToDistribution",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Equal to distribution",
+          "description": ""
+        },
+        {
+          "name": "FullySplit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Fully split",
+          "description": ""
+        },
+        {
+          "name": "ReferenceAccountingDistribution",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Reference accounting distribution",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingDistribution"
+          },
+          "name": "Relationship_AccountingDistributionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvCashAdvance"
+          },
+          "name": "Relationship_CashAdvanceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Expense accounting distribution"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvTransactionCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TrvCurrencyCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

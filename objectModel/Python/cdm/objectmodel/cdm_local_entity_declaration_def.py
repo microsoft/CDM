@@ -7,16 +7,15 @@ from typing import cast, Dict, List, Optional, TYPE_CHECKING
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, time_utils, logger
 from cdm.enums import CdmLogCode
-from cdm.utilities.string_utils import StringUtils
 
 from .cdm_collection import CdmCollection
 from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
 from .cdm_file_status import CdmFileStatus
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCollection, CdmCorpusContext, CdmCorpusDefinition, CdmDataPartitionDefinition, \
-        CdmDataPartitionPatternDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.objectmodel import CdmCollection, CdmCorpusContext, CdmDataPartitionDefinition, \
+        CdmDataPartitionPatternDefinition, CdmTraitReferenceBase
+    from cdm.utilities import VisitCallback
 
     from .cdm_trait_collection import CdmTraitCollection
 
@@ -65,7 +64,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         new_partition.last_file_status_check_time = datetime.now(timezone.utc)
 
         for trait in exhibits_traits:
-            new_partition.exhibits_traits.append(trait)
+            new_partition.exhibits_traits.append(cast('CdmTraitReferenceBase', trait.copy()))
 
         new_partition.arguments = args.copy()
         self.data_partitions.append(new_partition)
@@ -97,7 +96,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         return False
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmLocalEntityDeclarationDefinition'] = None) -> 'CdmLocalEntityDeclarationDefinition':
+    def copy(self, res_opt: Optional['ResolveOptions'] = None,
+             host: Optional['CdmLocalEntityDeclarationDefinition'] = None) -> 'CdmLocalEntityDeclarationDefinition':
         if not res_opt:
             res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
         if not host:
@@ -134,7 +134,9 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     def validate(self) -> bool:
         if not bool(self.entity_name):
             missing_fields = ['entity_name']
-            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path,
+                         CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path,
+                         ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
@@ -144,10 +146,12 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.data_partitions and self.data_partitions._visit_array('{}/dataPartitions/'.format(path), pre_children, post_children):
+        if self.data_partitions and self.data_partitions._visit_array('{}/dataPartitions/'.format(path), pre_children,
+                                                                      post_children):
             return True
 
-        if self.data_partition_patterns and self.data_partition_patterns._visit_array('{}/dataPartitionPatterns/'.format(path), pre_children, post_children):
+        if self.data_partition_patterns and self.data_partition_patterns._visit_array(
+                '{}/dataPartitionPatterns/'.format(path), pre_children, post_children):
             return True
 
         if self._visit_def(path, pre_children, post_children):
@@ -169,4 +173,4 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         return self.last_file_modified_old_time
 
     def reset_last_file_modified_old_time(self) -> None:
-       self.last_file_modified_old_time = None
+        self.last_file_modified_old_time = None

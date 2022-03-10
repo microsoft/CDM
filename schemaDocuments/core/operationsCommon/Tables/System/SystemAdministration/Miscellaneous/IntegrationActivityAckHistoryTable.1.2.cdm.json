@@ -1,0 +1,110 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "IntegrationActivityRuntimeMonitoringTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "IntegrationActivityAckHistoryTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Timestamp",
+          "dataType": "IntegrationActivityAckTimestamp",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityRuntimeId",
+          "dataType": "IntegrationActivityRuntimeMonitoringRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MessageId",
+          "dataType": "IntegrationMessageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClientId",
+          "dataType": "IntegrationClientId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "IntegrationActivityRuntimeMonitoringTable"
+          },
+          "name": "Relationship_MonitoringRuntimeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "IntegrationActivityAckTimestamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "IntegrationActivityRuntimeMonitoringRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "IntegrationMessageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntegrationClientId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "manifestName": "relationshipsAreHard",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "Acct",
+      "entityPath": "local:/Acct.cdm.json/Acct"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Curr",
+      "entityPath": "local:/Curr.cdm.json/Curr"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Lead",
+      "entityPath": "local:/Lead.cdm.json/Lead"
+    }
+  ],
+  "subManifests": [
+    {
+      "manifestName": "specialized",
+      "definition": "local:/specialized/specialized.manifest.cdm.json"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "local:/Acct.cdm.json/Acct",
+      "fromEntityAttribute": "defaultCurrId",
+      "toEntity": "local:/Curr.cdm.json/Curr",
+      "toEntityAttribute": "currId",
+      "exhibitsTraits": [
+        "specialized.gold.trait"
+      ]
+    },
+    {
+      "fromEntity": "local:/Lead.cdm.json/Lead",
+      "fromEntityAttribute": "leadAcctId",
+      "toEntity": "local:/Acct.cdm.json/Acct",
+      "toEntityAttribute": "acctId"
+    }
+  ],
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "$schema": "CdmFolder.cdm.json",
+  "imports": [
+    {
+      "corpusPath": "local:/specialized/Gold.cdm.json"
+    },
+    {
+      "corpusPath": "cdm:/primitives.cdm.json"
+    }
+  ]
+}

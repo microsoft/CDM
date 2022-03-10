@@ -1,0 +1,64 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "Acct.cdm.json"
+        },
+        {
+            "corpusPath": "/Lead.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Email",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "entityId",
+                    "name": "emailId"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "subject"
+                },
+                {
+                    "name": "sendToAcct",
+                    "entity": {
+                        "entityReference": "Acct",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Acct/(resolvedAttributes)/acctId"
+                                ]
+                            }
+                        ]
+                    },
+                    "purpose": {
+                        "purposeReference": "hasA",
+                        "appliedTraits": [
+                            "lead.trait"
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "sendToAcctId"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

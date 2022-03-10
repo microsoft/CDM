@@ -1,0 +1,207 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxationCodeTable_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TaxExemptCodeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TaxItemGroupHeading.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TaxTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxOnItem",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AbatementPercent_IN",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Abatement %",
+          "description": ""
+        },
+        {
+          "name": "CustomsChargeAsExpensePercent_IN",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Charge as expense %",
+          "description": ""
+        },
+        {
+          "name": "ExemptTax_BR",
+          "dataType": "TaxExemptTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadOnInventory_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Load on inventory",
+          "description": ""
+        },
+        {
+          "name": "LoadOnInventoryPercent_IN",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Load on inventory %",
+          "description": ""
+        },
+        {
+          "name": "TaxationCodeTable_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Taxation code",
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "description": ""
+        },
+        {
+          "name": "TaxExemptCode",
+          "dataType": "TaxExemptCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "description": ""
+        },
+        {
+          "name": "WithoutTaxCredit_BR",
+          "dataType": "TaxWithoutTaxCredit_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxationCodeTable_BR"
+          },
+          "name": "Relationship_TaxationCodeTable_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxExemptCodeTable"
+          },
+          "name": "Relationship_TaxExemptCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Item sales tax group setup"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxExemptTax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxExemptCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithoutTaxCredit_BR",
+      "extendsDataType": "integer"
+    }
+  ]
+}

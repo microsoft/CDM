@@ -1,0 +1,268 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "FiscalDocumentLine_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "FiscalDocumentMiscCharge_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Transaction/TaxTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxExemptCodeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FiscalDocumentTaxTrans_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FiscalDocumentLine",
+          "dataType": "FiscalDocumentLineRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentMiscCharge",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalValue",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludedTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Included tax",
+          "description": ""
+        },
+        {
+          "name": "RetainedTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Retained tax/to recuperate",
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Taxable amount",
+          "description": ""
+        },
+        {
+          "name": "TaxAmountOther",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Other tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxationCode",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxationOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Tax base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountExempt",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Exempt base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountOther",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Other base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxExemptCode",
+          "dataType": "TaxExemptCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxNonRecoverablePct",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Tax non-recoverable",
+          "description": ""
+        },
+        {
+          "name": "TaxReductionPct",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Tax reduction pct",
+          "description": ""
+        },
+        {
+          "name": "TaxSubstitutionMarkupPct",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Tributary substitution",
+          "description": ""
+        },
+        {
+          "name": "TaxTrans",
+          "dataType": "TaxTransRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentLine_BR"
+          },
+          "name": "Relationship_FiscalDocumentLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentMiscCharge_BR"
+          },
+          "name": "Relationship_FiscalDocumentMiscChargeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTrans"
+          },
+          "name": "Relationship_TaxTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxExemptCodeTable"
+          },
+          "name": "Relationship_TaxExemptCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal document taxes"
+    },
+    {
+      "dataTypeName": "FiscalDocumentLineRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxationCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxBaseCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxExemptCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxTransRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

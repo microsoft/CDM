@@ -104,6 +104,12 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.getSupportingAttribute() != null
+                && this.getSupportingAttribute()
+                .visit(path + "/supportingAttribute/", preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren != null && postChildren.invoke(this, path)) {
             return true;
         }

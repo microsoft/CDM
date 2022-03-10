@@ -1,0 +1,272 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTaxAllowance.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "RAssetDistribution.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/LandTypeTable_W.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetTaxAllowanceHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetId",
+          "dataType": "RAssetId",
+          "description": ""
+        },
+        {
+          "name": "DenominatorShare",
+          "dataType": "RAssetTaxPrivilegeShare",
+          "isNullable": true,
+          "displayName": "Allowance share denominator",
+          "description": ""
+        },
+        {
+          "name": "NumeratorShare",
+          "dataType": "RAssetTaxPrivilegeShare",
+          "isNullable": true,
+          "displayName": "Allowance share numerator",
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "RAssetPeriod",
+          "displayName": "Period",
+          "description": ""
+        },
+        {
+          "name": "TaxAllowance395RecId",
+          "dataType": "RAssetTaxAllowanceExemption",
+          "isNullable": true,
+          "displayName": "Land tax exemption (art.395)",
+          "description": ""
+        },
+        {
+          "name": "TaxAllowanceRecId",
+          "dataType": "RAssetTaxAllowanceRecId",
+          "isNullable": true,
+          "displayName": "Land tax exemption (art.387)",
+          "description": ""
+        },
+        {
+          "name": "UntaxedAreaPartAllowanceRecId",
+          "dataType": "RAssetTaxAllowanceUntaxedAreaPart",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DenominatorShareOwned",
+          "dataType": "RAssetOwnedShare",
+          "isNullable": true,
+          "displayName": "Owned share denominator",
+          "description": ""
+        },
+        {
+          "name": "LandCadastralNum",
+          "dataType": "LandCadastralNum_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoomCadastralNum",
+          "dataType": "RoomCadastralNum_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LandType",
+          "dataType": "LandType_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumeratorShareOwned",
+          "dataType": "RAssetOwnedShare",
+          "isNullable": true,
+          "displayName": "Owned share numerator",
+          "description": ""
+        },
+        {
+          "name": "RAssetDistribution",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBase",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Tax base",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTaxAllowance"
+          },
+          "name": "Relationship_TaxAllowanceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTaxAllowance"
+          },
+          "name": "Relationship_TaxAllowance395Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTaxAllowance"
+          },
+          "name": "Relationship_UntaxedAreaPartAllowanceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetDistribution"
+          },
+          "name": "Relationship_RAssetDistributionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LandTypeTable_W"
+          },
+          "name": "Relationship_LandTypeTable_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "History of tax allowance changing"
+    },
+    {
+      "dataTypeName": "RAssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetTaxPrivilegeShare",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RAssetPeriod",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RAssetTaxAllowanceExemption",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetTaxAllowanceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetTaxAllowanceUntaxedAreaPart",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetOwnedShare",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LandCadastralNum_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RoomCadastralNum_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LandType_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

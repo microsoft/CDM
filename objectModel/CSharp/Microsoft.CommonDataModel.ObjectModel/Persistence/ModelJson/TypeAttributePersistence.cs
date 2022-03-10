@@ -47,7 +47,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Description = instance.GetProperty("description")
             };
 
-            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
 

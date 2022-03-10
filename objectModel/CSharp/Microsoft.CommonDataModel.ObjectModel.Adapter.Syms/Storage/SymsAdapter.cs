@@ -516,7 +516,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             catch (Exception ex)
             {
-                throw new Exception($"There was an error while acquiring Syms Adapter's Token with client ID/secret authentication. Exception: {ex.Message}");
+                var errorMsg = $"Exception: {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMsg += $" InnerException: {ex.InnerException.Message}";
+                }
+                throw new Exception($"There was an error while acquiring Syms Adapter's Token with client ID/secret authentication. {errorMsg}");
             }
 
             if (result == null || result.CreateAuthorizationHeader() == null)

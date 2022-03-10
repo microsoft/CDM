@@ -1,0 +1,157 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/WorksheetHeader/LedgerOpeningSheet_ES.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/MainAccount.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerOpeningTable_ES",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BalanceSheet",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Balance",
+          "description": ""
+        },
+        {
+          "name": "Capital",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Capital",
+          "description": ""
+        },
+        {
+          "name": "MainAccount",
+          "dataType": "RefRecId",
+          "displayName": "Main account",
+          "description": ""
+        },
+        {
+          "name": "Reconciled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Reconciled",
+          "description": ""
+        },
+        {
+          "name": "Result",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Result",
+          "description": ""
+        },
+        {
+          "name": "Sheet",
+          "dataType": "OpeningSheet_ES",
+          "description": ""
+        },
+        {
+          "name": "Transfer",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Transfer",
+          "description": ""
+        },
+        {
+          "name": "TrialBalanceSheet",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Trial balance",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerOpeningSheet_ES"
+          },
+          "name": "Relationship_LedgerOpeningSheet_ESRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_MainAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Opening accounts"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "OpeningSheet_ES",
+      "extendsDataType": "string"
+    }
+  ]
+}

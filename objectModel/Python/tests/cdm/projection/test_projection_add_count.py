@@ -69,7 +69,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('value', resolved_entity.attributes[2].name)
         self.assertEqual('date', resolved_entity.attributes[3].name)
         self.assertEqual('testCount', resolved_entity.attributes[4].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[4].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[4].applied_traits.item('is.linkedEntity.array.count'))
 
     @async_test
     async def test_entity_proj_using_object_model(self):
@@ -109,7 +109,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('value', resolved_entity.attributes[2].name)
         self.assertEqual('date', resolved_entity.attributes[3].name)
         self.assertEqual('testCount', resolved_entity.attributes[4].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[4].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[4].applied_traits.item('is.linkedEntity.array.count'))
 
     @async_test
     async def test_conditional_proj_using_object_model(self):
@@ -156,7 +156,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('value', resolved_entity_with_reference_only.attributes[2].name)
         self.assertEqual('date', resolved_entity_with_reference_only.attributes[3].name)
         self.assertEqual('testCount', resolved_entity_with_reference_only.attributes[4].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity_with_reference_only.attributes[4].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity_with_reference_only.attributes[4].applied_traits.item('is.linkedEntity.array.count'))
 
         # Now resolve the entity with the 'structured' directive
         res_opt.directives = AttributeResolutionDirectiveSet(set(['structured']))
@@ -193,7 +193,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
         self.assertEqual('email', resolved_entity.attributes[4].name)
         self.assertEqual('someCount', resolved_entity.attributes[5].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[5].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[5].applied_traits.item('is.linkedEntity.array.count'))
 
     @async_test
     async def test_count_attribute(self):
@@ -213,7 +213,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         # For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
         self.assertEqual(6, len(resolved_entity.attributes))
         self.assertEqual('someCount', resolved_entity.attributes[0].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[0].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[0].applied_traits.item('is.linkedEntity.array.count'))
         self.assertEqual('name1', resolved_entity.attributes[1].name)
         self.assertEqual('age1', resolved_entity.attributes[2].name)
         self.assertEqual('address1', resolved_entity.attributes[3].name)
@@ -242,7 +242,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
         self.assertEqual('email', resolved_entity.attributes[4].name)
         self.assertEqual('someCount', resolved_entity.attributes[5].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[5].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[5].applied_traits.item('is.linkedEntity.array.count'))
 
     @async_test
     async def test_extends_entity(self):
@@ -263,7 +263,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         # ExtendsEntityResolutionGuidance doesn't support doing expansions, so we only get the Count attribute
         self.assertEqual(1, len(resolved_entity.attributes))
         self.assertEqual('someCount', resolved_entity.attributes[0].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[0].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[0].applied_traits.item('is.linkedEntity.array.count'))
 
     @async_test
     async def test_with_nested_array_expansion(self):
@@ -292,8 +292,8 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('phoneNumber2', resolved_entity.attributes[8].name)
         self.assertEqual('email2', resolved_entity.attributes[9].name)
         self.assertEqual('personCount', resolved_entity.attributes[10].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[10].applied_traits[1].named_reference)
-        self.assertEqual('indicates.expansionInfo.count', resolved_entity.attributes[10].applied_traits[2].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[10].applied_traits.item('is.linkedEntity.array.count'))
+        self.assertIsNotNone(resolved_entity.attributes[10].applied_traits.item('indicates.expansionInfo.count'))
 
     @async_test
     async def test_combine_ops(self):
@@ -317,9 +317,9 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
         self.assertEqual('email', resolved_entity.attributes[4].name)
         self.assertEqual('someCount', resolved_entity.attributes[5].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[5].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[5].applied_traits.item('is.linkedEntity.array.count'))
         self.assertEqual('anotherCount', resolved_entity.attributes[6].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[6].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[6].applied_traits.item('is.linkedEntity.array.count'))
         self.assertEqual('firstName', resolved_entity.attributes[7].name)
 
     @async_test
@@ -341,7 +341,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('new_name', resolved_entity.attributes[0].name)
         self.assertEqual('new_age', resolved_entity.attributes[1].name)
         self.assertEqual('new_someCount', resolved_entity.attributes[2].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[2].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[2].applied_traits.item('is.linkedEntity.array.count'))
 
     @async_test
     async def test_conditional_proj(self):
@@ -388,7 +388,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
         self.assertEqual('email', resolved_entity.attributes[4].name)
         self.assertEqual('someCount', resolved_entity.attributes[5].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[5].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[5].applied_traits.item('is.linkedEntity.array.count'))
 
     @async_test
     async def test_group(self):
@@ -408,7 +408,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         # For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
         self.assertEqual(6, len(resolved_entity.attributes))
         self.assertEqual('someCount', resolved_entity.attributes[0].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[0].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[0].applied_traits.item('is.linkedEntity.array.count'))
         self.assertEqual('name1', resolved_entity.attributes[1].name)
         self.assertEqual('age1', resolved_entity.attributes[2].name)
         self.assertEqual('address1', resolved_entity.attributes[3].name)
@@ -438,4 +438,4 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
         self.assertEqual('email', resolved_entity.attributes[4].name)
         self.assertEqual('someCount', resolved_entity.attributes[5].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[5].applied_traits[1].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[5].applied_traits.item('is.linkedEntity.array.count'))

@@ -1,0 +1,130 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxReportPeriod.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxReportJournal_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FromDate",
+          "dataType": "PeriodStart",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportedDate",
+          "dataType": "TaxPeriodDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reporting date",
+          "description": ""
+        },
+        {
+          "name": "TaxPeriod",
+          "dataType": "TaxPeriod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "PeriodEnd",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Updated",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Approved",
+          "description": ""
+        },
+        {
+          "name": "UseTax",
+          "dataType": "TaxUseTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxReportPeriod"
+          },
+          "name": "Relationship_taxReportPeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "VAT reporting"
+    },
+    {
+      "dataTypeName": "PeriodStart",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxPeriodDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxPeriod",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PeriodEnd",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxUseTax",
+      "extendsDataType": "integer"
+    }
+  ]
+}

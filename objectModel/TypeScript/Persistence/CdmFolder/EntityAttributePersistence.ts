@@ -17,12 +17,19 @@ import {
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { ProjectionPersistence } from './Projections/ProjectionPersistence';
-import { AttributeResolutionGuidance, EntityAttribute, EntityReferenceDefinition, PurposeReference, TraitGroupReference, TraitReference } from './types';
+import {
+    AttributeResolutionGuidance,
+    EntityAttribute,
+    EntityReferenceDefinition,
+    PurposeReference,
+    TraitGroupReference,
+    TraitReference
+} from './types';
 import * as utils from './utils';
 
 export class EntityAttributePersistence {
     private static TAG: string = EntityAttributePersistence.name;
-    
+
     public static fromData(ctx: CdmCorpusContext, object: EntityAttribute): CdmEntityAttributeDefinition {
         const entityAttribute: CdmEntityAttributeDefinition = ctx.corpus.MakeObject(cdmObjectType.entityAttributeDef, object.name);
 
@@ -34,7 +41,7 @@ export class EntityAttributePersistence {
 
         entityAttribute.isPolymorphicSource = object.isPolymorphicSource;
 
-        if (object.entity && typeof(object.entity) !== 'string' && 'source' in object.entity) {
+        if (object.entity && typeof (object.entity) !== 'string' && 'source' in object.entity) {
             const inlineEntityRef: CdmEntityReference = ctx.corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
             inlineEntityRef.explicitReference = ProjectionPersistence.fromData(ctx, object.entity);
             entityAttribute.entity = inlineEntityRef;
@@ -49,7 +56,7 @@ export class EntityAttributePersistence {
         );
 
         // Ignore resolution guidance if the entity is a projection
-        if (object.resolutionGuidance && object.entity && typeof(object.entity) !== 'string' && 'source' in object.entity) {
+        if (object.resolutionGuidance && object.entity && typeof (object.entity) !== 'string' && 'source' in object.entity) {
             Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityAttrUnsupported, entityAttribute.name);
         } else {
             entityAttribute.resolutionGuidance =
@@ -73,7 +80,7 @@ export class EntityAttributePersistence {
             explanation: instance.explanation,
             isPolymorphicSource: instance.isPolymorphicSource,
             purpose: instance.purpose
-            ? instance.purpose.copyData(resOpt, options) as (string | PurposeReference)
+                ? instance.purpose.copyData(resOpt, options) as (string | PurposeReference)
                 : undefined,
             entity: entity,
             appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, appliedTraits, options),

@@ -1,0 +1,1743 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/WorksheetLine/BankLCImportLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CashDisc.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Parameter/FiscalDocumentType_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventBuyerGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendInvoiceDeclaration_IS.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsElectronicAddress.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Transaction/OfficialsTrans_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymDay.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymSched.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchAgreementHeader.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/SalesPurchOperationType_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/TransportationDocument.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Miscellaneous/VendConsInvoice_JP.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Group/VendGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendInvoiceJour",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OrderAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AttorneyDate_RU",
+          "dataType": "AttorneyDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AttorneyId_RU",
+          "dataType": "AttorneyId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AttorneyIssuedName_RU",
+          "dataType": "AttorneyIssuedName_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLCImportLine",
+          "dataType": "BankLCLineRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDisc",
+          "dataType": "VendCashDiscAmount",
+          "isNullable": true,
+          "displayName": "Cash discount",
+          "description": ""
+        },
+        {
+          "name": "CashDiscCode",
+          "dataType": "VendCashDiscCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscDate",
+          "dataType": "VendCashDiscDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscPercent",
+          "dataType": "DiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsigneeAccount_RU",
+          "dataType": "CustAccountConsignee_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsignorAccount_RU",
+          "dataType": "VendAccountConsignor_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsTarget_JP",
+          "dataType": "VendConsTarget_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContractNum_SA",
+          "dataType": "VendContractNumZakat_SA",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Correct_RU",
+          "dataType": "Correct_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectedInvoiceDate_RU",
+          "dataType": "CorrectedInvoiceDate_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectedInvoiceId_RU",
+          "dataType": "CorrectedInvoiceId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectionType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostLedgerVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "displayName": "Costing voucher",
+          "description": ""
+        },
+        {
+          "name": "CountryRegionId",
+          "dataType": "AddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "VendCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryAddress_LT",
+          "dataType": "Addressing",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Delivery address",
+          "description": ""
+        },
+        {
+          "name": "DeliveryDate_ES",
+          "dataType": "DlvDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "VendName",
+          "isNullable": true,
+          "displayName": "Delivery name",
+          "description": ""
+        },
+        {
+          "name": "DeliveryName_LT",
+          "dataType": "VendName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "InvoiceDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvAddress_LV",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "displayName": "Delivery address",
+          "description": ""
+        },
+        {
+          "name": "DlvMode",
+          "dataType": "VendDlvModeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTerm",
+          "dataType": "VendDlvTermId",
+          "isNullable": true,
+          "displayName": "Terms",
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentNum",
+          "dataType": "DocumentNum",
+          "isNullable": true,
+          "displayName": "Document number",
+          "description": ""
+        },
+        {
+          "name": "DocumentOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDisc",
+          "dataType": "PurchEndDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDiscMST",
+          "dataType": "PurchEndDiscAmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnterpriseNumber",
+          "dataType": "TaxEnterpriseNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EUSalesList",
+          "dataType": "ListDispatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "VendExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRateSecondary",
+          "dataType": "ExchrateSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FacturedFully_RU",
+          "dataType": "FacturedFully_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentType_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Fiscal document type",
+          "description": ""
+        },
+        {
+          "name": "FixedDueDate",
+          "dataType": "PurchFixedDueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InclTax",
+          "dataType": "InclTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyCompanyId",
+          "dataType": "InterCompanyCompanyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyLedgerVoucher",
+          "dataType": "InterCompanyVoucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyPosted",
+          "dataType": "InterCompanyPosted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanySalesId",
+          "dataType": "InterCompanySalesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InternalInvoiceId",
+          "dataType": "PurchInternalInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatAddValue_LV",
+          "dataType": "LvIntrastatAddValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatDispatch",
+          "dataType": "IntrastatDispatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatFulfillmentDate_HU",
+          "dataType": "IntrastatFulfillmentDate_HU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventBaileeReceiptReportId_RU",
+          "dataType": "InventBaileeReceiptReportId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventProfileType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccount",
+          "dataType": "VendInvoiceAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Invoice amount",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "The invoice amount in the accounting currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "VendInvoiceId",
+          "description": ""
+        },
+        {
+          "name": "InvoiceRoundOff",
+          "dataType": "RoundOff",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemBuyerGroupId",
+          "dataType": "ItemBuyerGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "VendLanguageId",
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Listcode",
+          "dataType": "ListcodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogisticsElectronicAddress",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonRealRevenue_RU",
+          "dataType": "NonRealRevenue_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceCode_LT",
+          "dataType": "NumberSequenceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "numberSequenceGroup",
+          "dataType": "NumberSequenceGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsessionId_RU",
+          "dataType": "OffSessionId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OperationType_MX",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymDayId",
+          "dataType": "VendPaymDayId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "VendPaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentSched",
+          "dataType": "PaymSchedId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymId",
+          "dataType": "PaymId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Prepayment",
+          "dataType": "CustVendPrepayment",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Proforma",
+          "dataType": "CustVendProforma",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchAgreementHeader_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchaseType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchId",
+          "dataType": "PurchIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchReceiptDate_W",
+          "dataType": "PurchReceiptDate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "PurchInvoicedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef_BR",
+          "dataType": "ReasonTableRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemittanceAddress",
+          "dataType": "RemittanceAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnItemNum",
+          "dataType": "ReturnItemNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReverseChargeAmount",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesBalance",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Subtotal amount",
+          "description": ""
+        },
+        {
+          "name": "SalesPurchOperationType_BR",
+          "dataType": "SalesPurchOperationTypeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeOnDlvAddress_BR",
+          "dataType": "TaxServiceCodeOnDlvAddress_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "SourceDocumentHeaderRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentLine",
+          "dataType": "SourceDocumentLineRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StateInvoicePrinted_LV",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Printed",
+          "description": ""
+        },
+        {
+          "name": "SumLineDisc",
+          "dataType": "PurchSumLineDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumMarkup",
+          "dataType": "MarkupSumPurch",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumMarkupMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumTax",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "Sales tax",
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInvoicePurchId",
+          "dataType": "TaxInvoicePurchId",
+          "isNullable": true,
+          "displayName": "Tax setoff voucher",
+          "description": ""
+        },
+        {
+          "name": "TaxPrintOnInvoice",
+          "dataType": "TaxPrintOnInvoice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxRoundOff",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "Sales tax rounding",
+          "description": ""
+        },
+        {
+          "name": "TaxSetoffVoucher_IN",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "displayName": "Tax setoff voucher",
+          "description": ""
+        },
+        {
+          "name": "TaxSpecifyByLine",
+          "dataType": "TaxSpecifyLine",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAmount_IN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationDocument",
+          "dataType": "TransportationDocumentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Triangulation",
+          "dataType": "EUROTriangulation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitedVATInvoice_LT",
+          "dataType": "UnitedVATInvoice_LT",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATAmount_IN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "VAT amount",
+          "description": ""
+        },
+        {
+          "name": "VATNum",
+          "dataType": "VATNumJournal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATOnPayment_RU",
+          "dataType": "VATOnPayment_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendConsInvoice_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendFinalUser_BR",
+          "dataType": "CustVendFinalUser_BR",
+          "isNullable": true,
+          "displayName": "Use and consumption",
+          "description": ""
+        },
+        {
+          "name": "VendGroup",
+          "dataType": "VendGroupId",
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceDeclaration_IS",
+          "dataType": "InvoiceDeclarationId_IS",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceGroup",
+          "dataType": "VendInvoiceGrouping",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorRequestedWorkerEmail",
+          "dataType": "Email",
+          "isNullable": true,
+          "displayName": "Requested approver email address",
+          "description": ""
+        },
+        {
+          "name": "VendPaymentGroup",
+          "dataType": "VendPaymentGrouping",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Volume",
+          "dataType": "Volume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WhoIsAuthor_LT",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIUUID_MX",
+          "dataType": "EInvoiceCFDIUUID_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceSeries_MX",
+          "dataType": "InvoiceSeries_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReverseCharge_UK",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyExchangeRate",
+          "dataType": "ReportingCurrencyExchRate",
+          "isNullable": true,
+          "displayName": "Reporting currency fixed exchange rate",
+          "description": ""
+        },
+        {
+          "name": "IntentLetterId_IT",
+          "dataType": "VendIntentLetterId_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlafondDate_IT",
+          "dataType": "PlafondDate_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNPurchasingCardType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankLCImportLine"
+          },
+          "name": "Relationship_BankLCImportLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CashDisc"
+          },
+          "name": "Relationship_CashDiscRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableConsigneeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentType_BR"
+          },
+          "name": "Relationship_FiscalDocumentType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventBuyerGroup"
+          },
+          "name": "Relationship_InventBuyerGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceDeclaration_IS"
+          },
+          "name": "Relationship_InvoiceDeclarationId_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsElectronicAddress"
+          },
+          "name": "Relationship_LogisticsElectronicAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceGroup"
+          },
+          "name": "Relationship_NumberSequenceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OfficialsTrans_RU"
+          },
+          "name": "Relationship_OfficialsTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymDay"
+          },
+          "name": "Relationship_PaymDayRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymSched"
+          },
+          "name": "Relationship_PaymSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchAgreementHeader"
+          },
+          "name": "Relationship_PurchAgreementHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTable_PurchIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_RemittanceAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesPurchOperationType_BR"
+          },
+          "name": "Relationship_SalesPurchOperationType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentLine"
+          },
+          "name": "Relationship_SourceDocumentLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TransportationDocument"
+          },
+          "name": "Relationship_TransportationDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendConsInvoice_JP"
+          },
+          "name": "Relationship_VendConsInvoice_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendGroup"
+          },
+          "name": "Relationship_VendGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_InvoiceAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_OrderAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableConsignorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor invoice journal"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AttorneyDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AttorneyId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AttorneyIssuedName_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankLCLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendCashDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendCashDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendCashDiscDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustAccountConsignee_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccountConsignor_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendConsTarget_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendContractNumZakat_SA",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Correct_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CorrectedInvoiceDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CorrectedInvoiceId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Addressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DlvDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InvoiceDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendDlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendDlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchEndDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchEndDiscAmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxEnterpriseNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ListDispatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchrateSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FacturedFully_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchFixedDueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InclTax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InterCompanyCompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyVoucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyPosted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InterCompanySalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchInternalInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LvIntrastatAddValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "IntrastatDispatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatFulfillmentDate_HU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventBaileeReceiptReportId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RoundOff",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemBuyerGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendLanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ListcodeId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NonRealRevenue_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NumberSequenceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NumberSequenceGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OffSessionId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymDayId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSchedId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendPrepayment",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustVendProforma",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchReceiptDate_W",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchInvoicedQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReasonTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RemittanceAddress",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReturnItemNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesPurchOperationTypeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeOnDlvAddress_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SourceDocumentHeaderRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SourceDocumentLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchSumLineDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MarkupSumPurch",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxInvoicePurchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxPrintOnInvoice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxSpecifyLine",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransportationDocumentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EUROTriangulation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UnitedVATInvoice_LT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VATNumJournal",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATOnPayment_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustVendFinalUser_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceDeclarationId_IS",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendInvoiceGrouping",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Email",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymentGrouping",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EInvoiceCFDIUUID_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceSeries_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReportingCurrencyExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendIntentLetterId_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlafondDate_IT",
+      "extendsDataType": "date"
+    }
+  ]
+}

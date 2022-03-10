@@ -10,14 +10,18 @@ import {
     CdmTraitCollection,
     CdmTraitGroupReference,
     CdmTraitReference,
+    isCdmTraitReference,
     Logger
 } from '../../internal';
 import { CdmJsonType, TraitGroupReference, TraitReference } from '../CdmFolder/types';
 import { processExtensionTraitToObject, traitRefIsExtension } from './ExtensionHelper';
 import { Annotation, CsvFormatSettings, MetadataObject } from './types';
 import { NameValuePair } from '../../Utilities/NameValuePair';
+import { ArgumentPersistence } from './ArgumentPersistence';
 
 const annotationToTraitMap: Map<string, string> = new Map([['version', 'is.CDM.entityVersion']]);
+
+const traitToAnnotationMap: Map<string, string> = new Map([['is.CDM.entityVersion', 'version']]);
 
 export const ignoredTraits: Set<string> = new Set<string>().add('is.modelConversion.otherAnnotations')
     .add('is.propertyContent.multiTrait')
@@ -41,6 +45,10 @@ export function shouldAnnotationGoIntoASingleTrait(name: string): boolean {
 
 export function convertAnnotationToTrait(name: string): string {
     return annotationToTraitMap.get(name);
+}
+
+export function convertTraitToAnnotation(name: string): string {
+    return traitToAnnotationMap.get(name);
 }
 
 export function createCsvTrait(object: CsvFormatSettings, ctx: CdmCorpusContext): CdmTraitReference {
@@ -150,7 +158,7 @@ export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: 
     }
 }
 
-export function processTraitsAndAnnotationsToData(
+export async function processTraitsAndAnnotationsToData(
     ctx: CdmCorpusContext,
     entityObject: MetadataObject,
     traits: CdmTraitCollection): Promise<void> {
@@ -166,11 +174,7 @@ export function processTraitsAndAnnotationsToData(
         if (traitRefIsExtension(trait)) {
             // Safe to cast since extensions can only be trait refs, not trait group refs
             processExtensionTraitToObject(trait as CdmTraitReference, entityObject);
-
-            continue;
-        }
-
-        if (trait.namedReference === 'is.modelConversion.otherAnnotations') {
+        } else if (trait.namedReference === 'is.modelConversion.otherAnnotations') {
             // Safe to cast since extensions can only be trait refs, not trait group refs
             for (const annotation of ((trait as CdmTraitReference).arguments.allItems[0].value as any)) {
                 if (annotation instanceof NameValuePair) {
@@ -185,6 +189,10 @@ export function processTraitsAndAnnotationsToData(
                     Logger.warning(ctx, this.TAG, this.processTraitsAndAnnotationsToData.name, trait.atCorpusPath, cdmLogCode.WarnAnnotationTypeNotSupported);
                 }
             }
+        } else if (isCdmTraitReference(trait) && traitToAnnotationMap.has(trait.namedReference)) {
+            const element: Annotation = await ArgumentPersistence.toData(trait.arguments.allItems[0], undefined, undefined);
+            element.name = convertTraitToAnnotation(trait.namedReference);
+            annotations.push(element);
         } else if (!ignoredTraits.has(trait.namedReference)
                     && !trait.namedReference.startsWith('is.dataFormat')
                     && !(modelJsonPropertyTraits.has(trait.namedReference) && trait instanceof CdmTraitReference && (trait as CdmTraitReference).isFromProperty)) {
@@ -203,12 +211,4 @@ export function processTraitsAndAnnotationsToData(
             entityObject['cdm:traits'] = extensions;
         }
     }
-}
-
-export function traitToAnnotationName(traitName: string): string {
-    if (traitName === 'is.CDM.entityVersion') {
-        return 'version';
-    }
-
-    return undefined;
 }

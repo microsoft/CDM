@@ -655,9 +655,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // make a new document in given folder if provided or the same folder as the source entity
                 folder.Documents.Remove(fileName);
                 CdmDocumentDefinition docRes = folder.Documents.Add(fileName);
-                // add a import of the source document 
+                // add an import of the source document 
                 origDoc = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.Imports.Add(origDoc, "resolvedFrom");
+
+                if (this.InDocument.Imports.Item("cdm:/foundations.cdm.json") != null)
+                {
+                    docRes.Imports.Add("cdm:/foundations.cdm.json");
+                }
 
                 docRes.DocumentVersion = this.InDocument.DocumentVersion;
                 // make the empty entity

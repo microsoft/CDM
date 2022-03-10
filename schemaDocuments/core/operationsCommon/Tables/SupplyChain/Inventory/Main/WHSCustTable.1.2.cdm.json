@@ -1,0 +1,145 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "WHSFulfillmentPolicy.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSCustTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "FillEntireOrder",
+          "dataType": "WHSFillEntireOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FulfillmentRate",
+          "dataType": "WHSFulfillmentRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FulfillmentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GenerateASN",
+          "dataType": "WHSGenerateASN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FulfillmentErrorTolerance",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FulfillmentPolicy",
+          "dataType": "WHSFulfillmentPolicyRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSFulfillmentPolicy"
+          },
+          "name": "Relationship_WHSFulfillmentPolicyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "The customer accounts that are associated with warehouse management transactions"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSFillEntireOrder",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSFulfillmentRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSGenerateASN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSFulfillmentPolicyRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

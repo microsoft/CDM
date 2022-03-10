@@ -80,7 +80,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("value", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("date", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("testCount", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[4].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[4].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("value", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("date", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("testCount", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[4].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[4].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("value", (resolvedEntityWithReferenceOnly.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("date", (resolvedEntityWithReferenceOnly.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("testCount", (resolvedEntityWithReferenceOnly.Attributes[4] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntityWithReferenceOnly.Attributes[4].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntityWithReferenceOnly.Attributes[4].AppliedTraits.Item("is.linkedEntity.array.count"));
 
             // Now resolve the entity with the 'structured' directive
             resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "structured" });
@@ -218,7 +218,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[5].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[5].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
             Assert.AreEqual(6, resolvedEntity.Attributes.Count);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[0].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[0].AppliedTraits.Item("is.linkedEntity.array.count"));
             Assert.AreEqual("name1", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("age1", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("address1", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
@@ -279,7 +279,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[5].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[5].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // ExtendsEntityResolutionGuidance doesn't support doing expansions, so we only get the Count attribute
             Assert.AreEqual(1, resolvedEntity.Attributes.Count);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[0].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[0].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
 
         /// <summary>
@@ -341,8 +341,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("phoneNumber2", (resolvedEntity.Attributes[8] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("email2", (resolvedEntity.Attributes[9] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("personCount", (resolvedEntity.Attributes[10] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[10].AppliedTraits[1].NamedReference);
-            Assert.AreEqual("indicates.expansionInfo.count", resolvedEntity.Attributes[10].AppliedTraits[2].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[10].AppliedTraits.Item("is.linkedEntity.array.count"));
+            Assert.IsNotNull(resolvedEntity.Attributes[10].AppliedTraits.Item("indicates.expansionInfo.count"));
         }
 
         /// <summary>
@@ -372,9 +372,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[5].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[5].AppliedTraits.Item("is.linkedEntity.array.count"));
             Assert.AreEqual("anotherCount", (resolvedEntity.Attributes[6] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[6].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[6].AppliedTraits.Item("is.linkedEntity.array.count"));
             Assert.AreEqual("firstName", (resolvedEntity.Attributes[7] as CdmTypeAttributeDefinition).Name);
         }
 
@@ -402,7 +402,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("new_name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("new_age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("new_someCount", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[2].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[2].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
 
         /// <summary>
@@ -461,7 +461,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[5].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[5].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
 
         /// <summary>
@@ -487,7 +487,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
             Assert.AreEqual(6, resolvedEntity.Attributes.Count);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[0].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[0].AppliedTraits.Item("is.linkedEntity.array.count"));
             Assert.AreEqual("name1", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("age1", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("address1", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
@@ -523,7 +523,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("someCount", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[5].AppliedTraits[1].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[5].AppliedTraits.Item("is.linkedEntity.array.count"));
         }
     }
 }

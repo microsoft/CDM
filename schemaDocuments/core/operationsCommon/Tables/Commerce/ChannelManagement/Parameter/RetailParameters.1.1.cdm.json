@@ -1,0 +1,2008 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustLedger.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CustPaymModeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventJournalName.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Group/MarkupTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscAdmName.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Miscellaneous/RetailEventNotificationProfile.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/InventoryAndAdvancedWarehouse/Group/RetailInventItemActivityType.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Reference/ReturnDispositionCode.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/SysEmailTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResAttributeGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/BarcodeSetup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventBatch.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/MCRHoldCodeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PrePaymentLedgerJournalName",
+          "dataType": "RetailPrePaymentLedgerJournalNameId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "mixAndMatchActivityType",
+          "dataType": "RetailInventItemActivityTypeId",
+          "isNullable": true,
+          "displayName": "Mix and match activity type",
+          "description": ""
+        },
+        {
+          "name": "AccountExportProfile",
+          "dataType": "RetailSmbAccountExportProfileRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "aggregateBeforePosting",
+          "dataType": "RetailRetailAggregateYesNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AggregateCustPayments_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Customer payments",
+          "description": ""
+        },
+        {
+          "name": "AggregateIncomeExpense_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Income/Expense transactions",
+          "description": ""
+        },
+        {
+          "name": "AggregateSalesReturns_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Sales and returns",
+          "description": ""
+        },
+        {
+          "name": "AggregateTenderFlow_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Tender remove/float",
+          "description": ""
+        },
+        {
+          "name": "ApplyDiscountsToPriceKeyedIn",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Apply discounts to 'key in price' products.",
+          "description": ""
+        },
+        {
+          "name": "ApplyDiscountsToPriceOverrides",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Apply discounts to price overrides.",
+          "description": ""
+        },
+        {
+          "name": "AutomaticReturnOfLoyaltyPayment_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Automatically calculate refund points",
+          "description": ""
+        },
+        {
+          "name": "autoSettle",
+          "dataType": "RetailAutoSettle",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AwardPointsForPartialRedemption_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Award loyalty points for a partial redemption",
+          "description": ""
+        },
+        {
+          "name": "BuyersPushRespectAssortments",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Buyer's push",
+          "description": ""
+        },
+        {
+          "name": "CancellationCharge",
+          "dataType": "RetailCancellationCharge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CancellationChargeCode",
+          "dataType": "MarkupCode",
+          "isNullable": true,
+          "displayName": "Cancellation charge code",
+          "description": ""
+        },
+        {
+          "name": "CrossDockingRespectAssortments",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Cross docking",
+          "description": ""
+        },
+        {
+          "name": "defaultCustomerPosting",
+          "dataType": "RetailDefaultCustomerPosting",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultCustPaymentJournalName_RU",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Customer payment journal",
+          "description": ""
+        },
+        {
+          "name": "defaultInventJournalName",
+          "dataType": "JournalNameId",
+          "isNullable": true,
+          "displayName": "Default inventory journal",
+          "description": ""
+        },
+        {
+          "name": "DefaultJournalName4CategoryPrice",
+          "dataType": "PriceDiscJournalName",
+          "isNullable": true,
+          "displayName": "Category journal name",
+          "description": ""
+        },
+        {
+          "name": "DefaultLedgerJournalName_RU",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "General journal",
+          "description": ""
+        },
+        {
+          "name": "DefaultOrdertype",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Default order type",
+          "description": ""
+        },
+        {
+          "name": "DefaultPriceType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Default price type",
+          "description": ""
+        },
+        {
+          "name": "DefaultRCashJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Cash payment journal",
+          "description": ""
+        },
+        {
+          "name": "DefaultTransferType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Default transfer type",
+          "description": ""
+        },
+        {
+          "name": "detailSummary",
+          "dataType": "RetailStatementDetailSummary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscountAccountLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Discount account",
+          "description": ""
+        },
+        {
+          "name": "DiscountAlgorithmMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "discountOfferActivityType",
+          "dataType": "RetailInventItemActivityTypeId",
+          "isNullable": true,
+          "displayName": "Discount activity type",
+          "description": ""
+        },
+        {
+          "name": "EANLicenseNo",
+          "dataType": "RetailEANLicenseNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ElectronicDeliveryModeCode",
+          "dataType": "DlvModeId",
+          "isNullable": true,
+          "displayName": "Electronic mode of delivery",
+          "description": ""
+        },
+        {
+          "name": "EventNotificationProfileId",
+          "dataType": "RetailEventNotificationProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpirationDate",
+          "dataType": "RetailExpirationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GiftCardCompany",
+          "dataType": "DataAreaId",
+          "displayName": "Gift card company",
+          "description": ""
+        },
+        {
+          "name": "GiftcardItem",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "displayName": "Gift card product",
+          "description": ""
+        },
+        {
+          "name": "GiftCardLedgerJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Journal",
+          "description": ""
+        },
+        {
+          "name": "GiftCardPrepaymentCustAccount_RU",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GiftCardPrepaymentPostingProfile_RU",
+          "dataType": "CustPostingProfile",
+          "isNullable": true,
+          "displayName": "Posting profile for prepayments",
+          "description": ""
+        },
+        {
+          "name": "InventLocationIdForInventory",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "displayName": "Inventory",
+          "description": ""
+        },
+        {
+          "name": "InventLocationIdForPurchaseOrder",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "displayName": "Purchase order",
+          "description": ""
+        },
+        {
+          "name": "InventLocationIdForSalesOrder",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "displayName": "Sales order",
+          "description": ""
+        },
+        {
+          "name": "ItemLabelLastAction",
+          "dataType": "RetailLabelLastAction",
+          "isNullable": true,
+          "displayName": "Last action for product label",
+          "description": ""
+        },
+        {
+          "name": "ItemLabelsForNegativeStock",
+          "dataType": "RetailItemLabelsForNegativeStock",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "itemSalesStatisticsOn",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Sales statistics on",
+          "description": ""
+        },
+        {
+          "name": "JournalNameForKitPricing",
+          "dataType": "PriceDiscJournalName",
+          "isNullable": true,
+          "displayName": "Kit journal name",
+          "description": ""
+        },
+        {
+          "name": "key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ledgerAccountType",
+          "dataType": "RetailBookingLedgerAccountType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxBestDealStepCount",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maxSalesOrdersPerTask",
+          "dataType": "RetailSalesOrdersPerTask",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRGiftCardVoidJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Void journal name",
+          "description": ""
+        },
+        {
+          "name": "MinimumDepositForSalesOrder",
+          "dataType": "RetailCustomerOrderDeposit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinimumPasswordLength",
+          "dataType": "RetailPOSPasswordLength",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MixMatchLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Mix and match number",
+          "description": ""
+        },
+        {
+          "name": "multibuyActivityType",
+          "dataType": "RetailInventItemActivityTypeId",
+          "isNullable": true,
+          "displayName": "Quantity discount activity type",
+          "description": ""
+        },
+        {
+          "name": "MultiBuyLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Quantity discount",
+          "description": ""
+        },
+        {
+          "name": "NumberOfPasswordsRemembered",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Number of passwords remembered",
+          "description": ""
+        },
+        {
+          "name": "OfferLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Discount",
+          "description": ""
+        },
+        {
+          "name": "OverRideSystemLookup",
+          "dataType": "RetailConnOverRideSystemLookup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "parallelSOPosting",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Process requests in parallel",
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "CustPaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "paymentStatistics",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Payment statistics",
+          "description": ""
+        },
+        {
+          "name": "PaymMode",
+          "dataType": "CustPaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PickUpDeliveryModeCode",
+          "dataType": "DlvModeId",
+          "isNullable": true,
+          "displayName": "Pickup mode of delivery",
+          "description": ""
+        },
+        {
+          "name": "postBankedSum",
+          "dataType": "RetailPostBankedSum",
+          "isNullable": true,
+          "displayName": "Bank drop",
+          "description": ""
+        },
+        {
+          "name": "postCustDisc",
+          "dataType": "RetailPostCustDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostFacture_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post facture",
+          "description": ""
+        },
+        {
+          "name": "postInfocodeDisc",
+          "dataType": "RetailPostInfocodeDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "postLineDisc",
+          "dataType": "RetailPostLineDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "postPeriodicDisc",
+          "dataType": "RetailPostPeriodicDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostSafeSum",
+          "dataType": "RetailPostSafeSum",
+          "isNullable": true,
+          "displayName": "Safe drop",
+          "description": ""
+        },
+        {
+          "name": "postSalesOrderWhenPaid",
+          "dataType": "RetailPostSalesOrderWhenPaid",
+          "isNullable": true,
+          "displayName": "Post sales order when paid",
+          "description": ""
+        },
+        {
+          "name": "postTotalDisc",
+          "dataType": "RetailPostTotalDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrepaymentLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Ledger account",
+          "description": ""
+        },
+        {
+          "name": "ProcessGiftCardsAsPrepayments_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Process gift card operations as prepayments",
+          "description": ""
+        },
+        {
+          "name": "ProcessReturnsAsInOriginalSaleShift_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Process as a return in the same shift",
+          "description": ""
+        },
+        {
+          "name": "ProposeRefundPaymentAmount_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Initialize refund amounts",
+          "description": ""
+        },
+        {
+          "name": "receiptEmailFilename",
+          "dataType": "RetailReceiptEmailFilename",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "receiptEmailSubject",
+          "dataType": "RetailReceiptEmailSubject",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "receiptEmailText",
+          "dataType": "RetailReceiptEmailText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "receiptOption",
+          "dataType": "RetailReceiptOption",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentAssortmentsCoverageDays",
+          "dataType": "RetailReplAssortmentsCoverageDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequireNumericChar",
+          "dataType": "RetailPOSParameterNumericChar",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequireSpecialChar",
+          "dataType": "RetailPOSParameterSpecialChar",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequireUppercase",
+          "dataType": "RetailPOSParameterUpperCase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnDispositionCodeId",
+          "dataType": "ReturnDispositionCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShelfLabelLastAction",
+          "dataType": "RetailLabelLastAction",
+          "isNullable": true,
+          "displayName": "Last action for shelf label",
+          "description": ""
+        },
+        {
+          "name": "ShippingChargeCode",
+          "dataType": "MarkupCode",
+          "isNullable": true,
+          "displayName": "Shipping charge code",
+          "description": ""
+        },
+        {
+          "name": "staffStatistics",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Staff statistics",
+          "description": ""
+        },
+        {
+          "name": "systemInUse",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "System in use",
+          "description": ""
+        },
+        {
+          "name": "terminalStatistics",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Terminal statistics",
+          "description": ""
+        },
+        {
+          "name": "ThresholdLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Threshold discount number",
+          "description": ""
+        },
+        {
+          "name": "TotalDiscountLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Total discount account",
+          "description": ""
+        },
+        {
+          "name": "UseDefaultLedgerAccount",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Use default ledger accounts",
+          "description": ""
+        },
+        {
+          "name": "UseDefaultTradeDates_W",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use posting date as sales date",
+          "description": ""
+        },
+        {
+          "name": "UseRetailReturnTaxGroup_W",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use sales tax group for returns",
+          "description": ""
+        },
+        {
+          "name": "WishListInvitationEmailId",
+          "dataType": "SysEmailId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GiftCardClosingLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Nonoperating income account",
+          "description": ""
+        },
+        {
+          "name": "ItemLabelSetupMissingAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseGiftCardPolicies",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Use gift card policies",
+          "description": ""
+        },
+        {
+          "name": "LockoutThreshold",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Lockout threshold",
+          "description": ""
+        },
+        {
+          "name": "LockoutDuration",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Lockout duration (in minutes)",
+          "description": ""
+        },
+        {
+          "name": "LoginCounterResetDuration",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Reset login counter after (in minutes)",
+          "description": ""
+        },
+        {
+          "name": "PasswordExpiryInterval",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Password expiry interval (in days)",
+          "description": ""
+        },
+        {
+          "name": "PasswordExpiryNotificationThreshold",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Password expiry notification threshold (in days)",
+          "description": ""
+        },
+        {
+          "name": "RefundShippingAmtWithoutAppr",
+          "dataType": "RetailRefundShippingAmtWithoutAppr",
+          "isNullable": true,
+          "displayName": "Maximum amount without approval",
+          "description": ""
+        },
+        {
+          "name": "RefundShippingCharges",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Refund shipping charges",
+          "description": ""
+        },
+        {
+          "name": "RecommendationsModelId",
+          "dataType": "SysGuidString",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecommendationsModelName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Recommendation model",
+          "description": ""
+        },
+        {
+          "name": "EnableProductRecommendations",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable product recommendations",
+          "description": ""
+        },
+        {
+          "name": "RecommendationsActiveBuildType",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Active build type",
+          "description": ""
+        },
+        {
+          "name": "RecommendationsActiveBuildCreatedDate",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Active build created date",
+          "description": ""
+        },
+        {
+          "name": "FbtModelId",
+          "dataType": "SysGuidString",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FbtModelName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Frequently bought together model",
+          "description": ""
+        },
+        {
+          "name": "FbtActiveBuildType",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Active build type",
+          "description": ""
+        },
+        {
+          "name": "FbtActiveBuildCreatedDate",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Active build created date",
+          "description": ""
+        },
+        {
+          "name": "HoldTogetherForDiscountRounding",
+          "dataType": "RetailDiscountRoundingHoldTogetherType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarryOutDeliveryModeCode",
+          "dataType": "DlvModeId",
+          "isNullable": true,
+          "displayName": "Carry Out mode of delivery",
+          "description": ""
+        },
+        {
+          "name": "DlvMode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerAttributeGroup",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClientBookAttributeGroup",
+          "dataType": "RetailClientBookAttributeGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CouponBarcodeSetupId",
+          "dataType": "BarcodeSetupId",
+          "isNullable": true,
+          "displayName": "Coupon bar code mask",
+          "description": ""
+        },
+        {
+          "name": "SAFTERFileFormatMappingId",
+          "dataType": "RetailSAFTERFileFormatMappingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateGSTTransactionId_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Update POS invoice number",
+          "description": ""
+        },
+        {
+          "name": "DisableCountingRequired",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Disable counting required",
+          "description": ""
+        },
+        {
+          "name": "GrandTotalJournalArchiveERFileFormatMappingId",
+          "dataType": "RetailGrandTotalJournalArchiveERFileFormatMappingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxNumberOfStatementsPostInParallel",
+          "dataType": "RetailEodMaxNumberOfStatementPostInParallel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxNumberOfThreadsCustomerOrder",
+          "dataType": "RetailEodMaxNumberOfCustomerOrderThreads",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AggregatedTransactionsBundleSize",
+          "dataType": "RetailEodAggregatedTransactionsBundleSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReserveInventoryDuringStatementCalculation",
+          "dataType": "RetailEodReserveInventoryDuringStatementCalculation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowExchangeOnReturnOrders",
+          "dataType": "RetailAllowExchangeOnReturnOrders",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxOnGiftCards",
+          "dataType": "RetailTaxOnGiftCard",
+          "isNullable": true,
+          "displayName": "Tax on gift cards",
+          "description": ""
+        },
+        {
+          "name": "AllowConcludeGiftCardTransactionsWhenOffline",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow concluding gift card transactions in offline mode",
+          "description": ""
+        },
+        {
+          "name": "UseAdvanceInvoice_W",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Create advance invoice for deposit",
+          "description": ""
+        },
+        {
+          "name": "TaxCalculationBehavior",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseAdvancedAutoCharges",
+          "dataType": "UseAdvancedAutoCharges",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GiftCardInquiryPrintHistoryCount",
+          "dataType": "RetailGiftCardInquiryPrintHistoryCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisableTransactionConsistencyChecker",
+          "dataType": "RetailTransactionConsistencyCheckerStatus",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnableReturnsForMultipleOrderInvoices",
+          "dataType": "RetailEnableReturnsForMultipleOrderInvoices",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxNumberOfThreadsConsistencyChecker",
+          "dataType": "RetailTransactionConsistencyCheckerNumberOfThreads",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecalculateDimensionsOnPostingError",
+          "dataType": "RetailRecalculateDimensionsOnPostingError",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChargeOverrideReasonCode",
+          "dataType": "RetailInfocodeId",
+          "isNullable": true,
+          "displayName": "Charge override reason code",
+          "description": ""
+        },
+        {
+          "name": "PostPeriodicDiscountForOrders",
+          "dataType": "RetailPostPeriodicDiscountForOrders",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SkipAggregationForReturns",
+          "dataType": "RetailSkipAggregationForReturns",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseRTSForOnlineOrderCreation",
+          "dataType": "RetailUseRTSForOnlineOrderCreation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseFinancialDimensionFromReturnStore",
+          "dataType": "RetailEodStatementPostReturnWithoutSaleFinancialDimension",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseSessionDateForCalculatingPricesAndDiscounts",
+          "dataType": "RetailUseSessioDateForPricesAndDiscounts",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultBatchIdOnSaleForCustomerOrder",
+          "dataType": "RetailDefaultBatchIdOnSale",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseDefaultBatchIdOnSaleForCustomerOrder",
+          "dataType": "RetailUseDefaultBatchIdOnSale",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseDefaultBatchIdOnSaleForCashAndCarrySales",
+          "dataType": "RetailUseDefaultBatchIdOnSale",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultBatchIdOnSaleForCashAndCarrySales",
+          "dataType": "RetailDefaultBatchIdOnSale",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IgnoreReturnLink",
+          "dataType": "RetailEodStatementIgnoreReturnLink",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisablePostRoundingDifference",
+          "dataType": "RetailDisablePostRoundingDifference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShowOnlyCarrierOptionsForShipOrders",
+          "dataType": "RetailShowOnlyCarrierOptionsForShipOrders",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AsyncOrdersEditHoldCode",
+          "dataType": "RetailAsyncOrdersEditHoldCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TenderLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Tender discount",
+          "description": ""
+        },
+        {
+          "name": "EnableChannelReturnPolicies",
+          "dataType": "RetailReturnPolicyChannelIsEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StmtAutoSettleCustomerDeposit",
+          "dataType": "RetailEodStatementAutoSettleCustomerDeposit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerOrderTaxCalculationBehavior",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowConcludeCreditMemoTransactionsWhenOffline",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow concluding credit memo transactions in offline mode",
+          "description": ""
+        },
+        {
+          "name": "StmtUseChannelCashManagementReconciliation",
+          "dataType": "RetailEodStatementUseChannelCashManagementReconciliation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventoryAvailabilityQuantityReturnType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseSalesStoreDimensions",
+          "dataType": "UseSalesStoreDimensions",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventoryEnableAutomaticValidation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable automatic validation",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_CustLedger_GiftCardPrepaymentProfile_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeTable"
+          },
+          "name": "Relationship_CustPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_DefaultCustPaymentJournalName_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_DefaultIncomeExpenseJournalName_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_DefaultRCashJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination3Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination5Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination6Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvMode_ElectronicRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvMode_PickUpRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvMode_CarryOutRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_GiftCardJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_GiftCardPrepaymentCustAccount_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventJournalName"
+          },
+          "name": "Relationship_InventJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocation1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocation2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_MarkUpTable_CancellationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_MarkupTable_ShippingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_MCRLedgerJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_PrepaymentDimensionAttrValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscAdmName"
+          },
+          "name": "Relationship_PriceDiscAdmNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscAdmName"
+          },
+          "name": "Relationship_PriceDiscAdmName1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailEventNotificationProfile"
+          },
+          "name": "Relationship_RetailEventNotificationProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInventItemActivityType"
+          },
+          "name": "Relationship_RetailInventItemActivityTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInventItemActivityType"
+          },
+          "name": "Relationship_RetailInventItemActivityType1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInventItemActivityType"
+          },
+          "name": "Relationship_RetailInventItemActivityType2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReturnDispositionCode"
+          },
+          "name": "Relationship_ReturnDispositionCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailTable"
+          },
+          "name": "Relationship_SysEmailTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination7Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttributeGroup"
+          },
+          "name": "Relationship_EcoResAttributeGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttributeGroup"
+          },
+          "name": "Relationship_EcoResAttributeGroup1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BarcodeSetup"
+          },
+          "name": "Relationship_BarcodeSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventBatch"
+          },
+          "name": "Relationship_InventBatchCustomerOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventBatch"
+          },
+          "name": "Relationship_InventBatchCashAndCarrySalesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRHoldCodeTable"
+          },
+          "name": "Relationship_AsyncOrdersEditHoldCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination8Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail Headquarters parameters"
+    },
+    {
+      "dataTypeName": "RetailPrePaymentLedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInventItemActivityTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailSmbAccountExportProfileRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailRetailAggregateYesNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAutoSettle",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCancellationCharge",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MarkupCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDefaultCustomerPosting",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceDiscJournalName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStatementDetailSummary",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailEANLicenseNo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailEventNotificationProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailExpirationDate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailLabelLastAction",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailItemLabelsForNegativeStock",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailBookingLedgerAccountType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailSalesOrdersPerTask",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCustomerOrderDeposit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailPOSPasswordLength",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailConnOverRideSystemLookup",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustPaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailPostBankedSum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostCustDisc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostInfocodeDisc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostLineDisc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostPeriodicDisc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostSafeSum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostSalesOrderWhenPaid",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostTotalDisc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailReceiptEmailFilename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReceiptEmailSubject",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReceiptEmailText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReceiptOption",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailReplAssortmentsCoverageDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPOSParameterNumericChar",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPOSParameterSpecialChar",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPOSParameterUpperCase",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReturnDispositionCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailRefundShippingAmtWithoutAppr",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SysGuidString",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDiscountRoundingHoldTogetherType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailClientBookAttributeGroupId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BarcodeSetupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailSAFTERFileFormatMappingId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailGrandTotalJournalArchiveERFileFormatMappingId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailEodMaxNumberOfStatementPostInParallel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodMaxNumberOfCustomerOrderThreads",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodAggregatedTransactionsBundleSize",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodReserveInventoryDuringStatementCalculation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAllowExchangeOnReturnOrders",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTaxOnGiftCard",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UseAdvancedAutoCharges",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailGiftCardInquiryPrintHistoryCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTransactionConsistencyCheckerStatus",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEnableReturnsForMultipleOrderInvoices",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTransactionConsistencyCheckerNumberOfThreads",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailRecalculateDimensionsOnPostingError",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailInfocodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailPostPeriodicDiscountForOrders",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailSkipAggregationForReturns",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailUseRTSForOnlineOrderCreation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodStatementPostReturnWithoutSaleFinancialDimension",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailUseSessioDateForPricesAndDiscounts",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailDefaultBatchIdOnSale",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailUseDefaultBatchIdOnSale",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodStatementIgnoreReturnLink",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailDisablePostRoundingDifference",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailShowOnlyCarrierOptionsForShipOrders",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAsyncOrdersEditHoldCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReturnPolicyChannelIsEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodStatementAutoSettleCustomerDeposit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodStatementUseChannelCashManagementReconciliation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UseSalesStoreDimensions",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetGroupZakat_SA.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetDepreciationZakat_SA",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetGroup",
+          "dataType": "RefRecId",
+          "displayName": "Group number",
+          "description": ""
+        },
+        {
+          "name": "CurrentYrGroupBalance",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Group balance end of current year",
+          "description": ""
+        },
+        {
+          "name": "CurrentYrGroupValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Group value end of current year",
+          "description": ""
+        },
+        {
+          "name": "DepreciationAsPerBooks",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Depreciation as per books",
+          "description": ""
+        },
+        {
+          "name": "DepreciationDifference",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Depreciation difference",
+          "description": ""
+        },
+        {
+          "name": "DepreciationRatio",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Depreciation ratio",
+          "description": ""
+        },
+        {
+          "name": "DepreciationValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Depreciation value",
+          "description": ""
+        },
+        {
+          "name": "GroupValueEndofYr",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Group value end of year",
+          "description": ""
+        },
+        {
+          "name": "MaintenanceExpenses",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "More than 4% maintenance expenses",
+          "description": ""
+        },
+        {
+          "name": "PreviousYrCost",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Total cost of additions within current and previous year",
+          "description": ""
+        },
+        {
+          "name": "PreviousYrGrpValue",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Group value end of previous year",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalCompensations",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Total compensations within current and previous year",
+          "description": ""
+        },
+        {
+          "name": "Year",
+          "dataType": "LedgerFiscalYearZakat_SA",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetGroupZakat_SA"
+          },
+          "name": "Relationship_AssetGroupZakatRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Zakat assets and depreciation transactions"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerFiscalYearZakat_SA",
+      "extendsDataType": "integer"
+    }
+  ]
+}

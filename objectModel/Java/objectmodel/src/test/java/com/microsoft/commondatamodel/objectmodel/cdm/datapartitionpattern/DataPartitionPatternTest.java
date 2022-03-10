@@ -111,6 +111,43 @@ public class DataPartitionPatternTest {
   }
 
   /**
+   * Tests data partition objects created by a partition pattern do not share the same trait with the partition pattern
+   */
+  @Test
+  public void testRefreshesDataPartitionPatternsWithTrait() throws IOException, InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshesDataPartitionPatternsWithTrait");
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
+
+    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getDataPartitionPatterns().size(), 1);
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 0);
+
+    final CdmTraitDefinition traitDef = new CdmTraitDefinition(corpus.getCtx(), "testTrait");
+    traitDef.getParameters().add(new CdmParameterDefinition(corpus.getCtx(), "argument value"));
+    CdmTraitReference patternTraitRef = (CdmTraitReference)partitionEntity.getDataPartitionPatterns().get(0).getExhibitsTraits().add("testTrait");
+    patternTraitRef.getArguments().add("int", 1);
+    patternTraitRef.getArguments().add("bool", (Object)true);
+    patternTraitRef.getArguments().add("string", "a");
+
+    manifest.fileStatusCheckAsync().join();
+
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 2);
+    patternTraitRef = (CdmTraitReference)partitionEntity.getDataPartitionPatterns().get(0).getExhibitsTraits().item("testTrait");
+    Assert.assertEquals(patternTraitRef.getArguments().get(0).getValue(), 1);
+    Assert.assertTrue((Boolean) patternTraitRef.getArguments().get(1).getValue());
+    patternTraitRef.getArguments().get(0).setValue(3);
+    patternTraitRef.getArguments().get(1).setValue(false);
+
+    final CdmTraitReference partitionTraitRef = (CdmTraitReference)partitionEntity.getDataPartitions().get(0).getExhibitsTraits().item("testTrait");
+    Assert.assertNotEquals(partitionTraitRef, patternTraitRef);
+    Assert.assertEquals(partitionTraitRef.getArguments().get(0).getValue(), 1);
+    Assert.assertTrue((Boolean) partitionTraitRef.getArguments().get(1).getValue());
+    partitionTraitRef.getArguments().get(0).setValue(2);
+
+    Assert.assertEquals(((CdmTraitReference)partitionEntity.getDataPartitions().get(1).getExhibitsTraits().item("testTrait")).getArguments().get(0).getValue(), 1);
+  }
+
+  /**
    * Testing that error is handled when partition pattern contains a folder that does not exist
    */
   @Test

@@ -164,9 +164,6 @@ public class Program {
     System.out.println("Resolve the placeholder");
     final CdmManifestDefinition manifestResolved = manifestAbstract.createResolvedManifestAsync("default", null).get();
 
-    // Add an import to the foundations doc so the traits about partitions will resolve nicely.
-    manifestResolved.getImports().add(FOUNDATION_JSON_PATH);
-
     System.out.println("Save the documents");
     // We can save the documents as manifest.cdm.json format or model.json
     // Save as manifest.cdm.json

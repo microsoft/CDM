@@ -1,0 +1,188 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CatVendorCatalog.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatVendorApprovedProduct",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CatVendorCatalog",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ColorName",
+          "dataType": "EcoResColorName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfigurationName",
+          "dataType": "EcoResConfigurationName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DirPartyTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EcoResCategory",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EcoResProduct",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDeleted",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Deleted",
+          "description": ""
+        },
+        {
+          "name": "ProductSubtype",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SizeName",
+          "dataType": "EcoResSizeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StyleName",
+          "dataType": "EcoResStyleName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorProductCode",
+          "dataType": "EcoResProductDisplayProductNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_CategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_PartyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_ProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CatVendorCatalog"
+          },
+          "name": "Relationship_VendorCatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor approved products"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResColorName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResConfigurationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EcoResSizeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResStyleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResProductDisplayProductNumber",
+      "extendsDataType": "string"
+    }
+  ]
+}

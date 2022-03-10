@@ -1,0 +1,1382 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetAcquisitionMethod.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "AssetBookTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Transaction/AssetChangesHistory.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetConsumptionFactor.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetConsumptionUnit.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetLedger.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetReserveType.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetRevaluationGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetSorting.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "AssetTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Transaction/AssetTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetDepreciationGroup_W.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/MainAccount.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetDepreciationProfile.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetSubGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetBook",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AcquisitionDate",
+          "dataType": "AssetAcquisitionDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AcquisitionMethod",
+          "dataType": "AssetAcquisitionMethodId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AcquisitionPrice",
+          "dataType": "AssetAcquisitionPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllocationStartDate_JP",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowableLimitForAccumulatedDepType_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetCostAccountingType_PL",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetDerogatoryModel_FR",
+          "dataType": "AssetDerogatoryValueModel_FR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetFairValue",
+          "dataType": "AssetFairValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetGroup",
+          "dataType": "AssetGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetGroupDepreciation_IN",
+          "dataType": "AssetGroupDepreciation_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetId",
+          "dataType": "AssetId",
+          "description": ""
+        },
+        {
+          "name": "AssetPurchaseDate_PL",
+          "dataType": "PlAssetPurchaseDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetRevisedAcquisitionCost_JP",
+          "dataType": "AssetRevisedAcquisitionCost_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetRevisedAcquisitionCostStartDate_JP",
+          "dataType": "AssetTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BookId",
+          "dataType": "AssetBookId",
+          "description": ""
+        },
+        {
+          "name": "CategorizationDate_CZ",
+          "dataType": "CzAssetCategorizationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CheckMaxPercentRB",
+          "dataType": "AssetCheckMaxPercentRB_DE",
+          "isNullable": true,
+          "displayName": "Check maximum percent",
+          "description": ""
+        },
+        {
+          "name": "ConsumptionFactorId",
+          "dataType": "AssetConsumptionFactorId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsumptionQtyEstimated",
+          "dataType": "AssetConsumptionQtyEstimated",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsumptionUnitId",
+          "dataType": "AssetConsumptionUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustInvoiceId",
+          "dataType": "CustInvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Depreciation",
+          "dataType": "AssetDepreciate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationAmountUnit",
+          "dataType": "AssetDepreciationAmountUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationConvention",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationGroupId_W",
+          "dataType": "AssetDepreciationGroupId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationStartDate",
+          "dataType": "AssetDepreciationStartDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeprPrevPeriods_PL",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "displayName": "Depreciation amount before registration",
+          "description": ""
+        },
+        {
+          "name": "DeprPrevPeriodsNonCost_PL",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "displayName": "Non-cost depreciation amount before registration",
+          "description": ""
+        },
+        {
+          "name": "DeprPrevPriorCost_PL",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "displayName": "Depreciation amount before registration (prior years)",
+          "description": ""
+        },
+        {
+          "name": "DeprPrevPriorNonCost_PL",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "displayName": "Non-cost depreciation amount before registration (prior years)",
+          "description": ""
+        },
+        {
+          "name": "DisposalDate",
+          "dataType": "AssetDisposalDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueFrom_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Transfer from account",
+          "description": ""
+        },
+        {
+          "name": "DueTo_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Transfer to account",
+          "description": ""
+        },
+        {
+          "name": "EquallyDividedStartDate_JP",
+          "dataType": "AssetDepYearsEquallyDividedStartDate_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExceedingNetBookValue",
+          "dataType": "ExceedingNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDerogatoryBook_FR",
+          "dataType": "AssetDerogatoryBook_FR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDisposalSameYear",
+          "dataType": "FixedAssetDisposalSameYear",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsShorteningUsefulLife_JP",
+          "dataType": "AssetIsShorteningUsefulLife_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsTrueUpDepreciation",
+          "dataType": "FixedAssetTrueUpDepreciation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastDepreciationDate",
+          "dataType": "AssetLastDepreciationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastDepreciationDateAccelerated_JP",
+          "dataType": "AssetLastDepreciationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastDepreciationDateExtraOrd",
+          "dataType": "AssetLastDepreciationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastReserveAllocationDate_JP",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTime",
+          "dataType": "AssetLifeTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTimeRest",
+          "dataType": "AssetLifeTimeRest",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LVPTransferDate_AU",
+          "dataType": "AssetLowValuePoolTransferDate_AU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LVPTransferId_AU",
+          "dataType": "AssetLowValuePoolTransferId_AU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxPercentRB",
+          "dataType": "AssetMaxPercentRB_DE",
+          "isNullable": true,
+          "displayName": "Percentage after validation",
+          "description": ""
+        },
+        {
+          "name": "NegativeNetBookValue",
+          "dataType": "NegativeNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigAcquisitionDate_IN",
+          "dataType": "AssetAcquisitionDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Percentage_PL",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Percentage",
+          "description": ""
+        },
+        {
+          "name": "PercentageAlt_PL",
+          "dataType": "Percent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PercentageExt_PL",
+          "dataType": "Percent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "AssetPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchId",
+          "dataType": "PurchId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RBSLFactor",
+          "dataType": "AssetRBSLFactor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplacementDate",
+          "dataType": "AssetReplacementDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReserveTypeId",
+          "dataType": "AssetReserveTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevaluationGroupId",
+          "dataType": "AssetRevaluationGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SaleValue",
+          "dataType": "AssetSaleValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScrapValue",
+          "dataType": "AssetScrapValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLife",
+          "dataType": "AssetServiceLife",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLifeMonths_FR",
+          "dataType": "AssetServiceLifeMonths",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLifeYears_FR",
+          "dataType": "AssetServiceLifeYears",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SortingId",
+          "dataType": "AssetSortingId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SortingId2",
+          "dataType": "AssetSortingId2",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SortingId3",
+          "dataType": "AssetSortingId3",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepAllocationConvention_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepAllocationPeriods_JP",
+          "dataType": "AssetSpecialDepAllocationPeriods_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepAllocationUnit_JP",
+          "dataType": "AssetSpecialDepAllocationUnit_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepLastAllocationDate_JP",
+          "dataType": "AssetSpecialDepLastAllocationDate_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepStartDate_JP",
+          "dataType": "AssetSpecialDepStartDate_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SummarizeByMajorType_JP",
+          "dataType": "AssetSummarizeByMajorType_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsedFromDate",
+          "dataType": "AssetUsedFromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceId",
+          "dataType": "VendInvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationProfile",
+          "dataType": "AssetDepreciationProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationAltProfile",
+          "dataType": "AssetDepreciationAltProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationExtProfile",
+          "dataType": "AssetDepreciationExtProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationAcceleratedProfile_JP",
+          "dataType": "AssetDepreciationAcceleratedProfileId_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId_RU",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode_RU",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubGroupId_RU",
+          "dataType": "RAssetSubGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Lock_RU",
+          "dataType": "AssetLock_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceGroupId_RU",
+          "dataType": "NumberSequenceGroupId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchInternalInvoiceId_RU",
+          "dataType": "PurchInternalInvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesId_RU",
+          "dataType": "SalesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationExtProfile_JP",
+          "dataType": "AssetDepreciationExtProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AcquisitionPriceReportingCurrency",
+          "dataType": "AssetAcquisitionPriceReportingCurrency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScrapValueReportingCurrency",
+          "dataType": "AssetScrapValueReportingCurrency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationAmountUnitReportingCurrency",
+          "dataType": "AssetDepreciationAmountUnitReportingCurrency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetAcquisitionMethod"
+          },
+          "name": "Relationship_AssetAcquisitionMethodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetChangesHistory"
+          },
+          "name": "Relationship_AssetChangesHistoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetConsumptionFactor"
+          },
+          "name": "Relationship_AssetConsumptionFactorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetConsumptionUnit"
+          },
+          "name": "Relationship_AssetConsumptionUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetGroup"
+          },
+          "name": "Relationship_AssetGroup_AssetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLedger"
+          },
+          "name": "Relationship_AssetLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetReserveType"
+          },
+          "name": "Relationship_AssetReserveTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetRevaluationGroup"
+          },
+          "name": "Relationship_AssetRevaluationGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetSorting"
+          },
+          "name": "Relationship_AssetSorting_SortingIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetSorting"
+          },
+          "name": "Relationship_AssetSorting_SortingId2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetSorting"
+          },
+          "name": "Relationship_AssetSorting_SortingId3Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTable_AssertIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTable_LVPTransferIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTrans"
+          },
+          "name": "Relationship_assettransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationGroup_W"
+          },
+          "name": "Relationship_DepreciationGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_DueFrom_PSNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_DueTo_PSNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationProfile"
+          },
+          "name": "Relationship_DepreciationProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationProfile"
+          },
+          "name": "Relationship_DepreciationAltProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationProfile"
+          },
+          "name": "Relationship_DepreciationExtProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationProfile"
+          },
+          "name": "Relationship_DepreciationAcceleratedProfile_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOrigin_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetSubGroup"
+          },
+          "name": "Relationship_RAssetSubGroup_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceGroup"
+          },
+          "name": "Relationship_NumberSequenceGroup_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset book"
+    },
+    {
+      "dataTypeName": "AssetAcquisitionDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetAcquisitionMethodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetAcquisitionPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetDerogatoryValueModel_FR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetFairValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetGroupDepreciation_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlAssetPurchaseDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetRevisedAcquisitionCost_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CzAssetCategorizationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetCheckMaxPercentRB_DE",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetConsumptionFactorId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetConsumptionQtyEstimated",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetConsumptionUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetDepreciate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationAmountUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetDepreciationGroupId_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetDisposalDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetDepYearsEquallyDividedStartDate_JP",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ExceedingNetBookValue",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDerogatoryBook_FR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FixedAssetDisposalSameYear",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetIsShorteningUsefulLife_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FixedAssetTrueUpDepreciation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetLastDepreciationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetLifeTimeRest",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetLowValuePoolTransferDate_AU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetLowValuePoolTransferId_AU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetMaxPercentRB_DE",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NegativeNetBookValue",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetRBSLFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetReplacementDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetReserveTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetRevaluationGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetSaleValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetScrapValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetServiceLife",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetServiceLifeMonths",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetServiceLifeYears",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetSortingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetSortingId2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetSortingId3",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepAllocationPeriods_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepAllocationUnit_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepLastAllocationDate_JP",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepStartDate_JP",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetSummarizeByMajorType_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetUsedFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationAltProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationExtProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationAcceleratedProfileId_JP",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetSubGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetLock_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NumberSequenceGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchInternalInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetAcquisitionPriceReportingCurrency",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetScrapValueReportingCurrency",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetDepreciationAmountUnitReportingCurrency",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

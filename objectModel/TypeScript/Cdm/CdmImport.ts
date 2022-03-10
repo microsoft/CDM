@@ -70,6 +70,10 @@ export class CdmImport extends cdmObjectSimple {
         // return p.measure(bodyCode);
     }
 
+    public fetchObjectDefinitionName(): string {
+        return undefined;
+    }
+    
     public validate(): boolean {
         // let bodyCode = () =>
         {

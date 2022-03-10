@@ -222,7 +222,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             newPartition.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
 
             foreach (var trait in exhibitsTraits)
-                newPartition.ExhibitsTraits.Add(trait);
+                newPartition.ExhibitsTraits.Add((CdmTraitReferenceBase)trait.Copy());
             foreach (KeyValuePair<string, List<string>> entry in args)
                 newPartition.Arguments[entry.Key] = entry.Value;
 

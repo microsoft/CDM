@@ -20,6 +20,24 @@ public class CdmImportCollection extends CdmCollection<CdmImport> {
     super(ctx, owner, CdmObjectType.Import);
   }
 
+  public CdmImport item(final String corpusPath, final String moniker, final boolean checkMoniker) {
+    if (checkMoniker) {
+      return this.allItems.stream().filter((x) -> corpusPath.equals(x.getCorpusPath())
+              && ((x.getMoniker() == null && moniker == null) || (x.getMoniker() != null && x.getMoniker().equals(moniker)))).findFirst().orElse(null);
+    } else {
+      return this.allItems.stream().filter((x) -> corpusPath.equals(x.getCorpusPath())).findFirst().orElse(null);
+    }
+  }
+
+  public CdmImport item(final String corpusPath, final String moniker) {
+    return this.item(corpusPath, moniker, true);
+  }
+
+  @Override
+  public CdmImport item(final String corpusPath) {
+    return this.item(corpusPath, null);
+  }
+
   @Override
   public CdmDocumentDefinition getOwner() {
     return (CdmDocumentDefinition) super.getOwner();

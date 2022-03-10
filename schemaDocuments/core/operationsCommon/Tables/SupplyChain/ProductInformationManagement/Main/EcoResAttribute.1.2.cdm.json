@@ -1,0 +1,112 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResAttributeType.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResAttribute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AttributeModifier",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AttributeType",
+          "dataType": "RefRecId",
+          "displayName": "Attribute type",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "description": ""
+        },
+        {
+          "name": "EngChgAttribMax",
+          "dataType": "PdsBatchAttribMax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngChgAttribMin",
+          "dataType": "PdsBatchAttribMin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngChgAttribMultiple",
+          "dataType": "PdsBatchAttribMultiple",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngChgAttribToleranceAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttributeType"
+          },
+          "name": "Relationship_AttributeTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Attributes"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsBatchAttribMax",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsBatchAttribMin",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsBatchAttribMultiple",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

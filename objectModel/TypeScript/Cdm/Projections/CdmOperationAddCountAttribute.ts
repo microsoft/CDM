@@ -94,6 +94,10 @@ export class CdmOperationAddCountAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.countAttribute !== undefined && this.countAttribute.visit(`${path}/countAttribute/`, preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren && postChildren(this, path)) {
             return true;
         }

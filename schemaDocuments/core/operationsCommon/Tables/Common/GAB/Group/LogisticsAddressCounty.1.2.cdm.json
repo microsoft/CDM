@@ -1,0 +1,149 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LogisticsAddressCountryRegion.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressProperties_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressState.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LogisticsAddressCounty",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryRegionId",
+          "dataType": "LogisticsAddressCountryRegionId",
+          "description": ""
+        },
+        {
+          "name": "CountyCode_IT",
+          "dataType": "AddressCountyCode_IT",
+          "isNullable": true,
+          "displayName": "IT county code",
+          "description": ""
+        },
+        {
+          "name": "CountyCode_SP",
+          "dataType": "TaxRep347CountyCode",
+          "isNullable": true,
+          "displayName": "ES county code",
+          "description": ""
+        },
+        {
+          "name": "CountyId",
+          "dataType": "LogisticsAddressCountyId",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "LogisticsAddressCountyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Properties_RU",
+          "dataType": "LogisticsAddressPropertiesId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StateId",
+          "dataType": "LogisticsAddressStateId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_CountryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressProperties_RU"
+          },
+          "name": "Relationship_Properties_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_StateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Counties"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCountyCode_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRep347CountyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressPropertiesId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -17,6 +17,8 @@ import {
     cdmStatusLevel,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
+    copyOptions,
+    resolveOptions,
 } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import {
@@ -85,7 +87,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson, false, true);
+        HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson, true, true);
 
         expect(stopwatch.getTime())
             .toBeLessThan(8500);
@@ -331,6 +333,22 @@ describe('Persistence.ModelJson.ModelJson', () => {
 
         expect(obtainedModelJson.entities[0].description)
             .toEqual('test description');
+    });
+
+    /**
+     * Tests that traits that convert into annotations are properly converted on load and save
+     */
+    it('TestLoadingAndSavingCdmTraits', async () => {
+        const cdmCorpus = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingAndSavingCdmTraits');
+        const manifest = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('model.json');
+        const entity = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>('someEntity.cdm.json/someEntity');
+        expect(entity.exhibitsTraits.item('is.CDM.entityVersion'))
+            .not.toBeUndefined();
+
+        const manifestData = await ModelJson.ManifestPersistence.toData(manifest, new resolveOptions(manifest.inDocument), new copyOptions());
+        const versionAnnotation = manifestData.entities[0]['annotations'][0];
+        expect(versionAnnotation.value)
+            .toBe('<version>');
     });
 
     /**

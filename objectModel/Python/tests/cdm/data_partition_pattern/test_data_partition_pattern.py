@@ -1,12 +1,13 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
+from typing import cast
 
 from cdm.storage.local import LocalAdapter
 from datetime import datetime, timezone
 import os
 import unittest
 
-from cdm.objectmodel import CdmManifestDefinition, CdmLocalEntityDeclarationDefinition
+from cdm.objectmodel import CdmManifestDefinition, CdmLocalEntityDeclarationDefinition, CdmTraitDefinition, CdmParameterDefinition, CdmTraitReference
 
 from tests.common import async_test, TestHelper
 from cdm.persistence.cdmfolder import ManifestPersistence
@@ -76,6 +77,41 @@ class _data_partition_patternTest(unittest.TestCase):
                 total_expected_partitions_found += 1
                 self.assertEqual(len(partition.arguments), 0)
         self.assertEqual(8, total_expected_partitions_found)
+
+    @async_test
+    async def test_refreshes_data_partition_patterns_with_trait(self):
+        """Tests data partition objects created by a partition pattern do not share the same trait with the partition pattern"""
+        test_name = 'test_refreshes_data_partition_patterns_with_trait'
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
+        manifest = await corpus.fetch_object_async('local:/patternManifest.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.data_partition_patterns))
+        self.assertEqual(0, len(partition_entity.data_partitions))
+
+        trait_def = CdmTraitDefinition(corpus.ctx, 'testTrait')
+        trait_def.parameters.append(CdmParameterDefinition(corpus.ctx, 'argument value'))
+        pattern_trait_ref = partition_entity.data_partition_patterns[0].exhibits_traits.append('testTrait')
+        pattern_trait_ref.arguments.append('int', 1)
+        pattern_trait_ref.arguments.append('bool', True)
+        pattern_trait_ref.arguments.append('string', 'a')
+
+        await manifest.file_status_check_async()
+
+        self.assertEqual(2, len(partition_entity.data_partitions))
+        pattern_trait_ref = partition_entity.data_partition_patterns[0].exhibits_traits.item('testTrait')
+        self.assertEqual(1, pattern_trait_ref.arguments[0].value)
+        self.assertTrue(pattern_trait_ref.arguments[1].value)
+        pattern_trait_ref.arguments[0].value = 3
+        pattern_trait_ref.arguments[1].value = False
+
+        partition_trait_ref = partition_entity.data_partitions[0].exhibits_traits.item('testTrait')
+        self.assertNotEqual(partition_trait_ref, pattern_trait_ref)
+        self.assertEqual(1, partition_trait_ref.arguments[0].value)
+        self.assertTrue(partition_trait_ref.arguments[1].value)
+        partition_trait_ref.arguments[0].value = 2
+
+        self.assertEqual(1, partition_entity.data_partitions[1].exhibits_traits.item('testTrait').arguments[0].value)
 
     @async_test
     async def test_pattern_with_non_existing_folder(self):

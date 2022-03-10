@@ -103,14 +103,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (preChildren != null && preChildren.Invoke(this, pathFrom))
                 return false;
-            if (this.Definitions != null)
-                if (this.Definitions.VisitList(pathFrom, preChildren, postChildren))
-                    return true;
-            if (this.Entities != null)
-            {
-                if (this.Entities.VisitList(pathFrom, preChildren, postChildren))
-                    return true;
-            }
+            if (this.Imports != null && this.Imports.VisitList(pathFrom, preChildren, postChildren))
+                return true;
+            if (this.Definitions != null && this.Definitions.VisitList(pathFrom, preChildren, postChildren))
+                return true;
+            if (this.Entities != null && this.Entities.VisitList(pathFrom, preChildren, postChildren))
+                return true;
             if (this.Relationships != null)
                 if (this.Relationships.VisitList(pathFrom + "/relationships/", preChildren, postChildren))
                     return true;
@@ -349,6 +347,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 if (!relCache.Contains(cacheKey) && this.IsRelAllowed(rel, option))
                                 {
                                     this.Relationships.Add(this.LocalizeRelToManifest(rel));
+                                    this.AddImportsForElevatedTraits(rel);
                                     relCache.Add(cacheKey);
                                 }
                             }
@@ -385,6 +384,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 if (!relCache.Contains(cacheKey) && this.IsRelAllowed(inRel, option))
                                 {
                                     this.Relationships.Add(this.LocalizeRelToManifest(inRel));
+                                    this.AddImportsForElevatedTraits(inRel);
                                     relCache.Add(cacheKey);
                                 }
 
@@ -409,6 +409,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                             if (!relCache.Contains(baseRelCacheKey) && this.IsRelAllowed(newRel, option))
                                             {
                                                 this.Relationships.Add(this.LocalizeRelToManifest(newRel));
+                                                this.AddImportsForElevatedTraits(newRel);
                                                 relCache.Add(baseRelCacheKey);
                                             }
                                         }
@@ -427,6 +428,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             await subManifest.PopulateManifestRelationshipsAsync(option);
                         }
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adding imports for elevated purpose traits for relationships.
+        /// The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+        /// </summary>
+        private void AddImportsForElevatedTraits(CdmE2ERelationship rel)
+        {
+            foreach (var path in rel.ElevatedTraitCorpusPaths)
+            {
+                var relativePath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(path, this);
+                if (this.Imports.Item(relativePath, checkMoniker: false) == null)
+                {
+                    this.Imports.Insert(0, new CdmImport(this.Ctx, relativePath, null));
                 }
             }
         }

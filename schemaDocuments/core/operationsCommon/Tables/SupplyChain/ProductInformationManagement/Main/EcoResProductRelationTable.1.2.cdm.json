@@ -1,0 +1,105 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResProduct.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductRelationType.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductRelationTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Product1",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Product2",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ProductRelationType",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "DisplayOrder",
+          "dataType": "EcoResProductRelationDisplayOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_Product1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_Product2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductRelationType"
+          },
+          "name": "Relationship_ProductRelationTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Product relationships"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResProductRelationDisplayOrder",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

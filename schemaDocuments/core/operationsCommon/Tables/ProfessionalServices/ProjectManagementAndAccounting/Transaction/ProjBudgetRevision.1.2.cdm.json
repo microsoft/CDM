@@ -1,0 +1,199 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "ProjBudget.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjBudgetRevision",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalReference",
+          "dataType": "ProjRevExtReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjBudget",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RequestedByCust",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "displayName": "Requested by",
+          "description": ""
+        },
+        {
+          "name": "RequestedByEmpl",
+          "dataType": "ProjWorkerRecId",
+          "isNullable": true,
+          "displayName": "Requested by",
+          "description": ""
+        },
+        {
+          "name": "RequestedByVend",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "displayName": "Requested by",
+          "description": ""
+        },
+        {
+          "name": "RequestedDate",
+          "dataType": "ProjRequestedDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevisionDate",
+          "dataType": "ProjRevisionDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevisionId",
+          "dataType": "ProjRevisionId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RevisionWorkflowStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Revision workflow status",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjBudget"
+          },
+          "name": "Relationship_ProjBudgetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project budget revision"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjRevExtReference",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjRequestedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjRevisionDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjRevisionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

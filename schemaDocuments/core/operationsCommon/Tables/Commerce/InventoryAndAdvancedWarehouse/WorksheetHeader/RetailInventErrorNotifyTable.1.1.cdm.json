@@ -1,0 +1,319 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventItemBarcode.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Main/RetailInfocodeTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailInventErrorNotifyTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "dataTeamcomplete",
+          "dataType": "RetailDataTeamComplete",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "infocodeId",
+          "dataType": "RetailInfocodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "inventLocationComplete",
+          "dataType": "RetailInventLocationComplete",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "inventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "inventLocationName",
+          "dataType": "InventLocationName",
+          "isNullable": true,
+          "displayName": "Warehouse name",
+          "description": ""
+        },
+        {
+          "name": "itemBarCode",
+          "dataType": "ItemBarCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "itemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "itemName",
+          "dataType": "ItemName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "requestId",
+          "dataType": "RetailRequestId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "staffId",
+          "dataType": "RetailUserIdEx2",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "storeComplete",
+          "dataType": "RetailStoreComplete",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "storeId",
+          "dataType": "RetailStoreId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "storeName",
+          "dataType": "RetailStoreName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "subInfocodeDescription",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Subcode name",
+          "description": ""
+        },
+        {
+          "name": "subInfocodeId",
+          "dataType": "RetailInformationSubcodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transDate",
+          "dataType": "RetailtransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transTime",
+          "dataType": "RetailTransTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "unitID",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "vendName",
+          "dataType": "VendName",
+          "isNullable": true,
+          "displayName": "Vendor name",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemBarcode"
+          },
+          "name": "Relationship_InventItemBarcodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInfocodeTable"
+          },
+          "name": "Relationship_RetailInfocodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invent error notify table"
+    },
+    {
+      "dataTypeName": "RetailDataTeamComplete",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailInfocodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInventLocationComplete",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemBarCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailRequestId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailUserIdEx2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreComplete",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInformationSubcodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailtransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailTransTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    }
+  ]
+}

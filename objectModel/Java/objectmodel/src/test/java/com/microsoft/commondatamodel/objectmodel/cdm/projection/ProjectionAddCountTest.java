@@ -90,7 +90,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "testCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(4)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 
     /**
@@ -133,7 +133,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "testCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(4)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 
     /**
@@ -183,7 +183,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(4)).getName(), "testCount");
-        Assert.assertEquals((resolvedEntityWithReferenceOnly.getAttributes().get(4)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntityWithReferenceOnly.getAttributes().get(4)).getAppliedTraits().item("is.linkedEntity.array.count"));
 
         // Now resolve the entity with the 'structured' directive
         resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<String>(Arrays.asList("structured"))));
@@ -224,7 +224,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(5)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 
     /**
@@ -248,7 +248,7 @@ public class ProjectionAddCountTest {
         // For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
         Assert.assertEquals(resolvedEntity.getAttributes().size(), 6);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(0)).getAppliedTraits().item("is.linkedEntity.array.count"));
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "name1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "age1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "address1");
@@ -281,7 +281,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(5)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 
     /**
@@ -306,7 +306,7 @@ public class ProjectionAddCountTest {
         // ExtendsEntityResolutionGuidance doesn't support doing expansions, so we only get the Count attribute
         Assert.assertEquals(resolvedEntity.getAttributes().size(), 1);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(0)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 
     /**
@@ -339,8 +339,8 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(8)).getName(), "phoneNumber2");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(9)).getName(), "email2");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(10)).getName(), "personCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(10)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(10)).getAppliedTraits().get(2).getNamedReference(), "indicates.expansionInfo.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(10)).getAppliedTraits().item("is.linkedEntity.array.count"));
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(10)).getAppliedTraits().item("indicates.expansionInfo.count"));
     }
 
     /**
@@ -368,9 +368,9 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(5)).getAppliedTraits().item("is.linkedEntity.array.count"));
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "anotherCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(6)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(6)).getAppliedTraits().item("is.linkedEntity.array.count"));
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "firstName");
     }
 
@@ -396,7 +396,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "new_name");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "new_age");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "new_someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(2)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(2)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 
     /**
@@ -451,7 +451,7 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(5)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 
     /**
@@ -475,7 +475,7 @@ public class ProjectionAddCountTest {
         // For resolution guidance, CountAttribute has to be used with Expansion so we do an Expansion of 1...1 here
         Assert.assertEquals(resolvedEntity.getAttributes().size(), 6);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(0)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(0)).getAppliedTraits().item("is.linkedEntity.array.count"));
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "name1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "age1");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "address1");
@@ -509,6 +509,6 @@ public class ProjectionAddCountTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "someCount");
-        Assert.assertEquals((resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(1).getNamedReference(), "is.linkedEntity.array.count");
+        Assert.assertNotNull((resolvedEntity.getAttributes().get(5)).getAppliedTraits().item("is.linkedEntity.array.count"));
     }
 }

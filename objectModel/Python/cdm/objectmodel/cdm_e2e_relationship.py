@@ -1,7 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Set
 import warnings
 
 from cdm.enums import CdmObjectType
@@ -29,6 +29,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
         self.to_entity_attribute = None  # type: Optional[str]
         self.last_file_modified_time = None  # type: Optional[datetime]
         self.last_file_modified_old_time = None  # type: Optional[datetime]
+        self._elevated_trait_corpus_paths = set()  # type: set[str]
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -107,6 +108,9 @@ class CdmE2ERelationship(CdmObjectDefinition):
 
     def get_last_file_modified_old_time(self) -> datetime:
         return self.last_file_modified_old_time
+
+    def _get_elevated_trait_corpus_paths(self) -> Set[str]:
+        return self._elevated_trait_corpus_paths
 
     def reset_last_file_modified_old_time(self) -> None:
         self.last_file_modified_old_time = None

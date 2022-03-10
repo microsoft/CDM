@@ -1,0 +1,199 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBook.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBookTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetChangesHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Assetid",
+          "dataType": "AssetId",
+          "description": ""
+        },
+        {
+          "name": "Bookid",
+          "dataType": "AssetBookId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChangeDateTime",
+          "dataType": "AssetUpdateDateTime",
+          "description": ""
+        },
+        {
+          "name": "ChangedBy",
+          "dataType": "AssetModifiedBy",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeprciationBook",
+          "dataType": "AssetDepreciationBookId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FieldChanged",
+          "dataType": "AssetFieldModified",
+          "description": ""
+        },
+        {
+          "name": "NewValue",
+          "dataType": "AssetNewValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OldValue",
+          "dataType": "AssetOldValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonRefRecId",
+          "dataType": "ReasonRefRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBook"
+          },
+          "name": "Relationship_AssetBookRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset changes history"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetUpdateDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetModifiedBy",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetFieldModified",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetNewValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetOldValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReasonRefRecID",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

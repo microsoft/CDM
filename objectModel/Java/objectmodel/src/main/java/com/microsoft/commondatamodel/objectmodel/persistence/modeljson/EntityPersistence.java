@@ -75,29 +75,30 @@ public class EntityPersistence {
     result.setDescription((String) instance.getProperty(CdmPropertyName.DESCRIPTION));
     result.setType(EntityDeclaration.EntityDeclarationDefinitionType.LocalEntity);
 
-    Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
-    if (instance.getAttributes() != null) {
-      result.setAttributes(new ArrayList<>());
-      for (final CdmAttributeItem element : instance.getAttributes()) {
-        if (element.getObjectType() != CdmObjectType.TypeAttributeDef) {
-          Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityAttrError);
-          return null;
-        }
-        // TODO-BQ: verify if the order of attribute being added is important.
-        // TODO: handle when attribute is something else other than CdmTypeAttributeDefinition.
-        if (element instanceof CdmTypeAttributeDefinition) {
-          final Attribute attribute = TypeAttributePersistence
-              .toData((CdmTypeAttributeDefinition) element, resOpt, options).join();
-          if (attribute != null) {
-            result.getAttributes().add(attribute);
-          } else {
-            Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonFromAttrConversionFailure);
+    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).thenCompose(v -> {
+      if (instance.getAttributes() != null) {
+        result.setAttributes(new ArrayList<>());
+        for (final CdmAttributeItem element : instance.getAttributes()) {
+          if (element.getObjectType() != CdmObjectType.TypeAttributeDef) {
+            Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityAttrError);
             return null;
+          }
+          // TODO-BQ: verify if the order of attribute being added is important.
+          // TODO: handle when attribute is something else other than CdmTypeAttributeDefinition.
+          if (element instanceof CdmTypeAttributeDefinition) {
+            final Attribute attribute = TypeAttributePersistence
+                    .toData((CdmTypeAttributeDefinition) element, resOpt, options).join();
+            if (attribute != null) {
+              result.getAttributes().add(attribute);
+            } else {
+              Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonFromAttrConversionFailure);
+              return null;
+            }
           }
         }
       }
-    }
 
-    return CompletableFuture.completedFuture(result);
+      return CompletableFuture.completedFuture(result);
+    });
   }
 }

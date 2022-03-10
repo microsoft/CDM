@@ -1,0 +1,162 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/WorkCalendarTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PSAScheduleSettings",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PSASchedCalendarId",
+          "dataType": "CalendarId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedConstraintDate",
+          "dataType": "PSAConstraintDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedConstraintType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedDuration",
+          "dataType": "RealBase",
+          "isNullable": true,
+          "displayName": "Duration in days",
+          "description": ""
+        },
+        {
+          "name": "PSASchedEffort",
+          "dataType": "Hours",
+          "isNullable": true,
+          "displayName": "Total effort in hours",
+          "description": ""
+        },
+        {
+          "name": "PSASchedEndDate",
+          "dataType": "SchedToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedIgnoreCalendar",
+          "dataType": "PSAIgnoreCalendar",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedMilestone",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Milestone",
+          "description": ""
+        },
+        {
+          "name": "PSASchedScheduled",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedStartDate",
+          "dataType": "SchedFromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WorkCalendarTable"
+          },
+          "name": "Relationship_WorkCalendarTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Settings"
+    },
+    {
+      "dataTypeName": "CalendarId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAConstraintDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RealBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Hours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SchedToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PSAIgnoreCalendar",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SchedFromDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

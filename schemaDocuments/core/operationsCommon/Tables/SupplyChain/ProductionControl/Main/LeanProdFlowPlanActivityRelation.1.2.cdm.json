@@ -1,0 +1,92 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LeanProductionFlow.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/PlanActivityRelationship.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LeanProdFlowPlanActivityRelation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CycleTimeRatio",
+          "dataType": "PlanCycleTimeRatio",
+          "description": ""
+        },
+        {
+          "name": "PlanActivityRelationship",
+          "dataType": "PlanActivityRelationshipRefRecId",
+          "description": ""
+        },
+        {
+          "name": "ProductionFlow",
+          "dataType": "LeanProductionFlowRefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LeanProductionFlow"
+          },
+          "name": "Relationship_LeanProductionFlowRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlanActivityRelationship"
+          },
+          "name": "Relationship_PlanActivityRelationshipRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Production flow activity relations"
+    },
+    {
+      "dataTypeName": "PlanCycleTimeRatio",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlanActivityRelationshipRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanProductionFlowRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

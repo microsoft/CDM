@@ -1,0 +1,356 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/BOMCalcTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "PdsComdPricingMargin.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsComdPricingMarginLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BOMId",
+          "dataType": "BOMId",
+          "isNullable": true,
+          "displayName": "BOM or formula",
+          "description": ""
+        },
+        {
+          "name": "Cost",
+          "dataType": "PdsCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventQty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventQtyFrom",
+          "dataType": "PdsInventQtyFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventQtyTo",
+          "dataType": "PdsInventQtyTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Margin",
+          "dataType": "PdsComdMargin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginAccountCode",
+          "dataType": "PdsComdMarginAccountCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginAccountRelation",
+          "dataType": "PdsComdMarginAccountRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrevCost",
+          "dataType": "PdsComdPrevCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrevMargin",
+          "dataType": "PdsComdPrevMargin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrevPrice",
+          "dataType": "PdsComdPrevPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Price",
+          "dataType": "PdsComdPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceCalcId",
+          "dataType": "PriceCalcId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PricingMarginId",
+          "dataType": "PdsComdPricingMarginId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteId",
+          "dataType": "RouteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitID",
+          "dataType": "InventUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateAgreement",
+          "dataType": "PdsUpdateAgreement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMCalcTable"
+          },
+          "name": "Relationship_BOMCalcTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsComdPricingMargin"
+          },
+          "name": "Relationship_PdsComdPricingMarginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteTable"
+          },
+          "name": "Relationship_RouteTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pricing margin lines"
+    },
+    {
+      "dataTypeName": "BOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsInventQtyFrom",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsInventQtyTo",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsComdMargin",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsComdMarginAccountCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsComdMarginAccountRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsComdPrevCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsComdPrevMargin",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsComdPrevPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsComdPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceCalcId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsComdPricingMarginId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsUpdateAgreement",
+      "extendsDataType": "integer"
+    }
+  ]
+}

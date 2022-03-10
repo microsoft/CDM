@@ -324,5 +324,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             await AttributeContextUtil.ValidateAttributeContext(expectedOutputFolder, "Sales", resolvedEntity);
         }
+
+        /// <summary>
+        /// Test that foundations import is added to resolved doc if it exists in the unresolved doc
+        /// </summary>
+        [TestMethod]
+        public async Task TestFoundationsInResDoc()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestFoundationsInResDoc");
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("Entity.cdm.json/Entity");
+            var resEntity = await entity.CreateResolvedEntityAsync("resolvedEntity");
+            Assert.IsTrue(resEntity.InDocument.Imports.Item("cdm:/foundations.cdm.json") != null);
+        }
     }
 }

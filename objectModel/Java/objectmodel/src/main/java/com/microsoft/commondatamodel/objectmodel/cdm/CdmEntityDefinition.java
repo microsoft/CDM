@@ -492,9 +492,14 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         // Make a new document in given folder if provided or the same folder as the source entity.
         folder.getDocuments().remove(fileName);
         CdmDocumentDefinition docRes = folder.getDocuments().add(fileName);
-        // Add a import of the source document.
+        // Add an import of the source document.
         origDoc = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
         docRes.getImports().add(origDoc, "resolvedFrom");
+
+        if (this.getInDocument().getImports().item("cdm:/foundations.cdm.json") != null) {
+          docRes.getImports().add("cdm:/foundations.cdm.json");
+        }
+
         docRes.setDocumentVersion(this.getInDocument().getDocumentVersion());
 
         // Make the empty entity.

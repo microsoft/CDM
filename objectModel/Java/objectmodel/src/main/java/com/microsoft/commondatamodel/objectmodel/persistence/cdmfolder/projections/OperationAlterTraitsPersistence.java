@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projecti
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAlterTraits;
@@ -36,12 +37,14 @@ public class OperationAlterTraitsPersistence {
 
         final ArrayList<CdmTraitReferenceBase> traitsToAdd = Utils.createTraitReferenceList(ctx, obj.get("traitsToAdd"));
         if (traitsToAdd != null) {
-            alterTraitsOp.setTraitsToAdd(traitsToAdd);
+            alterTraitsOp.setTraitsToAdd(new CdmCollection<CdmTraitReferenceBase>(ctx, alterTraitsOp, CdmObjectType.TraitRef));
+            Utils.addListToCdmCollection(alterTraitsOp.getTraitsToAdd(), traitsToAdd);
         }
 
         final ArrayList<CdmTraitReferenceBase> traitsToRemove = Utils.createTraitReferenceList(ctx, obj.get("traitsToRemove"));
         if (traitsToRemove != null) {
-            alterTraitsOp.setTraitsToRemove(traitsToRemove);
+            alterTraitsOp.setTraitsToRemove(new CdmCollection<CdmTraitReferenceBase>(ctx, alterTraitsOp, CdmObjectType.TraitRef));
+            Utils.addListToCdmCollection(alterTraitsOp.getTraitsToRemove(), traitsToRemove);
         }
 
         if (obj.get("argumentsContainWildcards") != null) {

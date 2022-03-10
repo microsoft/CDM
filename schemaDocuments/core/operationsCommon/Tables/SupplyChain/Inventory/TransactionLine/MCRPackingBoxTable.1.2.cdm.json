@@ -1,0 +1,185 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRPackingBoxTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Active",
+          "dataType": "MCRActive",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepthLimit",
+          "dataType": "BOMMeasureDepth",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveCost",
+          "dataType": "MCREffectiveCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HeightLimit",
+          "dataType": "BOMMeasureHeight",
+          "description": ""
+        },
+        {
+          "name": "LengthLongest",
+          "dataType": "BOMMeasureWidth",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LengthMiddle",
+          "dataType": "BOMMeasureWidth",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LengthShortest",
+          "dataType": "BOMMeasureWidth",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumUtilizationPercent",
+          "dataType": "MCRUtilizationPercent",
+          "isNullable": true,
+          "displayName": "Maximum utilization",
+          "description": ""
+        },
+        {
+          "name": "PackingBoxName",
+          "dataType": "MCRPackingBoxName",
+          "description": ""
+        },
+        {
+          "name": "VolumeLimit",
+          "dataType": "Volume",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WeightLimit",
+          "dataType": "MCRWeightNoZero",
+          "displayName": "Weight limit",
+          "description": ""
+        },
+        {
+          "name": "WidthLimit",
+          "dataType": "BOMMeasureWidth",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Packing box table"
+    },
+    {
+      "dataTypeName": "MCRActive",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BOMMeasureDepth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCREffectiveCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BOMMeasureHeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BOMMeasureWidth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRUtilizationPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRPackingBoxName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRWeightNoZero",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

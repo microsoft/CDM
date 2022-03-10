@@ -87,7 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Logger.Warning(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.WarnPersistPartitionLocMissing, result.Name);
             }
 
-            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
 

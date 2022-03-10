@@ -17,7 +17,8 @@ import {
     resolveOptions,
     StorageAdapterBase,
     StorageAdapterCacheContext,
-    VisitCallback
+    VisitCallback,
+    CdmTraitReferenceBase
 } from '../internal';
 import * as timeUtils from '../Utilities/timeUtils';
 
@@ -241,7 +242,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         newPartition.lastFileStatusCheckTime = new Date();
 
         for (const trait of exhibitsTraits) {
-            newPartition.exhibitsTraits.push(trait);
+            newPartition.exhibitsTraits.push(trait.copy() as CdmTraitReferenceBase);
         }
 
         newPartition.arguments = new Map(args);

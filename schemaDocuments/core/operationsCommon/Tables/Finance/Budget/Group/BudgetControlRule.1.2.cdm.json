@@ -1,0 +1,134 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetControlConfiguration.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetCycleTimeSpan.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetControlRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetControlConfiguration",
+          "dataType": "BudgetControlConfigurationRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetCycleTimeSpan",
+          "dataType": "RefRecId",
+          "displayName": "Budget cycle time span",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Interval",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "BudgetControlRuleName",
+          "description": ""
+        },
+        {
+          "name": "OverrideResponsibleUser",
+          "dataType": "BudgetResponsibleUser",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TemporaryBudgetControlRule",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThresholdPercent",
+          "dataType": "BudgetThresholdPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetControlConfiguration"
+          },
+          "name": "Relationship_BudgetControlConfigurationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetCycleTimeSpan"
+          },
+          "name": "Relationship_BudgetCycleTimeSpanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget control rules"
+    },
+    {
+      "dataTypeName": "BudgetControlConfigurationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetControlRuleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetResponsibleUser",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetThresholdPercent",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

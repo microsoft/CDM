@@ -177,9 +177,6 @@ namespace create_net_new_entities
             Console.WriteLine("Resolve the placeholder");
             var manifestResolved = await manifestAbstract.CreateResolvedManifestAsync("default", null);
 
-            // Add an import to the foundations doc so the traits about partitons will resolve nicely
-            manifestResolved.Imports.Add(FoundationJsonPath);
-
             Console.WriteLine("Save the documents");
 
             // We can save the documents as manifest.cdm.json format or model.json
