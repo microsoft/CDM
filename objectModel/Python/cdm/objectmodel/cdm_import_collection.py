@@ -24,3 +24,14 @@ class CdmImportCollection(CdmCollection):
             import_value.moniker = moniker
 
         return import_value
+
+    def item(self, corpus_path: str, moniker: Optional[str] = None, check_moniker: Optional[bool] = True) -> 'CdmImport':
+        for x in self:
+            if check_moniker:
+                if x.corpus_path == corpus_path and x.moniker == moniker:
+                    return x
+            else:
+                if x.corpus_path == corpus_path:
+                    return x
+        return None
+

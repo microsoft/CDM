@@ -1,0 +1,327 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/VendPromissoryNoteJour.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendOutAttendingNote_PNRemittanceTmp",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCurDebCred",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankAccountAddress",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankAccountName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyAccount",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "companyAddress",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "companyCoRegNum",
+          "dataType": "CompanyCoRegNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "companyName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyPhone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyTelefax",
+          "dataType": "TeleFax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "County",
+          "dataType": "AddressCountyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "VendCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateOfCreation",
+          "dataType": "SysDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FileId",
+          "dataType": "BankRemittanceFileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Invoice",
+          "dataType": "VendInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteID",
+          "dataType": "VendPromissoryNoteID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "sumAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "sumCurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Total",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "vendCity",
+          "dataType": "AddressCity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "vendName",
+          "dataType": "VendName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_CurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencySumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPromissoryNoteJour"
+          },
+          "name": "Relationship_VendPromissoryNoteJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Promissory note"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCurDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Addressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyCoRegNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TeleFax",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCountyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankRemittanceFileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPromissoryNoteID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCity",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    }
+  ]
+}

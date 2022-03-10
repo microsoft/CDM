@@ -1,0 +1,223 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Parameter/RAssetDeprProfile.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetStandards.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetStandardTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetSubGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetLifeHist",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "RAssetId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AssetStandardId",
+          "dataType": "RAssetStandardId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ChangeDate",
+          "dataType": "RAssetDepStartDate",
+          "isNullable": true,
+          "displayName": "Date",
+          "description": ""
+        },
+        {
+          "name": "NewFactor",
+          "dataType": "RAssetFactor",
+          "isNullable": true,
+          "displayName": "New factor",
+          "description": ""
+        },
+        {
+          "name": "NewLife",
+          "dataType": "RAssetLifeTime",
+          "isNullable": true,
+          "displayName": "New lifetime",
+          "description": ""
+        },
+        {
+          "name": "ReasonRefRecID",
+          "dataType": "ReasonRefRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubGroupId",
+          "dataType": "RAssetSubGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RAssetDeprProfile",
+          "dataType": "RAssetDeprProfileRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetDeprProfile"
+          },
+          "name": "Relationship_RAssetDeprProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetStandards"
+          },
+          "name": "Relationship_RAssetStandardsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetStandardTable"
+          },
+          "name": "Relationship_RAssetStandardTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetSubGroup"
+          },
+          "name": "Relationship_RAssetSubGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "FA lifetime history"
+    },
+    {
+      "dataTypeName": "RAssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetStandardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetDepStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RAssetFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReasonRefRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetSubGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetDeprProfileRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

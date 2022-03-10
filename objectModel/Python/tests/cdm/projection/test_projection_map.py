@@ -67,9 +67,9 @@ class ProjectionMapTest(unittest.TestCase):
         self.validate_attribute_trait(non_structured_resolved_entity.attributes[9], 'ThreePeople_name_3_value', 3, 'ThreePeople', 'name')
         self.validate_attribute_trait(non_structured_resolved_entity.attributes[10], 'ThreePeople_age_3_value', 3, 'ThreePeople', 'age')
         self.validate_attribute_trait(non_structured_resolved_entity.attributes[11], 'ThreePeople_address_3_value', 3, 'ThreePeople', 'address')
-        self.assertEqual("personCount", (non_structured_resolved_entity.attributes[12]).name)
-        self.assertEqual("indicates.expansionInfo.count", non_structured_resolved_entity.attributes[12].applied_traits[1].named_reference)
-        self.assertEqual("ThreePeople", non_structured_resolved_entity.attributes[12].applied_traits[1].arguments[0].value)
+        self.assertEqual('personCount', (non_structured_resolved_entity.attributes[12]).name)
+        self.assertIsNotNone(non_structured_resolved_entity.attributes[12].applied_traits.item('indicates.expansionInfo.count'))
+        self.assertEqual('ThreePeople', non_structured_resolved_entity.attributes[12].applied_traits.item('indicates.expansionInfo.count').arguments[0].value)
 
         # Original set of attributes: ["name", "age", "address"]
         # in structured form
@@ -82,7 +82,7 @@ class ProjectionMapTest(unittest.TestCase):
         self.assertEqual(1, len(structured_resolved_entity.attributes))
         att_group_definition = ProjectionTestUtils.validate_attribute_group(self, structured_resolved_entity.attributes, 'favorite People Group')  # type: CdmAttributeGroupDefinition
         self.assertIsNotNone(att_group_definition.exhibits_traits.item('is.dataFormat.map'))
-        self.assertEqual("favorite People Key", att_group_definition.members[0].name)
+        self.assertEqual('favorite People Key', att_group_definition.members[0].name)
         self.assertIsNotNone(att_group_definition.members[0].applied_traits.item('is.dataFormat.mapKey'))
         self.assertEqual(CdmObjectType.ATTRIBUTE_GROUP_REF, att_group_definition.members[1].object_type)
         inner_att_group_ref = att_group_definition.members[1]  # type: CdmAttributeGroupReference
@@ -119,9 +119,9 @@ class ProjectionMapTest(unittest.TestCase):
         self.validate_attribute_trait(non_structured_resolved_entity.attributes[1], 'FavoriteTerms_1_value', 1, 'FavoriteTerms')
         self.validate_attribute_trait(non_structured_resolved_entity.attributes[2], 'Term key_2_key', 2, 'FavoriteTerms', is_key=True)
         self.validate_attribute_trait(non_structured_resolved_entity.attributes[3], 'FavoriteTerms_2_value', 2, 'FavoriteTerms')
-        self.assertEqual("number of favorite terms", (non_structured_resolved_entity.attributes[4]).name)
-        self.assertEqual("indicates.expansionInfo.count", non_structured_resolved_entity.attributes[4].applied_traits[1].named_reference)
-        self.assertEqual("FavoriteTerms", non_structured_resolved_entity.attributes[4].applied_traits[1].arguments[0].value)
+        self.assertEqual('number of favorite terms', (non_structured_resolved_entity.attributes[4]).name)
+        self.assertIsNotNone(non_structured_resolved_entity.attributes[4].applied_traits.item('indicates.expansionInfo.count'))
+        self.assertEqual('FavoriteTerms', non_structured_resolved_entity.attributes[4].applied_traits.item('indicates.expansionInfo.count').arguments[0].value)
 
         # Original set of attributes: ["Favorite Terms"]
         # in structured form
@@ -130,9 +130,9 @@ class ProjectionMapTest(unittest.TestCase):
         self.assertEqual(1, len(structured_resolved_entity.attributes))
         att_group_definition = ProjectionTestUtils.validate_attribute_group(self, structured_resolved_entity.attributes, 'favorite Term Group')  # type: CdmAttributeGroupDefinition
         self.assertIsNotNone(att_group_definition.exhibits_traits.item('is.dataFormat.map'))
-        self.assertEqual("Favorite Terms Key", att_group_definition.members[0].name)
+        self.assertEqual('Favorite Terms Key', att_group_definition.members[0].name)
         self.assertIsNotNone(att_group_definition.members[0].applied_traits.item('is.dataFormat.mapKey'))
-        self.assertEqual("FavoriteTerms", att_group_definition.members[1].name)
+        self.assertEqual('FavoriteTerms', att_group_definition.members[1].name)
         self.assertIsNotNone(att_group_definition.members[1].applied_traits.item('is.dataFormat.mapValue'))
 
     def validate_attribute_trait(self, attribute: 'CdmTypeAttributeDefinition', expected_attr_name: str, ordinal: int,

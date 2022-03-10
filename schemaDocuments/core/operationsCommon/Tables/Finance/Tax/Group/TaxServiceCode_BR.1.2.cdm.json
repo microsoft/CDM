@@ -1,0 +1,189 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCity.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressState.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxServiceType_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxServiceCode_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "City",
+          "dataType": "LogisticsAddressCityName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountryId",
+          "dataType": "LogisticsAddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Service code description",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "description": ""
+        },
+        {
+          "name": "ParentServiceCode",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "displayName": "Parent service code",
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeId",
+          "dataType": "TaxServiceCodeId_BR",
+          "description": ""
+        },
+        {
+          "name": "StateId",
+          "dataType": "LogisticsAddressStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Service type",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCity"
+          },
+          "name": "Relationship_LogisticsAddressCityNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_LogisticsAddressStateIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxServiceType_BR"
+          },
+          "name": "Relationship_TaxServiceType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Service code"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "JmgPayAgreementTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgPayAgreementOverride",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PayAgreement",
+          "dataType": "JmgPayAgreement",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayDeductToLateSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Pick quantity",
+          "description": ""
+        },
+        {
+          "name": "ProfileDate",
+          "dataType": "StartDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "JmgWorkerRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayAgreementTable"
+          },
+          "name": "Relationship_JmgPayAgreementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pay agreement override"
+    },
+    {
+      "dataTypeName": "JmgPayAgreement",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/TransactionLine/GeneralJournalAccountEntry.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "GeneralJournalAccountEntryHash.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/MainAccount.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "GeneralJournalAccountEntryDimension",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrentSessionId",
+          "dataType": "SessionId",
+          "description": ""
+        },
+        {
+          "name": "GeneralJournalAccountEntry",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "GeneralJournalAccountEntryHash",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "MainAccount",
+          "dataType": "MainAccountRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingLayer",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "SessionId",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UTCTimestamp",
+          "dataType": "UTCTimestamp",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "GeneralJournalAccountEntry"
+          },
+          "name": "Relationship_GeneralJournalAccountEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "GeneralJournalAccountEntryHash"
+          },
+          "name": "Relationship_GeneralJournalAccountEntryHashRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_MainAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "General journal account entry dimension"
+    },
+    {
+      "dataTypeName": "SessionId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MainAccountRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    }
+  ]
+}

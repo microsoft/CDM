@@ -205,18 +205,18 @@ public class ProjectionAlterTraitsTest {
 
         // Create an AlterTraits operation
         CdmOperationAlterTraits alterTraitsOp_1 = corpus.makeObject(CdmObjectType.OperationAlterTraitsDef);
-        alterTraitsOp_1.setTraitsToAdd(new ArrayList<CdmTraitReferenceBase>());
-        alterTraitsOp_1.getTraitsToAdd().add(corpus.makeRef(CdmObjectType.TraitRef, "means.TraitG100", true));
-        alterTraitsOp_1.getTraitsToAdd().add(corpus.makeRef(CdmObjectType.TraitGroupRef, "JobTitleBase", true));
-        alterTraitsOp_1.setTraitsToRemove(new ArrayList<CdmTraitReferenceBase>());
-        alterTraitsOp_1.getTraitsToRemove().add(corpus.makeRef(CdmObjectType.TraitRef, "means.TraitG300", true));
+        alterTraitsOp_1.setTraitsToAdd(new CdmCollection<CdmTraitReferenceBase>(corpus.getCtx(), alterTraitsOp_1, CdmObjectType.TraitRef));
+        alterTraitsOp_1.getTraitsToAdd().add((CdmTraitReference)corpus.makeRef(CdmObjectType.TraitRef, "means.TraitG100", true));
+        alterTraitsOp_1.getTraitsToAdd().add((CdmTraitGroupReference)corpus.makeRef(CdmObjectType.TraitGroupRef, "JobTitleBase", true));
+        alterTraitsOp_1.setTraitsToRemove(new CdmCollection<CdmTraitReferenceBase>(corpus.getCtx(), alterTraitsOp_1, CdmObjectType.TraitRef));
+        alterTraitsOp_1.getTraitsToRemove().add((CdmTraitReference)corpus.makeRef(CdmObjectType.TraitRef, "means.TraitG300", true));
         projection.getOperations().add(alterTraitsOp_1);
 
         CdmOperationAlterTraits alterTraitsOp_2 = corpus.makeObject(CdmObjectType.OperationAlterTraitsDef);
-        alterTraitsOp_2.setTraitsToAdd(new ArrayList<CdmTraitReferenceBase>());
         CdmTraitReference traitG4 = corpus.makeRef(CdmObjectType.TraitRef, "means.TraitG4", true);
         traitG4.getArguments().add("precision", "5");
         traitG4.getArguments().add("scale", "15");
+        alterTraitsOp_2.setTraitsToAdd(new CdmCollection<CdmTraitReferenceBase>(corpus.getCtx(), alterTraitsOp_2, CdmObjectType.TraitRef));
         alterTraitsOp_2.getTraitsToAdd().add(traitG4);
         alterTraitsOp_2.setApplyTo(new ArrayList<String>(Collections.singletonList("name")));
         projection.getOperations().add(alterTraitsOp_2);
@@ -387,7 +387,7 @@ public class ProjectionAlterTraitsTest {
         CdmTraitReference traitG4_2 = (CdmTraitReference) resolvedEntityWithNormalized.getAttributes().get(2).getAppliedTraits().item("means.TraitG4");
         Assert.assertNotNull(traitG4_2);
         Assert.assertEquals(traitG4_2.getArguments().fetchValue("precision"), "8");
-        Assert.assertNull(traitG4_2.getArguments().fetchValue("scale"));
+        Assert.assertEquals(traitG4_2.getArguments().fetchValue("scale"), "");
     }
 
     private static void validateTrait(CdmTypeAttributeDefinition attribute, String expectedAttrName){

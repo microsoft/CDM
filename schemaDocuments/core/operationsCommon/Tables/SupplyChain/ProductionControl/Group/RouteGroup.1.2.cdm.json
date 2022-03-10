@@ -1,0 +1,124 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RouteGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoProcessTime",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Automatic consumption, run time",
+          "description": ""
+        },
+        {
+          "name": "AutoQty",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Automatically report quantity as finished",
+          "description": ""
+        },
+        {
+          "name": "AutoSetUpTime",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Automatic consumption, setup time",
+          "description": ""
+        },
+        {
+          "name": "CalcProc",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Calculate run time",
+          "description": ""
+        },
+        {
+          "name": "CalcQty",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Calculate quantity",
+          "description": ""
+        },
+        {
+          "name": "CalcSetUp",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Calculate setup time",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportFinishOpr",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Report operation as finished",
+          "description": ""
+        },
+        {
+          "name": "RouteGroupId",
+          "dataType": "RouteGroupId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route groups"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

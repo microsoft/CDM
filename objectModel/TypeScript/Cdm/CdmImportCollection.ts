@@ -35,4 +35,8 @@ constructor(ctx: CdmCorpusContext, owner: CdmDocumentDefinition) {
 
         return obj;
     }
+
+    public item(corpusPath: string, moniker?: string, checkMoniker: boolean = true): CdmImport {
+        return this.allItems.find((x: CdmImport) => checkMoniker ? x.corpusPath === corpusPath && x.moniker === moniker : x.corpusPath === corpusPath);
+    }
 }

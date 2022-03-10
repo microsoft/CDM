@@ -1,0 +1,123 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustEntryCertificateJour_W.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "CustInvoiceJour.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustEntryCertificateInvoiceLink_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EntryCertificateJourRefRecId",
+          "dataType": "EntryCertificateJourRefRecId_W",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "InvoiceDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "CustInvoiceId",
+          "description": ""
+        },
+        {
+          "name": "InvoiceRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustEntryCertificateJour_W"
+          },
+          "name": "Relationship_CustEntryCertificateJour_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Entry certificate - customer invoice relation table"
+    },
+    {
+      "dataTypeName": "EntryCertificateJourRefRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

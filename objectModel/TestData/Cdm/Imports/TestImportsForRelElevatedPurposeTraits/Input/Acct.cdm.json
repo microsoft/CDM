@@ -1,0 +1,67 @@
+{
+    "$schema": "../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "specialized/Gold.cdm.json"
+        },
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "Curr.cdm.json"
+        },
+        {
+            "corpusPath": "Curr.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Acct",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "entityId",
+                    "name": "acctId"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "acctName"
+                },
+                {
+                    "name": "defaultCurr",
+                    "entity": {
+                        "entityReference": "Curr",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Curr/(resolvedAttributes)/currId"
+                                ]
+                            }
+                        ]
+                    },
+                    "purpose": {
+                        "purposeReference": "hasA",
+                        "appliedTraits": [
+                            "specialized.gold.trait"
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "defaultCurrId"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

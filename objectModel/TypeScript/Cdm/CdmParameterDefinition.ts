@@ -10,8 +10,8 @@ import {
     CdmDataTypeReference,
     CdmObject,
     CdmObjectBase,
+    CdmObjectDefinitionBase,
     CdmObjectReferenceBase,
-    cdmObjectSimple,
     cdmObjectType,
     cdmLogCode,
     Logger,
@@ -20,7 +20,7 @@ import {
     VisitCallback
 } from '../internal';
 
-export class CdmParameterDefinition extends cdmObjectSimple implements CdmParameterDefinition {
+export class CdmParameterDefinition extends CdmObjectDefinitionBase {
     private TAG: string = CdmParameterDefinition.name;
 
     public explanation: string;

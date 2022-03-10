@@ -1,0 +1,829 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Miscellaneous/BankConstantSymbol.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/ContactPerson.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustInvoiceTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustLedger.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CustPaymModeSpec.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CustPaymModeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymSched.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/PlFiscalPrinterTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Transaction/SalesParmTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CzCustAdvanceInvoiceTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FiscalOrderAccount_PL",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankConstantSymbol",
+          "dataType": "CzConstantSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonId",
+          "dataType": "ContactPersonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CustCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "CustGroup",
+          "dataType": "CustGroupId",
+          "displayName": "Group",
+          "description": ""
+        },
+        {
+          "name": "CustPostingProfile",
+          "dataType": "CustPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "displayName": "Due",
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "ExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchrateSecond",
+          "dataType": "ExchrateSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocDate_PL",
+          "dataType": "PlFiscalDocDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocState_PL",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalInvoiceAccount_PL",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalPrinterCode_PL",
+          "dataType": "PlFiscalPrinterCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreeInvoiceRefRecId",
+          "dataType": "CustInvoiceTableRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccount",
+          "dataType": "CustInvoiceAccount",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Invoice amount",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "CzCustAdvanceInvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "CustLanguageId",
+          "description": ""
+        },
+        {
+          "name": "Listcode",
+          "dataType": "ListcodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Log",
+          "dataType": "LogText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "CustName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceGroup",
+          "dataType": "NumberSequenceGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OneTimeCustomer",
+          "dataType": "OneTimeCustomer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderAccount",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "CustPaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentSched",
+          "dataType": "PaymSchedId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymMode",
+          "dataType": "CustPaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymSpec",
+          "dataType": "PaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "Posted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "CustPostingProfile",
+          "isNullable": true,
+          "displayName": "Posting profile with prepayment journal voucher",
+          "description": ""
+        },
+        {
+          "name": "PostVAT",
+          "dataType": "CzPostVAT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostVATDate",
+          "dataType": "CzPostVATDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesId",
+          "dataType": "SalesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDocumentCreate",
+          "dataType": "CzTaxDocumentCreateDoc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Triangulation",
+          "dataType": "EUROTriangulation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VatDueDate_W",
+          "dataType": "VatDueDate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "CustAdvanceInvoiceVoucher_W",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkerSalesTaker",
+          "dataType": "SalesTaker",
+          "isNullable": true,
+          "displayName": "Recipient",
+          "description": ""
+        },
+        {
+          "name": "HeadId",
+          "dataType": "SysGuid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailOrderReferenceId",
+          "dataType": "RetailOrderChannelReferenceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailStoreId",
+          "dataType": "RetailStoreId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailTerminalId",
+          "dataType": "RetailTerminalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailTransactionId",
+          "dataType": "RetailTransactionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankConstantSymbol"
+          },
+          "name": "Relationship_BankConstantSymbolRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustGroup"
+          },
+          "name": "Relationship_CustGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTable"
+          },
+          "name": "Relationship_CustInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_CustLedger_CustPostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_CustLedger_PostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeSpec"
+          },
+          "name": "Relationship_CustPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeTable"
+          },
+          "name": "Relationship_CustPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_FiscalInvoiceAccount_PLRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_FiscalOrderAccount_PLRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_InvoiceAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_OrderAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceGroup"
+          },
+          "name": "Relationship_NumberSequenceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymSched"
+          },
+          "name": "Relationship_PaymentSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlFiscalPrinterTable"
+          },
+          "name": "Relationship_PlFiscalPrinterTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_PostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesParmTable"
+          },
+          "name": "Relationship_SalesParmTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Advance invoice"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CzConstantSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchrateSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlFiscalDocDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PlFiscalPrinterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustInvoiceTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CzCustAdvanceInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustLanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ListcodeId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NumberSequenceGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OneTimeCustomer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustPaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSchedId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Posted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CzPostVAT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CzPostVATDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CzTaxDocumentCreateDoc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EUROTriangulation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VatDueDate_W",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustAdvanceInvoiceVoucher_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesTaker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SysGuid",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "RetailOrderChannelReferenceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

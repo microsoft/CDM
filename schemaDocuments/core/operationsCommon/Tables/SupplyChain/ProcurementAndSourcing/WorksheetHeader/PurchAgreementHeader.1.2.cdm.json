@@ -1,0 +1,206 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "AgreementHeader.1.2.cdm.json",
+      "moniker": "base_AgreementHeader"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchAgreementHeader",
+      "extendsEntity": "base_AgreementHeader/AgreementHeader",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BuyingLegalEntity",
+          "dataType": "RefRecId",
+          "displayName": "Legal entities",
+          "description": ""
+        },
+        {
+          "name": "InterestBasedOnCEB_PSN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Interest is based on central European bank",
+          "description": ""
+        },
+        {
+          "name": "MaximumAmount_PSN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Maximum",
+          "description": ""
+        },
+        {
+          "name": "MinimumAmount_PSN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Minimum",
+          "description": ""
+        },
+        {
+          "name": "ParentPurchAgreementID_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Parent purchase agreement",
+          "description": ""
+        },
+        {
+          "name": "ProcurementClassification_PSN",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Procurement classification",
+          "description": ""
+        },
+        {
+          "name": "PurchAgreementType_PSN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchNumberSequence",
+          "dataType": "PurchAgreementId",
+          "description": ""
+        },
+        {
+          "name": "Purpose_PSN",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Purpose",
+          "description": ""
+        },
+        {
+          "name": "Renewable_PSN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Renewable",
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "name": "VendorDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowStatus_PSN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrimaryResponsibleWorker",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "displayName": "Primary responsible worker",
+          "description": ""
+        },
+        {
+          "name": "SecondaryResponsibleWorker",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "displayName": "Secondary responsible worker",
+          "description": ""
+        },
+        {
+          "name": "MatchingPolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Line matching policy",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase agreement"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchAgreementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

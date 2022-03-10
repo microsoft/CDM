@@ -1,0 +1,124 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailAffiliation.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailLoyaltyCard.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailLoyaltyTier.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailLoyaltyCardTier",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Affiliation",
+          "dataType": "RefRecId",
+          "displayName": "Loyalty program",
+          "description": ""
+        },
+        {
+          "name": "LoyaltyCard",
+          "dataType": "RefRecId",
+          "displayName": "Loyalty card",
+          "description": ""
+        },
+        {
+          "name": "LoyaltyTier",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Program tier",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDate",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailAffiliation"
+          },
+          "name": "Relationship_RetailAffiliationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailLoyaltyCard"
+          },
+          "name": "Relationship_RetailLoyaltyCardRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailLoyaltyTier"
+          },
+          "name": "Relationship_RetailLoyaltyTierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Card affiliation tier"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

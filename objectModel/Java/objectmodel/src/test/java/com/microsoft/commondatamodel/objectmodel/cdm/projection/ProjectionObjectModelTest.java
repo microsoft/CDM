@@ -248,17 +248,17 @@ public class ProjectionObjectModelTest {
 
         // AddCountAttribute Operation
         CdmOperationAddCountAttribute addCountAttributeOp = new CdmOperationAddCountAttribute(corpus.getCtx());
-        addCountAttributeOp.setCountAttribute(corpus.makeObject(CdmObjectType.TypeAttributeDef));
+        addCountAttributeOp.setCountAttribute(corpus.makeObject(CdmObjectType.TypeAttributeDef, "countAtt"));
         projection.getOperations().add(addCountAttributeOp);
 
         // AddSupportingAttribute Operation
         CdmOperationAddSupportingAttribute addSupportingAttributeOp = new CdmOperationAddSupportingAttribute(corpus.getCtx());
-        addSupportingAttributeOp.setSupportingAttribute(corpus.makeObject(CdmObjectType.TypeAttributeDef));
+        addSupportingAttributeOp.setSupportingAttribute(corpus.makeObject(CdmObjectType.TypeAttributeDef, "supportingAtt"));
         projection.getOperations().add(addSupportingAttributeOp);
 
         // AddTypeAttribute Operation
         CdmOperationAddTypeAttribute addTypeAttributeOp = new CdmOperationAddTypeAttribute(corpus.getCtx());
-        addTypeAttributeOp.setTypeAttribute(corpus.makeObject(CdmObjectType.TypeAttributeDef));
+        addTypeAttributeOp.setTypeAttribute(corpus.makeObject(CdmObjectType.TypeAttributeDef, "typeAtt"));
         projection.getOperations().add(addTypeAttributeOp);
 
         // ExcludeAttributes Operation
@@ -276,7 +276,7 @@ public class ProjectionObjectModelTest {
         // CombineAttributes Operation
         CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(corpus.getCtx());
         combineAttributesOp.setSelect(new ArrayList<String>());
-        combineAttributesOp.setMergeInto(corpus.makeObject(CdmObjectType.TypeAttributeDef));
+        combineAttributesOp.setMergeInto(corpus.makeObject(CdmObjectType.TypeAttributeDef, "combineAtt"));
         combineAttributesOp.getSelect().add("testAttribute1");
         projection.getOperations().add(combineAttributesOp);
 

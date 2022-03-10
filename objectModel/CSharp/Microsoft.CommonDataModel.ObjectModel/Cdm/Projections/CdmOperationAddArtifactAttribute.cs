@@ -93,6 +93,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return false;
             }
 
+            if (this.NewAttribute != null && this.NewAttribute.Visit($"{path}/newAttribute/", preChildren, postChildren))
+                return true;
+
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
 

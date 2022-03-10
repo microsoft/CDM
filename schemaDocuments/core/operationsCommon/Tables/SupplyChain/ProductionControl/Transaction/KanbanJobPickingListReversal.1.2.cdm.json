@@ -1,0 +1,146 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "KanbanJobPickingList.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KanbanJobPickingListReversal",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventDimDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "IssueReversal",
+          "dataType": "KanbanJobPickingListReversalRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "KanbanJobPickingList",
+          "dataType": "KanbanJobPickingListRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "KanbanJobPickingListQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KanbanJobPickingList"
+          },
+          "name": "Relationship_KanbanJobPickingListRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanban job picking list reversals"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanJobPickingListReversalRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KanbanJobPickingListRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KanbanJobPickingListQuantity",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

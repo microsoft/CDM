@@ -25,6 +25,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             { "version", "is.CDM.entityVersion" }
         };
 
+        private static IReadOnlyDictionary<string, string> traitToAnnotationMap => new Dictionary<string, string>
+        {
+            { "is.CDM.entityVersion", "version" }
+        };
+
         internal static ReadOnlySet<string> ignoredTraits = new ReadOnlySet<string>(new HashSet<string>
         {
             "is.propertyContent.multiTrait",
@@ -50,7 +55,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         internal static async Task ProcessAnnotationsFromData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
             var multiTraitAnnotations = new List<NameValuePair>();
-            
+
             if (obj.Annotations != null)
             {
                 foreach (var element in obj.Annotations)
@@ -103,7 +108,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             }
         }
 
-        internal static void ProcessTraitsAndAnnotationsToData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
+        internal static async Task ProcessTraitsAndAnnotationsToData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
             if (traits == null)
             {
@@ -119,10 +124,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 {
                     // Safe to cast since extensions can only be trait refs, not trait group refs
                     ExtensionHelper.ProcessExtensionTraitToObject(trait as CdmTraitReference, obj);
-                    continue;
                 }
-
-                if (trait.NamedReference == "is.modelConversion.otherAnnotations")
+                else if (trait.NamedReference == "is.modelConversion.otherAnnotations")
                 {
                     // Safe to cast since "is.modelConversion.otherAnnotations" is a trait, not trait group
                     foreach (var annotation in (trait as CdmTraitReference).Arguments[0].Value)
@@ -148,6 +151,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
                     }
                 }
+                else if (trait is CdmTraitReference && traitToAnnotationMap.ContainsKey(trait.NamedReference))
+                {
+                    Annotation element = await ArgumentPersistence.ToData((trait as CdmTraitReference).Arguments[0], null, null);
+                    element.Name = ConvertTraitToAnnotation(trait.NamedReference);
+                    annotations.Add(element);
+                }
                 else if (
                     !ignoredTraits.Contains(trait.NamedReference)
                     && !trait.NamedReference.StartsWith("is.dataFormat")
@@ -168,17 +177,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             if (extensions.Count > 0)
             {
                 obj.Traits = extensions;
-            }
-        }
-
-        internal static string TraitToAnnotationName(string traitName)
-        {
-            switch (traitName)
-            {
-                case "is.CDM.entityVersion":
-                    return "version";
-                default:
-                    return null;
             }
         }
 
@@ -262,6 +260,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         private static string ConvertAnnotationToTrait(string name)
         {
             return annotationToTraitMap[name];
+        }
+
+        private static string ConvertTraitToAnnotation(string name)
+        {
+            return traitToAnnotationMap[name];
         }
     }
 }

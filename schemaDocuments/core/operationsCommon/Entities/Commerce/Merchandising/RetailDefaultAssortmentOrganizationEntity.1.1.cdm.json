@@ -1,0 +1,116 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/BrickAndMortarStore/RetailStoreEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/OnlineStore/RetailOnlineChannelEntity.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/CallCenter/RetailCallCenterEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMHierarchyRelationship.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailDefaultAssortmentOrganizationEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ValidFrom",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrganizationName",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "OrganizationPartyNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreEntity"
+          },
+          "name": "Relationship_StoreRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailOnlineChannelEntity"
+          },
+          "name": "Relationship_OnlineChannelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCallCenterEntity"
+          },
+          "name": "Relationship_CallCenterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMHierarchyRelationship"
+          },
+          "name": "BackingTable_OMHierarchyRelationshipRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Organizations for default retail assortment organization hierarchy"
+    }
+  ]
+}

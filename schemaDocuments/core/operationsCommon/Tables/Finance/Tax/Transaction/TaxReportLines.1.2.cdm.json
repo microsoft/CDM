@@ -1,0 +1,408 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TaxReportTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxReportLines",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountPropertyVAT",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Amount of property sale subject to VAT",
+          "description": ""
+        },
+        {
+          "name": "CashCollectable",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Cash received",
+          "description": ""
+        },
+        {
+          "name": "CashInvoiceYear",
+          "dataType": "TaxReport347CashInvoiceYear",
+          "isNullable": true,
+          "displayName": "Fiscal year of invoice(s) for cash received",
+          "description": ""
+        },
+        {
+          "name": "DocumentNum",
+          "dataType": "DocumentNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Excluded",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Excluded",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OperationType",
+          "dataType": "TaxReportOperationType_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PropertyTaxNumber",
+          "dataType": "TaxPropertyNumber_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportRecord",
+          "dataType": "TaxReportRecord",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SituationCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountEq",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Equivalence charge amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBase",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseEq",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Equivalence charge origin",
+          "description": ""
+        },
+        {
+          "name": "TaxBookType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCodeEq",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "displayName": "Equivalence charge code",
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxValueEq",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Equivalence charge value",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnpaidInvoiceAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Amount not settled",
+          "description": ""
+        },
+        {
+          "name": "VATNum",
+          "dataType": "VATNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "InvoiceDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInCostPrice",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "Nondeductible sales tax",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxReportTable"
+          },
+          "name": "Relationship_TaxReportTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTable_TaxCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTable_TaxCodeEqRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "VAT report lines"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxReport347CashInvoiceYear",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxReportOperationType_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxPropertyNumber_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxReportRecord",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VATNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

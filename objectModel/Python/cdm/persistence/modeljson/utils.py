@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
+from cdm.objectmodel import CdmTraitReference
 from cdm.persistence.cdmfolder import TraitReferencePersistence, TraitGroupReferencePersistence
 from cdm.utilities import logger
 
@@ -20,6 +21,10 @@ if TYPE_CHECKING:
 
 annotation_to_trait_map = {
     'version': 'is.CDM.entityVersion'
+}
+
+trait_to_annotation_map = {
+    'is.CDM.entityVersion': 'version'
 }
 
 ignored_traits = (
@@ -54,6 +59,10 @@ def should_annotation_go_into_a_single_trait(name: str) -> bool:
 
 def convert_annotation_to_trait(name: str) -> str:
     return annotation_to_trait_map[name]
+
+
+def convert_trait_to_annotation(name: str) -> str:
+    return trait_to_annotation_map[name]
 
 
 def create_csv_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext') -> 'CdmTraitReference':
@@ -141,7 +150,7 @@ async def process_annotations_from_data(ctx: 'CdmCorpusContext', obj: 'MetadataO
                 traits.append(TraitReferencePersistence.from_data(ctx, trait))
 
 
-def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'MetadataObject', traits: 'CdmTraitCollection'):
+async def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'MetadataObject', traits: 'CdmTraitCollection'):
     if traits is None:
         return
 
@@ -151,9 +160,7 @@ def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_objec
     for trait in traits:
         if trait.named_reference.startswith('is.extension.'):
             extension_helper.process_extension_trait_to_object(trait, entity_object)
-            continue
-
-        if trait.named_reference == 'is.modelConversion.otherAnnotations':
+        elif trait.named_reference == 'is.modelConversion.otherAnnotations':
             for annotation in trait.arguments[0].value:
                 if isinstance(annotation, NameValuePair):
                     element = Annotation()
@@ -165,7 +172,10 @@ def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_objec
                 else:
                     logger.warning(ctx, _TAG, process_traits_and_annotations_to_data.__name__, None,
                                    CdmLogCode.WARN_ANNOTATION_TYPE_NOT_SUPPORTED)
-
+        elif isinstance(trait, CdmTraitReference) and trait.named_reference in trait_to_annotation_map:
+            element = await ArgumentPersistence.to_data(trait.arguments[0], None, None)
+            element.name = convert_trait_to_annotation(trait.named_reference)
+            annotations.append(element)
         elif trait.named_reference not in ignored_traits and not trait.named_reference.startswith('is.dataFormat') \
                 and not (trait.named_reference in model_json_property_traits
                          and trait.object_type == CdmObjectType.TRAIT_REF and trait.is_from_property):
@@ -180,9 +190,3 @@ def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_objec
 
         if extensions:
             entity_object.traits = extensions
-
-
-def trait_to_annotation_name(trait_name: str) -> str:
-    if trait_name == 'is.CDM.entityVersion':
-        return 'version'
-    return None

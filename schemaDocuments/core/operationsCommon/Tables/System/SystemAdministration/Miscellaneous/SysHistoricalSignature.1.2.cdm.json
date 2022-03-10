@@ -1,0 +1,107 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysHistoricalSignature",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RawData",
+          "dataType": "EncryptedString",
+          "isNullable": true,
+          "displayName": "RawData",
+          "description": ""
+        },
+        {
+          "name": "Signature",
+          "dataType": "EncryptedString",
+          "isNullable": true,
+          "displayName": "DataSignature",
+          "description": ""
+        },
+        {
+          "name": "AlgorithmType",
+          "dataType": "CryptographyAlgorithmType",
+          "isNullable": true,
+          "displayName": "DataSignatureAlgorithmType",
+          "description": ""
+        },
+        {
+          "name": "SigningThumbprint",
+          "dataType": "SigningThumbprint",
+          "isNullable": true,
+          "displayName": "DataSignatureCertificateThumbprint",
+          "description": ""
+        },
+        {
+          "name": "DateTime",
+          "dataType": "CreatedDateTime",
+          "isNullable": true,
+          "displayName": "DataSignatureDateTime",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "EncryptedString",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CryptographyAlgorithmType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SigningThumbprint",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreatedDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

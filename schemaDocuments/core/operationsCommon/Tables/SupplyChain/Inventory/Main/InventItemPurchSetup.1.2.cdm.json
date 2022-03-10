@@ -1,0 +1,266 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventDim.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "InventItemInventSetup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "InventItemSalesSetup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventItemPurchSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CalendarDays",
+          "dataType": "CalendarDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HighestQty",
+          "dataType": "QtyHighest",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimIdDefault",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "LeadTime",
+          "dataType": "LeadTimePurchDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LowestQty",
+          "dataType": "QtyLowest",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MandatoryInventLocation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Mandatory warehouse",
+          "description": ""
+        },
+        {
+          "name": "MandatoryInventSite",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Mandatory site",
+          "description": ""
+        },
+        {
+          "name": "MultipleQty",
+          "dataType": "QtyMultiples",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Override",
+          "dataType": "Override",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StandardQty",
+          "dataType": "QtyStandard",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Stopped",
+          "dataType": "ItemStopped",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "InventItemSetupSequence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OverrideDefaultStorageDimensions",
+          "dataType": "InventItemOverrideDefaultStorageDimensions",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_DefaultInventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemInventSetup"
+          },
+          "name": "Relationship_InventItemInventSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemSalesSetup"
+          },
+          "name": "Relationship_InventItemSalesSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Item purchase order settings"
+    },
+    {
+      "dataTypeName": "CalendarDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "QtyHighest",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LeadTimePurchDefault",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "QtyLowest",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "QtyMultiples",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Override",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "QtyStandard",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemStopped",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventItemSetupSequence",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventItemOverrideDefaultStorageDimensions",
+      "extendsDataType": "integer"
+    }
+  ]
+}

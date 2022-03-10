@@ -1,0 +1,113 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "IntrastatTransactionCode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IndirectTrade_HU",
+          "dataType": "IntrastatIndirectTrade_HU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCode",
+          "dataType": "IntrastatTransactionCodeId",
+          "description": ""
+        },
+        {
+          "name": "TransferOrderAmountValueType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Invoice amount",
+          "description": ""
+        },
+        {
+          "name": "TransferOrderStatValueType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Statistical amount",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmountCalcMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Invoice amount",
+          "description": ""
+        },
+        {
+          "name": "StatisticalAmountCalcMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Statistical amount",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transaction codes"
+    },
+    {
+      "dataTypeName": "IntrastatIndirectTrade_HU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatTransactionCodeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

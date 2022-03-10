@@ -1,0 +1,87 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Main/ProcCategoryModifier.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProcurementProductCategoryPropertyEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ProductCategoryHierarchyName",
+          "dataType": "string",
+          "displayName": "Product category hierarchy name",
+          "description": ""
+        },
+        {
+          "name": "ProductCategoryName",
+          "dataType": "string",
+          "displayName": "Product category name",
+          "description": ""
+        },
+        {
+          "name": "IsInheritingParentProductCategoryVendors",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsInheritingParentProductCategoryProductAttributes",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsInheritingParentProductCategoryVendorEvaluatiionCriterionGroups",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsInheritingParentProductCategoryQuestionnaires",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ProcCategoryModifier"
+          },
+          "name": "BackingTable_ProcCategoryModifierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Procurement product category properties"
+    }
+  ]
+}

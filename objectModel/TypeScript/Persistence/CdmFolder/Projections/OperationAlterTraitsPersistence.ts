@@ -9,6 +9,8 @@ import {
     cdmLogCode,
     Logger,
     resolveOptions,
+    CdmCollection,
+    CdmTraitReferenceBase,
 } from '../../../internal';
 import { OperationAlterTraits, TraitGroupReference, TraitReference } from '../types';
 import * as utils from './../utils';
@@ -27,8 +29,14 @@ export class OperationAlterTraitsPersistence {
         }
 
         const alterTraitsOp: CdmOperationAlterTraits = OperationBasePersistence.fromData(ctx, cdmObjectType.operationAlterTraitsDef, object);
-        alterTraitsOp.traitsToAdd = utils.createTraitReferenceArray(ctx, object.traitsToAdd);
-        alterTraitsOp.traitsToRemove = utils.createTraitReferenceArray(ctx, object.traitsToRemove);
+        if (object.traitsToAdd !== undefined) {
+            alterTraitsOp.traitsToAdd = new CdmCollection<CdmTraitReferenceBase>(ctx, alterTraitsOp, cdmObjectType.traitRef);
+            utils.addArrayToCdmCollection(alterTraitsOp.traitsToAdd, utils.createTraitReferenceArray(ctx, object.traitsToAdd));
+        }
+        if (object.traitsToRemove !== undefined) {
+            alterTraitsOp.traitsToRemove = new CdmCollection<CdmTraitReferenceBase>(ctx, alterTraitsOp, cdmObjectType.traitRef);
+            utils.addArrayToCdmCollection(alterTraitsOp.traitsToRemove, utils.createTraitReferenceArray(ctx, object.traitsToRemove));
+        }
         alterTraitsOp.argumentsContainWildcards = object.argumentsContainWildcards;
 
         if (typeof (object.applyTo) === 'string') {

@@ -1,0 +1,135 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustVendDirective_PSN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountantApprovalDate",
+          "dataType": "CustVendDirectiveIssueDateTime_PSN",
+          "isNullable": true,
+          "displayName": "Accountant date and time",
+          "description": ""
+        },
+        {
+          "name": "AccountantApprovalStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountantUserId",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Accountant",
+          "description": ""
+        },
+        {
+          "name": "DirectorApprovalDate",
+          "dataType": "CustVendDirectiveApprovalDate_PSN",
+          "isNullable": true,
+          "displayName": "Director date and time",
+          "description": ""
+        },
+        {
+          "name": "DirectorApprovalStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DirectorUserId",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Director",
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssueDate",
+          "dataType": "CustVendDirectiveIssueDateTime_PSN",
+          "displayName": "Date of issue",
+          "description": ""
+        },
+        {
+          "name": "Memo",
+          "dataType": "CustVendDirectiveMemo_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Directive"
+    },
+    {
+      "dataTypeName": "CustVendDirectiveIssueDateTime_PSN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendDirectiveApprovalDate_PSN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustVendDirectiveMemo_PSN",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -114,6 +114,7 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   @Deprecated
   public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     final com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
+    rasb.getResolvedAttributeSet().setAttributeContext(under);
     AttributeContextParameters acpEnt = null;
     if (under != null) {
       acpEnt = new AttributeContextParameters();

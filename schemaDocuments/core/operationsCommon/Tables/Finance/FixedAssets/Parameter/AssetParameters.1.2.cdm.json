@@ -1,0 +1,936 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBookTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "AssetLedger.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventJournalName.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/UserGroupInfo.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Reference/DimensionAttribute.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventProfile_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AcceleratedDepCalcMethod_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AcceleratedDepRateFactor_JP",
+          "dataType": "AssetAcceleratedDepRateFactor_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AcceleratedDepRateThreshold_JP",
+          "dataType": "AssetAcceleratedDepRateThreshold_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Acquisition",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Acquisition",
+          "description": ""
+        },
+        {
+          "name": "AcquisitionAdj",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Acquisition adjustment",
+          "description": ""
+        },
+        {
+          "name": "AllowPreAcquisition_CZ",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetAccountingStandard_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetAllowAcqPostingPO",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow asset acquisition from Purchasing",
+          "description": ""
+        },
+        {
+          "name": "AssetAllowAutoCreate",
+          "dataType": "AssetAllowAutoCreate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetAllowCreate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Create asset during product receipt or invoice posting",
+          "description": ""
+        },
+        {
+          "name": "AssetAllowSale_PL",
+          "dataType": "PlAssetAllowSale",
+          "isNullable": true,
+          "displayName": "Check whether asset can be sold",
+          "description": ""
+        },
+        {
+          "name": "AssetAllowLocationTransfer_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow location transfer",
+          "description": ""
+        },
+        {
+          "name": "AssetAssemblingReservation_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetChanges",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Reason code requirements for asset changes",
+          "description": ""
+        },
+        {
+          "name": "AssetDefaultSaleLedgerDimension_PL",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Sales account",
+          "description": ""
+        },
+        {
+          "name": "AssetPercentageLevel_PL",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetUserGroupIdPostPO",
+          "dataType": "UserGroupId",
+          "isNullable": true,
+          "displayName": "Restrict asset acquisition posting to user group",
+          "description": ""
+        },
+        {
+          "name": "AutoNumber",
+          "dataType": "AssetAutoNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BarcodeEqualsAssetNumber",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Bar code equals fixed asset number",
+          "description": ""
+        },
+        {
+          "name": "BookIdDefault",
+          "dataType": "AssetBookIdDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CapitalizationThreshold",
+          "dataType": "AssetCapitalizationThreshold",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CapitalReserve",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Provision for reserve",
+          "description": ""
+        },
+        {
+          "name": "CapitalReserveTransfer",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Transfer from reserve",
+          "description": ""
+        },
+        {
+          "name": "CheckMaxPercentRB",
+          "dataType": "AssetCheckMaxPercentRB_DE",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsiderCapitalizationThreshold",
+          "dataType": "AssetConsiderCapitalizationThreshold",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductCashDisc",
+          "dataType": "AssetDeductCachDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Depreciation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Depreciation",
+          "description": ""
+        },
+        {
+          "name": "DepreciationAdj",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Depreciation adjustment",
+          "description": ""
+        },
+        {
+          "name": "DepreciationCompaniesAct_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Companies Act depreciation",
+          "description": ""
+        },
+        {
+          "name": "DepreciationIncomeTaxAct_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Income tax Act depreciation",
+          "description": ""
+        },
+        {
+          "name": "DepreciationMin",
+          "dataType": "AssetDepreciationMin",
+          "description": ""
+        },
+        {
+          "name": "DepreciationThreshold_IN",
+          "dataType": "DepreciationThreshold_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DerogatoryDecrease",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Derogatory decrease",
+          "description": ""
+        },
+        {
+          "name": "DerogatoryIncrease",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Derogatory increase",
+          "description": ""
+        },
+        {
+          "name": "DisposalSale",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Disposal - sale",
+          "description": ""
+        },
+        {
+          "name": "DisposalScrap",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Disposal - scrap",
+          "description": ""
+        },
+        {
+          "name": "EnableDepreciationMethods",
+          "dataType": "AssetDepreciationMethodsEnabled_CN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnableDepreciationPolicy",
+          "dataType": "AssetDepreciationPolicyEnabled_CN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExtraOrdinaryDepreciation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Extraordinary depreciation",
+          "description": ""
+        },
+        {
+          "name": "HalfYearDepreciation_AT",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Apply specific rules for half year depreciation",
+          "description": ""
+        },
+        {
+          "name": "ICMSCreditInstallments_BR",
+          "dataType": "ICMSCreditInstallments_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImpairmentWarningPeriod_JP",
+          "dataType": "AssetImpairmentWarningPeriod_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventJournalNameId",
+          "dataType": "InventJournalNameAsset",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsAssemblingEnabled_JP",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inventory assemble and disassemble",
+          "description": ""
+        },
+        {
+          "name": "IsAutomaticPosting",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Automatically create depreciation adjustment amounts with disposal",
+          "description": ""
+        },
+        {
+          "name": "IsDisposalSameYear",
+          "dataType": "FixedAssetDisposalSameYear",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsProratedDepreciation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Calculate prorated depreciation",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Account for revenue recognition of untransferred reserves",
+          "description": ""
+        },
+        {
+          "name": "LowCostAssetThreshold_W",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Low-cost asset threshold",
+          "description": ""
+        },
+        {
+          "name": "ManuallyChangeDepProfileEnable_JP",
+          "dataType": "AssetManuallyChangeDepProfileEnable_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxAcquisitionValue_IN",
+          "dataType": "AssetMaxAcquisitionValue_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinNonSeasonalWorkingDays_IN",
+          "dataType": "Days_IN",
+          "isNullable": true,
+          "displayName": "Min. working days for non-seasonal industries",
+          "description": ""
+        },
+        {
+          "name": "MinSeasonalWorkingDays_IN",
+          "dataType": "Days_IN",
+          "isNullable": true,
+          "displayName": "Min. working days for seasonal industries",
+          "description": ""
+        },
+        {
+          "name": "MultiAcquisition",
+          "dataType": "AssetMultiAcquisition",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "AssetPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Revaluation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Revaluation",
+          "description": ""
+        },
+        {
+          "name": "ThresholdPercentage_IN",
+          "dataType": "ThresholdPercentage_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseCatchUpMethod_JP",
+          "dataType": "AssetUseCatchUpMethod_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseSpecialDepreciatonBalance_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Use special depreciation balance",
+          "description": ""
+        },
+        {
+          "name": "WriteDownAdj",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Write down adjustment",
+          "description": ""
+        },
+        {
+          "name": "WriteUpAdj",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Write up adjustment",
+          "description": ""
+        },
+        {
+          "name": "DepreciationCatchUpInterval_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetSaleBasis_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AnalysisDimensionAttribute_RU",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Analysis code",
+          "description": ""
+        },
+        {
+          "name": "AssessedRoll_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssessedTaxInitDate_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyIssue_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Transference",
+          "description": ""
+        },
+        {
+          "name": "CompanyReceipt_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Receipt",
+          "description": ""
+        },
+        {
+          "name": "Disposal_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Writing-off",
+          "description": ""
+        },
+        {
+          "name": "Lending_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Lease",
+          "description": ""
+        },
+        {
+          "name": "LendingReturn_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Return from lease",
+          "description": ""
+        },
+        {
+          "name": "Other_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Others",
+          "description": ""
+        },
+        {
+          "name": "PartialTakeDown_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Partial dismantlement",
+          "description": ""
+        },
+        {
+          "name": "CurrencyWriteDownAdj_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Currency depreciation revaluation",
+          "description": ""
+        },
+        {
+          "name": "CurrencyWriteUpAdj_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Currency cost revaluation",
+          "description": ""
+        },
+        {
+          "name": "MajorRepairs_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Major repairs",
+          "description": ""
+        },
+        {
+          "name": "LandTaxCode_RU",
+          "dataType": "RAssetLandTaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LandTaxRoll_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LowCostAssetInventProfileId_RU",
+          "dataType": "InventProfileId_RU",
+          "isNullable": true,
+          "displayName": "NVFA inventory profile",
+          "description": ""
+        },
+        {
+          "name": "TaxBookIdDefault_RU",
+          "dataType": "AssetBookIdDefault",
+          "isNullable": true,
+          "displayName": "Tax book",
+          "description": ""
+        },
+        {
+          "name": "TaxCode_RU",
+          "dataType": "RAssetAssessedTaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportTaxCode_RU",
+          "dataType": "RAssetTransportTaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportTaxRoll_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LowCostAssetThreshold_HU",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Low-cost asset threshold",
+          "description": ""
+        },
+        {
+          "name": "DepreciationMinReportingCurrency",
+          "dataType": "AssetDepreciationMinReportingCurrency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmountUpdatesComplete",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultMaintenanceFunctionalLocation",
+          "dataType": "EntAssetFunctionalLocationRecID",
+          "isNullable": true,
+          "displayName": "Functional location",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_AssetDefaultSaleDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLedger"
+          },
+          "name": "Relationship_AssetLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventJournalName"
+          },
+          "name": "Relationship_InventJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "UserGroupInfo"
+          },
+          "name": "Relationship_UserGroupInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttribute"
+          },
+          "name": "Relationship_AnalysisDimensionAttribute_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_LandTaxCode_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventProfile_RU"
+          },
+          "name": "Relationship_InventProfile_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_AssessedTaxCode_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableTax_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TransportTaxCode_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset parameters"
+    },
+    {
+      "dataTypeName": "AssetAcceleratedDepRateFactor_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetAcceleratedDepRateThreshold_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetAllowAutoCreate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PlAssetAllowSale",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UserGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetAutoNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetBookIdDefault",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetCapitalizationThreshold",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetCheckMaxPercentRB_DE",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetConsiderCapitalizationThreshold",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDeductCachDisc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationMin",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DepreciationThreshold_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationMethodsEnabled_CN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationPolicyEnabled_CN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ICMSCreditInstallments_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetImpairmentWarningPeriod_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventJournalNameAsset",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FixedAssetDisposalSameYear",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetManuallyChangeDepProfileEnable_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetMaxAcquisitionValue_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Days_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetMultiAcquisition",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ThresholdPercentage_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetUseCatchUpMethod_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetLandTaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventProfileId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetAssessedTaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetTransportTaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationMinReportingCurrency",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EntAssetFunctionalLocationRecID",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

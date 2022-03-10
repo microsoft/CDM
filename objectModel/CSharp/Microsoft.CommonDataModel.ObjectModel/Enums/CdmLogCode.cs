@@ -28,6 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrPersistCardinalityPropMissing,
         ErrPersistCdmEntityFetchError,
         ErrPersistClassMissing,
+        ErrPersistConversionError,
         ErrPersistCsvProcessingError,
         ErrPersistDeserializeError,
         ErrPersistDocConversionFailure,

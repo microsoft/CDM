@@ -78,7 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 ToAttribute = toAttribute
             };
 
-            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             return result;
         }

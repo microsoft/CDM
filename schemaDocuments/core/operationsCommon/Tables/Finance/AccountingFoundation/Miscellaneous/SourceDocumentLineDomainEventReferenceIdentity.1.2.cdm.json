@@ -1,0 +1,89 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "SourceDocumentDomainEventReferenceIdentity.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SourceDocumentLineDomainEventReferenceIdentity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SourceDocumentLine",
+          "dataType": "bigInteger",
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentDomainEventReferenceIdentity",
+          "dataType": "bigInteger",
+          "description": ""
+        },
+        {
+          "name": "LineDate",
+          "dataType": "AccountingDate",
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentLine"
+          },
+          "name": "Relationship_SourceDocumentLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentDomainEventReferenceIdentity"
+          },
+          "name": "Relationship_SourceDocumentDomainEventReferenceIdentityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

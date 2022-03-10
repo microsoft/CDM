@@ -1,0 +1,877 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Group/MarkupTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustLedger.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/MCRHoldCodeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/DocuType.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Main/MCRSourceCodeSetup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Main/RetailTenderTypeTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCROrderParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OrderCreditJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Journal name",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudHoldCode",
+          "dataType": "MCRHoldCode",
+          "isNullable": true,
+          "displayName": "Fraud hold code",
+          "description": ""
+        },
+        {
+          "name": "BackorderDays",
+          "dataType": "MCRBackorderNumDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BatchFrequency",
+          "dataType": "Integer9",
+          "isNullable": true,
+          "displayName": "Batch frequency minutes",
+          "description": ""
+        },
+        {
+          "name": "contChildToCreate",
+          "dataType": "MCRContChildToCreate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContinuityPaymentProfile",
+          "dataType": "CustPostingProfile",
+          "isNullable": true,
+          "displayName": "Continuity payment profile",
+          "description": ""
+        },
+        {
+          "name": "ContinuityRevenueJournal",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Revenue journal name",
+          "description": ""
+        },
+        {
+          "name": "CouponAccruals",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Write accruals",
+          "description": ""
+        },
+        {
+          "name": "CouponDiscountLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Liability offset account",
+          "description": ""
+        },
+        {
+          "name": "CouponLiabilityLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Liability account",
+          "description": ""
+        },
+        {
+          "name": "CouponMiscChargeCode",
+          "dataType": "MCRCouponMiscChargeCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustCreditManualJourPost",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Manual posting",
+          "description": ""
+        },
+        {
+          "name": "CustCreditOnAccount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Credit to account",
+          "description": ""
+        },
+        {
+          "name": "FTCDaysCancellationNotice",
+          "dataType": "MCRDaysFromStart",
+          "isNullable": true,
+          "displayName": "Cancellation notice days from start",
+          "description": ""
+        },
+        {
+          "name": "FTCDaysFirstNotice",
+          "dataType": "MCRDaysFromStart",
+          "isNullable": true,
+          "displayName": "First notice days from start",
+          "description": ""
+        },
+        {
+          "name": "FTCDaysSecondNotice",
+          "dataType": "MCRDaysFromStart",
+          "isNullable": true,
+          "displayName": "Second notice days from start",
+          "description": ""
+        },
+        {
+          "name": "InstallAccelPaym",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Accelerate payments",
+          "description": ""
+        },
+        {
+          "name": "InstallmentAdjMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstallmentAuth",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstallmentBillLeadTime",
+          "dataType": "MCRInstallBillLeadTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstallmentShipComplete",
+          "dataType": "MCRInstallmentShipComplete",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstallPlanApplyMiscCharge",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstallReauthLimit",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Reauthorization limit",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalNameId",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Journal name",
+          "description": ""
+        },
+        {
+          "name": "MaxCustCreditAmount",
+          "dataType": "MCRMaxCreditAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRAllowExpiredSourceCode",
+          "dataType": "MCRAllowExpiredSourceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRAuthContinuityChild",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Authorize continuity child order",
+          "description": ""
+        },
+        {
+          "name": "MCRContinuityBillLead",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Continuity on account bill days",
+          "description": ""
+        },
+        {
+          "name": "MCRContinuityDeliveryDays",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Continuity days before delivery",
+          "description": ""
+        },
+        {
+          "name": "MCRContinuityRepeatThreshold",
+          "dataType": "MCRNumTimesToRepeat",
+          "isNullable": true,
+          "displayName": "Continuity repeat threshold",
+          "description": ""
+        },
+        {
+          "name": "MCRCreditCardApprovalAmount",
+          "dataType": "MCRCreditCardApprovalAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRDefaultExchangeSourceID",
+          "dataType": "MCRSourceID",
+          "isNullable": true,
+          "displayName": "Default exchange source code",
+          "description": ""
+        },
+        {
+          "name": "MCRExchangePaymBalanceHold",
+          "dataType": "MCRExchangePaymBalanceHold",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRExchangeSourceCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRFraudBadEmailScore",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Email score",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudBadPhoneScore",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Phone score",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudBadZipAddressScore",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Extended ZIP/postal code score",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudBadZipScore",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "ZIP/postal code score",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudCheck",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Fraud Check",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudCommentTypeId",
+          "dataType": "DocuTypeId",
+          "isNullable": true,
+          "displayName": "Fraud comment type",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudManualHoldCode",
+          "dataType": "MCRHoldCode",
+          "isNullable": true,
+          "displayName": "Manual fraud hold code",
+          "description": ""
+        },
+        {
+          "name": "MCRFTCProcessing",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Automatic notification and cancellation processing",
+          "description": ""
+        },
+        {
+          "name": "MCRFutureOrder",
+          "dataType": "MCRFutureOrders",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRFutureOrderAuth",
+          "dataType": "MCRFutureOrderAuthorization",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRFutureOrderDays",
+          "dataType": "MCRFutureOrderDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRFutureReleaseReserved",
+          "dataType": "MCRFutureReleaseReserved",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRMarkupTransReasonCodeRequired",
+          "dataType": "MCRMarkupTransReasonCodeRequired",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRMinScore",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Minimum score",
+          "description": ""
+        },
+        {
+          "name": "MCRMiscChargePrintOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRNumCCAuthRetry",
+          "dataType": "MCRNumCCAuthRetry",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRPADSSLogging",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable payment logging:",
+          "description": ""
+        },
+        {
+          "name": "MCRPaymModeSelect",
+          "dataType": "PaymMode",
+          "isNullable": true,
+          "displayName": "Payment method selection",
+          "description": ""
+        },
+        {
+          "name": "MCRPriceOverrideLineColor",
+          "dataType": "MCRPriceOverrideLineColor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRRefundCheckApprovalAmount",
+          "dataType": "MCRRefundCheckApprovalAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRReserveInventAuthStale",
+          "dataType": "MCRReserveInventAuthStale",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRRetryOnSubmit",
+          "dataType": "MCRRetryOnSubmit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRReturnCreditHold",
+          "dataType": "MCRReturnCreditHold",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRReturnCreditPaymMode",
+          "dataType": "RetailTenderTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRSourceCodeRequired",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Source code required",
+          "description": ""
+        },
+        {
+          "name": "MCRSubmitOnClear",
+          "dataType": "MCRSubmitOnClear",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRUnReserveOnDeclinedPayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Remove reservations for declined payments",
+          "description": ""
+        },
+        {
+          "name": "PriceMatchMarkupCode",
+          "dataType": "MarkupCode",
+          "isNullable": true,
+          "displayName": "Price match charges code",
+          "description": ""
+        },
+        {
+          "name": "MCRReplacementOrderColor",
+          "dataType": "MCROrderColor",
+          "isNullable": true,
+          "displayName": "Replacement order",
+          "description": ""
+        },
+        {
+          "name": "MCRReturnOrderColor",
+          "dataType": "MCROrderColor",
+          "isNullable": true,
+          "displayName": "Return order",
+          "description": ""
+        },
+        {
+          "name": "MCRSOWithReturnOrderColor",
+          "dataType": "MCROrderColor",
+          "isNullable": true,
+          "displayName": "Sales order with returns",
+          "description": ""
+        },
+        {
+          "name": "MCRPriceOverrideHoldCode",
+          "dataType": "MCRHoldCode",
+          "isNullable": true,
+          "displayName": "Price override hold code",
+          "description": ""
+        },
+        {
+          "name": "MCRAllowReturnPaymentOverride",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SecurityOverrideCode",
+          "dataType": "MCRSecurityOverridePassword",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApplyCreditToExchange",
+          "dataType": "MCRApplyCreditToExchange",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdvanceExchange",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdvanceCredit",
+          "dataType": "MCRAdvanceCredit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_ContinuityRevenueJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CouponDiscountLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CouponLiabilityLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_CouponMiscChargeCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalNameIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_MarkupTable_PriceMatchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_MCRContinuityProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRHoldCodeTable"
+          },
+          "name": "Relationship_MCRExchangePaymBalanceHoldRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuType"
+          },
+          "name": "Relationship_MCRFraudCommentTypeIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRHoldCodeTable"
+          },
+          "name": "Relationship_MCRFraudHoldCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRHoldCodeTable"
+          },
+          "name": "Relationship_MCRFraudManualHoldCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRHoldCodeTable"
+          },
+          "name": "Relationship_MCRReturnCreditHoldRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRSourceCodeSetup"
+          },
+          "name": "Relationship_MCRSourceCodeSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_OrderCreditJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeTable"
+          },
+          "name": "Relationship_RetailTenderTypeTable_ReturnCreditRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Call center parameters"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRHoldCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRBackorderNumDays",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Integer9",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRContChildToCreate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MCRCouponMiscChargeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRDaysFromStart",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRInstallBillLeadTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRInstallmentShipComplete",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRMaxCreditAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRAllowExpiredSourceCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRNumTimesToRepeat",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRCreditCardApprovalAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRSourceID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRExchangePaymBalanceHold",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocuTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRFutureOrders",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRFutureOrderAuthorization",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRFutureOrderDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRFutureReleaseReserved",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRMarkupTransReasonCodeRequired",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRNumCCAuthRetry",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRPriceOverrideLineColor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRRefundCheckApprovalAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRReserveInventAuthStale",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRRetryOnSubmit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRReturnCreditHold",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTenderTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRSubmitOnClear",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MarkupCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCROrderColor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRSecurityOverridePassword",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRApplyCreditToExchange",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRAdvanceCredit",
+      "extendsDataType": "integer"
+    }
+  ]
+}

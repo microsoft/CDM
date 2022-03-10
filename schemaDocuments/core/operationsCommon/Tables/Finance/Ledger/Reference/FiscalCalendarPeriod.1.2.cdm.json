@@ -1,0 +1,150 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "FiscalCalendar.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "FiscalCalendarYear.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FiscalCalendarPeriod",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Comments",
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "FiscalPeriodEnd",
+          "description": ""
+        },
+        {
+          "name": "FiscalCalendar",
+          "dataType": "FiscalCalendarRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalCalendarYear",
+          "dataType": "FiscalCalendarYearRecId",
+          "description": ""
+        },
+        {
+          "name": "Month",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PeriodName",
+          "description": ""
+        },
+        {
+          "name": "Quarter",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShortName",
+          "dataType": "PeriodShortName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "FiscalPeriodStart",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendar"
+          },
+          "name": "Relationship_FiscalCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendarYear"
+          },
+          "name": "Relationship_FiscalCalendarYearRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal calendar period"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalPeriodEnd",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FiscalCalendarRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalCalendarYearRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PeriodName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PeriodShortName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalPeriodStart",
+      "extendsDataType": "date"
+    }
+  ]
+}

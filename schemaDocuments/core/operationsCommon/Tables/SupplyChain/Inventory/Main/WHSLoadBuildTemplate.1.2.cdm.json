@@ -1,0 +1,201 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSLoadMixGroup.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSEquipment.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "WHSLoadTemplate.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSLoadBuildTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SequenceNumber",
+          "dataType": "WHSSeqNum",
+          "description": ""
+        },
+        {
+          "name": "LoadBuildTemplateName",
+          "dataType": "WHSLoadBuildTemplateName",
+          "description": ""
+        },
+        {
+          "name": "WaveStepCode",
+          "dataType": "WHSWaveStepCode",
+          "description": ""
+        },
+        {
+          "name": "LoadTemplateId",
+          "dataType": "WHSLoadTemplateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EquipmentCode",
+          "dataType": "TMSEquipmentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadMixGroupId",
+          "dataType": "WHSLoadMixGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidateVolumetrics",
+          "dataType": "WHSValidateVolumetrics",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseOpenLoads",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreateLoads",
+          "dataType": "WHSCreateLoads",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowLoadLineSplit",
+          "dataType": "WHSAllowLoadLineSplit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedQueryRun",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadMixGroup"
+          },
+          "name": "Relationship_WHSLoadMixGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSEquipment"
+          },
+          "name": "Relationship_TMSEquipmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadTemplate"
+          },
+          "name": "Relationship_WHSLoadTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Load build templates"
+    },
+    {
+      "dataTypeName": "WHSSeqNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLoadBuildTemplateName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWaveStepCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadTemplateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSEquipmentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadMixGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSValidateVolumetrics",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSCreateLoads",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSAllowLoadLineSplit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    }
+  ]
+}

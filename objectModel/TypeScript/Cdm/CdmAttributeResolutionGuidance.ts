@@ -16,6 +16,9 @@ import {
  * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
  */
 export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements CdmAttributeResolutionGuidance {
+    public fetchObjectDefinitionName(): string {
+        return undefined;
+    }
     public removeAttribute?: boolean;
     /**
      * A list of strings, one for each 'directive' that should be always imposed at this attribute definition

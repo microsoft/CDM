@@ -1,0 +1,384 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InterCompanyInventDim.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "PurchLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InterCompanyInventSum",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Arrived",
+          "dataType": "InventQtyArrived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AvailOrdered",
+          "dataType": "InventQtyAvailOrdered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AvailPhysical",
+          "dataType": "InventQtyAvailPhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Closed",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closed",
+          "description": ""
+        },
+        {
+          "name": "ClosedQty",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Physical open quantity",
+          "description": ""
+        },
+        {
+          "name": "Deducted",
+          "dataType": "InventQtyDeducted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyCompanyId",
+          "dataType": "InterCompanyCompanyId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "InterCompanyItemId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LastUpdDateExpected",
+          "dataType": "DateExpected",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastUpdDatePhysical",
+          "dataType": "DatePhysical",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnOrder",
+          "dataType": "InventQtyOnOrder",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ordered",
+          "dataType": "InventQtyOrdered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalInvent",
+          "dataType": "InventQtyPhysicalOnhand",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalValue",
+          "dataType": "CostAmountPhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalValueSecCur_RU",
+          "dataType": "CostAmountPhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Picked",
+          "dataType": "InventQtyPicked",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedQty",
+          "dataType": "InventQtyPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedValue",
+          "dataType": "CostAmountPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedValueSecCur_RU",
+          "dataType": "CostAmountPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuotationIssue",
+          "dataType": "InventQtyQuotationIssue",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuotationReceipt",
+          "dataType": "InventQtyQuotationReceipt",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Received",
+          "dataType": "InventQtyReceived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Registered",
+          "dataType": "InventQtyRegistered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReservOrdered",
+          "dataType": "InventQtyReservOrdered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReservPhysical",
+          "dataType": "InventQtyReservPhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "SessionId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InterCompanyInventDim"
+          },
+          "name": "Relationship_InterCompanyInventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqTrans"
+          },
+          "name": "Relationship_ReqTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesOrderLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Intercompany on-hand inventory"
+    },
+    {
+      "dataTypeName": "InventQtyArrived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyAvailOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyAvailPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyDeducted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InterCompanyCompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DateExpected",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DatePhysical",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventQtyOnOrder",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyPhysicalOnhand",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyPicked",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyPosted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountPosted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyQuotationIssue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyQuotationReceipt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyRegistered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReservOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReservPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SessionId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

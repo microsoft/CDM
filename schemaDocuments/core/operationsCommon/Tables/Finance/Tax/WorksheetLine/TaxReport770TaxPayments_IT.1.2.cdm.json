@@ -1,0 +1,217 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/WorksheetHeader/TaxReport770Table_IT.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TaxReport770Trans_IT.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxReport770TaxPayments_IT",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DeductionsUsed",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Deduction amounts used",
+          "description": ""
+        },
+        {
+          "name": "InterestAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Interest amount",
+          "description": ""
+        },
+        {
+          "name": "Month",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Note",
+          "dataType": "char",
+          "isNullable": true,
+          "displayName": "Note",
+          "description": ""
+        },
+        {
+          "name": "OverPayment",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Overpayment",
+          "description": ""
+        },
+        {
+          "name": "PaidAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Paid amount",
+          "description": ""
+        },
+        {
+          "name": "PaymentDate",
+          "dataType": "PaymDate",
+          "isNullable": true,
+          "displayName": "Payment date",
+          "description": ""
+        },
+        {
+          "name": "RecoveredCredits",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Recovered credits",
+          "description": ""
+        },
+        {
+          "name": "ReportId",
+          "dataType": "TaxReport770Id_IT",
+          "description": ""
+        },
+        {
+          "name": "TaxCredit",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Tax credit used as a detraction",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdCode",
+          "dataType": "TaxWithholdReasonCode",
+          "displayName": "Reason code",
+          "description": ""
+        },
+        {
+          "name": "Total",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Total amount",
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "name": "Year",
+          "dataType": "Year",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxReport770Table_IT"
+          },
+          "name": "Relationship_TaxReport770TableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxReport770Trans_IT"
+          },
+          "name": "Relationship_TaxReport770TransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Modello 770 Monthly Tax Payments Table"
+    },
+    {
+      "dataTypeName": "TaxWithholdAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PaymDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxReport770Id_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdReasonCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Year",
+      "extendsDataType": "integer"
+    }
+  ]
+}

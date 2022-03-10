@@ -14,9 +14,6 @@ export abstract class cdmObjectSimple extends CdmObjectBase {
     public constructor(ctx: CdmCorpusContext) {
         super(ctx);
     }
-    public fetchObjectDefinitionName(): string {
-        return undefined;
-    }
     public fetchObjectDefinition<T extends CdmObjectDefinition>(resOpt: resolveOptions): T {
         return undefined;
     }

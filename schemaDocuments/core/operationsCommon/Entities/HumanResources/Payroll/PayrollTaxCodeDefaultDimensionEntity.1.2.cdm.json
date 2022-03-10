@@ -1,0 +1,130 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionSetEntity.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "PayrollTaxCodeHeaderEntity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/Payroll/Reference/PayrollTaxCodeDefaultDimension.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollTaxCodeDefaultDimensionEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaxCodeId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "TaxCodeCountryRegionId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "LegalEntityId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimensionDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorAccountNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorLegalEntityId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectCategoryId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectCategoryLegalEntityId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionSetEntity"
+          },
+          "name": "Relationship_DefaultDimensionDimensionSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollTaxCodeHeaderEntity"
+          },
+          "name": "Relationship_TaxCodeHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollTaxCodeDefaultDimension"
+          },
+          "name": "BackingTable_PayrollTaxCodeDefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payroll tax code default dimension"
+    }
+  ]
+}

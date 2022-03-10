@@ -1,0 +1,232 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/WorksheetHeader/EximAuthorizationSchemesTable_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRegistrationNumbers_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxLedgerAccountGroup_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EximAuthorizationSchemesLine_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AuthorizationSchemesTableRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ExportAssessableValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Export assessable value",
+          "description": ""
+        },
+        {
+          "name": "ExportExpiryDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Export expiration date",
+          "description": ""
+        },
+        {
+          "name": "ExtensionDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Issued date",
+          "description": ""
+        },
+        {
+          "name": "ExtensionNum",
+          "dataType": "EximLicenseNum_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Extension letter number",
+          "description": ""
+        },
+        {
+          "name": "IECTaxRegistrationNumber",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "IEC number",
+          "description": ""
+        },
+        {
+          "name": "ImportAssessableValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Import assessable value",
+          "description": ""
+        },
+        {
+          "name": "ImportExpiryDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Import expiration date",
+          "description": ""
+        },
+        {
+          "name": "LicenseStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchValue",
+          "dataType": "EximValue_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Purchase value",
+          "description": ""
+        },
+        {
+          "name": "SaleValue",
+          "dataType": "EximValue_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Sale value",
+          "description": ""
+        },
+        {
+          "name": "TaxLedgerAccountGroup",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Tax ledger posting group",
+          "description": ""
+        },
+        {
+          "name": "Text",
+          "dataType": "EximTxt_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionNum",
+          "dataType": "Version",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EximAuthorizationSchemesTable_IN"
+          },
+          "name": "Relationship_EximAuthorizationSchemesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_IECTaxRegistrationNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxLedgerAccountGroup_IN"
+          },
+          "name": "Relationship_TaxLedgerAccountGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "EXIM Authorization schemes"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EximLicenseNum_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EximValue_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EximTxt_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Version",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -4,6 +4,7 @@
 from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
+from cdm.objectmodel.cdm_collection import CdmCollection
 from cdm.persistence.cdmfolder.types import OperationAlterTraits
 from cdm.utilities.logging import logger
 
@@ -27,9 +28,13 @@ class OperationAlterTraitsPersistence:
 
         alter_traits_op = OperationBasePersistence.from_data(ctx,
             CdmObjectType.OPERATION_ALTER_TRAITS_DEF, data)  # type: CdmOperationAlterTraits
-        
-        alter_traits_op.traits_to_add = utils.create_trait_reference_array(ctx, data.traitsToAdd)
-        alter_traits_op.traits_to_remove = utils.create_trait_reference_array(ctx, data.traitsToRemove)
+
+        if 'traitsToAdd' in data:
+            alter_traits_op.traits_to_add = CdmCollection(ctx, alter_traits_op, CdmObjectType.TRAIT_REF)
+            utils.add_list_to_cdm_collection(alter_traits_op.traits_to_add, utils.create_trait_reference_array(ctx, data.traitsToAdd))
+        if 'traitsToRemove' in data:
+            alter_traits_op.traits_to_remove = CdmCollection(ctx, alter_traits_op, CdmObjectType.TRAIT_REF)
+            utils.add_list_to_cdm_collection(alter_traits_op.traits_to_remove, utils.create_trait_reference_array(ctx, data.traitsToRemove))
         alter_traits_op.arguments_contain_wildcards = data.argumentsContainWildcards
 
         if isinstance(data.applyTo, str):

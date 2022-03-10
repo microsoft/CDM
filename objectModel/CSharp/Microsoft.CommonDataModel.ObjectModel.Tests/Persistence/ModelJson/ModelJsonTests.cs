@@ -18,6 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
     using Microsoft.CommonDataModel.ObjectModel.Persistence;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
 
     /// <summary>
     /// The model json tests.
@@ -302,6 +303,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             var obtainedModelJson = await ManifestPersistence.ToData(cdmManifest, null, null);
 
             Assert.AreEqual("test description", obtainedModelJson.Entities[0]["description"].ToString());
+        }
+
+        /// <summary>
+        /// Tests that traits that convert into annotations are properly converted on load and save
+        /// </summary>
+        [Test]
+        public async Task TestLoadingAndSavingCdmTraits()
+        {
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestLoadingAndSavingCdmTraits));
+            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("model.json");
+            var entity = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("someEntity.cdm.json/someEntity");
+            Assert.NotNull(entity.ExhibitsTraits.Item("is.CDM.entityVersion"));
+
+            var manifestData = await ManifestPersistence.ToData(manifest, new ResolveOptions(manifest.InDocument), new CopyOptions());
+            var versionAnnotation = (manifestData.Entities[0]["annotations"][0]).ToObject<Annotation>();
+            Assert.AreEqual("<version>", versionAnnotation.Value);
         }
 
         /// <summary>

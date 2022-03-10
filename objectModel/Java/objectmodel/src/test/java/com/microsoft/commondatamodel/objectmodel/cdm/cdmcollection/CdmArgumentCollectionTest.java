@@ -80,10 +80,10 @@ public class CdmArgumentCollectionTest {
     Assert.assertEquals(2, trait.getArguments().size());
     Assert.assertFalse(trait.isResolvedArguments());
     Assert.assertEquals("Arg1", trait.getArguments().get(0).getName());
-    Assert.assertEquals(123, trait.getArguments().get(0).getValue());
+    Assert.assertEquals(123, trait.getArguments().item("Arg1").getValue());
     Assert.assertEquals(trait, trait.getArguments().get(0).getOwner());
     Assert.assertEquals("Arg2", trait.getArguments().get(1).getName());
-    Assert.assertEquals(valOfArg2, trait.getArguments().get(1).getValue());
+    Assert.assertEquals(valOfArg2, trait.getArguments().item("Arg2").getValue());
   }
 
   @Test

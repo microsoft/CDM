@@ -1,0 +1,257 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/Project/Group/CategoryTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TrvPayMethod.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Group/TrvCostTypeStatistics.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvCostType",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostTxt",
+          "dataType": "TrvCostTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostType",
+          "dataType": "TrvCostTypeEDT",
+          "description": ""
+        },
+        {
+          "name": "ExpType",
+          "dataType": "TrvExpTypeEDT",
+          "description": ""
+        },
+        {
+          "name": "IsCommon",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Commonly used category",
+          "description": ""
+        },
+        {
+          "name": "IsGovernment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Include in anti-corruption",
+          "description": ""
+        },
+        {
+          "name": "isImportOnly",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Import only",
+          "description": ""
+        },
+        {
+          "name": "IsInactive",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inactive",
+          "description": ""
+        },
+        {
+          "name": "IsItemizationMandatory",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Itemization mandatory",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StdPaiMethod",
+          "dataType": "TrvStdPaiMethod",
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "displayName": "Item sales tax group",
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroupIfBilledToEmployee",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "displayName": "Alternate item sales tax group",
+          "description": ""
+        },
+        {
+          "name": "TrvCostTypeStatisticsId",
+          "dataType": "TrvCostTypeStatisticsId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CategoryTable"
+          },
+          "name": "Relationship_CategoryTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvPayMethod"
+          },
+          "name": "Relationship_PayMethodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingBilledToEmployeeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvCostTypeStatistics"
+          },
+          "name": "Relationship_TrvCostTypeStatisticsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Expense category"
+    },
+    {
+      "dataTypeName": "TrvCostTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvCostTypeEDT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvExpTypeEDT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvStdPaiMethod",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvCostTypeStatisticsId",
+      "extendsDataType": "string"
+    }
+  ]
+}

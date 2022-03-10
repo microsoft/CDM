@@ -1,0 +1,188 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SourceDocumentAcctEventReferenceIdentity.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SourceDocumentLineReferenceIdentity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LineDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "LineDescription",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDocumentReference",
+          "dataType": "LineDocumentReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineText",
+          "dataType": "LineText",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcurementCategory",
+          "dataType": "ProcurementCategory",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductNumber",
+          "dataType": "Description255",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "Qty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentAcctEventReferenceIdentity",
+          "dataType": "SourceDocumentAcctEventRefIdentityRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentLine",
+          "dataType": "SourceDocumentLineRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "UnitOfMeasureSymbol",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentAcctEventReferenceIdentity"
+          },
+          "name": "Relationship_SourceDocumentAcctEventReferenceIdentityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentLine"
+          },
+          "name": "Relationship_SourceDocumentLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Source document line reference identity"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LineDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineDocumentReference",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProcurementCategory",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SourceDocumentAcctEventRefIdentityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SourceDocumentLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    }
+  ]
+}

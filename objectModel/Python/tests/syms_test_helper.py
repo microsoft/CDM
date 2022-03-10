@@ -1,10 +1,11 @@
-﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import os, json
 
 from cdm.storage import ADLSAdapter, SymsAdapter
 from cdm.enums import AzureCloudEndpoint
+
 
 class SymsTestHelper:
     DATABASE_NAME = 'SymsTestDatabase'
@@ -50,8 +51,10 @@ class SymsTestHelper:
                 if 'ColumnSetEntityName' in data['properties']['StorageDescriptor']:
                     data['properties']['StorageDescriptor']['ColumnSetEntityName'] = ''
             if 'Properties' in data['properties']:
-                    if 'spark.sql.sources.schema.part.0' in data['properties']['Properties']:
-                        data['properties']['Properties']['spark.sql.sources.schema.part.0'] = ''
+                if 'spark.sql.sources.schema.part.0' in data['properties']['Properties']:
+                    data['properties']['Properties']['spark.sql.sources.schema.part.0'] = ''
+                if 'spark.sql.sources.provider' in data['properties']['Properties']:
+                    data['properties']['Properties']['spark.sql.sources.provider'] = ''
 
         return data
 

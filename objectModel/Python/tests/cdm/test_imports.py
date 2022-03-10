@@ -5,14 +5,14 @@ import os
 from typing import TYPE_CHECKING
 import unittest
 
-from cdm.enums import ImportsLoadStrategy, CdmStatusLevel, CdmLogCode
+from cdm.enums import ImportsLoadStrategy, CdmLogCode, CdmRelationshipDiscoveryStyle
 from cdm.storage import LocalAdapter
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, CopyOptions
 
 from tests.common import async_test, TestHelper
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmDocumentDefinition
+    from cdm.objectmodel import CdmDocumentDefinition, CdmManifestDefinition
 
 
 class ImportsTests(unittest.TestCase):
@@ -182,3 +182,33 @@ class ImportsTests(unittest.TestCase):
         self.assertIsNotNone(second_import_doc)
 
         self.assertIs(import_doc, second_import_doc)
+
+    @async_test
+    async def test_imports_for_rel_elevated_purpose_traits(self):
+        """
+        Testing that import for elevated purpose traits for relationships are added.
+        """
+        test_name = 'test_imports_for_rel_elevated_purpose_traits'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        root_manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type: 'CdmManifestDefinition'
+        sub_manifest = await corpus.fetch_object_async(root_manifest.sub_manifests[0].definition)
+
+        await corpus.calculate_entity_graph_async(root_manifest)
+        await root_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
+
+        # Assert having relative path
+        self.assertEqual('specialized/Gold.cdm.json', root_manifest.imports[0].corpus_path)
+        self.assertEqual('/Lead.cdm.json', sub_manifest.imports[0].corpus_path)
+
+        corpus.storage.fetch_root_folder('output').documents.append(root_manifest)
+        corpus.storage.fetch_root_folder('output').documents.append(sub_manifest)
+        copy_options = CopyOptions()
+        copy_options.save_config_file = False
+        await root_manifest.save_as_async('output:/default.manifest.cdm.json', False, copy_options)
+        await sub_manifest.save_as_async('output:/default-submanifest.manifest.cdm.json', False, copy_options)
+
+        TestHelper.compare_folder_files_equality(
+            TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name),
+            TestHelper.get_actual_output_folder_path(self.tests_subpath, test_name))
+
+

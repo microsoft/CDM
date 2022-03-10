@@ -6,7 +6,7 @@ from typing import Optional, TYPE_CHECKING, cast
 
 from cdm.enums import CdmLogCode
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmOperationType
-from cdm.objectmodel import CdmAttributeContext, CdmAttribute
+from cdm.objectmodel import CdmAttributeContext, CdmAttribute, CdmCollection
 from cdm.resolvedmodel import ResolvedAttributeSet, ResolvedAttribute, ResolvedTraitSet, ParameterValueSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
@@ -28,8 +28,8 @@ class CdmOperationAlterTraits(CdmOperationBase):
         super().__init__(ctx)
 
         self._TAG = CdmOperationAlterTraits.__name__
-        self.traits_to_add = None  # type: List[CdmTraitReferenceBase]
-        self.traits_to_remove = None  # type: List[CdmTraitReferenceBase]
+        self.traits_to_add = None  # type: CdmCollection[CdmTraitReferenceBase]
+        self.traits_to_remove = None  # type: CdmCollection[CdmTraitReferenceBase]
         self.arguments_contain_wildcards = None  # type: Optional[bool]
         self.apply_to = None  # type: List[str]
         self.type = CdmOperationType.ALTER_TRAITS  # type: CdmOperationType
@@ -40,21 +40,17 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
         copy = CdmOperationAlterTraits(self.ctx) if not host else host
 
-        traits_to_add = []
-        if self.traits_to_add is not None:
+        if self.traits_to_add:
             for trait in self.traits_to_add:
-                traits_to_add.append(cast(CdmTraitReferenceBase, trait.copy(res_opt)))
+                copy.traits_to_add.append(trait.copy())
 
-        traits_to_remove = []
-        if self.traits_to_remove is not None:
+        if self.traits_to_remove:
             for trait in self.traits_to_remove:
-                traits_to_remove.append(cast(CdmTraitReferenceBase, trait.copy(res_opt)))
+                copy.traits_to_remove.append(trait.copy())
 
         if self.apply_to is not None:
             copy.apply_to = self.apply_to.copy()
 
-        copy.traits_to_add = traits_to_add
-        copy.traits_to_remove = traits_to_remove
         copy.arguments_contain_wildcards = self.arguments_contain_wildcards
 
         self._copy_proj(res_opt, copy)
@@ -88,12 +84,18 @@ class CdmOperationAlterTraits(CdmOperationBase):
         if pre_children and pre_children(self, path):
             return False
 
+        if self.traits_to_add and self.traits_to_add._visit_array('{}/traitsToAdd/'.format(path), pre_children, post_children):
+            return True
+
+        if self.traits_to_remove and self.traits_to_remove._visit_array('{}/traitsToRemove/'.format(path), pre_children, post_children):
+            return True
+
         if post_children and post_children(self, path):
             return True
 
         return False
 
-    def _append_projection_attribute_state(self, proj_ctx: 'ProjectionContext', proj_output_set: 'ProjectionAttributeStateSet', \
+    def _append_projection_attribute_state(self, proj_ctx: 'ProjectionContext', proj_output_set: 'ProjectionAttributeStateSet',
                                            attr_ctx: 'CdmAttributeContext') -> 'ProjectionAttributeStateSet':
         # Create a new attribute context for the operation
         attr_ctx_op_alter_traits_param = AttributeContextParameters()
@@ -104,7 +106,8 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
         # Get the top-level attribute names of the selected attributes to apply
         # We use the top-level names because the applyTo list may contain a previous name our current resolved attributes had
-        top_level_selected_attribute_names = ProjectionResolutionCommonUtil._get_top_list(proj_ctx, self.apply_to) if self.apply_to is not None else None  # type: Dict[str, str]
+        top_level_selected_attribute_names = ProjectionResolutionCommonUtil._get_top_list(
+            proj_ctx, self.apply_to) if self.apply_to is not None else None  # type: Dict[str, str]
 
         # Iterate through all the PAS in the PASSet generated from the projection source's resolved attributes
         for current_PAS in proj_ctx._current_attribute_state_set._states:
@@ -125,7 +128,8 @@ class CdmOperationAlterTraits(CdmOperationBase):
                     # Attribute group
                     # Create a copy of resolved attribute set
                     res_attr_new_copy = current_PAS._current_resolved_attribute.target.copy()
-                    new_res_attr = ResolvedAttribute(proj_ctx._projection_directive._res_opt, res_attr_new_copy, current_PAS._current_resolved_attribute.resolved_name, attr_ctx_new_attr)
+                    new_res_attr = ResolvedAttribute(proj_ctx._projection_directive._res_opt, res_attr_new_copy,
+                                                     current_PAS._current_resolved_attribute.resolved_name, attr_ctx_new_attr)
 
                     # the resolved attribute group obtained from previous projection operation may have a different set of traits comparing to the resolved attribute target.
                     #  We would want to take the set of traits from the resolved attribute.
@@ -133,7 +137,8 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
                 elif isinstance(current_PAS._current_resolved_attribute.target, CdmAttribute):
                     # Entity Attribute or Type Attribute
-                    new_res_attr = self._create_new_resolved_attribute(proj_ctx, attr_ctx_new_attr, current_PAS._current_resolved_attribute, current_PAS._current_resolved_attribute.resolved_name)
+                    new_res_attr = self._create_new_resolved_attribute(
+                        proj_ctx, attr_ctx_new_attr, current_PAS._current_resolved_attribute, current_PAS._current_resolved_attribute.resolved_name)
 
                 else:
                     logger.error(self.ctx, self._TAG, CdmOperationAlterTraits._append_projection_attribute_state.__name__,
@@ -159,7 +164,6 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
         return proj_output_set
 
-
     def _resolved_new_traits(self, proj_ctx: 'ProjectionContext', current_PAS: 'ProjectionAttributeState'):
         resolved_trait_set = ResolvedTraitSet(proj_ctx._projection_directive._res_opt)
         projection_owner_name = proj_ctx._projection_directive._original_source_attribute_name if proj_ctx._projection_directive._original_source_attribute_name is not None else ''
@@ -182,7 +186,6 @@ class CdmOperationAlterTraits(CdmOperationBase):
                         if new_val != value:
                             parameter_value_set.update_parameter_value(res_opt, parameter_value_set.fetch_parameter_at_index(i).get_name(), new_val)
 
-
     def _remove_traits_in_new_attribute(self, res_opt: 'ResolveOptions', new_res_attr: 'ResolvedAttribute') -> None:
         """
         Remove traits from the new resolved attribute.
@@ -196,4 +199,3 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
             for trait_name in trait_names_to_remove:
                 new_res_attr.resolved_traits.remove(res_opt, trait_name)
-

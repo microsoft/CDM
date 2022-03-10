@@ -664,9 +664,14 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 // make a new document in given folder if provided or the same folder as the source entity
                 folder.documents.remove(fileName);
                 const docRes: CdmDocumentDefinition = folder.documents.push(fileName);
-                // add a import of the source document
+                // add an import of the source document
                 origDoc = this.ctx.corpus.storage.createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.imports.push(origDoc, 'resolvedFrom');
+
+                if (this.inDocument.imports.item('cdm:/foundations.cdm.json') !== undefined) {
+                    docRes.imports.push('cdm:/foundations.cdm.json');
+                }
+
                 docRes.documentVersion = this.inDocument.documentVersion;
 
                 // make the empty entity
@@ -998,9 +1003,9 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         = (subAttCtx: CdmAttributeContext, entityHint: string): void => {
                             const traitsHere: CdmTraitCollection = subAttCtx.exhibitsTraits;
                             if (traitsHere) {
-                                traitsHere.allItems.forEach((tr: CdmTraitReferenceBase) => { 
+                                traitsHere.allItems.forEach((tr: CdmTraitReferenceBase) => {
                                     if (tr instanceof CdmTraitReference) {
-                                        replaceTraitAttRef(tr, entityHint, true); 
+                                        replaceTraitAttRef(tr, entityHint, true);
                                     }
                                 });
                             }
@@ -1024,9 +1029,9 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         for (const attribute of entAtts.allItems) {
                             const attTraits: CdmTraitCollection = attribute.appliedTraits;
                             if (attTraits) {
-                                attTraits.allItems.forEach((tr: CdmTraitReference) => { 
+                                attTraits.allItems.forEach((tr: CdmTraitReference) => {
                                     if (tr instanceof CdmTraitReference) {
-                                        replaceTraitAttRef(tr, newEntName, false); 
+                                        replaceTraitAttRef(tr, newEntName, false);
                                     }
                                 });
                             }

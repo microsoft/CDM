@@ -1,0 +1,501 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustSettlement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TransRecId",
+          "dataType": "CustSettleParentRecID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountNum",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Account number",
+          "description": ""
+        },
+        {
+          "name": "CanBeReversed",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscountLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Alternative cash discount account",
+          "description": ""
+        },
+        {
+          "name": "CustCashDiscDate",
+          "dataType": "CustCashDiscDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EUSalesList",
+          "dataType": "ListDispatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchAdjustment",
+          "dataType": "CustExchAdjustment",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchAdjustmentReporting",
+          "dataType": "CustExchAdjustment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FineAmount_BR",
+          "dataType": "FineAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FineCode_BR",
+          "dataType": "CustFineCode_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestAmount_BR",
+          "dataType": "FinInterestAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestCode_BR",
+          "dataType": "CustInterestCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastInterestDate",
+          "dataType": "CustLastInterestDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsetAccountNum",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Account",
+          "description": ""
+        },
+        {
+          "name": "OffsetCompany",
+          "dataType": "CompanyId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "OffsetRecid",
+          "dataType": "CustTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsetTransVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Offset voucher",
+          "description": ""
+        },
+        {
+          "name": "PennyDiff",
+          "dataType": "PennyDiff",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReversedRecId_RU",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReverseTrans_RU",
+          "dataType": "Cancelled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettleAmountCur",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Settled currency",
+          "description": ""
+        },
+        {
+          "name": "SettleAmountMST",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Amount settled",
+          "description": ""
+        },
+        {
+          "name": "SettleAmountReporting",
+          "dataType": "AmountMSTSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettlementGroup",
+          "dataType": "SysInt64",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettlementVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettleTax1099Amount",
+          "dataType": "SettleTax1099Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettleTax1099StateAmount",
+          "dataType": "SettleTax1099StateAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxVoucher_RU",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransCompany",
+          "dataType": "CompanyId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Date of settlement",
+          "description": ""
+        },
+        {
+          "name": "UtilizedCashDisc",
+          "dataType": "DiscAmount",
+          "isNullable": true,
+          "displayName": "Discount used",
+          "description": ""
+        },
+        {
+          "name": "ReportingDate_RU",
+          "dataType": "ReportingDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closed date",
+          "description": ""
+        },
+        {
+          "name": "TransOpen",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CashDiscountLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_OffsetAccountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTrans_OffsetRecidRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer settlement"
+    },
+    {
+      "dataTypeName": "CustSettleParentRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustCashDiscDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ListDispatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustExchAdjustment",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FineAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustFineCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FinInterestAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustInterestCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustLastInterestDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PennyDiff",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Cancelled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMSTSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SysInt64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SettleTax1099Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SettleTax1099StateAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReportingDate_RU",
+      "extendsDataType": "date"
+    }
+  ]
+}

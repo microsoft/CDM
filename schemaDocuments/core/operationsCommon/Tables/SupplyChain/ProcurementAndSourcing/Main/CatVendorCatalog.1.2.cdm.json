@@ -1,0 +1,108 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatVendorCatalog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DateDeleted",
+          "dataType": "CatVendorDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "CatVendorCatalogDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "isAutomatedApprovalEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "isDeleted",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Is deleted",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "CatVendorCatalogName",
+          "displayName": "Name",
+          "description": ""
+        },
+        {
+          "name": "VendorParty",
+          "dataType": "RefRecId",
+          "displayName": "Vendor",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor catalogs"
+    },
+    {
+      "dataTypeName": "CatVendorDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CatVendorCatalogDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CatVendorCatalogName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

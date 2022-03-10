@@ -1,0 +1,277 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/UserGroupInfo.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/JournalError.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqItemJournalName.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqItemJournalTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BlockUserGroupId",
+          "dataType": "JournalBlockUserGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BlockUserId",
+          "dataType": "JournalBlockUserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalcStdDeviation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Calculate standard deviation",
+          "description": ""
+        },
+        {
+          "name": "DeletePostedLines",
+          "dataType": "JournalDeletePostedLines",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "JournalDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssuesFromDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "IssuesToDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "To date",
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "ReqItemJournalId",
+          "description": ""
+        },
+        {
+          "name": "JournalIdOriginal",
+          "dataType": "ReqItemJournalIdOriginal",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalNameId",
+          "dataType": "ReqItemJournalNameId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfLines",
+          "dataType": "JournalNumOfLines",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "JournalPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedDateTime",
+          "dataType": "JournalPostedDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedUserId",
+          "dataType": "JournalPostedUserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "JournalSessionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionLoginDateTime",
+          "dataType": "JournalSessionLoginDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SystemBlocked",
+          "dataType": "JournalSystemBlocked",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "UserGroupInfo"
+          },
+          "name": "Relationship_BlockingUserGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JournalError"
+          },
+          "name": "Relationship_JournalErrorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqItemJournalName"
+          },
+          "name": "Relationship_ReqItemJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Item coverage journal table"
+    },
+    {
+      "dataTypeName": "JournalBlockUserGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalBlockUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalDeletePostedLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ReqItemJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqItemJournalIdOriginal",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqItemJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalNumOfLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalPosted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalPostedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JournalPostedUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalSessionId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalSessionLoginDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JournalSystemBlocked",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -179,6 +179,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
         {
             ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
+            rasb.ResolvedAttributeSet.AttributeContext = under;
             AttributeContextParameters acpEnt = null;
             if (under != null)
             {

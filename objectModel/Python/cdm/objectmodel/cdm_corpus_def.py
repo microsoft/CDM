@@ -22,11 +22,12 @@ from .cdm_document_def import CdmDocumentDefinition
 from .cdm_e2e_relationship import CdmE2ERelationship
 from .cdm_object import CdmObject
 from ._document_library import DocumentLibrary
+from ..utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmArgumentValue, CdmAttributeContext, CdmDocumentDefinition, CdmEntityDefinition, \
+    from cdm.objectmodel import CdmTraitReference, CdmAttributeContext, CdmDocumentDefinition, CdmEntityDefinition, \
         CdmManifestDefinition, CdmObject, CdmObjectDefinition, \
-        CdmObjectReference, CdmParameterDefinition, CdmTypeAttributeDefinition
+        CdmObjectReference, CdmTypeAttributeDefinition
     from cdm.resolvedmodel import ResolvedTraitSet
     from cdm.utilities import EventCallback, TelemetryClient
 
@@ -243,14 +244,17 @@ class CdmCorpusDefinition:
                         if new_gen_set and not from_atts:
                             from_atts = self._get_from_attributes(new_gen_set, from_atts)
 
-                        resolved_trait_set = None
+                        # Fetch purpose traits
+                        trait_refs_and_corpus_paths = None
                         entity_att = owner.fetch_object_definition(res_opt)  # type: 'CdmEntityAttributeDefinition'
                         if entity_att and entity_att.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF and entity_att.purpose:
                             resolved_trait_set = entity_att.purpose._fetch_resolved_traits(res_opt)
+                            if resolved_trait_set is not None:
+                                trait_refs_and_corpus_paths = self._find_elevated_trait_refs_and_corpus_paths(res_opt, resolved_trait_set)  # type: Dict['CdmTriatReference', str]
 
                         out_rels = self._find_outgoing_relationships_for_projection(out_rels, child, res_opt,
                                                                                     res_entity, from_atts,
-                                                                                    resolved_trait_set)
+                                                                                    trait_refs_and_corpus_paths)
 
                         was_projection_polymorphic = is_polymorphic_source
                     else:
@@ -299,14 +303,25 @@ class CdmCorpusDefinition:
 
         return out_rels
 
-    def _fetch_purpose_resolved_traits_from_att_ctx(self, res_opt: 'ResolveOptions', attribute_ctx: 'CdmAttributeContext') -> 'ResolvedTraitSet':
+    def _fetch_purpose_trait_refs_from_att_ctx(self, res_opt: 'ResolveOptions', attribute_ctx: 'CdmAttributeContext') -> Dict['CdmTraitReference', str]:
         if attribute_ctx.definition is not None:
             definition = attribute_ctx.definition.fetch_object_definition(res_opt)
             if definition and definition.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF \
                     and cast('CdmEntityAttributeDefinition', definition) and cast('CdmEntityAttributeDefinition', definition).purpose is not None:
-                return cast('CdmEntityAttributeDefinition', definition).purpose._fetch_resolved_traits(res_opt)
+                resolved_trait_set = cast('CdmEntityAttributeDefinition', definition).purpose._fetch_resolved_traits(res_opt)  # type: 'ResolvedTraitSet'
+                if resolved_trait_set is not None:
+                    return self._find_elevated_trait_refs_and_corpus_paths(res_opt, resolved_trait_set)
 
         return None
+
+    def _find_elevated_trait_refs_and_corpus_paths(self, res_opt: 'ResolveOptions', resolved_trait_set: 'ResolvedTraitSet') -> Dict['CdmTraitReference', str]:
+        trait_refs_and_corpus_paths = dict()
+        for resolvedTrait in resolved_trait_set.rt_set:
+            trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt, resolvedTrait)
+            if trait_ref is not None and resolvedTrait.trait.in_document is not None and not StringUtils.is_null_or_white_space(resolvedTrait.trait.in_document.at_corpus_path):
+                trait_refs_and_corpus_paths[trait_ref] = resolvedTrait.trait.in_document.at_corpus_path
+
+        return trait_refs_and_corpus_paths
 
     def _find_outgoing_relationships_for_projection(
         self,
@@ -315,7 +330,7 @@ class CdmCorpusDefinition:
         res_opt: 'ResolveOptions',
         res_entity: 'CdmEntityDefinition',
         from_atts: Optional[List['CdmAttributeReference']] = None,
-        resolved_trait_set: 'ResolvedTraitSets' = None
+        trait_refs_and_corpus_paths: Optional[Dict['CdmTriatReference', str]] = None
     ) -> List['CdmE2ERelationship']:
         """
         Find the outgoing relationships for Projections.
@@ -345,11 +360,7 @@ class CdmCorpusDefinition:
                     new_e2e_rel.to_entity = self.storage.create_absolute_corpus_path(tuple[0], unresolved_entity)
                     new_e2e_rel.to_entity_attribute = tuple[1]
 
-                    if resolved_trait_set is not None:
-                        for rt in resolved_trait_set.rt_set:
-                            trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt, rt)
-                            if trait_ref is not None:
-                                new_e2e_rel.exhibits_traits.append(trait_ref)
+                    self._add_trait_refs_and_corpus_paths_to_relationship(trait_refs_and_corpus_paths, new_e2e_rel)
 
                     out_rels.append(new_e2e_rel)
 
@@ -406,7 +417,7 @@ class CdmCorpusDefinition:
                         absolute_path = self.storage.create_absolute_corpus_path(const_ent[0], att_from_fk)
                         to_att_list.append((absolute_path, const_ent[1]))
 
-                resolved_trait_set = self._fetch_purpose_resolved_traits_from_att_ctx(res_opt, attribute_ctx)
+                trait_refs_and_corpus_paths = self._fetch_purpose_trait_refs_from_att_ctx(res_opt, attribute_ctx)
 
                 for attribute_tuple in to_att_list:
                     from_att = self._get_attribute_name(foreign_key).replace(child.name + '_', '')
@@ -414,11 +425,7 @@ class CdmCorpusDefinition:
                     new_e2e_relationship.from_entity_attribute = from_att
                     new_e2e_relationship.to_entity_attribute = attribute_tuple[1]
 
-                    if resolved_trait_set is not None:
-                        for rt in resolved_trait_set.rt_set:
-                            trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt, rt)
-                            if trait_ref is not None:
-                                new_e2e_relationship.exhibits_traits.append(trait_ref)
+                    self._add_trait_refs_and_corpus_paths_to_relationship(trait_refs_and_corpus_paths, new_e2e_relationship)
 
                     if is_resolved_entity:
                         new_e2e_relationship.from_entity = res_entity.at_corpus_path
@@ -447,6 +454,12 @@ class CdmCorpusDefinition:
                         out_rels.append(new_e2e_relationship)
 
         return out_rels
+
+    def _add_trait_refs_and_corpus_paths_to_relationship(self, trait_refs_and_corpus_paths: Dict['CdmTriatReference', str], cdm_e2e_rel: 'CdmE2ERelationship') -> None:
+        if trait_refs_and_corpus_paths is not None:
+            for key, value in trait_refs_and_corpus_paths.items():
+                cdm_e2e_rel.exhibits_traits.append(key)
+                cdm_e2e_rel._get_elevated_trait_corpus_paths().add(value)
 
     def _create_definition_cache_tag(self, res_opt: 'ResolveOptions', definition: 'CdmObject', kind: str,
                                      extra_tags: str = '',

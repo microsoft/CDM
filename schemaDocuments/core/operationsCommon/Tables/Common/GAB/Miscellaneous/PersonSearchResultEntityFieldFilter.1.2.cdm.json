@@ -1,0 +1,153 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PersonSearch.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PersonSearchResult.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "PersonSearchEntityFilterRelation.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PersonSearchResultEntityFieldFilter",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaskId",
+          "dataType": "PersonSearchTaskId",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "DataAreaId",
+          "displayName": "Legal entity",
+          "description": ""
+        },
+        {
+          "name": "EntityName",
+          "dataType": "DMFEntityName",
+          "description": ""
+        },
+        {
+          "name": "EntityField",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FilterValue",
+          "dataType": "PersonSearchFilterValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Category",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FilterGroup",
+          "dataType": "PersonSearchFilterGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRelation",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PersonSearch"
+          },
+          "name": "Relationship_PersonSearchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PersonSearchResult"
+          },
+          "name": "Relationship_PersonSearchResultRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PersonSearchEntityFilterRelation"
+          },
+          "name": "Relationship_PersonSearchEntityFilterRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "PersonSearchTaskId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DMFEntityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefFieldId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PersonSearchFilterValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PersonSearchFilterGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

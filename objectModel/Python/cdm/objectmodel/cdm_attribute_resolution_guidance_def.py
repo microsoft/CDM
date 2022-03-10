@@ -10,7 +10,7 @@ from .cdm_object_simple import CdmObjectSimple
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.utilities import VisitCallback
 
 
 class CdmAttributeResolutionGuidance_Expansion:
@@ -93,6 +93,8 @@ class CdmAttributeResolutionGuidanceDefinition(CdmObjectSimple):
         # If the 'structured' directive is set, this trait causes resolved attributes to end up in groups rather than a flattend list
         self.selects_sub_attribute = None  # type: Optional[CdmAttributeResolutionGuidance_SelectsSubAttribute]
 
+    def fetch_object_definition_name(self) -> Optional[str]:
+       return None
     @property
     def object_type(self) -> CdmObjectType:
         return CdmObjectType.ATTRIBUTE_RESOLUTION_GUIDANCE_DEF

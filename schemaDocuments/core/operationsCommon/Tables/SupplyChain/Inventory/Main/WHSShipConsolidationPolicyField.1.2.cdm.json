@@ -1,0 +1,104 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSShipConsolidationPolicy.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSShipConsolidationPolicyField",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ShipConsolidationPolicyName",
+          "dataType": "WHSShipConsolidationPolicyName",
+          "description": ""
+        },
+        {
+          "name": "SourceFieldName",
+          "dataType": "FieldName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableName",
+          "dataType": "TableName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipConsolidationPolicyType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipConsolidationPolicy"
+          },
+          "name": "Relationship_WHSShipConsolidationPolicyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shipment consolidation policy fields"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationPolicyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FieldName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    }
+  ]
+}

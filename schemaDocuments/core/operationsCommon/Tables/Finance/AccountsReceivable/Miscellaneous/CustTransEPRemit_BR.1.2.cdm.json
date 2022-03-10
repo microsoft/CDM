@@ -1,0 +1,312 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/CustSettlement.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTransOpen.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Miscellaneous/EP_FileSequenceNum_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Miscellaneous/EPBankFolders_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Miscellaneous/EPDocumentTypes_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Miscellaneous/EPInstructions_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustTransEPRemit_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankAccountID",
+          "dataType": "BankAccountID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Bank account",
+          "description": ""
+        },
+        {
+          "name": "BankFolder",
+          "dataType": "EPBankFolder_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankInvoiceId",
+          "dataType": "EPBankInvoiceId_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfLayoutGroupId",
+          "dataType": "ConfLayoutGroupId_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustSettleRefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustTransOpenRefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentType",
+          "dataType": "EPDocumentType_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "SysDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Instruction_1",
+          "dataType": "EPInstruction_BR",
+          "isNullable": true,
+          "displayName": "Instruction 1",
+          "description": ""
+        },
+        {
+          "name": "Instruction_2",
+          "dataType": "EPInstruction_BR",
+          "isNullable": true,
+          "displayName": "Instruction 2",
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "JournalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Journal number",
+          "description": ""
+        },
+        {
+          "name": "RemitDate",
+          "dataType": "SysDate",
+          "isNullable": true,
+          "displayName": "Remittance date",
+          "description": ""
+        },
+        {
+          "name": "RemitOccCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetDate",
+          "dataType": "SysDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Return date",
+          "description": ""
+        },
+        {
+          "name": "RetOccCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustSettlement"
+          },
+          "name": "Relationship_CustSettlementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTransOpen"
+          },
+          "name": "Relationship_CustTransOpenRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EP_FileSequenceNum_BR"
+          },
+          "name": "Relationship_EP_FileSequenceNum_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EPBankFolders_BR"
+          },
+          "name": "Relationship_EPBankFolders_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EPDocumentTypes_BR"
+          },
+          "name": "Relationship_EPDocumentTypes_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EPInstructions_BR"
+          },
+          "name": "Relationship_EPInstructions1_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EPInstructions_BR"
+          },
+          "name": "Relationship_EPInstructions2_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic payment"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankAccountID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EPBankFolder_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EPBankInvoiceId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfLayoutGroupId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EPDocumentType_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EPInstruction_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalId",
+      "extendsDataType": "string"
+    }
+  ]
+}

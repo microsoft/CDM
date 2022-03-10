@@ -1,0 +1,701 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "Transaction",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "EmplSettlement_RU",
+      "entityPath": "EmplSettlement_RU.1.2.cdm.json/EmplSettlement_RU"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "EmplExchRateAdjustment_RU",
+      "entityPath": "EmplExchRateAdjustment_RU.1.2.cdm.json/EmplExchRateAdjustment_RU"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TrvExpTransSplit",
+      "entityPath": "TrvExpTransSplit.1.2.cdm.json/TrvExpTransSplit"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TrvRequisitionTable",
+      "entityPath": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TrvRequisitionLine",
+      "entityPath": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "EmplTrans_RU",
+      "entityPath": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TrvGroupedTransactionDetails",
+      "entityPath": "TrvGroupedTransactionDetails.1.2.cdm.json/TrvGroupedTransactionDetails"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TrvExpTrans",
+      "entityPath": "TrvExpTrans.1.2.cdm.json/TrvExpTrans"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TrvExpPaymentDetails",
+      "entityPath": "TrvExpPaymentDetails.1.2.cdm.json/TrvExpPaymentDetails"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TrvAccountingDistribution",
+      "entityPath": "TrvAccountingDistribution.1.2.cdm.json/TrvAccountingDistribution"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "EmplSettlement_RU.1.2.cdm.json/EmplSettlement_RU",
+      "fromEntityAttribute": "Relationship_CreditEmplTransRelationshipId",
+      "toEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplSettlement_RU.1.2.cdm.json/EmplSettlement_RU",
+      "fromEntityAttribute": "Relationship_DebetEmplTransRelationshipId",
+      "toEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplSettlement_RU.1.2.cdm.json/EmplSettlement_RU",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "fromEntityAttribute": "Relationship_EmplSettlement_RURelationshipId",
+      "toEntity": "EmplSettlement_RU.1.2.cdm.json/EmplSettlement_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplExchRateAdjustment_RU.1.2.cdm.json/EmplExchRateAdjustment_RU",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "fromEntityAttribute": "Relationship_EmplExchRateAdjustment_RURelationshipId",
+      "toEntity": "EmplExchRateAdjustment_RU.1.2.cdm.json/EmplExchRateAdjustment_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTransSplit.1.2.cdm.json/TrvExpTransSplit",
+      "fromEntityAttribute": "Relationship_SplitHeaderRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTransSplit.1.2.cdm.json/TrvExpTransSplit",
+      "fromEntityAttribute": "Relationship_SplitLineRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTransSplit.1.2.cdm.json/TrvExpTransSplit",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_CompanyInfoRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_DefaultDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json/DimensionAttributeValueSet",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_LegalEntityRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_SourceDocumentHeaderRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.1.cdm.json/SourceDocumentHeader",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_SourceDocumentLineRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json/SourceDocumentLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_TrvDestinationsRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvDestinations.1.2.cdm.json/TrvDestinations",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_TrvTravelTxtRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvTravelTxt.1.2.cdm.json/TrvTravelTxt",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationJustification.1.2.cdm.json/TrvPolicyViolationJustification",
+      "fromEntityAttribute": "Relationship_TrvRequisitionTableRelationshipId",
+      "toEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationsCache.1.2.cdm.json/TrvPolicyViolationsCache",
+      "fromEntityAttribute": "Relationship_TrvRequisitionTableRelationshipId",
+      "toEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationsLog.1.2.cdm.json/TrvPolicyViolationsLog",
+      "fromEntityAttribute": "Relationship_TrvRequisitionTableRelationshipId",
+      "toEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvAppEmplSub.1.2.cdm.json/TrvAppEmplSub",
+      "fromEntityAttribute": "Relationship_TrvRequisitionTableRelationshipId",
+      "toEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_TrvRequisitionTableRelationshipId",
+      "toEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvExpTableTrvRequisitionTable.1.2.cdm.json/TrvExpTableTrvRequisitionTable",
+      "fromEntityAttribute": "Relationship_TrvRequisitionTableRelationshipId",
+      "toEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/Finance/TravelAndExpense/TrvRequisitionTableEntity.1.2.cdm.json/TrvRequisitionTableEntity",
+      "fromEntityAttribute": "BackingTable_TrvRequisitionTableRelationshipId",
+      "toEntity": "TrvRequisitionTable.1.2.cdm.json/TrvRequisitionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_CompanyInfoRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_CurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_DefaultDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json/DimensionAttributeValueSet",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_LegalEntityRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_ProjLinePropertyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjLineProperty.1.2.cdm.json/ProjLineProperty",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_ProjTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.2.cdm.json/ProjTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_SourceDocumentLineRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json/SourceDocumentLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_TrvCostTypeRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvCostType.1.2.cdm.json/TrvCostType",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_TrvExpMerchantRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvExpMerchant.1.2.cdm.json/TrvExpMerchant",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "fromEntityAttribute": "Relationship_TrvLocationsRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvLocations.1.2.cdm.json/TrvLocations",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationJustification.1.2.cdm.json/TrvPolicyViolationJustification",
+      "fromEntityAttribute": "Relationship_TrvRequisitionLineRelationshipId",
+      "toEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationsCache.1.2.cdm.json/TrvPolicyViolationsCache",
+      "fromEntityAttribute": "Relationship_TrvRequisitionLineRelationshipId",
+      "toEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationsLog.1.2.cdm.json/TrvPolicyViolationsLog",
+      "fromEntityAttribute": "Relationship_TrvRequisitionLineRelationshipId",
+      "toEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TrvRequisitionLineRelationshipId",
+      "toEntity": "TrvRequisitionLine.1.2.cdm.json/TrvRequisitionLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "fromEntityAttribute": "Relationship_EmplAdvTable_RURelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetHeader/EmplAdvTable_RU.1.2.cdm.json/EmplAdvTable_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "fromEntityAttribute": "Relationship_EmployeeTable_RURelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Main/EmployeeTable_RU.1.2.cdm.json/EmployeeTable_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "fromEntityAttribute": "Relationship_LedgerDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.2.cdm.json/DimensionAttributeValueCombination",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "fromEntityAttribute": "Relationship_ReportingDefaultDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json/DimensionAttributeValueSet",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/EmplAdvLine_RU.1.2.cdm.json/EmplAdvLine_RU",
+      "fromEntityAttribute": "Relationship_EmplTransRelationshipId",
+      "toEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetLine/PurchBookTrans_RU.1.2.cdm.json/PurchBookTrans_RU",
+      "fromEntityAttribute": "Relationship_EmplTransRelationshipId",
+      "toEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetLine/FactureTrans_RU.1.2.cdm.json/FactureTrans_RU",
+      "fromEntityAttribute": "Relationship_EmplTrans_RURelationshipId",
+      "toEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/HumanResources/Payroll/Miscellaneous/RTax25RegisterTrans_PayRoll.1.2.cdm.json/RTax25RegisterTrans_PayRoll",
+      "fromEntityAttribute": "Relationship_EmplTrans_RURelationshipId",
+      "toEntity": "EmplTrans_RU.1.2.cdm.json/EmplTrans_RU",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvGroupedTransactionDetails.1.2.cdm.json/TrvGroupedTransactionDetails",
+      "fromEntityAttribute": "Relationship_TrvExpTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetHeader/TrvExpTable.1.2.cdm.json/TrvExpTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvGroupedTransactionDetails.1.2.cdm.json/TrvGroupedTransactionDetails",
+      "fromEntityAttribute": "Relationship_DefaultDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json/DimensionAttributeValueSet",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvGroupedTransactionDetails.1.2.cdm.json/TrvGroupedTransactionDetails",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_AddressCityRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCity.1.2.cdm.json/LogisticsAddressCity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_AddressZipCode_FKRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressZipCode.1.2.cdm.json/LogisticsAddressZipCode",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_CashAdvanceRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvCashAdvance.1.2.cdm.json/TrvCashAdvance",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_CCImportedRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPBSMaindata.1.2.cdm.json/TrvPBSMaindata",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_CompanyInfoRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_CostTypeRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvCostType.1.2.cdm.json/TrvCostType",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_CreditCardTransactionCurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_CurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_DefaultDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json/DimensionAttributeValueSet",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_InterCompanyLERelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_IntercompanySalesCurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_IntercompanyTransferCurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_LegalEntityRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_LogisticsAddressCountryRegionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.2.cdm.json/LogisticsAddressCountryRegion",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_OriginalSourceDocumentLineRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json/SourceDocumentLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_PayValidateRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvValidatePayment.1.2.cdm.json/TrvValidatePayment",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_InterCompanyCategoryRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.2.cdm.json/ProjCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_ProjLinePropertyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjLineProperty.1.2.cdm.json/ProjLineProperty",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_ProjIdRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.2.cdm.json/ProjTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_SourceDocumentLineRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json/SourceDocumentLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_SubCategoryRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvExpSubCategory.1.2.cdm.json/TrvExpSubCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TaxGroupHeadingRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.2.cdm.json/TaxGroupHeading",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TaxItemGroupHeadingRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.2.cdm.json/TaxItemGroupHeading",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TrvCostTypeRatesRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvCostTypeRates.1.2.cdm.json/TrvCostTypeRates",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TrvExpMerchantRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvExpMerchant.1.2.cdm.json/TrvExpMerchant",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TrvExpTableRecIDRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetHeader/TrvExpTable.1.2.cdm.json/TrvExpTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TrvLinePurposeRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvLinePurpose.1.2.cdm.json/TrvLinePurpose",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TrvLocationsRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvLocations.1.2.cdm.json/TrvLocations",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_TrvPayMethodRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvPayMethod.1.2.cdm.json/TrvPayMethod",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_WebAdvanceCosttypeRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvCostType.1.2.cdm.json/TrvCostType",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "fromEntityAttribute": "Relationship_AddressStateRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressState.1.2.cdm.json/LogisticsAddressState",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Transaction/CustInvoiceLineInterProj.1.2.cdm.json/CustInvoiceLineInterProj",
+      "fromEntityAttribute": "Relationship_OrigTransExpenseRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationJustification.1.2.cdm.json/TrvPolicyViolationJustification",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationsCache.1.2.cdm.json/TrvPolicyViolationsCache",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvExpenseTaxRecovery.1.2.cdm.json/TrvExpenseTaxRecovery",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvEnhancedItineraryData.1.2.cdm.json/TrvEnhancedItineraryData",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvPolicyViolationsLog.1.2.cdm.json/TrvPolicyViolationsLog",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvEnhancedHotelData.1.2.cdm.json/TrvEnhancedHotelData",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvExpTransLinkReceipts.1.2.cdm.json/TrvExpTransLinkReceipts",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvUnreconciledExpenseTransaction.1.2.cdm.json/TrvUnreconciledExpenseTransaction",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvWorkflowExpProviderCache.1.2.cdm.json/TrvWorkflowExpProviderCache",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvEnhancedCarRentalData.1.2.cdm.json/TrvEnhancedCarRentalData",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetLine/TrvEnhancedData.1.2.cdm.json/TrvEnhancedData",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/Miscellaneous/TrvExpPerdiemData.1.2.cdm.json/TrvExpPerdiemData",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpPaymentDetails.1.2.cdm.json/TrvExpPaymentDetails",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvWorkflowLog.1.2.cdm.json/TrvWorkflowLog",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvExpTransGuest.1.2.cdm.json/TrvExpTransGuest",
+      "fromEntityAttribute": "Relationship_TrvExpTransNewRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvMatchedExpenseLines.1.2.cdm.json/TrvMatchedExpenseLines",
+      "fromEntityAttribute": "Relationship_HiddenExpenseRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvMatchedExpenseLines.1.2.cdm.json/TrvMatchedExpenseLines",
+      "fromEntityAttribute": "Relationship_MatchedExpenseRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Tax/Transaction/TaxGSTTaxInformation_MY.1.2.cdm.json/TaxGSTTaxInformation_MY",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Tax/WorksheetLine/TaxUncommitted.1.2.cdm.json/TaxUncommitted",
+      "fromEntityAttribute": "Relationship_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/Finance/TravelAndExpense/TrvExpTransEntity.1.2.cdm.json/TrvExpTransEntity",
+      "fromEntityAttribute": "BackingTable_TrvExpTransRelationshipId",
+      "toEntity": "TrvExpTrans.1.2.cdm.json/TrvExpTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpPaymentDetails.1.2.cdm.json/TrvExpPaymentDetails",
+      "fromEntityAttribute": "Relationship_TrvExpTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/WorksheetHeader/TrvExpTable.1.2.cdm.json/TrvExpTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvExpPaymentDetails.1.2.cdm.json/TrvExpPaymentDetails",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/Finance/TravelAndExpense/TrvExpPaymentDetailsEntity.1.2.cdm.json/TrvExpPaymentDetailsEntity",
+      "fromEntityAttribute": "BackingTable_TrvExpPaymentDetailsRelationshipId",
+      "toEntity": "TrvExpPaymentDetails.1.2.cdm.json/TrvExpPaymentDetails",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvAccountingDistribution.1.2.cdm.json/TrvAccountingDistribution",
+      "fromEntityAttribute": "Relationship_AccountingDistributionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Transaction/AccountingDistribution.1.2.cdm.json/AccountingDistribution",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvAccountingDistribution.1.2.cdm.json/TrvAccountingDistribution",
+      "fromEntityAttribute": "Relationship_CurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TrvAccountingDistribution.1.2.cdm.json/TrvAccountingDistribution",
+      "fromEntityAttribute": "Relationship_CashAdvanceRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Expense/Worksheet/TrvCashAdvance.1.2.cdm.json/TrvCashAdvance",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

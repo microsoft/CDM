@@ -45,6 +45,7 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         from cdm.utilities import AttributeContextParameters
 
         rasb = ResolvedAttributeSetBuilder()
+        rasb._resolved_attribute_set.attribute_context = under
         acp_ent = None
         if under:
             acp_ent = AttributeContextParameters(

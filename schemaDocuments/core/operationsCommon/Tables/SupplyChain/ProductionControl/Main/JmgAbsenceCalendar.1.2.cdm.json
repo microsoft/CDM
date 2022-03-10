@@ -1,0 +1,130 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgAbsenceCalendar",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CalculationTrans",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisableAtSigning",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Interrupt",
+          "description": ""
+        },
+        {
+          "name": "Disabled",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Interrupted",
+          "description": ""
+        },
+        {
+          "name": "FromDateTime",
+          "dataType": "JmgAbsenceFromDateTime",
+          "isNullable": true,
+          "displayName": "Start date/time",
+          "description": ""
+        },
+        {
+          "name": "JobId",
+          "dataType": "JmgJobId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Seconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDateTime",
+          "dataType": "JmgAbsenceToDateTime",
+          "isNullable": true,
+          "displayName": "End date/time",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "JmgWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Absence registration"
+    },
+    {
+      "dataTypeName": "JmgAbsenceFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgAbsenceToDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+    "$schema": "CdmManifestDefinition.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "manifestName": "patternManifest",
+    "explanation": "test cdm folder for cdm version 1.0+",
+    "imports": [
+        {
+            "uri": "/primitives.cdm.json"
+        }
+    ],
+    "entities": [
+        {
+            "entityName": "testEntity",
+            "explanation": "test explanation",
+            "entitySchema": "someEntity.cdm.json/SomeEntity",
+            "dataPartitionPatterns": [
+                {
+                    "name": "folderMultipleCaptures",
+                    "explanation": "test explanation",
+                    "rootLocation": "partitions",
+                    "regularExpression": "/(.*)/(.*)/(.*)/folderCapture.csv",
+                    "parameters": [
+                        "year",
+                        "month",
+                        "day"
+                    ],
+                    "specializedSchema": "test special schema"
+                }
+            ]
+        }
+    ],
+    "subManifests": []
+}

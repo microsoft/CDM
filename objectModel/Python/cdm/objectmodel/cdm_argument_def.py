@@ -66,6 +66,9 @@ class CdmArgumentDefinition(CdmObjectSimple):
         copy_obj.explanation = self.explanation
         return copy_obj
 
+    def fetch_object_definition_name(self) -> Optional[str]:
+        return self.name
+
     def get_name(self) -> str:
         return self.name
 

@@ -1,0 +1,160 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CurrencyEntity.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "ExchangeRateTypeEntity.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Reference/ExchangeRate.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ExchangeRateEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExchangeRateForStorage",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateCurrencyPair",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConversionFactor",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromCurrency",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "From currency",
+          "description": ""
+        },
+        {
+          "name": "ToCurrency",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "To currency",
+          "description": ""
+        },
+        {
+          "name": "RateTypeDescription",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Name",
+          "description": ""
+        },
+        {
+          "name": "RateTypeName",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Rate",
+          "dataType": "string",
+          "displayName": "Exchange rate",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CurrencyEntity"
+          },
+          "name": "Relationship_FromCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CurrencyEntity"
+          },
+          "name": "Relationship_ToCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateTypeEntity"
+          },
+          "name": "Relationship_ExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRate"
+          },
+          "name": "BackingTable_ExchangeRateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Exchange rates"
+    }
+  ]
+}

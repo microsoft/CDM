@@ -80,10 +80,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
             Assert.AreEqual(2, trait.Arguments.Count);
             Assert.IsFalse(trait.ResolvedArguments);
             Assert.AreEqual("Arg1", trait.Arguments[0].Name);
-            Assert.AreEqual(123, trait.Arguments[0].Value);
+            Assert.AreEqual(123, trait.Arguments.Item("Arg1").Value);
             Assert.AreEqual(trait, trait.Arguments[0].Owner);
             Assert.AreEqual("Arg2", trait.Arguments[1].Name);
-            Assert.AreEqual(valOfArg2, trait.Arguments[1].Value);
+            Assert.AreEqual(valOfArg2, trait.Arguments.Item("Arg2").Value);
         }
 
         [TestMethod]

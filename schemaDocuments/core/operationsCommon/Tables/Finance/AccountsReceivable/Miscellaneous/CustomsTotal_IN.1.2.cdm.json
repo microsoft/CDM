@@ -1,0 +1,153 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxComponentTable_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustomsTotal_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccumulatedAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Accumulated amount",
+          "description": ""
+        },
+        {
+          "name": "AccumulatedAmountSecondary",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Accumulated amount in reporting currency",
+          "description": ""
+        },
+        {
+          "name": "AmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountSecondary",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Amount in reporting currency",
+          "description": ""
+        },
+        {
+          "name": "FieldName",
+          "dataType": "FieldLabel",
+          "isNullable": true,
+          "displayName": "Field name",
+          "description": ""
+        },
+        {
+          "name": "SelectQuery",
+          "dataType": "SelectQuery_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxComponentTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Tax component",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxComponentTable_IN"
+          },
+          "name": "Relationship_TaxComponentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Total"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FieldLabel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectQuery_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

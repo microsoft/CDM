@@ -1,0 +1,128 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/TransactionHeader/ReqDemPlanTaskCollectionLog.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqDemPlanImportedForecast",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompanyForecastModelMapping",
+          "dataType": "ReqDemPlanCompanyForecastModelMapping",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnableChangeTracking",
+          "dataType": "ReqDemPlanEnableChangeTracking",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImportedByUser",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "displayName": "Authorized by",
+          "description": ""
+        },
+        {
+          "name": "ImportEndDate",
+          "dataType": "ReqDemPlanForecastEnd",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImportStartDate",
+          "dataType": "ReqDemPlanImportActualStart",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaskCollection",
+          "dataType": "ReqDemPlanTaskCollectionRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Title",
+          "dataType": "ReqDemPlanForecastTitle",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ReqDemPlanTaskCollectionLog"
+          },
+          "name": "Relationship_TaskCollectionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Demand forecast authorization log"
+    },
+    {
+      "dataTypeName": "ReqDemPlanCompanyForecastModelMapping",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ReqDemPlanEnableChangeTracking",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqDemPlanForecastEnd",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ReqDemPlanImportActualStart",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ReqDemPlanTaskCollectionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReqDemPlanForecastTitle",
+      "extendsDataType": "string"
+    }
+  ]
+}

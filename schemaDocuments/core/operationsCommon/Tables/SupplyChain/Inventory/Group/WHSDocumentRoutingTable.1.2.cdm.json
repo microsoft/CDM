@@ -1,0 +1,323 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "InventLocation.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrier.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Miscellaneous/WHSWorker.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSWorkTemplateTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSWorkUser.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "WHSZone.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSDocumentRoutingTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "CustVendAC",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierCode",
+          "dataType": "WHSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentType",
+          "dataType": "WHSDocumentType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Query",
+          "dataType": "WHSQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RunQuery",
+          "dataType": "WHSRunQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SeqNum",
+          "dataType": "WHSSeqNum",
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "WHSUserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "WHSWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTemplateCode",
+          "dataType": "WHSWorkTemplateCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTransType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ZoneIdFrom",
+          "dataType": "WHSZoneIdFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ZoneIdTo",
+          "dataType": "WHSZoneIdTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_SalesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_ReturnOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_PurchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorker"
+          },
+          "name": "Relationship_WHSWorkerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkTemplateTable"
+          },
+          "name": "Relationship_WHSWorkTemplateTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkUser"
+          },
+          "name": "Relationship_WHSWorkUserRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSZone"
+          },
+          "name": "Relationship_WHSZoneFromRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSZone"
+          },
+          "name": "Relationship_WHSZoneToRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Document routing"
+    },
+    {
+      "dataTypeName": "CustVendAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSDocumentType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSRunQuery",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSSeqNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSWorkTemplateCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSZoneIdFrom",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSZoneIdTo",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,275 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustPaymModeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "VendPaymModeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "VendPaymModeSpec.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "CustPaymModeSpec.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "SplitPaymentMandatoryItemGroup_PL.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SplitPaymentMandatoryRule_PL",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Threshold",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Threshold amount",
+          "description": ""
+        },
+        {
+          "name": "PaymMode",
+          "dataType": "CustPaymMode",
+          "description": ""
+        },
+        {
+          "name": "IsOverrideNonMandatorySplit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Override mandatory non-split payment",
+          "description": ""
+        },
+        {
+          "name": "IsOverrideMandatorySplit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Override mandatory split payment",
+          "description": ""
+        },
+        {
+          "name": "BlockWhilePosting",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Block while posting",
+          "description": ""
+        },
+        {
+          "name": "PaymModeRevert",
+          "dataType": "CustPaymMode",
+          "isNullable": true,
+          "displayName": "Mandatory non-split payment method",
+          "description": ""
+        },
+        {
+          "name": "DocumentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Specification",
+          "dataType": "PaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecificationRevert",
+          "dataType": "PaymSpec",
+          "isNullable": true,
+          "displayName": "Mandatory non-split Payment specification for revert",
+          "description": ""
+        },
+        {
+          "name": "ItemGroupId",
+          "dataType": "SplitPaymentMandatoryItemGroupId_PL",
+          "isNullable": true,
+          "displayName": "Item group",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeTable"
+          },
+          "name": "Relationship_CustPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "Relationship_VendPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeTable"
+          },
+          "name": "Relationship_CustPaymModeTableReverseRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "Relationship_VendPaymModeTableRevertRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeSpec"
+          },
+          "name": "Relationship_VendPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeSpec"
+          },
+          "name": "Relationship_VendPaymModeSpecRevertRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeSpec"
+          },
+          "name": "Relationship_CustPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeSpec"
+          },
+          "name": "Relationship_CustPaymModeSpecRevertRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SplitPaymentMandatoryItemGroup_PL"
+          },
+          "name": "Relationship_SplitPaymentMandatoryItemGroup_PLRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Split payment rules"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SplitPaymentMandatoryItemGroupId_PL",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1593,17 +1593,20 @@ public class CdmCorpusDefinition {
               }
 
               // Fetch purpose traits
-              ResolvedTraitSet resolvedTraitSet = null;
+              HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths = null;
               CdmObjectBase ownerDefinition = owner.fetchObjectDefinition(resOpt);
               CdmEntityAttributeDefinition entityAtt = null;
               if (ownerDefinition.getObjectType() == CdmObjectType.EntityAttributeDef) {
                 entityAtt = owner.fetchObjectDefinition(resOpt);
               }
               if (entityAtt != null && entityAtt.getPurpose() != null) {
-                resolvedTraitSet = entityAtt.getPurpose().fetchResolvedTraits(resOpt);
+                final ResolvedTraitSet resolvedTraitSet = entityAtt.getPurpose().fetchResolvedTraits(resOpt);
+                if (resolvedTraitSet != null) {
+                  traitRefsAndCorpusPaths = findElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
+                }
               }
 
-              outRels = findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, fromAtts, resolvedTraitSet);
+              outRels = findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, fromAtts, traitRefsAndCorpusPaths);
 
               wasProjectionPolymorphic = isPolymorphicSource;
             } else {
@@ -1686,8 +1689,6 @@ public class CdmCorpusDefinition {
     return findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, null, null);
   }
 
-
-  
   /** 
    * Find the outgoing relationships for Projections.
    * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
@@ -1699,7 +1700,7 @@ public class CdmCorpusDefinition {
    * @param resOpt Resolved options
    * @param resEntity Resolved entity
    * @param fromAtts From attributes
-   * @param resolvedTraitSet purpose resolved trait set
+   * @param traitRefsAndCorpusPaths purpose trait reference objects and their corpus paths
    * @return ArrayList of CdmE2ERelationship
    */
   @Deprecated
@@ -1709,7 +1710,7 @@ public class CdmCorpusDefinition {
       ResolveOptions resOpt,
       CdmEntityDefinition resEntity,
       List<CdmAttributeReference> fromAtts,
-      ResolvedTraitSet resolvedTraitSet) {
+      HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths) {
     if (fromAtts != null) {
       ResolveOptions resOptCopy = resOpt.copy();
       resOptCopy.setWrtDoc(resEntity.getInDocument());
@@ -1732,14 +1733,7 @@ public class CdmCorpusDefinition {
           newE2ERel.setToEntity(this.getStorage().createAbsoluteCorpusPath(tuple.get(0), unResolvedEntity));
           newE2ERel.setToEntityAttribute(tuple.get(1));
 
-          if (resolvedTraitSet != null) {
-            for (final ResolvedTrait rt : resolvedTraitSet.getSet()) {
-              CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
-              if (traitRef != null) {
-                newE2ERel.getExhibitsTraits().add(traitRef);
-              }
-            }
-          }
+          this.addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);
           outRels.add(newE2ERel);
         }
       }
@@ -1748,25 +1742,53 @@ public class CdmCorpusDefinition {
     return (ArrayList<CdmE2ERelationship>) outRels;
   }
 
+  private void addTraitRefsAndCorpusPathsToRelationship(HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths, CdmE2ERelationship cdmE2ERel) {
+    if (traitRefsAndCorpusPaths != null) {
+      for (Entry<CdmTraitReference, String> pair : traitRefsAndCorpusPaths.entrySet()) {
+        cdmE2ERel.getExhibitsTraits().add(pair.getKey());
+        cdmE2ERel.getElevatedTraitCorpusPaths().add(pair.getValue());
+      }
+    }
+  }
+
   /**
-   * Fetch resolved traits on purpose
+   * Fetch resolved traits on purpose from attribute context (non-projection entity attribute)
    *
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    * @param resOpt Resolved options
    * @return List of CdmE2ERelationship
    */
-  @Deprecated
-  public ResolvedTraitSet fetchPurposeResolvedTraitsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx) {
+  private HashMap<CdmTraitReference, String> fetchPurposeTraitRefsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx) {
     if (attributeCtx.getDefinition() != null) {
       CdmObjectDefinition def = attributeCtx.getDefinition().fetchObjectDefinition(resOpt);
       if (def != null && def.getObjectType() == CdmObjectType.EntityAttributeDef) {
         final CdmEntityAttributeDefinition ettAttDef = (CdmEntityAttributeDefinition)def;
-        return ettAttDef.getPurpose() != null ? ettAttDef.getPurpose().fetchResolvedTraits(resOpt) : null;
+        if (ettAttDef.getPurpose() != null) {
+          final ResolvedTraitSet resolvedTraitSet = ettAttDef.getPurpose().fetchResolvedTraits(resOpt);
+          if (resolvedTraitSet != null) {
+            return findElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
+          }
+        }
       }
     }
 
     return null;
+  }
+
+  /**
+   * Find the corpus path for each elevated trait.
+   *
+   * @param resOpt Resolved options
+   * @return List of CdmE2ERelationship
+   */
+  private HashMap<CdmTraitReference, String> findElevatedTraitRefsAndCorpusPaths(final ResolveOptions resOpt, final ResolvedTraitSet resolvedTraitSet) {
+    HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths = new HashMap<>();
+    for (final ResolvedTrait resolvedTrait : resolvedTraitSet.getSet()) {
+      final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, resolvedTrait);
+      if (traitRef != null && resolvedTrait.getTrait().getInDocument() != null && !StringUtils.isNullOrEmpty(resolvedTrait.getTrait().getInDocument().getAtCorpusPath())) {
+        traitRefsAndCorpusPaths.put(traitRef, resolvedTrait.getTrait().getInDocument().getAtCorpusPath());
+      }
+    }
+    return traitRefsAndCorpusPaths;
   }
   
   /** 
@@ -1880,7 +1902,7 @@ public class CdmCorpusDefinition {
           }
         }
 
-        final ResolvedTraitSet resolvedTraitSet = fetchPurposeResolvedTraitsFromAttCtx(resOpt, attributeCtx);
+        final HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths = fetchPurposeTraitRefsFromAttCtx(resOpt, attributeCtx);
 
         for (Pair<String, String> attributeTuple : toAttList) {
           final String fromAtt = foreignKey
@@ -1891,14 +1913,7 @@ public class CdmCorpusDefinition {
           newE2ERel.setFromEntityAttribute(fromAtt);
           newE2ERel.setToEntityAttribute(attributeTuple.getValue());
 
-          if (resolvedTraitSet != null) {
-            for (final ResolvedTrait rt : resolvedTraitSet.getSet()) {
-              CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
-              if (traitRef != null) {
-                newE2ERel.getExhibitsTraits().add(traitRef);
-              }
-            }
-          }
+          this.addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);
 
           if (isResolvedEntity) {
             newE2ERel.setFromEntity(resEntity.getAtCorpusPath());

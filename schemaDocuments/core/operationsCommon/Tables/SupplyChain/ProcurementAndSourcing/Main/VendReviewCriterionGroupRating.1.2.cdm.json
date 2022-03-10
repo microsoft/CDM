@@ -1,0 +1,103 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "VendReviewCriterionGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendReviewCriterionGroupRating",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AverageRating",
+          "dataType": "RealBase",
+          "isNullable": true,
+          "displayName": "Average rating",
+          "description": ""
+        },
+        {
+          "name": "CriterionGroup",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "VendorAccountNumber",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "name": "VendorDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "VendReviewCriterionGroup"
+          },
+          "name": "Relationship_VendReviewCriterionGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor evaluation criterion group rating"
+    },
+    {
+      "dataTypeName": "RealBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    }
+  ]
+}

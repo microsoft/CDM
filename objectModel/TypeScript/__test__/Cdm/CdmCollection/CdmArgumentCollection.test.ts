@@ -95,13 +95,13 @@ describe('Cdm/CdmCollection/CdmArgumentCollection', () => {
             .toEqual(false);
         expect(trait.arguments.allItems[0].name)
             .toEqual('Arg1');
-        expect(trait.arguments.allItems[0].value)
+        expect(trait.arguments.item('Arg1').value)
             .toEqual('123');
         expect(trait.arguments.allItems[0].owner)
             .toEqual(trait);
         expect(trait.arguments.allItems[1].name)
             .toEqual('arg2');
-        expect(trait.arguments.allItems[1].value)
+        expect(trait.arguments.item('arg2').value)
             .toEqual(valOfArg2);
         expect(trait.arguments.allItems[1].owner)
             .toEqual(trait);

@@ -113,6 +113,12 @@ public class CdmOperationAddArtifactAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.getNewAttribute() != null
+                && this.getNewAttribute()
+                .visit(path + "/newAttribute/", preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren != null && postChildren.invoke(this, path)) {
             return true;
         }

@@ -171,8 +171,14 @@ class PersistenceLayer:
                              CdmLogCode.ERR_PERSIST_CLASS_MISSING, doc_name)
                 return None
         except Exception as e:
+            error_msg = str(e)
+            if e.__context__ is not None:
+                error_msg += ' Implicitly chained exception: '.format(str(e.__context__))
+            if e.__cause__ is not None:
+                error_msg += ' Explicitly chained exception: '.format(str(e.__cause__))
+
             logger.error(self._ctx, self._TAG, self._load_document_from_path_async.__name__, doc_path,
-                         CdmLogCode.ERR_PERSIST_DOC_CONVERSION_FAILURE, doc_path, e)
+                         CdmLogCode.ERR_PERSIST_DOC_CONVERSION_FAILURE, doc_path, error_msg)
             return None
 
         # add document to the folder, this sets all the folder/path things, caches name to content association and may trigger indexing on content

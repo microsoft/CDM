@@ -104,6 +104,12 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
             return false;
         }
 
+        if (this.getCountAttribute() != null
+                && this.getCountAttribute()
+                .visit(path + "/countAttribute/", preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren != null && postChildren.invoke(this, path)) {
             return true;
         }

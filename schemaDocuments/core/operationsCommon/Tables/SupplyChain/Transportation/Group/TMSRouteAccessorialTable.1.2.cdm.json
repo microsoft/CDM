@@ -1,0 +1,285 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSAccessorialMaster.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrier.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TMSCarrierService.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TMSHubMaster.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSRoute.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRouteAccessorialTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccessorialAssignmentLevel",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierServiceCode",
+          "dataType": "TMSCarrierServiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "CustomerRate",
+          "dataType": "TMSCustomerRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestinationPostalCode",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HubMasterCode",
+          "dataType": "TMSHubMasterCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Id",
+          "dataType": "TMSId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginPostalCode",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RateCur",
+          "dataType": "TMSRate",
+          "description": ""
+        },
+        {
+          "name": "RateId",
+          "dataType": "TMSAccessorialMasterCode",
+          "isNullable": true,
+          "displayName": "Rate ID",
+          "description": ""
+        },
+        {
+          "name": "RateType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteAccessorialLevel",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteCode",
+          "dataType": "TMSRouteCode",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "TMSSequence",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipperRate",
+          "dataType": "TMSShipperRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSAccessorialMaster"
+          },
+          "name": "Relationship_TMSAccessorialMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierService"
+          },
+          "name": "Relationship_TMSCarrierServiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSHubMaster"
+          },
+          "name": "Relationship_TMSHubMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRoute"
+          },
+          "name": "Relationship_TMSRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route accessorial charges"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierServiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCustomerRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSPostalCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSHubMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSAccessorialMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSShipperRate",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

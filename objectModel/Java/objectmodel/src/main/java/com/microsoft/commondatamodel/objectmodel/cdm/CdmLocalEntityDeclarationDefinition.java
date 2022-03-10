@@ -318,7 +318,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
       newPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
 
       for (final CdmTraitReferenceBase trait : exhibitsTraits) {
-        newPartition.getExhibitsTraits().add(trait);
+        newPartition.getExhibitsTraits().add((CdmTraitReferenceBase) trait.copy());
       }
 
       for (final Map.Entry<String, List<String>> entry : args.entrySet()) {

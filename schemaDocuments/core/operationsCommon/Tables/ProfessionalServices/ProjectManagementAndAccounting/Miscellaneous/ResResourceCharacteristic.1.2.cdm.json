@@ -1,0 +1,148 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ResCharacteristic.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "ResRatingLevel.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "ResProjectResource.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ResResourceCharacteristic",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Resource",
+          "dataType": "ResourceRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Characteristic",
+          "dataType": "ResCharacteristicRecId",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ResResourceCharacteristicValidFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ResResourceCharacteristicValidTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Rating",
+          "dataType": "ResRatingLevelRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Note",
+          "dataType": "ResResourceCharacteristicNote",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResourceIdExt",
+          "dataType": "ResResourceIdExt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ResCharacteristic"
+          },
+          "name": "Relationship_CharacteristicRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ResRatingLevel"
+          },
+          "name": "Relationship_RatingLevelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ResProjectResource"
+          },
+          "name": "Relationship_ResProjectResourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "ResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResCharacteristicRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResResourceCharacteristicValidFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ResResourceCharacteristicValidTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ResRatingLevelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResResourceCharacteristicNote",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ResResourceIdExt",
+      "extendsDataType": "string"
+    }
+  ]
+}

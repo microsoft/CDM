@@ -45,7 +45,7 @@ class EntityPersistence:
         data.name = instance.entity_name
         data.description = instance._get_property("description")
 
-        utils.process_traits_and_annotations_to_data(instance.ctx, data, instance.exhibits_traits)
+        await utils.process_traits_and_annotations_to_data(instance.ctx, data, instance.exhibits_traits)
 
         if instance.attributes:
             data.attributes = []

@@ -58,15 +58,16 @@ public class TypeAttributePersistence {
     attribute.setDataType(dataTypeToData(instance.fetchDataFormat()));
     attribute.setDescription((String) instance.fetchProperty(CdmPropertyName.DESCRIPTION));
 
-    Utils.processTraitsAndAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits());
-    final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
-    final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
+    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits()).thenCompose(v-> {
+      final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
+      final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
 
-    if (isHiddenTrait != null) {
-      attribute.setHidden(true);
-    }
+      if (isHiddenTrait != null) {
+        attribute.setHidden(true);
+      }
 
-    return CompletableFuture.completedFuture(attribute);
+      return CompletableFuture.completedFuture(attribute);
+    });
   }
 
   private static CdmDataFormat dataTypeFromData(final String dataType) {

@@ -1,0 +1,106 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMInternalOrganization.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanningProcess.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanningWorkflow.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanningProcessAdministration",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetingOrganization",
+          "dataType": "BudgetingOrganizationRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanningProcess",
+          "dataType": "BudgetPlanningProcessRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanningWorkflow",
+          "dataType": "BudgetPlanningWorkflowRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "OMInternalOrganization"
+          },
+          "name": "Relationship_BudgetingOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningProcess"
+          },
+          "name": "Relationship_BudgetPlanningProcessRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningWorkflow"
+          },
+          "name": "Relationship_BudgetPlanningWorflowRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget planning process administrations"
+    },
+    {
+      "dataTypeName": "BudgetingOrganizationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningProcessRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningWorkflowRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

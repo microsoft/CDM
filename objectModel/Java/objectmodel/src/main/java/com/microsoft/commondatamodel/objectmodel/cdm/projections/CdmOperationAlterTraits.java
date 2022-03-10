@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
  */
 public class CdmOperationAlterTraits extends CdmOperationBase {
     private static final String TAG = CdmOperationAlterTraits.class.getSimpleName();
-    private List<CdmTraitReferenceBase> traitsToAdd;
-    private List<CdmTraitReferenceBase> traitsToRemove;
+    private CdmCollection<CdmTraitReferenceBase> traitsToAdd;
+    private CdmCollection<CdmTraitReferenceBase> traitsToRemove;
     private Boolean argumentsContainWildcards;
     private List<String> applyTo;
 
@@ -38,19 +38,19 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
         this.setType(CdmOperationType.AlterTraits);
     }
 
-    public List<CdmTraitReferenceBase> getTraitsToAdd() {
+    public CdmCollection<CdmTraitReferenceBase> getTraitsToAdd() {
         return traitsToAdd;
     }
 
-    public void setTraitsToAdd(final List<CdmTraitReferenceBase> traitsToAdd) {
+    public void setTraitsToAdd(final CdmCollection<CdmTraitReferenceBase> traitsToAdd) {
         this.traitsToAdd = traitsToAdd;
     }
 
-    public List<CdmTraitReferenceBase> getTraitsToRemove() {
+    public CdmCollection<CdmTraitReferenceBase> getTraitsToRemove() {
         return traitsToRemove;
     }
 
-    public void setTraitsToRemove(final List<CdmTraitReferenceBase> traitsToRemove) {
+    public void setTraitsToRemove(final CdmCollection<CdmTraitReferenceBase> traitsToRemove) {
         this.traitsToRemove = traitsToRemove;
     }
 
@@ -78,22 +78,22 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
 
         CdmOperationAlterTraits copy = host == null ? new CdmOperationAlterTraits(this.getCtx()) : (CdmOperationAlterTraits)host;
 
-        List<CdmTraitReferenceBase> traitsToAdd = null;
-        if (this.traitsToAdd != null) {
-            traitsToAdd = new ArrayList<CdmTraitReferenceBase>(this.traitsToAdd);
+        if (this.getTraitsToAdd() != null && this.getTraitsToAdd().size() > 0) {
+            for (CdmTraitReferenceBase trait : this.getTraitsToAdd()) {
+                copy.getTraitsToAdd().add((CdmTraitReferenceBase) trait.copy());
+            }
         }
 
-        List<CdmTraitReferenceBase> traitsToRemove = null;
-        if (this.traitsToRemove != null) {
-            traitsToRemove = new ArrayList<CdmTraitReferenceBase>(this.traitsToRemove);
+        if (this.getTraitsToRemove() != null && this.getTraitsToRemove().size() > 0) {
+            for (CdmTraitReferenceBase trait : this.getTraitsToRemove()) {
+                copy.getTraitsToRemove().add((CdmTraitReferenceBase) trait.copy());
+            }
         }
 
         if (this.applyTo != null) {
             copy.setApplyTo(new ArrayList<String>(this.applyTo));
         }
 
-        copy.traitsToAdd = traitsToAdd;
-        copy.traitsToRemove = traitsToRemove;
         copy.argumentsContainWildcards = this.argumentsContainWildcards;
 
         this.copyProj(resOpt, copy);
@@ -149,6 +149,14 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
+        }
+
+        if (this.getTraitsToAdd() != null && this.getTraitsToAdd().visitList(path + "/traitsToAdd/", preChildren, postChildren)) {
+            return true;
+        }
+
+        if (this.getTraitsToRemove() != null && this.getTraitsToRemove().visitList(path + "/traitsToRemove/", preChildren, postChildren)) {
+            return true;
         }
 
         if (postChildren != null && postChildren.invoke(this, path)) {

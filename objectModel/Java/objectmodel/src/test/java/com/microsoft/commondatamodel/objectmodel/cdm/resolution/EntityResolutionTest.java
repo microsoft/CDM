@@ -326,4 +326,15 @@ public class EntityResolutionTest {
     CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
     AttributeContextUtil.validateAttributeContext(expectedOutputFolder, "Sales", resolvedEntity);
   }
+
+  /**
+   * Test that foundations import is added to resolved doc if it exists in the unresolved doc
+   */
+  @Test
+  public void testFoundationsInResDoc() throws Exception {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFoundationsInResDoc");
+    final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("Entity.cdm.json/Entity").join();
+    final CdmEntityDefinition resEntity = entity.createResolvedEntityAsync("resolvedEntity").join();
+    Assert.assertTrue(resEntity.getInDocument().getImports().item("cdm:/foundations.cdm.json") != null);
+  }
 }

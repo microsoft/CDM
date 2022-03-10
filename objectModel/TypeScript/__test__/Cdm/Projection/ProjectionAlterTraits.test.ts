@@ -18,7 +18,9 @@ import {
     CdmProjection,
     CdmTypeAttributeDefinition,
     CdmTraitReference,
-    resolveOptions
+    resolveOptions,
+    CdmCollection,
+    CdmTraitReferenceBase
 } from '../../../internal';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
@@ -218,18 +220,18 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
 
         // Create an AlterTraits operation
         const alterTraitsOp_1:CdmOperationAlterTraits = corpus.MakeObject<CdmOperationAlterTraits>(cdmObjectType.operationAlterTraitsDef);
-        alterTraitsOp_1.traitsToAdd = [];
+        alterTraitsOp_1.traitsToAdd = new CdmCollection<CdmTraitReferenceBase>(corpus.ctx, alterTraitsOp_1, cdmObjectType.traitRef);
         alterTraitsOp_1.traitsToAdd.push(corpus.MakeRef<CdmTraitReference>(cdmObjectType.traitRef, 'means.TraitG100', true));
         alterTraitsOp_1.traitsToAdd.push(corpus.MakeRef<CdmTraitReference>(cdmObjectType.traitGroupRef, 'JobTitleBase', true));
-        alterTraitsOp_1.traitsToRemove = [];
+        alterTraitsOp_1.traitsToRemove = new CdmCollection<CdmTraitReferenceBase>(corpus.ctx, alterTraitsOp_1, cdmObjectType.traitRef);
         alterTraitsOp_1.traitsToRemove.push(corpus.MakeRef<CdmTraitReference>(cdmObjectType.traitRef, 'means.TraitG300', true));        
         projection.operations.push(alterTraitsOp_1);
 
         const alterTraitsOp_2:CdmOperationAlterTraits = corpus.MakeObject<CdmOperationAlterTraits>(cdmObjectType.operationAlterTraitsDef);
-        alterTraitsOp_2.traitsToAdd = [];
         const traitG4: CdmTraitReference = corpus.MakeRef<CdmTraitReference>(cdmObjectType.traitRef, 'means.TraitG4', true)
         traitG4.arguments.push('precision', '5')
         traitG4.arguments.push('scale', '15')
+        alterTraitsOp_2.traitsToAdd = new CdmCollection<CdmTraitReferenceBase>(corpus.ctx, alterTraitsOp_2, cdmObjectType.traitRef);
         alterTraitsOp_2.traitsToAdd.push(traitG4);
         alterTraitsOp_2.applyTo = [ 'name' ]  
         projection.operations.push(alterTraitsOp_2);        
@@ -418,7 +420,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
         expect(traitG4_2.arguments.fetchValue('precision'))
             .toEqual('8');
         expect(traitG4_2.arguments.fetchValue('scale'))
-            .toBeUndefined();        
+            .toEqual('');        
     });
 
     function validateTrait(attribute: CdmTypeAttributeDefinition, expectedAttrName: string, haveTraitG4?: boolean, doesNotExist?: boolean) {

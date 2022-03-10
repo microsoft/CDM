@@ -51,6 +51,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal DateTimeOffset? LastFileModifiedOldTime { get; private set; }
 
+        internal HashSet<string> ElevatedTraitCorpusPaths { get; private set; }
+
         /// <summary>
         /// Constructs a CdmE2ERelationship.
         /// </summary>
@@ -63,6 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.ObjectType = CdmObjectType.E2ERelationshipDef;
             this.LastFileModifiedOldTime = null;
             this.lastFileModifiedTime = null;
+            this.ElevatedTraitCorpusPaths = new HashSet<string>();
         }
 
         /// <inheritdoc />

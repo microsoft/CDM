@@ -1,0 +1,78 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WrkCtrActivityRequirement.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WrkCtrActivitySkillRequirement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityRequirement",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "RatingLevel",
+          "dataType": "HcmRatingLevelRecId",
+          "description": ""
+        },
+        {
+          "name": "Skill",
+          "dataType": "HcmSkillRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrActivityRequirement"
+          },
+          "name": "Relationship_ActivityRequirementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Skill requirement"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmRatingLevelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmSkillRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

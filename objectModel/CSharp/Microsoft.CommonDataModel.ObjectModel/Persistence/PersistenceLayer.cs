@@ -255,7 +255,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             }
             catch (Exception e)
             {
-                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistDocConversionFailure, docName, e.Message);
+                var errorMsg = e.Message;
+                if (e.InnerException != null)
+                {
+                    errorMsg += $" InnerException: {e.InnerException.Message}";
+                }
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistDocConversionFailure, docName, errorMsg);
                 return null;
             }
 

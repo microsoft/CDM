@@ -23,6 +23,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
     private lastFileModifiedTime: Date;
     private lastFileModifiedOldTime: Date;
+    private elevatedTraitCorpusPaths: Set<string>;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.e2eRelationshipDef;
@@ -35,6 +36,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
         this.lastFileModifiedTime = null;
         this.lastFileModifiedOldTime = null;
+        this.elevatedTraitCorpusPaths = new Set<string>();
     }
 
     public getObjectType(): cdmObjectType {
@@ -125,6 +127,13 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
     public getlastFileModifiedOldTime(): Date {
         return this.lastFileModifiedOldTime;
+    }
+
+    /**
+     * @internal
+     */
+    public getElevatedTraitCorpusPaths(): Set<string> {
+        return this.elevatedTraitCorpusPaths;
     }
 
     public resetLastFileModifiedOldTime(): void {

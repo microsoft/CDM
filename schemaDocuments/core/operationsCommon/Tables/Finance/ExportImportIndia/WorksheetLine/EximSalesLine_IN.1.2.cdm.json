@@ -1,0 +1,193 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/Group/EximIncentiveSchemeGroup_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/Main/EximPorts_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/Group/EximProductGroupTable_IN.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EximSalesLine_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApplyDEPB",
+          "dataType": "EximApplyDEPB_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DBKCenvatStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Drawback CENVAT status",
+          "description": ""
+        },
+        {
+          "name": "DBKPercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Drawback pct.",
+          "description": ""
+        },
+        {
+          "name": "DBKRateType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Drawback rate type",
+          "description": ""
+        },
+        {
+          "name": "EximIncentiveSchemeGroup",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Incentive scheme group",
+          "description": ""
+        },
+        {
+          "name": "EximPorts",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Port ID",
+          "description": ""
+        },
+        {
+          "name": "EximProductGroupTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Product group",
+          "description": ""
+        },
+        {
+          "name": "MarketValue",
+          "dataType": "EximMarketValue_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLineRecId",
+          "dataType": "SalesLineRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EximIncentiveSchemeGroup_IN"
+          },
+          "name": "Relationship_EximIncentiveSchemeGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EximPorts_IN"
+          },
+          "name": "Relationship_EximPortsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EximProductGroupTable_IN"
+          },
+          "name": "Relationship_EximProductGroupTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Order lines"
+    },
+    {
+      "dataTypeName": "EximApplyDEPB_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EximMarketValue_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesLineRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

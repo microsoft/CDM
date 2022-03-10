@@ -74,8 +74,8 @@ public class ProjectionMapTest {
         validateAttributeTrait((CdmTypeAttributeDefinition)nonStructuredResolvedEntity.getAttributes().get(10), "ThreePeople_age_3_value", 3, "ThreePeople", "age");
         validateAttributeTrait((CdmTypeAttributeDefinition)nonStructuredResolvedEntity.getAttributes().get(11), "ThreePeople_address_3_value", 3, "ThreePeople", "address");
         Assert.assertEquals(((CdmTypeAttributeDefinition)nonStructuredResolvedEntity.getAttributes().get(12)).getName(), "personCount");
-        Assert.assertEquals(nonStructuredResolvedEntity.getAttributes().get(12).getAppliedTraits().get(1).getNamedReference(), "indicates.expansionInfo.count");
-        Assert.assertEquals(((CdmTraitReference)nonStructuredResolvedEntity.getAttributes().get(12).getAppliedTraits().get(1)).getArguments().get(0).getValue(), "ThreePeople");
+        Assert.assertNotNull(nonStructuredResolvedEntity.getAttributes().get(12).getAppliedTraits().item("indicates.expansionInfo.count"));
+        Assert.assertEquals(((CdmTraitReference)nonStructuredResolvedEntity.getAttributes().get(12).getAppliedTraits().item("indicates.expansionInfo.count")).getArguments().get(0).getValue(), "ThreePeople");
 
         // Original set of attributes: ["name", "age", "address"]
         // in structured form
@@ -131,8 +131,8 @@ public class ProjectionMapTest {
         validateAttributeTrait((CdmTypeAttributeDefinition)nonStructuredResolvedEntity.getAttributes().get(2), "Term key_2_key", 2, "FavoriteTerms", null, true);
         validateAttributeTrait((CdmTypeAttributeDefinition)nonStructuredResolvedEntity.getAttributes().get(3), "FavoriteTerms_2_value", 2, "FavoriteTerms", null);
         Assert.assertEquals(((CdmTypeAttributeDefinition)nonStructuredResolvedEntity.getAttributes().get(4)).getName(), "number of favorite terms");
-        Assert.assertEquals(nonStructuredResolvedEntity.getAttributes().get(4).getAppliedTraits().get(1).getNamedReference(), "indicates.expansionInfo.count");
-        Assert.assertEquals(((CdmTraitReference)nonStructuredResolvedEntity.getAttributes().get(4).getAppliedTraits().get(1)).getArguments().get(0).getValue(), "FavoriteTerms");
+        Assert.assertNotNull(nonStructuredResolvedEntity.getAttributes().get(4).getAppliedTraits().item("indicates.expansionInfo.count"));
+        Assert.assertEquals(((CdmTraitReference)nonStructuredResolvedEntity.getAttributes().get(4).getAppliedTraits().item("indicates.expansionInfo.count")).getArguments().get(0).getValue(), "FavoriteTerms");
 
         // Original set of attributes: [ "FavoriteTerms" ]
         // in structured form

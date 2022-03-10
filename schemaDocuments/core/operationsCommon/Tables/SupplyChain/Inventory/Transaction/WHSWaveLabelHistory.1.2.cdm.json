@@ -1,0 +1,172 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSWaveTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSWorkTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/WHSWaveLabelTemplate.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWaveLabelHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BreakField",
+          "dataType": "WHSBreakFieldName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BreakLabel",
+          "dataType": "WHSBreakLabel",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LabelList",
+          "dataType": "WHSLabelList",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "WaveId",
+          "dataType": "WHSWaveId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "WorkId",
+          "dataType": "WHSWorkId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveLabelTemplateRecId",
+          "dataType": "WHSWaveLabelTemplateRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Active",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWaveTable"
+          },
+          "name": "Relationship_WHSWaveTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkTable"
+          },
+          "name": "Relationship_WHSWorkTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWaveLabelTemplate"
+          },
+          "name": "Relationship_WHSWaveLabelTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Wave label history"
+    },
+    {
+      "dataTypeName": "WHSBreakFieldName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSBreakLabel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLabelList",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSWaveId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWaveLabelTemplateRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

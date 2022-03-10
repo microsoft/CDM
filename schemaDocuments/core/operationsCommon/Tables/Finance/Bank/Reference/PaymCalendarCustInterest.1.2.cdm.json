@@ -1,0 +1,103 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustInterest.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "PaymCalendar.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymCalendarCustInterest",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustInterest",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Customer interest",
+          "description": ""
+        },
+        {
+          "name": "IncludeStateHoliday",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Include state/province holidays",
+          "description": ""
+        },
+        {
+          "name": "InterestCalculationStart",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsBusinessDaysGracePeriodApplicable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Include only business days in grace period",
+          "description": ""
+        },
+        {
+          "name": "PaymCalendar",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Payment calendar",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CustInterest"
+          },
+          "name": "Relationship_CustInterestRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymCalendar"
+          },
+          "name": "Relationship_PaymCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment calendar customer interest"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

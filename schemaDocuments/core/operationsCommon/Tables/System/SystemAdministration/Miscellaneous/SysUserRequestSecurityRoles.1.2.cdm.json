@@ -1,0 +1,70 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Transaction/SysUserRequest.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysUserRequestSecurityRoles",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RequestID",
+          "dataType": "SysUserRequestID",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RequestedRole",
+          "dataType": "SysUserRequestRoleRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysUserRequest"
+          },
+          "name": "Relationship_RelationForeignKeySysUserRequestRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "SysUserRequestID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysUserRequestRoleRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

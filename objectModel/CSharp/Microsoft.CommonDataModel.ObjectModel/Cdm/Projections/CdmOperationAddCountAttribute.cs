@@ -85,6 +85,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren?.Invoke(this, path) == true)
                 return false;
 
+            if (this.CountAttribute != null && this.CountAttribute.Visit($"{path}/countAttribute/", preChildren, postChildren))
+                return true;
+
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
 

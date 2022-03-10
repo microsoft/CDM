@@ -1,0 +1,262 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "FreeNotesGroupsTable_IT.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FreeNotesTable_IT",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustVendCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Account code",
+          "description": ""
+        },
+        {
+          "name": "CustVendRelation",
+          "dataType": "CustVendRel",
+          "isNullable": true,
+          "displayName": "Account relation",
+          "description": ""
+        },
+        {
+          "name": "HeaderLines",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Item code",
+          "description": ""
+        },
+        {
+          "name": "ItemRelation",
+          "dataType": "ItemRelationInvent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Module",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Customer or vendor",
+          "description": ""
+        },
+        {
+          "name": "OnConfirmation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Confirmation",
+          "description": ""
+        },
+        {
+          "name": "OnDeliveryNote",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Delivery Note",
+          "description": ""
+        },
+        {
+          "name": "OnFreeTextInvoice",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Free text invoice",
+          "description": ""
+        },
+        {
+          "name": "OnInvoice",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Invoice",
+          "description": ""
+        },
+        {
+          "name": "OnPackingSlip",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Packing slip",
+          "description": ""
+        },
+        {
+          "name": "OnPickingList",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Picking list",
+          "description": ""
+        },
+        {
+          "name": "OnPrepaymentRequest",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prepayment request",
+          "description": ""
+        },
+        {
+          "name": "OnPurchOrder",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Purchase order",
+          "description": ""
+        },
+        {
+          "name": "OnQuotation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Quotation",
+          "description": ""
+        },
+        {
+          "name": "Restriction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Text",
+          "dataType": "FreeText",
+          "isNullable": true,
+          "displayName": "Advanced note text",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FreeNotesGroupsTable_IT"
+          },
+          "name": "Relationship_CustNotesGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustNotesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FreeNotesGroupsTable_IT"
+          },
+          "name": "Relationship_InventNotesGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_ItemTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FreeNotesGroupsTable_IT"
+          },
+          "name": "Relationship_VendNotesGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendNotesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Advanced notes setup"
+    },
+    {
+      "dataTypeName": "CustVendRel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemRelationInvent",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FreeText",
+      "extendsDataType": "string"
+    }
+  ]
+}

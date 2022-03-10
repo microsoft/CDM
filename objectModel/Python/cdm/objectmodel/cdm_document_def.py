@@ -711,6 +711,9 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         if pre_children and pre_children(self, path_from):
             return False
 
+        if self.imports and self.imports._visit_array(path_from, pre_children, post_children):
+            return True
+
         if self.definitions and self.definitions._visit_array(path_from, pre_children, post_children):
             return True
 

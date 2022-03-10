@@ -57,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Type = "LocalEntity"
             };
 
-            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             if (instance.Attributes != null)
             {

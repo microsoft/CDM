@@ -76,7 +76,8 @@ import {
     TelemetryClient,
     CdmTraitGroupDefinition,
     CdmTraitGroupReference,
-    CdmTraitReferenceBase
+    CdmTraitReferenceBase,
+    StringUtils
 } from '../internal';
 import { PersistenceLayer } from '../Persistence';
 import {
@@ -1151,7 +1152,7 @@ export class CdmCorpusDefinition {
                 return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
             } catch (e) {
                 Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
-                return null;
+                return undefined;
             }
         } else {
             return this.getLastModifiedTimeFromObjectAsync(currObject.inDocument);
@@ -1314,8 +1315,8 @@ export class CdmCorpusDefinition {
         isResolvedEntity: boolean = false,
         generatedAttSetContext?: CdmAttributeContext,
         wasProjectionPolymorphic: boolean = false,
-        fromAtts: CdmAttributeReference[] = null,
-        entityAttAttContext: CdmAttributeContext = null
+        fromAtts: CdmAttributeReference[] = undefined,
+        entityAttAttContext: CdmAttributeContext = undefined
     ): CdmE2ERelationship[] {
         let outRels: CdmE2ERelationship[] = [];
         if (attCtx && attCtx.contents) {
@@ -1333,7 +1334,7 @@ export class CdmCorpusDefinition {
             for (const subAttCtx of attCtx.contents.allItems) {
                 if (subAttCtx.objectType === cdmObjectType.attributeContextDef) {
                     // find the top level entity definition's attribute context
-                    if (entityAttAttContext == null && attCtx.type == cdmAttributeContextType.attributeDefinition
+                    if (entityAttAttContext === undefined && attCtx.type == cdmAttributeContextType.attributeDefinition
                         && attCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt)?.objectType == cdmObjectType.entityAttributeDef) {
                         entityAttAttContext = attCtx;
                     }
@@ -1362,13 +1363,16 @@ export class CdmCorpusDefinition {
                             }
 
                             // Fetch purpose traits
-                            let resolvedTraitSet: ResolvedTraitSet = null;
+                            let traitRefsAndCorpusPaths: Map<CdmTraitReference, string> = undefined;
                             const entityAtt: CdmEntityAttributeDefinition = owner.fetchObjectDefinition<CdmObjectDefinition>(resOpt) as CdmEntityAttributeDefinition;
-                            if (entityAtt?.purpose != null) {
-                                resolvedTraitSet = entityAtt.purpose.fetchResolvedTraits(resOpt);
+                            if (entityAtt?.purpose !== undefined) {
+                                const resolvedTraitSet= entityAtt.purpose.fetchResolvedTraits(resOpt);
+                                if (resolvedTraitSet !== undefined) {
+                                    traitRefsAndCorpusPaths = this.findElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
+                                }
                             }
 
-                            outRels = this.findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, fromAtts, resolvedTraitSet);
+                            outRels = this.findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, fromAtts, traitRefsAndCorpusPaths);
 
                             wasProjectionPolymorphic = isPolymorphicSource;
                         } else {
@@ -1410,17 +1414,32 @@ export class CdmCorpusDefinition {
     }
 
     /**
-     * Fetch resolved traits on purpose.
-     * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
-     * @internal
+     * Fetch resolved traits on purpose from attribute context (non-projection entity attribute).
      */
-    public fetchPurposeResolvedTraitsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): ResolvedTraitSet {
+    private fetchPurposeTraitRefsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): Map<CdmTraitReference, string> {
         const def: CdmObjectDefinition = attributeCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
-        if (def?.objectType == cdmObjectType.entityAttributeDef && (def as CdmEntityAttributeDefinition)?.purpose != null) {
-            return (def as CdmEntityAttributeDefinition).purpose.fetchResolvedTraits(resOpt);
+        if (def?.objectType == cdmObjectType.entityAttributeDef && (def as CdmEntityAttributeDefinition)?.purpose !== undefined) {
+            var resolvedTraitSet = (def as CdmEntityAttributeDefinition).purpose.fetchResolvedTraits(resOpt);
+            if (resolvedTraitSet !== undefined) {
+                return this.findElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
+            }
         }
 
-        return null;
+        return undefined;
+    }
+
+    /**
+     * Find the corpus path for each elevated trait.
+     */
+    private findElevatedTraitRefsAndCorpusPaths(resOpt: resolveOptions, resolvedTraitSet: ResolvedTraitSet): Map<CdmTraitReference, string> {
+        const traitRefsAndCorpusPaths = new Map<CdmTraitReference, string>();
+        resolvedTraitSet.set.forEach(rt => {
+            var traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
+            if (traitRef !== undefined && !StringUtils.isNullOrWhiteSpace(rt.trait.inDocument?.atCorpusPath)){
+                traitRefsAndCorpusPaths.set(traitRef, rt.trait.inDocument.atCorpusPath);
+            }
+        })
+        return traitRefsAndCorpusPaths;
     }
 
     /**
@@ -1433,8 +1452,8 @@ export class CdmCorpusDefinition {
         child: CdmAttributeContext,
         resOpt: resolveOptions,
         resEntity: CdmEntityDefinition,
-        fromAtts: CdmAttributeReference[] = null,
-        resolvedTraitSet: ResolvedTraitSet = null
+        fromAtts: CdmAttributeReference[] = undefined,
+        traitRefsAndCorpusPaths: Map<CdmTraitReference, string> = undefined
     ): CdmE2ERelationship[] {
         if (fromAtts) {
             const resOptCopy: resolveOptions = resOpt.copy();
@@ -1458,14 +1477,7 @@ export class CdmCorpusDefinition {
                     newE2ERel.toEntity = this.storage.createAbsoluteCorpusPath(tuple[0], unResolvedEntity);
                     newE2ERel.toEntityAttribute = tuple[1];
 
-                    if (resolvedTraitSet != null) {
-                        resolvedTraitSet.set.forEach((rt: ResolvedTrait) => {
-                            const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
-                            if (traitRef != null) {
-                                newE2ERel.exhibitsTraits.push(traitRef);
-                            }
-                        });
-                    }
+                    this.addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);
 
                     outRels.push(newE2ERel);
                 }
@@ -1490,7 +1502,7 @@ export class CdmCorpusDefinition {
         isResolvedEntity: boolean,
         wasProjectionPolymorphic: boolean = false,
         wasEntityRef: boolean = false,
-        attributeCtx: CdmAttributeContext = null
+        attributeCtx: CdmAttributeContext = undefined
     ): CdmE2ERelationship[] {
         // entity references should have the "is.identifiedBy" trait, and the entity ref should be valid
         if (toAtt.length === 1 && toEntity) {
@@ -1533,7 +1545,7 @@ export class CdmCorpusDefinition {
                     }
                 }
 
-                const resolvedTraitSet: ResolvedTraitSet = this.fetchPurposeResolvedTraitsFromAttCtx(resOpt, attributeCtx);
+                const traitRefsAndCorpusPaths: Map<CdmTraitReference, string> = this.fetchPurposeTraitRefsFromAttCtx(resOpt, attributeCtx);
 
                 for (const attributeTuple of toAttList) {
                     const fromAtt: string = foreignKey.slice(foreignKey.lastIndexOf('/') + 1)
@@ -1543,14 +1555,7 @@ export class CdmCorpusDefinition {
                     newE2ERel.fromEntityAttribute = fromAtt;
                     newE2ERel.toEntityAttribute = attributeTuple[1];
 
-                    if (resolvedTraitSet != null) {
-                        resolvedTraitSet.set.forEach((rt: ResolvedTrait) => {
-                            const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
-                            if (traitRef != null) {
-                                newE2ERel.exhibitsTraits.push(traitRef);
-                            }
-                        });
-                    }
+                    this.addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);
 
                     if (isResolvedEntity) {
                         newE2ERel.fromEntity = resEntity.atCorpusPath;
@@ -1585,6 +1590,15 @@ export class CdmCorpusDefinition {
         }
 
         return outRels;
+    }
+
+    private addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths: Map<CdmTraitReference, string>, cdmE2ERel: CdmE2ERelationship): void {
+        if (traitRefsAndCorpusPaths !== undefined) {
+            for (const pair of traitRefsAndCorpusPaths) {
+                cdmE2ERel.exhibitsTraits.allItems.push(pair[0]);
+                cdmE2ERel.getElevatedTraitCorpusPaths().add(pair[1]);
+            }
+        }
     }
 
     /**

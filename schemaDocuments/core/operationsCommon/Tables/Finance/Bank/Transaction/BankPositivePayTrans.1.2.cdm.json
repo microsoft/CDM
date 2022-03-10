@@ -1,0 +1,119 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BankChequeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "BankPositivePayTable.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankPositivePayTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankChequeTableRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyRef",
+          "dataType": "SelectableDataArea",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PositivePayNumber",
+          "dataType": "BankPositivePayId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VoidedDate",
+          "dataType": "UTCTimestamp",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Voided date",
+          "description": ""
+        },
+        {
+          "name": "VoidedUser",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Voided by user",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BankChequeTable"
+          },
+          "name": "Relationship_BankChequeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankPositivePayTable"
+          },
+          "name": "Relationship_BankPositivePayTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank positive pay transaction table"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankPositivePayId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    }
+  ]
+}

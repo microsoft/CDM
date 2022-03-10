@@ -1,0 +1,129 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ConfLayoutGroups_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "EP_FileSequenceNum_BR.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EPRetOccCodes_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LayoutGroupId",
+          "dataType": "ConfLayoutGroupId_BR",
+          "description": ""
+        },
+        {
+          "name": "LayoutRetOccCode",
+          "dataType": "EPLayoutReturnOccCode_BR",
+          "description": ""
+        },
+        {
+          "name": "LayoutRetOccCodeDesc",
+          "dataType": "EPLayoutReturnOccCodeDesc_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetOccCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetOccCodeDesc",
+          "dataType": "EPRemitOccCodeDesc_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ConfLayoutGroups_BR"
+          },
+          "name": "Relationship_ConfLayoutGroups_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EP_FileSequenceNum_BR"
+          },
+          "name": "Relationship_EP_FileSequenceNum_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Return occurrence codes"
+    },
+    {
+      "dataTypeName": "ConfLayoutGroupId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EPLayoutReturnOccCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EPLayoutReturnOccCodeDesc_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EPRemitOccCodeDesc_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

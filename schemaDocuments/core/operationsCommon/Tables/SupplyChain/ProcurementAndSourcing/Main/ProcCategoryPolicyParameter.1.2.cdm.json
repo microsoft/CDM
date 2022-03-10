@@ -1,0 +1,128 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/Workflow/Main/SysPolicyRule.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProcCategoryPolicyParameter",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "HasDeductionRequirement",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Deduction requirements",
+          "description": ""
+        },
+        {
+          "name": "HasQuestionnaireRequirement",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Show questionnaires?",
+          "description": ""
+        },
+        {
+          "name": "HasReceivingRequirement",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Receiving requirements",
+          "description": ""
+        },
+        {
+          "name": "MatchingPolicyOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Category matching policy",
+          "description": ""
+        },
+        {
+          "name": "ProcurementCategory",
+          "dataType": "EcoResCategoryId",
+          "description": ""
+        },
+        {
+          "name": "ProcurementCategoryPolicyRule",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "RecordExpenditureOnGoodsReceipt",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Accrue purchase expense on receipt",
+          "description": ""
+        },
+        {
+          "name": "VendorSelection",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysPolicyRule"
+          },
+          "name": "Relationship_ProcCategoryPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Category procurement policy rule data"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EcoResCategoryId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

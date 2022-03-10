@@ -1,0 +1,161 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSShipConsolidationSession.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "WHSShipConsolidationProposedShipment.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSShipConsolidationProposedShipmentContent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultProposedGroup",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProposedGroup",
+          "dataType": "Integer",
+          "description": ""
+        },
+        {
+          "name": "ProposedShipment",
+          "dataType": "WHSShipConsolidationProposedShipmentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipConsolidationSession",
+          "dataType": "WHSShipConsolidationSessionRecId",
+          "description": ""
+        },
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "description": ""
+        },
+        {
+          "name": "TotalVolume",
+          "dataType": "TMSProposedTotalVolume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalWeight",
+          "dataType": "TMSProposedTotalWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipConsolidationSession"
+          },
+          "name": "Relationship_WHSShipConsolidationSessionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipConsolidationProposedShipment"
+          },
+          "name": "Relationship_WHSShipConsolidationProposedShipmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Proposed shipment content"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationProposedShipmentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationSessionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSProposedTotalVolume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSProposedTotalWeight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

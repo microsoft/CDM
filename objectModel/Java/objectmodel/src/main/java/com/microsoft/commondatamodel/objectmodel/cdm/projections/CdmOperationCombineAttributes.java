@@ -119,6 +119,12 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
             return false;
         }
 
+        if (this.getMergeInto() != null
+                && this.getMergeInto()
+                .visit(path + "/mergeInto/", preChildren, postChildren)) {
+            return true;
+        }
+
         if (postChildren != null && postChildren.invoke(this, path)) {
             return true;
         }

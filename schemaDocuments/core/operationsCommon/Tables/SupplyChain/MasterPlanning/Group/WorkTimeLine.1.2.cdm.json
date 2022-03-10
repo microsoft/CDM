@@ -1,0 +1,146 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkTimeTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "WrkCtrProperty.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkTimeLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Effectivity",
+          "dataType": "EffectivityPct",
+          "isNullable": true,
+          "displayName": "Efficiency",
+          "description": ""
+        },
+        {
+          "name": "FromTime",
+          "dataType": "FromTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PropertyId",
+          "dataType": "PropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToTime",
+          "dataType": "ToTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WeekDay",
+          "dataType": "WeekDay",
+          "isNullable": true,
+          "displayName": "Day",
+          "description": ""
+        },
+        {
+          "name": "WorkTimeId",
+          "dataType": "WorkTimeId",
+          "displayName": "Working time",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WorkTimeTable"
+          },
+          "name": "Relationship_MRPTimeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrProperty"
+          },
+          "name": "Relationship_WrkCtrPropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Time transactions"
+    },
+    {
+      "dataTypeName": "EffectivityPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FromTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "PropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ToTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "WeekDay",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkTimeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

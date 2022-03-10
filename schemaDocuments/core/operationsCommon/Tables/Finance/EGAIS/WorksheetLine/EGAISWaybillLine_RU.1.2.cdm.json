@@ -1,0 +1,178 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/Main/EGAISAlcoholProduction_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/Main/EGAISInformB_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/WorksheetHeader/EGAISWaybillJour_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EGAISWaybillLine_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AlcoholProduction",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "Alcohol product",
+          "description": ""
+        },
+        {
+          "name": "Identity",
+          "dataType": "EGAISIdentity_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InformB",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "Certificate B",
+          "description": ""
+        },
+        {
+          "name": "PackId",
+          "dataType": "String50",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Package ID",
+          "description": ""
+        },
+        {
+          "name": "Party",
+          "dataType": "String50",
+          "isNullable": true,
+          "displayName": "External batch",
+          "description": ""
+        },
+        {
+          "name": "Price",
+          "dataType": "Price",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RealQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Actual quantity",
+          "description": ""
+        },
+        {
+          "name": "WaybillJour",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISAlcoholProduction_RU"
+          },
+          "name": "Relationship_EGAISAlcoholProduction_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISInformB_RU"
+          },
+          "name": "Relationship_EGAISInformB_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISWaybillJour_RU"
+          },
+          "name": "Relationship_EGAISWaybillJour_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "EGAIS bill of lading journal lines"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EGAISIdentity_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "String50",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Price",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

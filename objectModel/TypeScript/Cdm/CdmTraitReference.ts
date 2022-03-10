@@ -67,7 +67,7 @@ export class CdmTraitReference extends CdmTraitReferenceBase {
             }
             if (!simpleReference) {
                 for (const arg of this.arguments) {
-                    copy.arguments.push(arg);
+                    copy.arguments.push(arg.copy(resOpt));
                 }
                 copy.resolvedArguments = this.resolvedArguments;
             }

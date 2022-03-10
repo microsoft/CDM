@@ -1,0 +1,294 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterTrans_AmountDifference",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountDifferenceExpense",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Amount difference - Expense",
+          "description": ""
+        },
+        {
+          "name": "AmountDifferenceIncome",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Amount difference - Income",
+          "description": ""
+        },
+        {
+          "name": "BlockType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line type",
+          "description": ""
+        },
+        {
+          "name": "ContractNumber",
+          "dataType": "DocumentNum",
+          "isNullable": true,
+          "displayName": "Agreement number",
+          "description": ""
+        },
+        {
+          "name": "Corrected",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected",
+          "description": ""
+        },
+        {
+          "name": "CTAAmount",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "CTA amount",
+          "description": ""
+        },
+        {
+          "name": "CTLAmount",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "CTL amount",
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeAdjustmentExpense",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Exchange adjustment - Expense",
+          "description": ""
+        },
+        {
+          "name": "ExchangeAdjustmentIncome",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Exchange adjustment - Income",
+          "description": ""
+        },
+        {
+          "name": "ExpenseIncomeType",
+          "dataType": "RTax25NotesLine",
+          "isNullable": true,
+          "displayName": "Expense/income type",
+          "description": ""
+        },
+        {
+          "name": "JournalTransRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "RTax25Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInput",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manual data input",
+          "description": ""
+        },
+        {
+          "name": "ProfitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettlementDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Date of settlement",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RTax25RegisterJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax register line"
+    },
+    {
+      "dataTypeName": "RTax25AmountMSTDisplay",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RTax25NotesLine",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25RegisterLineNum64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

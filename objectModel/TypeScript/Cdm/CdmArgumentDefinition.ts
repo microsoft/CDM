@@ -74,7 +74,6 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
                 if (this.value instanceof CdmObjectBase) {
                     copy.value = (this.value as CdmObject).copy(resOpt);
                 } else {
-                    // Value is a string or object
                     copy.value = this.value;
                 }
             }
@@ -86,10 +85,14 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
         // return p.measure(bodyCode);
     }
 
+    public fetchObjectDefinitionName(): string {
+        return this.name;
+    }
+
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            if (!this.value) {
+            if (this.value === undefined) {
                 let missingFields: string[] = ['value'];
                 Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;

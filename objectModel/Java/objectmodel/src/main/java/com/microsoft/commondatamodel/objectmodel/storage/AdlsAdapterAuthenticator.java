@@ -204,7 +204,11 @@ class AdlsAdapterAuthenticator {
       ClientCredentialParameters parameters = ClientCredentialParameters.builder(SCOPE).build();
       result = this.context.acquireToken(parameters).join();
     } catch (Exception ex) {
-        throw new StorageAdapterException("There was an error while acquiring ADLS Adapter's Token with client ID/secret authentication. Exception: ", ex);
+      String errorMsg = ex.getLocalizedMessage();
+      if (ex.getCause() != null) {
+        errorMsg += " InnerException: " + ex.getCause().getLocalizedMessage();
+      }
+      throw new StorageAdapterException("There was an error while acquiring ADLS Adapter's Token with client ID/secret authentication. " + errorMsg);
     }
 
     if (result == null || result.accessToken() == null) {

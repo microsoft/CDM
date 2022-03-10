@@ -1,0 +1,181 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionCombinationEntity.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdLedgerAccountGroup_TH.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdLedgerAccountGroupEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExpenseLedgerDimension",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Expense account",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithhodlSettlementLedgerDimension",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Settlement account",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAccountGroup",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Ledger posting group",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdLedgerDimension",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Withholding tax",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdOffsetLedgerDimension",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Withholding tax offset",
+          "description": ""
+        },
+        {
+          "name": "ExpenseLedgerDimensionDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Expense account",
+          "description": ""
+        },
+        {
+          "name": "TaxWithhodlSettlementLedgerDimensionDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Settlement account",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdLedgerDimensionDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Withholding tax",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdOffsetLedgerDimensionDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Withholding tax offset",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_ExpenseLedgerDimensionCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_TaxWithhodlSettlementLedgerDimensionCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_TaxWithholdLedgerDimensionCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_TaxWithholdOffsetLedgerDimensionCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdLedgerAccountGroup_TH"
+          },
+          "name": "BackingTable_TaxWithholdLedgerAccountGroup_THRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding tax ledger posting groups"
+    }
+  ]
+}

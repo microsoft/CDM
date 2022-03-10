@@ -270,7 +270,6 @@ public class ManifestPersistence {
       final CdmManifestDefinition instance,
       final ResolveOptions resOpt,
       final CopyOptions options) {
-    return CompletableFuture.supplyAsync(() -> {
       final Model result = new Model();
       result.setName(instance.getManifestName());
       result.setDescription(instance.getExplanation());
@@ -322,119 +321,118 @@ public class ManifestPersistence {
         });
       }
 
-      Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
+      return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).thenApply(v -> {
+        if (instance.getEntities() != null && instance.getEntities().getCount() > 0) {
+          final List<CompletableFuture<Void>> promises = new ArrayList<>();
+          final CopyOnWriteArrayList<Entity> obtainedEntities = new CopyOnWriteArrayList<>();
+          for (final CdmEntityDeclarationDefinition entity : instance.getEntities()) {
+            final CompletableFuture<Void> createdPromise = CompletableFuture.runAsync(() -> {
+              Entity element = null;
+              if ((entity.getObjectType() == CdmObjectType.LocalEntityDeclarationDef)) {
+                element = LocalEntityDeclarationPersistence.toData(
+                        entity,
+                        instance,
+                        resOpt,
+                        options
+                ).join();
+              } else if ((entity.getObjectType() == CdmObjectType.ReferencedEntityDeclarationDef)) {
+                element = ReferencedEntityDeclarationPersistence.toData(
+                        entity,
+                        resOpt,
+                        options
+                ).join();
 
-      if (instance.getEntities() != null && instance.getEntities().getCount() > 0) {
-        final List<CompletableFuture<Void>> promises = new ArrayList<>();
-        final CopyOnWriteArrayList<Entity> obtainedEntities = new CopyOnWriteArrayList<>();
-        for (final CdmEntityDeclarationDefinition entity : instance.getEntities()) {
-          final CompletableFuture<Void> createdPromise = CompletableFuture.runAsync(() -> {
-            Entity element = null;
-            if ((entity.getObjectType() == CdmObjectType.LocalEntityDeclarationDef)) {
-              element = LocalEntityDeclarationPersistence.toData(
-                  entity,
-                  instance,
-                  resOpt,
-                  options
-              ).join();
-            } else if ((entity.getObjectType() == CdmObjectType.ReferencedEntityDeclarationDef)) {
-              element = ReferencedEntityDeclarationPersistence.toData(
-                  entity,
-                  resOpt,
-                  options
-              ).join();
+                String location = instance.getCtx()
+                        .getCorpus()
+                        .getStorage()
+                        .corpusPathToAdapterPath(
+                                entity.getEntityPath()
+                        );
 
-              String location = instance.getCtx()
-                  .getCorpus()
-                  .getStorage()
-                  .corpusPathToAdapterPath(
-                      entity.getEntityPath()
-                  );
-
-              if (StringUtils.isNullOrEmpty(location)) {
-                Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
-                element = null;
-              }
-
-              if (element instanceof ReferenceEntity) {
-                // path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
-                final ReferenceEntity referenceEntity = (ReferenceEntity) element;
-                int lastSlashLocation = location.lastIndexOf("/") > location.lastIndexOf("\\") ? location.lastIndexOf("/") : location.lastIndexOf("\\");
-                if (lastSlashLocation > 0) {
-                  location = location.substring(0, lastSlashLocation);
+                if (StringUtils.isNullOrEmpty(location)) {
+                  Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
+                  element = null;
                 }
 
-                if (referenceEntity.getModelId() != null) {
-                  final String savedLocation = referenceModels.get(referenceEntity.getModelId());
-                  if (savedLocation != null && !Objects.equals(savedLocation, location)) {
-                    Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonModelIdDuplication);
-                    element = null;
-                  } else if (savedLocation == null) {
+                if (element instanceof ReferenceEntity) {
+                  // path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
+                  final ReferenceEntity referenceEntity = (ReferenceEntity) element;
+                  int lastSlashLocation = location.lastIndexOf("/") > location.lastIndexOf("\\") ? location.lastIndexOf("/") : location.lastIndexOf("\\");
+                  if (lastSlashLocation > 0) {
+                    location = location.substring(0, lastSlashLocation);
+                  }
+
+                  if (referenceEntity.getModelId() != null) {
+                    final String savedLocation = referenceModels.get(referenceEntity.getModelId());
+                    if (savedLocation != null && !Objects.equals(savedLocation, location)) {
+                      Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonModelIdDuplication);
+                      element = null;
+                    } else if (savedLocation == null) {
+                      referenceModels.put(referenceEntity.getModelId(), location);
+                      referenceEntityLocations.put(location, referenceEntity.getModelId());
+                    }
+                  } else if (referenceEntityLocations.containsKey(location)) {
+                    referenceEntity.setModelId(referenceEntityLocations.get(location));
+                  } else {
+                    referenceEntity.setModelId(UUID.randomUUID().toString());
                     referenceModels.put(referenceEntity.getModelId(), location);
                     referenceEntityLocations.put(location, referenceEntity.getModelId());
                   }
-                } else if (referenceEntityLocations.containsKey(location)) {
-                  referenceEntity.setModelId(referenceEntityLocations.get(location));
-                } else {
-                  referenceEntity.setModelId(UUID.randomUUID().toString());
-                  referenceModels.put(referenceEntity.getModelId(), location);
-                  referenceEntityLocations.put(location, referenceEntity.getModelId());
                 }
               }
-            }
 
-            if (element != null) {
-              obtainedEntities.add(element);
-            } else {
-              Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.getEntityName());
+              if (element != null) {
+                obtainedEntities.add(element);
+              } else {
+                Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.getEntityName());
+              }
+            });
+
+            try {
+              // TODO: Currently function is synchronous. Remove next line to turn it asynchronous.
+              // Currently some functions called are not thread safe.
+              createdPromise.get();
+              promises.add(createdPromise);
+            } catch (InterruptedException | ExecutionException e) {
+              Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionFailure, entity.getEntityName(), e.getMessage());
+            }
+          }
+          for (final CompletableFuture<Void> promise : promises) {
+            promise.join();
+          } //    TODO-BQ: 2019-09-05 Refactor.
+          result.setEntities(new ArrayList<>(obtainedEntities));
+        }
+
+        if (!referenceModels.isEmpty()) {
+          result.setReferenceModels(new ArrayList<>());
+          for (final Map.Entry<String, String> referenceModel : referenceModels.entrySet()) {
+            final ReferenceModel newReferenceModel = new ReferenceModel();
+            newReferenceModel.setId(referenceModel.getKey());
+            newReferenceModel.setLocation(referenceModel.getValue());
+            result.getReferenceModels().add(newReferenceModel);
+          }
+        }
+
+        if (null != instance.getRelationships() && instance.getRelationships().getCount() > 0) {
+          result.setRelationships(new ArrayList<>());
+
+          instance.getRelationships().forEach(cdmRelationship -> {
+            final SingleKeyRelationship relationship = RelationshipPersistence
+                    .toData(cdmRelationship, resOpt, options).join();
+
+            if (null != relationship) {
+              result.getRelationships().add(relationship);
             }
           });
-
-          try {
-            // TODO: Currently function is synchronous. Remove next line to turn it asynchronous.
-            // Currently some functions called are not thread safe.
-            createdPromise.get();
-            promises.add(createdPromise);
-          } catch (InterruptedException | ExecutionException e) {
-            Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionFailure, entity.getEntityName(), e.getMessage());
-          }
         }
-        for (final CompletableFuture<Void> promise : promises) {
-          promise.join();
-        } //    TODO-BQ: 2019-09-05 Refactor.
-        result.setEntities(new ArrayList<>(obtainedEntities));
-      }
 
-      if (!referenceModels.isEmpty()) {
-        result.setReferenceModels(new ArrayList<>());
-        for (final Map.Entry<String, String> referenceModel : referenceModels.entrySet()) {
-          final ReferenceModel newReferenceModel = new ReferenceModel();
-          newReferenceModel.setId(referenceModel.getKey());
-          newReferenceModel.setLocation(referenceModel.getValue());
-          result.getReferenceModels().add(newReferenceModel);
+        if (instance.getImports() != null && instance.getImports().getCount() > 0) {
+          result.setImports(new ArrayList<>());
+          instance.getImports().forEach(element ->
+                  result.getImports().add(ImportPersistence.toData(element, resOpt, options)));
         }
-      }
 
-      if (null != instance.getRelationships() && instance.getRelationships().getCount() > 0) {
-        result.setRelationships(new ArrayList<>());
-
-        instance.getRelationships().forEach(cdmRelationship -> {
-          final SingleKeyRelationship relationship = RelationshipPersistence
-              .toData(cdmRelationship, resOpt, options).join();
-
-          if (null != relationship) {
-            result.getRelationships().add(relationship);
-          }
-        });
-      }
-
-      if (instance.getImports() != null && instance.getImports().getCount() > 0) {
-        result.setImports(new ArrayList<>());
-        instance.getImports().forEach(element ->
-            result.getImports().add(ImportPersistence.toData(element, resOpt, options)));
-      }
-
-      return result;
-    });
+        return result;
+      });
   }
 }

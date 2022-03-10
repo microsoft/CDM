@@ -1,0 +1,174 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPerson.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsElectronicAddress.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "UserRequest",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AuthenticationMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateResolved",
+          "dataType": "UserRequestResolvedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateSubmitted",
+          "dataType": "UserRequestSubmittedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Email",
+          "dataType": "UserRequestPersonEmailRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Person",
+          "dataType": "UserRequestPersonRecId",
+          "description": ""
+        },
+        {
+          "name": "RequestAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestedRole",
+          "dataType": "UserRequestRoleRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestID",
+          "dataType": "UserRequestID",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RequestStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "User",
+          "dataType": "UserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserAlias",
+          "dataType": "UserRequestUserAlias",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirPerson"
+          },
+          "name": "Relationship_DirPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsElectronicAddress"
+          },
+          "name": "Relationship_EmailAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "User requests"
+    },
+    {
+      "dataTypeName": "UserRequestResolvedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserRequestSubmittedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserRequestPersonEmailRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UserRequestPersonRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UserRequestRoleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UserRequestID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserRequestUserAlias",
+      "extendsDataType": "string"
+    }
+  ]
+}

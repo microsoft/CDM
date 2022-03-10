@@ -70,8 +70,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             ProjectionTestUtils.ValidateExpansionInfoTrait(nonStructuredResolvedEntity.Attributes[7] as CdmTypeAttributeDefinition, "age3", 3, "ThreePeople", "age");
             ProjectionTestUtils.ValidateExpansionInfoTrait(nonStructuredResolvedEntity.Attributes[8] as CdmTypeAttributeDefinition, "address3", 3, "ThreePeople", "address");
             Assert.AreEqual("personCount", (nonStructuredResolvedEntity.Attributes[9] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("indicates.expansionInfo.count", nonStructuredResolvedEntity.Attributes[9].AppliedTraits[1].NamedReference);
-            Assert.AreEqual("ThreePeople", (nonStructuredResolvedEntity.Attributes[9].AppliedTraits[1] as CdmTraitReference).Arguments[0].Value);
+            Assert.IsNotNull(nonStructuredResolvedEntity.Attributes[9].AppliedTraits.Item("indicates.expansionInfo.count"));
+            Assert.AreEqual("ThreePeople", (nonStructuredResolvedEntity.Attributes[9].AppliedTraits.Item("indicates.expansionInfo.count") as CdmTraitReference).Arguments[0].Value);
 
             // Original set of attributes: ["name", "age", "address"]
             // in structured form 
@@ -112,8 +112,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("Term 1", (nonStructuredResolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("Term 2", (nonStructuredResolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("number of favorite terms", (nonStructuredResolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("indicates.expansionInfo.count", nonStructuredResolvedEntity.Attributes[2].AppliedTraits[1].NamedReference);
-            Assert.AreEqual("Favorite Terms", (nonStructuredResolvedEntity.Attributes[2].AppliedTraits[1] as CdmTraitReference).Arguments[0].Value);
+            Assert.IsNotNull(nonStructuredResolvedEntity.Attributes[2].AppliedTraits.Item("indicates.expansionInfo.count"));
+            Assert.AreEqual("Favorite Terms", (nonStructuredResolvedEntity.Attributes[2].AppliedTraits.Item("indicates.expansionInfo.count") as CdmTraitReference).Arguments[0].Value);
 
             // Original set of attributes: ["Favorite Terms"]
             // in structured form 

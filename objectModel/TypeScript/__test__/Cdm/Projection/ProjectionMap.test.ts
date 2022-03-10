@@ -78,9 +78,9 @@ describe('Cdm/Projection/TestProjectionMap', () => {
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[11] as CdmTypeAttributeDefinition, "ThreePeople_address_3_value", 3, "ThreePeople", "address");
         expect((nonStructuredResolvedEntity.attributes.allItems[12] as CdmTypeAttributeDefinition).name)
             .toEqual('personCount');
-        expect(nonStructuredResolvedEntity.attributes.allItems[12].appliedTraits.allItems[1].namedReference)
-            .toEqual('indicates.expansionInfo.count');  
-        expect((nonStructuredResolvedEntity.attributes.allItems[12].appliedTraits.allItems[1] as CdmTraitReference).arguments.allItems[0].value)
+        expect(nonStructuredResolvedEntity.attributes.allItems[12].appliedTraits.item('indicates.expansionInfo.count'))
+            .not.toBeUndefined; 
+        expect((nonStructuredResolvedEntity.attributes.allItems[12].appliedTraits.item('indicates.expansionInfo.count') as CdmTraitReference).arguments.allItems[0].value)
             .toEqual('ThreePeople');
 
         // Original set of attributes: ["name", "age", "address"]
@@ -148,9 +148,9 @@ describe('Cdm/Projection/TestProjectionMap', () => {
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition, "FavoriteTerms_2_value", 2, "FavoriteTerms");
         expect((nonStructuredResolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('number of favorite terms');
-        expect(nonStructuredResolvedEntity.attributes.allItems[4].appliedTraits.allItems[1].namedReference)
-            .toEqual('indicates.expansionInfo.count');  
-        expect((nonStructuredResolvedEntity.attributes.allItems[4].appliedTraits.allItems[1] as CdmTraitReference).arguments.allItems[0].value)
+        expect(nonStructuredResolvedEntity.attributes.allItems[4].appliedTraits.item('indicates.expansionInfo.count'))
+            .not.toBeUndefined();
+        expect((nonStructuredResolvedEntity.attributes.allItems[4].appliedTraits.item('indicates.expansionInfo.count') as CdmTraitReference).arguments.allItems[0].value)
             .toEqual('FavoriteTerms');
 
         // Original set of attributes: [ "FavoriteTerms" ]

@@ -1,0 +1,73 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "IntegrationActivityRuntimeTable.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "IntegrationActivityRuntimeMonitoringTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityRuntimeTable",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MessageCount",
+          "dataType": "IntegrationActivityRuntimeMessageCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogDateTime",
+          "dataType": "date",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "IntegrationActivityRuntimeTable"
+          },
+          "name": "Relationship_IntegrationActivityRuntimeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "IntegrationActivityRuntimeMessageCount",
+      "extendsDataType": "integer"
+    }
+  ]
+}

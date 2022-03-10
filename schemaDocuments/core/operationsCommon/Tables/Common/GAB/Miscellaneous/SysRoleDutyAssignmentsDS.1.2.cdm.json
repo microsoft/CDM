@@ -1,0 +1,121 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysRoleDutyAssignmentsDS",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RoleAotName",
+          "dataType": "SecurityRoleAotName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoleDescription",
+          "dataType": "SecurityRoleDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoleName",
+          "dataType": "String255",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserLicenseType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DutyDescription",
+          "dataType": "SecurityDutyDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DutyIdentifier",
+          "dataType": "SecurityDutyIdentifier",
+          "description": ""
+        },
+        {
+          "name": "DutyName",
+          "dataType": "SecurityDutyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Security duty assignments"
+    },
+    {
+      "dataTypeName": "SecurityRoleAotName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SecurityRoleDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "String255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SecurityDutyDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SecurityDutyIdentifier",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SecurityDutyName",
+      "extendsDataType": "string"
+    }
+  ]
+}

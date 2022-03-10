@@ -348,4 +348,16 @@ describe('Cdm/Resolution/EntityResolution', () => {
 
         done();
     });
+
+    /**
+     * Test that foundations import is added to resolved doc if it exists in the unresolved doc
+     */
+    it('TestFoundationsInResDoc', async (done) => {
+        const corpus = testHelper.getLocalCorpus(testsSubpath, 'TestFoundationsInResDoc');
+        const entity = await corpus.fetchObjectAsync<CdmEntityDefinition>('Entity.cdm.json/Entity');
+        const resEntity = await entity.createResolvedEntityAsync('resolvedEntity');
+        expect(resEntity.inDocument.imports.item('cdm:/foundations.cdm.json') != undefined)
+            .toBeTruthy();
+        done();
+    })
 });

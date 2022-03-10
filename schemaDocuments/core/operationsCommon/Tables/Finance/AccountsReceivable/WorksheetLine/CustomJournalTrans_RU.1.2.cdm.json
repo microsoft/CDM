@@ -1,0 +1,533 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustomJournalTable_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/FEACCTable_RU.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustomJournalTrans_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalculationMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChangeInLines",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manually correction",
+          "description": ""
+        },
+        {
+          "name": "CountryRegionId",
+          "dataType": "AddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomAmountStorage",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Storage fee",
+          "description": ""
+        },
+        {
+          "name": "CustomJournalId",
+          "dataType": "CustomJournalId_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CustomPartition",
+          "dataType": "CustomPartition_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FEACCId",
+          "dataType": "FEACCId_RU",
+          "description": ""
+        },
+        {
+          "name": "IndicativeCost",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Cost",
+          "description": ""
+        },
+        {
+          "name": "IndicativeDuty",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Duty",
+          "description": ""
+        },
+        {
+          "name": "IndicativeDutyFixed",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Duty",
+          "description": ""
+        },
+        {
+          "name": "IndicativeExcise",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Excise",
+          "description": ""
+        },
+        {
+          "name": "IndicativeExciseFixed",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Excise",
+          "description": ""
+        },
+        {
+          "name": "IndicativeVAT",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "VAT",
+          "description": ""
+        },
+        {
+          "name": "IndicativeVATFixed",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "VAT",
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceCostInclMarkup",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Cost",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "InvoiceDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceDuty",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Duty",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDutyFixed",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Duty",
+          "description": ""
+        },
+        {
+          "name": "InvoiceExcise",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Excise",
+          "description": ""
+        },
+        {
+          "name": "InvoiceExciseFixed",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Excise",
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "InvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceVAT",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "VAT",
+          "description": ""
+        },
+        {
+          "name": "InvoiceVATFixed",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "VAT",
+          "description": ""
+        },
+        {
+          "name": "ItemGrossWeight",
+          "dataType": "ItemGrossWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "ItemNetWeight",
+          "dataType": "ItemNetWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupAmount",
+          "dataType": "CustomAmount_RU",
+          "isNullable": true,
+          "displayName": "Charge",
+          "description": ""
+        },
+        {
+          "name": "PackingSlipId",
+          "dataType": "PackingSlipId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPurchId",
+          "dataType": "SalesPurchId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPurchInventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatusIssue",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatusReceipt",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Volume",
+          "dataType": "Volume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustomJournalTable_RU"
+          },
+          "name": "Relationship_CustomJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FEACCTable_RU"
+          },
+          "name": "Relationship_FEACCTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customs journal lines"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustomAmount_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustomJournalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustomPartition_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FEACCId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemGrossWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemNetWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PackingSlipId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesPurchId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

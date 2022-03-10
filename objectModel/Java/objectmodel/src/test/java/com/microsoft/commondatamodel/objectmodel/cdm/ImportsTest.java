@@ -7,6 +7,7 @@ import static org.testng.Assert.assertNotNull;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import java.io.File;
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -210,5 +212,34 @@ public class ImportsTest {
 
     Assert.assertEquals(document.getImports().size(), 1);
     Assert.assertEquals(document.getImportPriorities().getImportPriority().size(), 2);
+  }
+
+  /**
+   * Testing that import for elevated purpose traits for relationships are added.
+   */
+  @Test
+  public void testImportsForRelElevatedPurposeTraits() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsForRelElevatedPurposeTraits");
+    final CdmManifestDefinition rootManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
+    final CdmManifestDefinition subManifest = corpus.<CdmManifestDefinition>fetchObjectAsync(rootManifest.getSubManifests().get(0).getDefinition()).join();
+
+    corpus.calculateEntityGraphAsync(rootManifest).join();
+    rootManifest.populateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive).join();
+
+    // Assert having relative path
+    Assert.assertEquals(rootManifest.getImports().get(0).getCorpusPath(), "specialized/Gold.cdm.json");
+    Assert.assertEquals(subManifest.getImports().get(0).getCorpusPath(), "/Lead.cdm.json");
+
+    corpus.getStorage().fetchRootFolder("output").getDocuments().add(rootManifest);
+    corpus.getStorage().fetchRootFolder("output").getDocuments().add(subManifest);
+    CopyOptions co = new CopyOptions();
+    co.setSaveConfigFile(false);
+    rootManifest.saveAsAsync("output:/default.manifest.cdm.json", false, co).join();
+    subManifest.saveAsAsync("output:/default-submanifest.manifest.cdm.json", false, co).join();
+
+    // Compare the result.
+    TestHelper.assertFolderFilesEquality(
+            TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, "testImportsForRelElevatedPurposeTraits"),
+            TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testImportsForRelElevatedPurposeTraits"));
   }
 }

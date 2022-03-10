@@ -13,13 +13,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         }
 
-        /// <inheritdoc />
-        public override string FetchObjectDefinitionName()
-        {
-            return null;
-        }
-
-        /// <inheritdoc />
         public override T FetchObjectDefinition<T>(ResolveOptions resOpt = null)
         {
             if (resOpt == null)

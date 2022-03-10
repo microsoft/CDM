@@ -14,11 +14,6 @@ public abstract class CdmObjectSimple extends CdmObjectBase {
   }
 
   @Override
-  public String fetchObjectDefinitionName() {
-    return null;
-  }
-
-  @Override
   public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
     if (resOpt == null) {
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());

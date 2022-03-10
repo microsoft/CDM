@@ -1,0 +1,77 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "StorageFolder.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "StorageSharedAccessPolicy",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PolicyName",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "FolderId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpirationUtcDateTime",
+          "dataType": "date",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Permissions",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "StorageFolder"
+          },
+          "name": "Relationship_FolderRelationForeignKeyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

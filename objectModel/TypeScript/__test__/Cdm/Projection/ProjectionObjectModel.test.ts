@@ -285,17 +285,17 @@ describe('Cdm/Projection/ProjectionObjectModel', () => {
 
         // AddCountAttribute Operation
         const addCountAttributeOp: CdmOperationAddCountAttribute = new CdmOperationAddCountAttribute(corpus.ctx);
-        addCountAttributeOp.countAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef);
+        addCountAttributeOp.countAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'countAtt');
         projection.operations.push(addCountAttributeOp);
 
         // AddSupportingAttribute Operation
         const addSupportingAttributeOp: CdmOperationAddSupportingAttribute = new CdmOperationAddSupportingAttribute(corpus.ctx);
-        addSupportingAttributeOp.supportingAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef);
+        addSupportingAttributeOp.supportingAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'supportingAtt');
         projection.operations.push(addSupportingAttributeOp);
 
         // AddTypeAttribute Operation
         const addTypeAttributeOp: CdmOperationAddTypeAttribute = new CdmOperationAddTypeAttribute(corpus.ctx);
-        addTypeAttributeOp.typeAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef);
+        addTypeAttributeOp.typeAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'typeAtt');
         projection.operations.push(addTypeAttributeOp);
 
         // ExcludeAttributes Operation
@@ -313,7 +313,7 @@ describe('Cdm/Projection/ProjectionObjectModel', () => {
         // CombineAttributes Operation
         const combineAttributesOp: CdmOperationCombineAttributes = new CdmOperationCombineAttributes(corpus.ctx);
         combineAttributesOp.select = [];
-        combineAttributesOp.mergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef);
+        combineAttributesOp.mergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'combineAtt');
         combineAttributesOp.select.push('testAttribute1');
         projection.operations.push(combineAttributesOp);
 

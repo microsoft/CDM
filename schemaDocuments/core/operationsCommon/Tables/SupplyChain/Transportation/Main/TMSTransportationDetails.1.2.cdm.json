@@ -1,0 +1,191 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TMSAccessorialMaster.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TMSCarrier.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "TMSTransportationTemplate.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSTransportationDetails",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccessorialMasterCode",
+          "dataType": "TMSAccessorialMasterCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierServiceCode",
+          "dataType": "TMSCarrierServiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "TMSQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationDetailType",
+          "dataType": "TMSTransportationDetailType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationTemplateId",
+          "dataType": "TMSTransportationTemplateId",
+          "description": ""
+        },
+        {
+          "name": "UnitPrice",
+          "dataType": "TMSUnitPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSAccessorialMaster"
+          },
+          "name": "Relationship_TMSAccessorialMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSTransportationTemplate"
+          },
+          "name": "Relationship_TMSTransportationTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transportation Details"
+    },
+    {
+      "dataTypeName": "TMSAccessorialMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierServiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSTransportationDetailType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSTransportationTemplateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSUnitPrice",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,8 +1,12 @@
 {
-  "documentVersion": "1.2.1",
+  "documentVersion": "1.3",
   "$schema": "CdmManifest.cdm.json",
   "jsonSchemaSemanticVersion": "1.0.0",
-  "imports": [],
+  "imports": [
+    {
+      "corpusPath": "/core/cdsConcepts.cdm.json"
+    }
+  ],
   "manifestName": "productInsights",
   "explanation": "CDM schema documents for the Product Insights' solution",
   "entities": [
@@ -26,8 +30,20 @@
     },
     {
       "fromEntity": "Asset.cdm.json/Asset",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Asset.cdm.json/Asset",
       "fromEntityAttribute": "modifiedBy",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Asset.cdm.json/Asset",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/User.cdm.json/User",
       "toEntityAttribute": "systemUserId"
     },
     {
@@ -46,13 +62,19 @@
       "fromEntity": "Asset.cdm.json/Asset",
       "fromEntityAttribute": "ownerId",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
-      "toEntityAttribute": "systemUserId"
+      "toEntityAttribute": "systemUserId",
+      "exhibitsTraits": [
+        "is.CDS.owner"
+      ]
     },
     {
       "fromEntity": "Asset.cdm.json/Asset",
       "fromEntityAttribute": "ownerId",
       "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
-      "toEntityAttribute": "teamId"
+      "toEntityAttribute": "teamId",
+      "exhibitsTraits": [
+        "is.CDS.owner"
+      ]
     },
     {
       "fromEntity": "Asset.cdm.json/Asset",
@@ -64,6 +86,12 @@
       "fromEntity": "Asset.cdm.json/Asset",
       "fromEntityAttribute": "owningUser",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Asset.cdm.json/Asset",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/User.cdm.json/User",
       "toEntityAttribute": "systemUserId"
     },
     {

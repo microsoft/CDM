@@ -1,0 +1,251 @@
+{
+  "documentVersion": "1.2",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.4.4.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/AccountingDistributionTemplate.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/Payroll/WorksheetHeader/PayrollPayStatement.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollPayStatementLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingCurrencyAmount",
+          "dataType": "PayrollStatementAccountingCurrencyAmount",
+          "description": ""
+        },
+        {
+          "name": "AccountingDate",
+          "dataType": "AccountingDate",
+          "description": ""
+        },
+        {
+          "name": "AccountingDistributionTemplate",
+          "dataType": "AccountingDistributionTemplateRecId",
+          "isNullable": true,
+          "displayName": "Template ID",
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsEmployer",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Employer contribution",
+          "description": ""
+        },
+        {
+          "name": "IsLineLocked",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Line locked",
+          "description": ""
+        },
+        {
+          "name": "IsMarkedForRemoval",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Line to remove",
+          "description": ""
+        },
+        {
+          "name": "IsPayStatementLineOverridden",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Line locked",
+          "description": ""
+        },
+        {
+          "name": "PayStatement",
+          "dataType": "PayrollPayStatementRecId",
+          "description": ""
+        },
+        {
+          "name": "Position",
+          "dataType": "HcmPositionRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReversedPayStatementLine",
+          "dataType": "PayrollPayStatementLineRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Source",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentLine",
+          "dataType": "SourceDocumentLineRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTrans",
+          "dataType": "VendTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingDistributionTemplate"
+          },
+          "name": "Relationship_AccountingDistributionTemplate_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollPayStatement"
+          },
+          "name": "Relationship_PayStatement_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentLine"
+          },
+          "name": "Relationship_SourceDocumentLine_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTrans_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pay statement lines"
+    },
+    {
+      "dataTypeName": "PayrollStatementAccountingCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AccountingDistributionTemplateRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PayrollPayStatementRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmPositionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollPayStatementLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SourceDocumentLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}
