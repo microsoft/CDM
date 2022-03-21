@@ -41,7 +41,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         # --- internal ---
         self._adapter_paths = {}  # type: Dict[str, str]
-        self._root_blob_contrainer = None  # type: Optional[str]
+        self._root_blob_container = None  # type: Optional[str]
         self._http_authorization = 'Authorization'
         self._http_client = CdmHttpClient()  # type: CdmHttpClient
         self._http_xms_continuation = 'x-ms-continuation'
@@ -82,7 +82,8 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             raise ValueError('Hostname cannot be null or whitespace.')
 
         self._hostname = value
-        self._formatted_hostname = self._format_hostname(self._remove_protocol_from_hostname(self._hostname))
+        self._formatted_hostname = self._format_hostname(self.hostname)
+        self._formatted_hostname_no_protocol = self._format_hostname(self._remove_protocol_from_hostname(self._hostname))
 
     @property
     def root(self) -> str:
@@ -168,7 +169,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
             hostname = self._format_hostname(adapter_path[start_index:end_index])
 
-            if hostname == self._formatted_hostname and adapter_path[end_index:].startswith(self._get_escaped_root()):
+            if hostname == self._formatted_hostname_no_protocol and adapter_path[end_index:].startswith(self._get_escaped_root()):
                 escaped_corpus_path = adapter_path[end_index + len(self._get_escaped_root()):]
                 corpus_path = urllib.parse.unquote(escaped_corpus_path)
 
@@ -184,7 +185,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if folder_corpus_path is None:
             return None
 
-        url = 'https://{}/{}'.format(self._formatted_hostname, self._root_blob_contrainer)
+        url = 'https://{}/{}'.format(self._formatted_hostname_no_protocol, self._root_blob_container)
         escaped_folder_corpus_path = self._escape_path(folder_corpus_path)
         directory = self._escaped_root_sub_path + self._format_corpus_path(escaped_folder_corpus_path)
         if directory.startswith('/'):
@@ -419,7 +420,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     def _extract_root_blob_container_and_sub_path(self, root: str) -> str:
         # No root value was set
         if not root:
-            self._root_blob_contrainer = ''
+            self._root_blob_container = ''
             self._update_root_sub_path('')
             return ''
 
@@ -429,15 +430,15 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         # Root contains only the file-system name, e.g. "fs-name"
         if prep_root.find('/') == -1:
-            self._root_blob_contrainer = prep_root
+            self._root_blob_container = prep_root
             self._update_root_sub_path('')
-            return '/{}'.format(self._root_blob_contrainer)
+            return '/{}'.format(self._root_blob_container)
 
         # Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
         prep_root_array = prep_root.split('/')
-        self._root_blob_contrainer = prep_root_array[0]
+        self._root_blob_container = prep_root_array[0]
         self._update_root_sub_path('/'.join(prep_root_array[1:]))
-        return '/{}/{}'.format(self._root_blob_contrainer, self._unescaped_root_sub_path)
+        return '/{}/{}'.format(self._root_blob_container, self._unescaped_root_sub_path)
 
     def _format_corpus_path(self, corpus_path: str) -> Optional[str]:
         path_tuple = StorageUtils.split_namespace_path(corpus_path)
@@ -473,7 +474,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         return result
 
     def _get_escaped_root(self):
-        return '/' + self._root_blob_contrainer + '/' + self._escaped_root_sub_path if self._escaped_root_sub_path else '/' + self._root_blob_contrainer
+        return '/' + self._root_blob_container + '/' + self._escaped_root_sub_path if self._escaped_root_sub_path else '/' + self._root_blob_container
 
     def _try_from_base64_string(self, content: str) -> Optional[bytes]:
         try:
@@ -509,4 +510,3 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             raise ValueError('Please provide a valid hostname.')
 
         raise ValueError('ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.')
-

@@ -14,6 +14,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models
         [System.Runtime.Serialization.EnumMember(Value = "org.apache.hadoop.mapred.SequenceFileInputFormat")]
         OrgapachehadoopmapredSequenceFileInputFormat,
         [System.Runtime.Serialization.EnumMember(Value = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat")]
-        OrgapachehadoophiveqlioparquetMapredParquetInputFormat
+        OrgapachehadoophiveqlioparquetMapredParquetInputFormat,
+        [System.Runtime.Serialization.EnumMember(Value = "org.apache.hadoop.mapred.TextInputFormat")]
+        OrgapachehadoopmapredTextInputFormat
     }
 }

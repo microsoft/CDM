@@ -191,6 +191,25 @@ public class AdlsAdapterTest {
   }
 
   /**
+   * Test if the adapter handles requests correctly when the adls hostname contains https
+   */
+  @Test
+  public void testHttpsHostname() {
+    AdlsTestHelper.checkADLSEnvironment();
+    String filename =
+            "HTTPSWriteTest/" + System.getenv("USERNAME") + "_" + System.getenv("COMPUTERNAME") + "_Java.txt";
+    AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithSharedKey("", false, true);
+    try {
+      adlsAdapter.readAsync(filename).join();
+      adlsAdapter.computeLastModifiedTimeAsync(filename).join();
+    } catch (Exception ex) {
+      if (ex instanceof NullPointerException || ex.getCause() instanceof NullPointerException) {
+        Assert.fail();
+      }
+    }
+  }
+
+  /**
    * Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.
    * This is necessary to support old config files that do not include an "endpoint".
    */

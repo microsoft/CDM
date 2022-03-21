@@ -39,7 +39,8 @@ export class ADLSAdapter extends NetworkAdapter {
             throw new URIError('Hostname cannot be null or whitespace.');
         }
         this._hostname = val;
-        this.formattedHostname = this.formatHostname(this.removeProtocolFromHostname(this._hostname));
+        this.formattedHostname = this.formatHostname(this._hostname);
+        this.formattedHostnameNoProtocol = this.formatHostname(this.removeProtocolFromHostname(this._hostname));
     }
 
     public get sasToken(): string {
@@ -83,6 +84,7 @@ export class ADLSAdapter extends NetworkAdapter {
     private _sasToken: string;
     private context: msal.IConfidentialClientApplication;
     private formattedHostname: string = '';
+    private formattedHostnameNoProtocol: string = '';
     private rootBlobContainer: string = '';
     private unescapedRootSubPath: string = '';
     private escapedRootSubPath: string = '';
@@ -191,7 +193,7 @@ export class ADLSAdapter extends NetworkAdapter {
 
             const hostname: string = this.formatHostname(adapterPath.substring(startIndex, endIndex));
 
-            if (hostname === this.formattedHostname
+            if (hostname === this.formattedHostnameNoProtocol
                 && adapterPath.substring(endIndex)
                     .startsWith(this.getEscapedRoot())) {
                 const escapedCorpusPath: string = adapterPath.substring(endIndex + this.getEscapedRoot().length);
@@ -240,7 +242,7 @@ export class ADLSAdapter extends NetworkAdapter {
             return undefined;
         }
 
-        const url: string = `https://${this.formattedHostname}/${this.rootBlobContainer}`;
+        const url: string = `https://${this.formattedHostnameNoProtocol}/${this.rootBlobContainer}`;
         const escapedFolderCorpusPath: string = this.escapePath(folderCorpusPath);
         let directory: string = `${this.escapedRootSubPath}${this.formatCorpusPath(escapedFolderCorpusPath)}`;
         if (directory.startsWith('/')) {

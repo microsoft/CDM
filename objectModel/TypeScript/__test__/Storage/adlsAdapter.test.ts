@@ -173,6 +173,23 @@ describe('Cdm.Storage.AdlsAdapter', () => {
     });
 
     /**
+     * Tests if the adapter handles requests correctly when the adls hostname contains https
+     */
+    adlsIt('TestHttpsHostname', async (done) => {
+        const filename: string = `HTTPSWriteTest/${process.env['USERNAME']}_${process.env['COMPUTERNAME']}_TypeScript.txt`;
+        const adlsAdapter: ADLSAdapter = adlsTestHelper.createAdapterWithSharedKey(undefined, false, true);
+        try {
+            await adlsAdapter.readAsync(filename);
+            await adlsAdapter.computeLastModifiedTimeAsync(filename);
+        } catch (ex) {
+            if (ex.code === 'ERR_INVALID_URL') {
+                fail();
+            }
+        }
+        done();
+    });
+
+    /**
      * Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.
      * This is necessary to support old config files that do not include an "endpoint".
      */
@@ -423,7 +440,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             const host3: string = 'http://storageaccount.dfs.core.windows.net';
             const adlsAdapter3: MockADLSAdapter = new MockADLSAdapter(host3, 'root-without-slash', 'test');
             fail('Expected Exception for using a http:// hostname.')
-        } catch(ex) {
+        } catch (ex) {
             expect(ex instanceof URIError)
                 .toBeTruthy();
         }
@@ -432,7 +449,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             const host4: string = 'https://bar:baz::]/foo/';
             const adlsAdapter4: MockADLSAdapter = new MockADLSAdapter(host4, 'root-without-slash', 'test');
             fail('Expected Exception for using an invalid hostname.')
-        } catch(ex) {
+        } catch (ex) {
             expect(ex instanceof URIError)
                 .toBeTruthy();
         }

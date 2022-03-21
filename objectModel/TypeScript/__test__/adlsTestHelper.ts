@@ -5,8 +5,8 @@ import { azureCloudEndpoint, StringUtils } from '../internal';
 import { ADLSAdapter } from '../Storage';
 
 export const adlsTestHelper = {
-    createAdapterWithSharedKey(rootRelativePath?: string, testBlobHostname: boolean = false): ADLSAdapter {
-        let hostname: string = process.env['ADLS_HOSTNAME'];
+    createAdapterWithSharedKey(rootRelativePath?: string, testBlobHostname: boolean = false, httpsHostname: boolean = false): ADLSAdapter {
+        let hostname: string = httpsHostname ? process.env['ADLS_HTTPS_HOSTNAME'] : process.env['ADLS_HOSTNAME'];
         const rootPath: string = process.env['ADLS_ROOTPATH'];
         const sharedKey: string = process.env['ADLS_SHAREDKEY'];
 
@@ -53,7 +53,7 @@ export const adlsTestHelper = {
         return new ADLSAdapter(hostname, adlsTestHelper.getFullRootPath(rootPath, rootRelativePath), tenant, clientId, clientSecret);
     },
 
-    getFullRootPath(first: string, second: string) : string {
+    getFullRootPath(first: string, second: string): string {
         if (second === undefined || second === null) {
             return first;
         }

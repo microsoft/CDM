@@ -60,7 +60,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     throw new ArgumentException("Hostname cannot be null or whitespace.");
                 }
                 this._hostname = value;
-                this.formattedHostname = this.FormatHostname(this.RemoveProtocolFromHostname(this._hostname));
+                this.formattedHostname = this.FormatHostname(this._hostname);
+                this.formattedHostnameNoProtocol = this.FormatHostname(this.RemoveProtocolFromHostname(this._hostname));
             }
         }
 
@@ -134,6 +135,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The formatted hostname for validation in CreateCorpusPath.
         /// </summary>
         private string formattedHostname = "";
+
+        /// <summary>
+        /// The formatted hostname for validation in CreateCorpusPath without the protocol.
+        /// </summary>
+        private string formattedHostnameNoProtocol = "";
 
         /// <summary>
         /// The blob container name of root path.
@@ -338,7 +344,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                 var hostname = this.FormatHostname(adapterPath.Substring(startIndex, endIndex - startIndex));
 
-                if (hostname.Equals(this.formattedHostname) && adapterPath.Substring(endIndex).StartsWith(this.GetEscapedRoot()))
+                if (hostname.Equals(this.formattedHostnameNoProtocol) && adapterPath.Substring(endIndex).StartsWith(this.GetEscapedRoot()))
                 {
                     var escapedCorpusPath = adapterPath.Substring(endIndex + this.GetEscapedRoot().Length);
                     var corpusPath = Uri.UnescapeDataString(escapedCorpusPath);
@@ -398,7 +404,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 return null;
             }
 
-            var url = $"https://{this.formattedHostname}/{this.rootBlobContainer}";
+            var url = $"https://{this.formattedHostnameNoProtocol}/{this.rootBlobContainer}";
 
             var escapedFolderCorpusPath = this.EscapePath(folderCorpusPath);
             var directory = $"{this.escapedRootSubPath}{FormatCorpusPath(escapedFolderCorpusPath)}";

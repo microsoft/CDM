@@ -22,11 +22,19 @@ public class AdlsTestHelper {
     }
 
     public static AdlsAdapter createAdapterWithSharedKey() {
-        return createAdapterWithSharedKey("", false);
+        return createAdapterWithSharedKey("", false, false);
+    }
+
+    public static AdlsAdapter createAdapterWithSharedKey(String rootRelativePath) {
+        return createAdapterWithSharedKey(rootRelativePath, false, false);
     }
 
     public static AdlsAdapter createAdapterWithSharedKey(String rootRelativePath, boolean testBlobHostname) {
-        String hostname = System.getenv("ADLS_HOSTNAME");
+        return createAdapterWithSharedKey(rootRelativePath, testBlobHostname, false);
+    }
+
+    public static AdlsAdapter createAdapterWithSharedKey(String rootRelativePath, boolean testBlobHostname, boolean httpsHostName) {
+        String hostname = httpsHostName ? System.getenv("ADLS_HTTPS_HOSTNAME") : System.getenv("ADLS_HOSTNAME");
         String rootPath = System.getenv("ADLS_ROOTPATH");
         String sharedKey = System.getenv("ADLS_SHAREDKEY");
 
