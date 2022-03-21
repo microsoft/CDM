@@ -55,6 +55,11 @@ public class AdlsAdapter extends NetworkAdapter {
   private String formattedHostname = "";
 
   /**
+   * The formatted hostname for validation in CreateCorpusPath.
+   */
+  private String formattedHostnameNoProtocol = "";
+
+  /**
    * The blob container name of root path.
    * Leading and trailing slashes should be removed.
    * e.g. "blob-container-name"
@@ -222,7 +227,7 @@ public class AdlsAdapter extends NetworkAdapter {
         throw new StorageAdapterException("Unexpected adapter path: " + adapterPath);
       }
 
-      if (hostname.equals(this.formattedHostname) && adapterPath.substring(endIndex).startsWith(this.getEscapedRoot())) {
+      if (hostname.equals(this.formattedHostnameNoProtocol) && adapterPath.substring(endIndex).startsWith(this.getEscapedRoot())) {
         String escapedCorpusPath = adapterPath.substring(endIndex + this.getEscapedRoot().length());
         String corpusPath = "";
         try {
@@ -283,7 +288,7 @@ public class AdlsAdapter extends NetworkAdapter {
         return null;
       }
 
-      final String url = "https://" + this.formattedHostname + "/" + this.rootBlobContainer;
+      final String url = "https://" + this.formattedHostnameNoProtocol + "/" + this.rootBlobContainer;
       String escapedFolderCorpusPath = null;
       try {
         escapedFolderCorpusPath = this.escapePath(folderCorpusPath);
@@ -648,7 +653,8 @@ public class AdlsAdapter extends NetworkAdapter {
       throw new IllegalArgumentException("Hostname cannot be null or whitespace.");
     }
     this.hostname = value;
-    this.formattedHostname = this.formatHostname(this.removeProtocolFromHostname(this.hostname));
+    this.formattedHostname = this.formatHostname(this.hostname);
+    this.formattedHostnameNoProtocol = this.formatHostname(this.removeProtocolFromHostname(this.hostname));
   }
 
   public String getHostname() {

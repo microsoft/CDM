@@ -6,18 +6,19 @@ import os
 from cdm.storage import ADLSAdapter
 from cdm.enums import AzureCloudEndpoint
 
+
 class AdlsTestHelper:
     @staticmethod
-    def create_adapter_with_shared_key(root_relative_path: str = None, test_blob_hostname: bool = False):
-        hostname = os.environ.get("ADLS_HOSTNAME")
+    def create_adapter_with_shared_key(root_relative_path: str = None, test_blob_hostname: bool = False, https_hostname: bool = False):
+        hostname = os.environ.get("ADLS_HTTPS_HOSTNAME") if https_hostname else os.environ.get("ADLS_HOSTNAME")
         root_path = os.environ.get("ADLS_ROOTPATH")
         shared_key = os.environ.get("ADLS_SHAREDKEY")
 
         if test_blob_hostname is True:
-            hostname = hostname.replace('blob', 'dfs')
+            hostname = hostname.replace('dfs', 'blob')
 
         return ADLSAdapter(hostname=hostname, root=AdlsTestHelper.get_full_root_path(root_path, root_relative_path), shared_key=shared_key)
-        
+
     @staticmethod
     def create_adapter_with_client_id(root_relative_path: str = None, specify_endpoint: bool = False, test_blob_hostname: bool = False):
         hostname = os.environ.get("ADLS_HOSTNAME")
@@ -25,7 +26,7 @@ class AdlsTestHelper:
         tenant = os.environ.get("ADLS_TENANT")
         client_id = os.environ.get("ADLS_CLIENTID")
         client_secret = os.environ.get("ADLS_CLIENTSECRET")
-        
+
         if test_blob_hostname is True:
             hostname = hostname.replace('blob', 'dfs')
 

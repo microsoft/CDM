@@ -30,12 +30,14 @@ class InputFormat(Enum):
 
     orgapachehadoopmapred_sequence_file_input_format = "org.apache.hadoop.mapred.SequenceFileInputFormat"
     orgapachehadoophiveqlioparquet_mapred_parquet_input_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
+    orgapachehadoopmapred_text_input_format = "org.apache.hadoop.mapred.TextInputFormat"
 
 
 class OutputFormat(Enum):
 
     orgapachehadoophiveqlio_hive_sequence_file_output_format = "org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat"
     orgapachehadoophiveqlioparquet_mapred_parquet_output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+    orgapachehadoopmapred_text_output_format = "org.apache.hadoop.mapred.TextOutputFormat"
 
 
 class FormatType(Enum):

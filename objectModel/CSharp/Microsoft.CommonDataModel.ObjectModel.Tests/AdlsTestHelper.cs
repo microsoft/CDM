@@ -21,9 +21,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
         }
 
-        public static ADLSAdapter CreateAdapterWithSharedKey(string rootRelativePath = null, bool testBlobHostName = false)
+        public static ADLSAdapter CreateAdapterWithSharedKey(string rootRelativePath = null, bool testBlobHostName = false, bool httpsHostname = false)
         {
-            string hostname = Environment.GetEnvironmentVariable("ADLS_HOSTNAME");
+            string hostname = httpsHostname ? Environment.GetEnvironmentVariable("ADLS_HTTPS_HOSTNAME") : Environment.GetEnvironmentVariable("ADLS_HOSTNAME");
             string rootPath = Environment.GetEnvironmentVariable("ADLS_ROOTPATH");
             string sharedKey = Environment.GetEnvironmentVariable("ADLS_SHAREDKEY");
 

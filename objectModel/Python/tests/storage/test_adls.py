@@ -1,4 +1,4 @@
-﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import datetime
@@ -16,12 +16,15 @@ from cdm.enums import AzureCloudEndpoint
 from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
 
+
 def IfRunTestsFlagNotSet():
     return os.environ.get('ADLS_RUNTESTS') is not '1'
+
 
 class FakeTokenProvider(TokenProvider):
     def get_token(self) -> str:
         return 'TOKEN'
+
 
 class AdlsStorageAdapterTestCase(unittest.TestCase):
     test_subpath = 'Storage'
@@ -38,8 +41,8 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         await adapter.write_async(filename, write_contents)
         read_contents = await adapter.read_async(filename)
         self.assertEqual(write_contents, read_contents)
-    
-    async def run_check_filetime_test(self, adapter):    
+
+    async def run_check_filetime_test(self, adapter):
         offset1 = await adapter.compute_last_modified_time_async('/FileTimeTest/CheckFileTime.txt')
         offset2 = await adapter.compute_last_modified_time_async('FileTimeTest/CheckFileTime.txt')
 
@@ -48,7 +51,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertTrue(offset1 == offset2)
 
         utc_now = datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
-        self.assertTrue(offset1 < utc_now)    
+        self.assertTrue(offset1 < utc_now)
 
     async def run_file_enum_test(self, adapter):
         context = adapter.create_file_query_cache_context()
@@ -59,24 +62,24 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
             files4 = await adapter.fetch_all_files_async('FileEnumTest')
 
             # expect 100 files to be enumerated
-            self.assertTrue(len(files1) == 100 and len(files2)== 100 and len(files3) == 100 and len(files4) == 100)
+            self.assertTrue(len(files1) == 100 and len(files2) == 100 and len(files3) == 100 and len(files4) == 100)
 
-            # these calls should be fast due to cache                
+            # these calls should be fast due to cache
             start = time.time()
-            for i in range(0,len(files1) - 1):
+            for i in range(0, len(files1) - 1):
                 self.assertTrue(files1[i] == files2[i] and files1[i] == files3[i] and files1[i] == files4[i])
-                await adapter.compute_last_modified_time_async(files1[i]);    
+                await adapter.compute_last_modified_time_async(files1[i])
             stop = time.time()
 
             self.assertLess(stop - start, .1, 'Checking cached file modified times took too long')
         finally:
             context.dispose()
-    
+
     async def run_special_characters_test(self, adapter):
         corpus = CdmCorpusDefinition()
         corpus.storage.mount('adls', adapter)
         corpus.storage.default_namespace = 'adls'
-        
+
         manifest = await corpus.fetch_object_async('default.manifest.cdm.json')
         await manifest.file_status_check_async()
         self.assertEqual(len(manifest.entities), 1)
@@ -147,6 +150,20 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         await corpus.fetch_object_async('adls:/inexistentFile.cdm.json')  # type: CdmDocumentDefinition
 
         self.assertEqual(1, count)
+
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    async def test_https_hostname(self):
+        """Tests if the adapter handles requests correctly when the adls hostname contains https"""
+        filename = 'HTTPSWriteTest/' + os.environ.get('USERNAME') + '_' + os.environ.get('COMPUTERNAME') + '_Python.txt'
+        adls_adapter = AdlsTestHelper.create_adapter_with_shared_key(https_hostname=True)
+        try:
+            await adls_adapter.read_async(filename)
+            await adls_adapter.compute_last_modified_time_async(filename)
+        except ValueError:
+            self.fail()
+        except:
+            pass
 
     def test_endpoint_missing_on_config(self):
         """Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.
@@ -286,14 +303,14 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
         adlsAdapter1WithFolders = ADLSAdapter(hostname=host1, root='root-without-slash/folder1/folder2', shared_key='')
         self.assertEqual(adlsAdapter1WithFolders.root, '/root-without-slash/folder1/folder2')
-            
+
         adapterPath2 = 'https://storageaccount.dfs.core.windows.net/root-without-slash/folder1/folder2/a/1.csv'
         corpusPath2 = adlsAdapter1WithFolders.create_corpus_path(adapterPath2)
         self.assertEqual(corpusPath2, '/a/1.csv')
         self.assertEqual(adlsAdapter1WithFolders.create_adapter_path(corpusPath2), adapterPath2)
 
         adlsAdapter2 = ADLSAdapter(hostname=host1, root='/root-starts-with-slash', shared_key='')
-        self.assertEqual(adlsAdapter2.root, '/root-starts-with-slash') 
+        self.assertEqual(adlsAdapter2.root, '/root-starts-with-slash')
         adlsAdapter2WithFolders = ADLSAdapter(hostname=host1, root='/root-starts-with-slash/folder1/folder2', shared_key='')
         self.assertEqual(adlsAdapter2WithFolders.root, '/root-starts-with-slash/folder1/folder2')
 
@@ -376,6 +393,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         except Exception as ex:
             message = 'Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.'
             self.assertEqual(ex.args[0], message)
+
 
 if __name__ == '__main__':
     unittest.main()

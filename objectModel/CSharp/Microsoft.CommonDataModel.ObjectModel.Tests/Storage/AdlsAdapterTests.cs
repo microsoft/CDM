@@ -197,6 +197,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         }
 
         /// <summary>
+        /// Tests if the adapter handles requests correctly when the adls hostname contains https
+        /// </summary>
+        [TestMethod]
+        public async Task TestHttpsHostname()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+            string filename = $"HTTPSWriteTest/{Environment.GetEnvironmentVariable("USERNAME")}_{Environment.GetEnvironmentVariable("COMPUTERNAME")}_CSharp.txt";
+            var adlsAdapter = AdlsTestHelper.CreateAdapterWithSharedKey(null, false, true);
+            try
+            {
+                await adlsAdapter.ReadAsync(filename);
+                await adlsAdapter.ComputeLastModifiedTimeAsync(filename);
+            }
+            catch (UriFormatException ex)
+            {
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
         /// Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.
         /// This is necessary to support old config files that do not include an "endpoint".
         /// </summary>
