@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  * The CDM Definition for a collection that holds a set of CDM objects.
  */
 public class CdmCollection<T extends CdmObject> implements Iterable<T> {
-  final List<T> allItems;
+  public final List<T> allItems;
   private final CdmCorpusContext ctx;
   private final CdmObjectType defaultType;
   private final CdmObject owner;

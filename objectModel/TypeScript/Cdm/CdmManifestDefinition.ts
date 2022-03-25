@@ -287,12 +287,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 resolvedManifest.entities.push(result);
             }
 
-            // add the new document to the folder
-            if (!resolvedManifestFolder.documents.push(resolvedManifest)) {
-                // when would this happen?
-                return undefined;
-            }
-
             Logger.debug(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, `calculating relationships`);
 
             // calculate the entity graph for this manifest and any submanifests

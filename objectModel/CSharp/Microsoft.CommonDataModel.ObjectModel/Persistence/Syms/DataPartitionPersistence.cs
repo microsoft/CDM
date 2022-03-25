@@ -106,8 +106,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             {
                 obj.Format = new FormatInfo
                 {
-                    InputFormat = InputFormat.OrgapachehadoopmapredSequenceFileInputFormat,
-                    OutputFormat = OutputFormat.OrgapachehadoophiveqlioHiveSequenceFileOutputFormat,
+                    InputFormat = "OrgapachehadoopmapredSequenceFileInputFormat",
+                    OutputFormat = "OrgapachehadoophiveqlioHiveSequenceFileOutputFormat",
                     SerializeLib = SerializeLib.Orgapachehadoophiveserde2lazyLazySimpleSerDe,
                     FormatType = FormatType.Csv,
                     Properties = properties

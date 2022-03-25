@@ -160,8 +160,8 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         try:
             await adls_adapter.read_async(filename)
             await adls_adapter.compute_last_modified_time_async(filename)
-        except ValueError:
-            self.fail()
+        except ValueError as e:
+            self.fail(str(e))
         except:
             pass
 

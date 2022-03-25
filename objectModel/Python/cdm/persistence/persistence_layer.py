@@ -195,7 +195,10 @@ class PersistenceLayer:
                     ResolveOptions(wrt_doc=doc_container, directives=self._ctx.corpus.default_resolution_directives),
                     doc_container)
 
-            folder.documents.append(doc_content, doc_name)
+            exist_id_list = [x for x in folder.documents if x.id == doc_content.id]
+            if not exist_id_list:
+                folder.documents.append(doc_content, doc_name)
+
             doc_content._file_system_modified_time = fs_modified_time
             doc_content._is_dirty = False
 

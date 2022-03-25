@@ -212,7 +212,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             }
             catch (UriFormatException ex)
             {
-                Assert.Fail();
+                Assert.Fail(ex.Message);
             }
             catch (Exception)
             {

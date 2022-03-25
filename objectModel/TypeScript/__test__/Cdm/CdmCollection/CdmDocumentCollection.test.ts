@@ -35,6 +35,10 @@ describe('Cdm/CdmCollection/CdmDocumentCollection', () => {
             .toEqual(folder);
         expect(document.needsIndexing)
             .toBeTruthy();
+        
+        const doc: CdmDocumentDefinition = folder.documents.push(document);
+        expect(doc)
+            .toEqual(undefined);
     });
 
     it ('TestDocumentCollectionInsert', () => {
@@ -77,6 +81,10 @@ describe('Cdm/CdmCollection/CdmDocumentCollection', () => {
             .toBeTruthy();
         expect(manifest.ctx.corpus.documentLibrary.contains([folder, document]))
             .toBeTruthy();
+
+        folder.documents.insert(2, document);
+        expect(folder.documents.length)
+            .toEqual(3);
     });
 
     it ('TestDocumentColectionAddWithDocumentName', () => {

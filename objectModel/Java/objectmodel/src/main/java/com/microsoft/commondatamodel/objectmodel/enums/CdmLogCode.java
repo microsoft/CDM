@@ -11,6 +11,7 @@ public enum CdmLogCode
     None,
     ErrAdapterNotFound,
     ErrDocAdapterNotFound,
+    ErrDocAlreadyExist,
     ErrDocEntityDocSavingFailure,
     ErrDocEntityReplacementFailure,
     ErrDocImportSavingFailure,

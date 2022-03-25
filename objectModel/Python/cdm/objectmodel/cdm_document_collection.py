@@ -3,13 +3,15 @@
 
 from typing import Optional, List, Union, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
+from cdm.utilities import logger
 
 from .cdm_collection import CdmCollection
 
 if TYPE_CHECKING:
     from .cdm_document_def import CdmDocumentDefinition
 
+_TAG = 'CdmDocumentCollection'
 
 class CdmDocumentCollection(CdmCollection):
     def __init__(self, ctx: 'CdmCorpusContext', owner: 'CdmObject'):
@@ -22,7 +24,9 @@ class CdmDocumentCollection(CdmCollection):
         if document_name:
             document.name = document_name
 
-        self._add_item_modifications(document)
+        if not self._check_and_add_item_modifications(document):
+            return None
+        
         document.owner = self.owner
         list.append(self, document)
 
@@ -34,7 +38,9 @@ class CdmDocumentCollection(CdmCollection):
         super().clear()
 
     def insert(self, index: int, document: 'CdmDocumentDefinition') -> None:
-        self._add_item_modifications(document)
+        if not self._check_and_add_item_modifications(document):
+            return
+        
         document.owner = self.owner
         list.insert(self, index, document)
 
@@ -54,7 +60,13 @@ class CdmDocumentCollection(CdmCollection):
             self.ctx.corpus._is_currently_resolving = b_save
             return super().remove(elem)
 
-    def _add_item_modifications(self, document: 'CdmDocumentDefinition') -> None:
+    def _check_and_add_item_modifications(self, document: 'CdmDocumentDefinition') -> bool:
+        if self.item(document.name) is not None:
+            logger.error(self.ctx, _TAG, '_check_and_add_item_modifications', document.at_corpus_path,
+                       CdmLogCode.ERR_DOC_ALREADY_EXIST, document.name,
+                         lambda x:self.owner.at_corpus_path if self.owner.at_corpus_path is not None else self.owner.name)
+            return False;
+        
         if document.owner and document.owner is not self.owner:
             # this is fun! the document is moving from one folder to another
             # it must be removed from the old folder for sure, but also now
@@ -69,6 +81,7 @@ class CdmDocumentCollection(CdmCollection):
 
         super()._make_document_dirty()  # set the document to dirty so it will get saved in the new folder location if saved
         self.owner._corpus._add_document_objects(self.owner, document)
+        return True
 
     def _remove_item_modifications(self, name: str) -> None:
         self.owner._corpus._remove_document_objects(self.owner, self.owner._document_lookup[name])

@@ -42,7 +42,6 @@ class SymsTestHelper:
     @staticmethod
     def ignore_properties(data):
         ignore_paths = ['properties.ObjectId', 'properties.StorageDescriptor.ColumnSetEntityName']
-        others_path = 'properties.Properties'
 
         if 'properties' in data:
             if 'ObjectId' in data['properties']:
@@ -50,11 +49,13 @@ class SymsTestHelper:
             if 'StorageDescriptor' in data['properties']:
                 if 'ColumnSetEntityName' in data['properties']['StorageDescriptor']:
                     data['properties']['StorageDescriptor']['ColumnSetEntityName'] = ''
+            deleteAttr = []
             if 'Properties' in data['properties']:
-                if 'spark.sql.sources.schema.part.0' in data['properties']['Properties']:
-                    data['properties']['Properties']['spark.sql.sources.schema.part.0'] = ''
-                if 'spark.sql.sources.provider' in data['properties']['Properties']:
-                    data['properties']['Properties']['spark.sql.sources.provider'] = ''
+                for x in data['properties']['Properties']:
+                    if not x.startswith('cdm:'):
+                        deleteAttr.append(x)
+            for rem in deleteAttr:
+                del data['properties']['Properties'][rem]
 
         return data
 

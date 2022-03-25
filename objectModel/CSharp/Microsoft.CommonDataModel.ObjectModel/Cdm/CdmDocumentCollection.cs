@@ -5,12 +5,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using System.Collections.Generic;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     /// <summary>
     /// <see cref="CdmCollection"/> customized for <see cref="CdmDocumentDefinition"/>.
     /// </summary>
     public class CdmDocumentCollection : CdmCollection<CdmDocumentDefinition>
     {
+        private static readonly string Tag = nameof(CdmDocumentCollection);
+
         /// < inheritdoc/>
         protected new CdmFolderDefinition Owner
         {
@@ -31,19 +34,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public new void Insert(int index, CdmDocumentDefinition document)
+        public new bool Insert(int index, CdmDocumentDefinition document)
         {
-            this.AddItemModifications(document);
+            if (!this.CheckAndAddItemModifications(document))
+                return false;
+
             // why is this collection unlike all other collections?
             // because documents are in folders. folders are not in documents.
             document.Owner = this.Owner;
             this.AllItems.Insert(index, document);
+            return true;
         }
 
         /// < inheritdoc/>
         public new CdmDocumentDefinition Add(CdmDocumentDefinition document)
         {
-            this.AddItemModifications(document);
+            if (!this.CheckAndAddItemModifications(document))
+                return null;
 
             // why is this collection unlike all other collections?
             // because documents are in folders. folders are not in documents.
@@ -125,12 +132,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Performs changes to an item that is added to the collection.
+        /// Check if document already added, if not then performs changes to an item that is added to the collection.
         /// Does not actually add the item to the collection.
         /// </summary>
         /// <param name="document">The item that needs to be changed.</param>
-        private void AddItemModifications(CdmDocumentDefinition document)
+        private bool CheckAndAddItemModifications(CdmDocumentDefinition document)
         {
+            if (this.Item(document.Name) != null)
+            {
+                Logger.Error(this.Ctx, Tag, nameof(CheckAndAddItemModifications), document.AtCorpusPath, CdmLogCode.ErrDocAlreadyExist, document.Name,
+                    this.Owner.AtCorpusPath != null ? this.Owner.AtCorpusPath : this.Owner.Name);
+                return false;
+            }
+
             if (document.Owner != null && document.Owner != this.Owner)
             {
                 // this is fun! the document is moving from one folder to another
@@ -146,6 +160,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             document.Namespace = this.Owner.Namespace;
             MakeDocumentDirty(); // set the document to dirty so it will get saved in the new folder location if saved
             this.Owner.Corpus.AddDocumentObjects(this.Owner, document);
+            return true;
         }
 
         /// <summary>
