@@ -153,7 +153,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
-                if (expectedContext_referenceOnly_structured != null && expected_referenceOnly_structured != null)
+                 if (expectedContext_referenceOnly_structured != null && expected_referenceOnly_structured != null)
                 {
                     entityFileName = "ro_s";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "structured" });

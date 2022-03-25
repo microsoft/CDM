@@ -218,9 +218,6 @@ public class ManifestPersistence {
               extensionTraitDefList,
               folder);
 
-          // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
-          folder.getDocuments().add(manifest);
-
           return CompletableFuture.completedFuture(manifest);
         });
   }

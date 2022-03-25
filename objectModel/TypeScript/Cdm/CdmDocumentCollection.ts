@@ -7,10 +7,14 @@ import {
     CdmCorpusContext,
     CdmDocumentDefinition,
     CdmFolderDefinition,
-    cdmObjectType
+    cdmObjectType,
+    Logger,
+    cdmLogCode
 } from '../internal';
 
 export class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> {
+    private TAG: string = CdmDocumentCollection.name;
+
     constructor(ctx: CdmCorpusContext, owner: CdmFolderDefinition) {
         super(ctx, owner, cdmObjectType.documentDef);
     }
@@ -41,7 +45,9 @@ export class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
                 document.name = documentNameOrSimpleRef;
             }
 
-            this.addItemModifications(document);
+            if (!this.checkAndAddItemModifications(document)) {
+                return undefined;
+            }
 
             // why is this collection unlike all other collections?
             // because documents are in folders. folders are not in documents.
@@ -53,7 +59,10 @@ export class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
     }
 
     public insert(index: number, docDef: CdmDocumentDefinition): void {
-        this.addItemModifications(docDef);
+        if (!this.checkAndAddItemModifications(docDef)) {
+            return;
+        }
+
         // why is this collection unlike all other collections?
         // because documents are in folders. folders are not in documents.
         docDef.owner = this.owner;
@@ -98,7 +107,13 @@ export class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
         super.clear();
     }
 
-    private addItemModifications(document: CdmDocumentDefinition): void {
+    private checkAndAddItemModifications(document: CdmDocumentDefinition): boolean {
+        if (this.item(document.name) !== undefined) {
+            Logger.error(this.ctx, this.TAG, "checkAndAddItemModifications", document.atCorpusPath, cdmLogCode.ErrDocAlreadyExist, document.name,
+            this.owner.atCorpusPath != undefined ? this.owner.atCorpusPath : this.owner.name);
+            return false;
+        }
+
         if (document.owner !== undefined && document.owner !== this.owner) {
             // this is fun! the document is moving from one folder to another
             // it must be removed from the old folder for sure, but also now
@@ -112,6 +127,8 @@ export class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
         document.namespace = this.owner.namespace;
         this.makeDocumentDirty(); // set the document to dirty so it will get saved in the new folder location if saved
         this.owner.corpus.addDocumentObjects(this.owner, document);
+
+        return true;
     }
 
     private removeItemModifications(documentName: string): void {

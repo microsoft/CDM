@@ -36,6 +36,9 @@ public class CdmDocumentCollectionTest {
     Assert.assertEquals(folder, document.getOwner());
     Assert.assertEquals("Namespace", document.getNamespace());
     Assert.assertTrue(document.getNeedsIndexing());
+
+    final CdmDocumentDefinition doc = folder.getDocuments().add(document);
+    Assert.assertNull(doc);
   }
 
   @Test
@@ -73,6 +76,9 @@ public class CdmDocumentCollectionTest {
     Assert.assertTrue(manifest.getCtx().getCorpus()
         .getDocumentLibrary()
         .contains(ImmutablePair.of(folder, document)));
+    
+    folder.getDocuments().add(2, document);
+    Assert.assertEquals(3, folder.getDocuments().getCount());
   }
 
   @Test

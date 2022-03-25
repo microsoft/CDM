@@ -32,7 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models
         /// 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'</param>
         /// <param name="properties">Property bag.</param>
         /// <param name="serDeName">SerDe name.</param>
-        public FormatInfo(InputFormat inputFormat, OutputFormat outputFormat, FormatType formatType, SerializeLib serializeLib, System.Collections.Generic.IDictionary<string, JToken> properties = default(System.Collections.Generic.IDictionary<string, JToken>), string serDeName = default(string))
+        public FormatInfo(string inputFormat, string outputFormat, FormatType formatType, SerializeLib serializeLib, System.Collections.Generic.IDictionary<string, JToken> properties = default(System.Collections.Generic.IDictionary<string, JToken>), string serDeName = default(string))
         {
             InputFormat = inputFormat;
             OutputFormat = outputFormat;
@@ -48,7 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models
         /// 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "InputFormat")]
-        public InputFormat InputFormat { get; set; }
+        public string InputFormat { get; set; }
 
         /// <summary>
         /// Gets or sets possible values include:
@@ -56,7 +56,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models
         /// 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "OutputFormat")]
-        public OutputFormat OutputFormat { get; set; }
+        public string OutputFormat { get; set; }
 
         /// <summary>
         /// Gets or sets possible values include: 'csv', 'parquet'

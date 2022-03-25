@@ -8,6 +8,7 @@ class CdmLogCode(AutoNumber):
     # Errors
     NONE = ()
     ERR_ADAPTER_NOT_FOUND = ()
+    ERR_DOC_ALREADY_EXIST = ()
     ERR_DOC_ADAPTER_NOT_FOUND = ()
     ERR_DOC_ENTITY_DOC_SAVING_FAILURE = ()
     ERR_DOC_ENTITY_REPLACEMENT_FAILURE = ()

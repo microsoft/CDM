@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         None,
         ErrAdapterNotFound,
         ErrDocAdapterNotFound,
+        ErrDocAlreadyExist,
         ErrDocEntityDocSavingFailure,
         ErrDocEntityReplacementFailure,
         ErrDocImportSavingFailure,

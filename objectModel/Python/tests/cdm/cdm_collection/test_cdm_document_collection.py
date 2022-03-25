@@ -27,6 +27,9 @@ class CdmDocumentCollectionTests(unittest.TestCase):
         self.assertEqual(folder, document.owner)
         self.assertEqual('Namespace', document._namespace)
         self.assertTrue(document._needs_indexing)
+        
+        doc = folder.documents.append(document)
+        self.assertEqual(None, doc)
 
     @async_test
     def test_document_collection_insert(self):
@@ -58,6 +61,9 @@ class CdmDocumentCollectionTests(unittest.TestCase):
         self.assertTrue(document.name in folder._document_lookup)
         self.assertTrue(manifest.ctx.corpus._document_library._contains((folder, document)))
 
+        folder.documents.insert(2, document)
+        self.assertEqual(3, len(folder.documents))
+        
     @async_test
     def test_document_collection_add_with_document_name(self):
         manifest = generate_manifest('C:\\Root\\Path')

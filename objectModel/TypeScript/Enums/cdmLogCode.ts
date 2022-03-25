@@ -5,6 +5,7 @@ export enum cdmLogCode {
     None,
     ErrAdapterNotFound,
     ErrDocAdapterNotFound,
+    ErrDocAlreadyExist,
     ErrDocEntityDocSavingFailure,
     ErrDocEntityReplacementFailure,
     ErrDocImportSavingFailure,

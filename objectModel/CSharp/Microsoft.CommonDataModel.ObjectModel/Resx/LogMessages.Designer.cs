@@ -79,6 +79,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Document {0} already exist in folder {1}..
+        /// </summary>
+        internal static string ErrDocAlreadyExist {
+            get {
+                return ResourceManager.GetString("ErrDocAlreadyExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed saving local entity schema document {0}.
         /// </summary>
         internal static string ErrDocEntityDocSavingFailure {

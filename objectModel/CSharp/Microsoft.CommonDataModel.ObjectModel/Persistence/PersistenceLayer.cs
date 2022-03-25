@@ -279,7 +279,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     docContent = docContent.Copy(new ResolveOptions(docContainer, this.Ctx.Corpus.DefaultResolutionDirectives), docContainer) as CdmDocumentDefinition;
                 }
 
-                folder.Documents.Add(docContent, docName);
+                if (folder.Documents.AllItems.Find(x => x.Id == docContent.Id) == null)
+                {
+                    folder.Documents.Add(docContent, docName);
+                }
 
                 docContent._fileSystemModifiedTime = fsModifiedTime;
                 docContent.IsDirty = false;

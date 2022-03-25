@@ -4,6 +4,8 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,6 +13,9 @@ import java.util.Objects;
  * {@link CdmCollection} customized for {@link CdmDocumentDefinition}.
  */
 public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> {
+
+  private static final String TAG = CdmDocumentCollection.class.getSimpleName();
+
   /**
    * Constructs a CdmDocumentCollection by using parent constructor and DocumentDef as default type
    *
@@ -28,16 +33,20 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
 
   @Override
   public void add(int index, CdmDocumentDefinition document) {
-    this.addItemModifications(document);
+    if (!this.checkAndAddItemModifications(document))
+      return;
     // Why is this collection unlike all other collections?
     // Because documents are in folders. Folders are not in documents.
     document.setOwner(this.getOwner());
     this.getAllItems().add(index, document);
+
   }
 
   @Override
   public CdmDocumentDefinition add(final CdmDocumentDefinition document) {
-    this.addItemModifications(document);
+    if (!this.checkAndAddItemModifications(document))
+      return null;
+
     // Why is this collection unlike all other collections?
     // Because documents are in folders. folders are not in documents.
     document.setOwner(this.getOwner());
@@ -115,12 +124,17 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
   }
 
   /**
-   * Performs changes to an item that is added to the collection.
+   * Check if document already added, if not then performs changes to an item that is added to the collection.
    * Does not actually add the item to the collection.
    *
    * @param document The item that needs to be changed.
    */
-  private void addItemModifications(CdmDocumentDefinition document) {
+  private boolean checkAndAddItemModifications(CdmDocumentDefinition document) {
+    if (this.item(document.getName()) != null) {
+      Logger.error(this.getCtx(), TAG, "checkAndAddItemModifications", document.getAtCorpusPath(), CdmLogCode.ErrDocAlreadyExist, document.getName(),
+      this.getOwner().getAtCorpusPath() != null ? this.getOwner().getAtCorpusPath() : this.getOwner().getName());
+      return false;
+    }
     if (document.getOwner() != null && document.getOwner() != this.getOwner()) {
       // This is fun! The document is moving from one folder to another.
       // It must be removed from the old folder for sure, but also now there will be a problem with
@@ -138,6 +152,7 @@ public class CdmDocumentCollection extends CdmCollection<CdmDocumentDefinition> 
     // Set the document to dirty so it will get saved in the new folder location if saved.
     makeDocumentDirty();
     this.getOwner().getCorpus().addDocumentObjects(this.getOwner(), document);
+    return true;
   }
 
   /**

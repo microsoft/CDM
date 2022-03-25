@@ -215,7 +215,10 @@ export class PersistenceLayer {
                 // was just killed off but make it contain everything the new document loaded.
                 docContent = docContent.copy(new resolveOptions(docContainer, this.ctx.corpus.defaultResolutionDirectives), docContainer) as CdmDocumentDefinition;
             }
-            folder.documents.push(docContent, docName);
+
+            if (folder.documents.allItems.find((x: CdmDocumentDefinition) => x.ID === docContent.ID) == null) {
+                folder.documents.push(docContent, docName);
+            }
 
             docContent._fileSystemModifiedTime = fsModifiedTime;
             docContent.isDirty = false;

@@ -299,7 +299,6 @@ export const testHelper = {
             testHelper.failOnUnexpectedFailure(cdmCorpus, message, expectedCodes);
         }, cdmStatusLevel.warning);
 
-
         cdmCorpus.storage.defaultNamespace = 'local';
 
         cdmCorpus.storage.mount('local', new LocalAdapter(testInputDir));

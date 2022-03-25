@@ -30,6 +30,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
             Assert.AreEqual(folder, document.Owner);
             Assert.AreEqual("Namespace", document.Namespace);
             Assert.IsTrue(document.NeedsIndexing);
+
+            var doc = folder.Documents.Add(document);
+            Assert.IsNull(doc);
         }
 
         [TestMethod]
@@ -62,6 +65,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
             Assert.AreEqual(folder, document.Owner);
             Assert.IsTrue(folder.DocumentLookup.ContainsKey(document.Name));
             Assert.IsTrue(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document)));
+
+            // reinsert same name doc
+            folder.Documents.Insert(2, document);
+            Assert.AreEqual(3, folder.Documents.Count);
         }
 
         [TestMethod]

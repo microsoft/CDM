@@ -43,8 +43,8 @@ class FormatInfo(Model):
     }
 
     _attribute_map = {
-        'input_format': {'key': 'InputFormat', 'type': 'InputFormat'},
-        'output_format': {'key': 'OutputFormat', 'type': 'OutputFormat'},
+        'input_format': {'key': 'InputFormat', 'type': 'str'},
+        'output_format': {'key': 'OutputFormat', 'type': 'str'},
         'format_type': {'key': 'FormatType', 'type': 'FormatType'},
         'properties': {'key': 'Properties', 'type': '{object}'},
         'ser_de_name': {'key': 'SerDeName', 'type': 'str'},

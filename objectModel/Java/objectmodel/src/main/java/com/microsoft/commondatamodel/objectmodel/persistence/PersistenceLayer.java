@@ -235,7 +235,10 @@ public class PersistenceLayer {
                     docContent = (CdmDocumentDefinition) docContent.copy(new ResolveOptions(docContainer, this.ctx.getCorpus().getDefaultResolutionDirectives()), docContainer);
                 }
 
-                folder.getDocuments().add((CdmDocumentDefinition) docContent, docName);
+                CdmDocumentDefinition content = (CdmDocumentDefinition)docContent;
+                if (folder.getDocuments().allItems.stream().filter((x) -> x.getId() == content.getId()).findFirst().orElse(null) == null) {
+                     folder.getDocuments().add((CdmDocumentDefinition) docContent, docName);
+                 }
 
                 docContent.setFileSystemModifiedTime(fsModifiedTime);
                 docContent.setDirty(false);

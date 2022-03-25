@@ -183,7 +183,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             await adlsAdapter.computeLastModifiedTimeAsync(filename);
         } catch (ex) {
             if (ex.code === 'ERR_INVALID_URL') {
-                fail();
+                fail(ex);
             }
         }
         done();

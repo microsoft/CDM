@@ -9,7 +9,7 @@ from cdm.objectmodel import CdmDataPartitionDefinition
 from cdm.utilities import time_utils, copy_data_utils, TraitToPropertyMap, logger
 
 from . import utils
-from cdm.persistence.syms.models import FormatInfo, InputFormat, OutputFormat, SerializeLib, StorageDescriptor, FormatType
+from cdm.persistence.syms.models import FormatInfo, SerializeLib, StorageDescriptor, FormatType
 
 
 if TYPE_CHECKING:
@@ -70,8 +70,8 @@ class DataPartitionPersistence:
 
         if properties is not None:
             obj.format = FormatInfo(
-            input_format = InputFormat.orgapachehadoopmapred_sequence_file_input_format,
-            output_format = OutputFormat.orgapachehadoophiveqlio_hive_sequence_file_output_format,
+            input_format = 'OrgapachehadoopmapredSequenceFileInputFormat',
+            output_format = 'OrgapachehadoophiveqlioHiveSequenceFileOutputFormat',
             serialize_lib = SerializeLib.orgapachehadoophiveserde2lazy_lazy_simple_ser_de,
             format_type = FormatType.csv,
             properties = properties)

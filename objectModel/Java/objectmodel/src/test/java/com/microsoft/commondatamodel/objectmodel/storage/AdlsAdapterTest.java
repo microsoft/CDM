@@ -204,7 +204,7 @@ public class AdlsAdapterTest {
       adlsAdapter.computeLastModifiedTimeAsync(filename).join();
     } catch (Exception ex) {
       if (ex instanceof NullPointerException || ex.getCause() instanceof NullPointerException) {
-        Assert.fail();
+        Assert.fail(ex.getMessage());
       }
     }
   }
