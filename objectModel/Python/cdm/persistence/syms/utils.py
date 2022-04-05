@@ -1,9 +1,9 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
-
+from re import Match
 from typing import Union, Tuple, List, Optional, TYPE_CHECKING
 import threading
-import json
+import json, re
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.storage.syms import SymsAdapter
@@ -11,7 +11,7 @@ from cdm.objectmodel import CdmArgumentValue, CdmAttribute, CdmCorpusContext, \
     CdmObjectReference, CdmTraitReference, CdmTraitGroupReference, CdmCollection, CdmLocalEntityDeclarationDefinition
 from cdm.utilities import JObject, IdentifierRef, ResolveOptions, CopyOptions, StorageUtils
 from cdm.persistence.syms.types import SymsManifestContent
-from cdm.persistence.syms.models import DatabaseEntity, RelationshipEntity, TableEntity, TypeInfo, FormatType
+from cdm.persistence.syms.models import DatabaseEntity, RelationshipEntity, TableEntity, TypeInfo
 from .attribute_group_reference_persistence import AttributeGroupReferencePersistence
 from .data_type_reference_persistence import DataTypeReferencePersistence
 from .entity_attribute_persistence import EntityAttributePersistence
@@ -25,6 +25,8 @@ from .types import CdmJsonType, TraitGroupReference, TraitReference
 if TYPE_CHECKING:
     pass
 
+csv = 'csv'
+parquet = 'parquet'
 
 def create_trait_reference_array(ctx: CdmCorpusContext,
                                  obj: Optional[List[Union[str, TraitReference, TraitGroupReference]]]) \
@@ -156,11 +158,11 @@ def cardinality_settings_from_data(data: CardinalitySettings, attribute: CdmAttr
 
     return data
 
-def create_partition_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext',format_type: FormatType) -> 'CdmTraitReference':
+def create_partition_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext',format_type: str) -> 'CdmTraitReference':
     format_trait = None
-    if format_type == FormatType.csv:
+    if format_type == csv:
         format_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.partition.format.CSV', True)
-    elif format_type == FormatType.parquet:
+    elif format_type == parquet:
         format_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.partition.format.parquet', True)
     else:
         # error
@@ -324,10 +326,23 @@ def split_storage_name_fs_from_adls_path(path: str) -> Tuple[str, str]:
     if path.endswith('/'):
         path = path.rsplit('/', 1)[0]
 
-    paths = path.replace('https://', ',' ).replace('/',',').split(',')
+    paths = path.replace('https://', ',').replace('/',',').split(',')
     if len(paths) > 2:
         if paths[1].endswith('.dfs.core.windows.net'):
             return (paths[1].replace('.dfs.core.windows.net', ''), paths[2])
+    return None
+
+def get_wildcards_matches(path: str)-> 'Match[str]':
+    if path is not None and path is not '':
+        result = re.search(r'[^.]\*', path)
+        if result is not None:
+            return result
+    return None
+
+def split_root_location_regex_from_path(path: str, matches: 'Match[str]')-> Tuple[str, str]:
+    if path is not None or path is not '':
+        if matches is not None and len(matches) > 0:
+            return (path[0:matches.span()[0]], path[matches.span()[0]:])
     return None
 
 def split_storage_name_fs_from_syms_path(path: str)-> Tuple[str, str]:

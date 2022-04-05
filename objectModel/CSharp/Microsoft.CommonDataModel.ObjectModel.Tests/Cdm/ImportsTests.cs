@@ -233,8 +233,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             corpus.Storage.FetchRootFolder("output").Documents.Add(subManifest);
 
             await rootManifest.SaveAsAsync("output:/default.manifest.cdm.json", false, new CopyOptions() { SaveConfigFile=false });
+            // "acct.trait" in Acct.cdm.json. relationships in the manifests contain these 2 traits,
+            // so the manifest should import these two entity documents, but Lead.cdm.json imports Acct.cdm.json.
+            // Thus, the manifest can only import Lead.cdm.json
             await subManifest.SaveAsAsync("output:/default-submanifest.manifest.cdm.json", false, new CopyOptions() { SaveConfigFile = false });
-
 
             // Compare the result.
             TestHelper.AssertFolderFilesEquality(

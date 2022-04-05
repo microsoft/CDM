@@ -1,20 +1,19 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Optional, TYPE_CHECKING, Set
+from typing import Optional, TYPE_CHECKING, Dict
 import warnings
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, logger
 from cdm.enums import CdmLogCode
-from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object_def import CdmObjectDefinition
-from datetime import datetime, timezone
+from datetime import datetime
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference
+    from cdm.utilities import VisitCallback
 
 
 class CdmE2ERelationship(CdmObjectDefinition):
@@ -29,7 +28,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
         self.to_entity_attribute = None  # type: Optional[str]
         self.last_file_modified_time = None  # type: Optional[datetime]
         self.last_file_modified_old_time = None  # type: Optional[datetime]
-        self._elevated_trait_corpus_paths = set()  # type: set[str]
+        self._elevated_trait_corpus_path = dict()  # type: Dict['CdmTraitReference', str]
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -109,8 +108,8 @@ class CdmE2ERelationship(CdmObjectDefinition):
     def get_last_file_modified_old_time(self) -> datetime:
         return self.last_file_modified_old_time
 
-    def _get_elevated_trait_corpus_paths(self) -> Set[str]:
-        return self._elevated_trait_corpus_paths
+    def _get_elevated_trait_corpus_paths(self) -> Dict['CdmTraitReference', str]:
+        return self._elevated_trait_corpus_path
 
     def reset_last_file_modified_old_time(self) -> None:
         self.last_file_modified_old_time = None

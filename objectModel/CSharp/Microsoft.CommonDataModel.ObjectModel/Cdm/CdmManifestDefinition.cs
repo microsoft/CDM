@@ -329,6 +329,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (this.Entities != null)
                 {
+                    // Indexes on this manifest before calling `AddElevatedTraitsAndRelationships`
+                    // and calls `RefreshAsync` after adding all imports and traits to relationships
+                    var outerResopt = new ResolveOptions(this);
+                    await this.IndexIfNeeded(outerResopt, true);
+
                     foreach (CdmEntityDeclarationDefinition entDec in this.Entities)
                     {
                         string entPath = await this.GetEntityPathFromDeclaration(entDec, this);
@@ -346,8 +351,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 string cacheKey = rel.CreateCacheKey();
                                 if (!relCache.Contains(cacheKey) && this.IsRelAllowed(rel, option))
                                 {
-                                    this.Relationships.Add(this.LocalizeRelToManifest(rel));
-                                    this.AddImportsForElevatedTraits(rel);
+                                    await this.AddElevatedTraitsAndRelationships(rel);
                                     relCache.Add(cacheKey);
                                 }
                             }
@@ -383,8 +387,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 string cacheKey = inRel.CreateCacheKey();
                                 if (!relCache.Contains(cacheKey) && this.IsRelAllowed(inRel, option))
                                 {
-                                    this.Relationships.Add(this.LocalizeRelToManifest(inRel));
-                                    this.AddImportsForElevatedTraits(inRel);
+                                    await this.AddElevatedTraitsAndRelationships(inRel);
                                     relCache.Add(cacheKey);
                                 }
 
@@ -408,8 +411,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                             string baseRelCacheKey = newRel.CreateCacheKey();
                                             if (!relCache.Contains(baseRelCacheKey) && this.IsRelAllowed(newRel, option))
                                             {
-                                                this.Relationships.Add(this.LocalizeRelToManifest(newRel));
-                                                this.AddImportsForElevatedTraits(newRel);
+                                                await this.AddElevatedTraitsAndRelationships(newRel);
                                                 relCache.Add(baseRelCacheKey);
                                             }
                                         }
@@ -419,33 +421,53 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                     }
 
-                    if (this.SubManifests != null)
+                    // Calls RefreshAsync on this manifest to resolve purpose traits in relationships
+                    // after adding all imports and traits by calling `AddElevatedTraitsAndRelationships`
+                    await this.RefreshAsync(outerResopt);
+                }
+                
+                if (this.SubManifests != null)
+                {
+                    foreach (CdmManifestDeclarationDefinition subManifestDef in this.SubManifests)
                     {
-                        foreach (CdmManifestDeclarationDefinition subManifestDef in this.SubManifests)
-                        {
-                            var corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
-                            var subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
-                            await subManifest.PopulateManifestRelationshipsAsync(option);
-                        }
+                        var corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
+                        var subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                        await subManifest.PopulateManifestRelationshipsAsync(option);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Adding imports for elevated purpose traits for relationships.
-        /// The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+        /// Adds imports for elevated purpose traits for relationships, then adds the relationships to the manifest.
+        /// The last import has the highest priority, so we insert the imports for traits to the beginning of the list.
         /// </summary>
-        private void AddImportsForElevatedTraits(CdmE2ERelationship rel)
+        private async Task AddElevatedTraitsAndRelationships(CdmE2ERelationship rel)
         {
-            foreach (var path in rel.ElevatedTraitCorpusPaths)
+            var resOpt = new ResolveOptions(this);
+            foreach (var traitRef in rel.ExhibitsTraits)
             {
-                var relativePath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(path, this);
-                if (this.Imports.Item(relativePath, checkMoniker: false) == null)
+                var traitDef = this.Ctx.Corpus.ResolveSymbolReference(resOpt, this, traitRef.FetchObjectDefinitionName(), CdmObjectType.TraitDef, true);
+                if (traitDef == null)
                 {
+                    var absPath = rel.ElevatedTraitCorpusPath[traitRef as CdmTraitReference];
+                    var relativePath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(absPath, this);
+                    // Adds the import to this manifest file
                     this.Imports.Insert(0, new CdmImport(this.Ctx, relativePath, null));
+                    // Fetches the actual file of the import and indexes it
+                    var importDocument = await this.Ctx.Corpus.FetchObjectAsync<CdmDocumentDefinition>(absPath);
+                    await importDocument.IndexIfNeeded(resOpt);
+                    // Resolves the imports in the manifests
+                    await this.Ctx.Corpus.ResolveImportsAsync(this, new HashSet<string> { this.AtCorpusPath }, resOpt);
+                    // Calls `GetImportPriorities` to prioritize all imports properly after a new import added (which requires `ImportPriorities` set to null)
+                    this.ImportPriorities = null;
+                    this.GetImportPriorities();
+                    // As adding a new import above set the manifest needsIndexing to true, we want to avoid over indexing for each import insertion
+                    // so we handle the indexing for the new import above seperately in this case, no indexing needed at this point
+                    this.NeedsIndexing = false;
                 }
             }
+            this.Relationships.Add(this.LocalizeRelToManifest(rel));
         }
 
         private bool IsRelAllowed(CdmE2ERelationship rel, CdmRelationshipDiscoveryStyle option)

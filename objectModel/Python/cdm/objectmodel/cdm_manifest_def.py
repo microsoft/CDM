@@ -19,7 +19,7 @@ from .cdm_trait_collection import CdmTraitCollection
 from .cdm_import import CdmImport
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, CdmEntityDefinition,\
+    from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, CdmEntityDefinition, CdmTraitReference, \
         CdmEntityDeclarationDefinition, CdmFolderDefinition, CdmManifestDeclarationDefinition, CdmObject
     from cdm.utilities import CopyOptions, VisitCallback
 
@@ -289,15 +289,33 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             return bool(from_ent_in_manifest and to_ent_in_manifest)
         return True
 
-    def _add_imports_for_elevated_traits(self, rel: 'CdmE2ERelationship') -> None:
+    async def _add_elevated_traits_and_relationships(self, rel: 'CdmE2ERelationship') -> None:
         """
-        Adding imports for elevated purpose traits for relationships.
-        The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+        Adds imports for elevated purpose traits for relationships, then adds the relationships to the manifest.
+        The last import has the highest priority, so we insert the imports for traits to the beginning of the list.
         """
-        for path in rel._get_elevated_trait_corpus_paths():
-            relative_path = self.ctx.corpus.storage.create_relative_corpus_path(path, self)
-            if self.imports.item(relative_path, check_moniker=False) is None:
+        res_opt = ResolveOptions(self)
+        for trait_ref in rel.exhibits_traits:
+            trait_def = self.ctx.corpus._resolve_symbol_reference(res_opt, self, trait_ref.fetch_object_definition_name(), CdmObjectType.TRAIT_DEF, True)
+            if trait_def is None:
+                abs_path = rel._elevated_trait_corpus_path[trait_ref]
+                relative_path = self.ctx.corpus.storage.create_relative_corpus_path(abs_path, self)
+                # Adds the import to this manifest file
                 self.imports.insert(0, CdmImport(self.ctx, relative_path, None))
+                # Fetches the actual file of the import and indexes it
+                import_document = await self.ctx.corpus.fetch_object_async(abs_path)  # type: 'CdmDocumentDefinition'
+                await import_document._index_if_needed(res_opt)
+                # Resolves the imports in the manifests
+                await self.ctx.corpus._resolve_imports_async(self, set(self.at_corpus_path), res_opt)
+                # Calls `GetImportPriorities` to prioritize all imports properly after a new import added (which requires `ImportPriorities` set to null)
+                self._import_priorities = None
+                self._get_import_priorities()
+                # As adding a new import above set the manifest needsIndexing to true, we want to avoid over indexing for each import insertion
+                # so we handle the indexing for the new import above seperately in this case, no indexing needed at this point
+                self._needs_indexing = False
+
+        self.relationships.append(self._localize_rel_to_manifest(rel))
+
 
     def _localize_rel_to_manifest(self, rel: 'CdmE2ERelationship') -> 'CdmE2ERelationship':
         rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, rel.name)  # type: CdmE2ERelationship
@@ -314,66 +332,74 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             self.relationships.clear()
             rel_cache = set()  # Set[str]
 
-            for ent_dec in self.entities:
-                ent_path = await self._get_entity_path_from_declaration(ent_dec, self)
-                curr_entity = await self.ctx.corpus.fetch_object_async(ent_path)  # type: Optional[CdmEntityDefinition]
+            if self.entities:
+                # Indexes on this manifest before calling `AddElevatedTraitsAndRelationships`
+                # and calls `RefreshAsync` after adding all imports and traits to relationships
+                out_res_opt = ResolveOptions(self)
+                await self._index_if_needed(out_res_opt, True)
 
-                if curr_entity is None:
-                    continue
+                for ent_dec in self.entities:
+                    ent_path = await self._get_entity_path_from_declaration(ent_dec, self)
+                    curr_entity = await self.ctx.corpus.fetch_object_async(ent_path)  # type: Optional[CdmEntityDefinition]
 
-                # handle the outgoing relationships
-                outgoing_rels = self.ctx.corpus.fetch_outgoing_relationships(curr_entity)  # List[CdmE2ERelationship]
-                if outgoing_rels:
-                    for rel in outgoing_rels:
-                        cache_key = rel.create_cache_key()
-                        if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
-                            self.relationships.append(self._localize_rel_to_manifest(rel))
-                            self._add_imports_for_elevated_traits(rel)
-                            rel_cache.add(cache_key)
+                    if curr_entity is None:
+                        continue
 
-                incoming_rels = self.ctx.corpus.fetch_incoming_relationships(curr_entity)  # type: List[CdmE2ERelationship]
+                    # handle the outgoing relationships
+                    outgoing_rels = self.ctx.corpus.fetch_outgoing_relationships(curr_entity)  # List[CdmE2ERelationship]
+                    if outgoing_rels:
+                        for rel in outgoing_rels:
+                            cache_key = rel.create_cache_key()
+                            if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
+                                await self._add_elevated_traits_and_relationships(rel)
+                                rel_cache.add(cache_key)
 
-                if incoming_rels:
-                    for in_rel in incoming_rels:
-                        # get entity object for current toEntity
-                        current_in_base = await self.ctx.corpus.fetch_object_async(in_rel.to_entity, self)  # type: Optional[CdmEntityDefinition]
+                    incoming_rels = self.ctx.corpus.fetch_incoming_relationships(curr_entity)  # type: List[CdmE2ERelationship]
 
-                        if not current_in_base:
-                            continue
+                    if incoming_rels:
+                        for in_rel in incoming_rels:
+                            # get entity object for current toEntity
+                            current_in_base = await self.ctx.corpus.fetch_object_async(in_rel.to_entity, self)  # type: Optional[CdmEntityDefinition]
 
-                        # create graph of inheritance for to current_in_base
-                        # graph represented by an array where entity at i extends entity at i+1
-                        to_inheritance_graph = []  # type: List[CdmEntityDefinition]
-                        while current_in_base:
-                            res_opt = ResolveOptions(wrt_doc=current_in_base.in_document)
-                            current_in_base = current_in_base.extends_entity.fetch_object_definition(res_opt) if current_in_base.extends_entity else None
-                            if current_in_base:
-                                to_inheritance_graph.append(current_in_base)
+                            if not current_in_base:
+                                continue
 
-                        # add current incoming relationship
-                        cache_key = in_rel.create_cache_key()
-                        if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
-                            self.relationships.append(self._localize_rel_to_manifest(in_rel))
-                            self._add_imports_for_elevated_traits(in_rel)
-                            rel_cache.add(cache_key)
+                            # create graph of inheritance for to current_in_base
+                            # graph represented by an array where entity at i extends entity at i+1
+                            to_inheritance_graph = []  # type: List[CdmEntityDefinition]
+                            while current_in_base:
+                                res_opt = ResolveOptions(wrt_doc=current_in_base.in_document)
+                                current_in_base = current_in_base.extends_entity.fetch_object_definition(res_opt) if current_in_base.extends_entity else None
+                                if current_in_base:
+                                    to_inheritance_graph.append(current_in_base)
 
-                        # if A points at B, A's base classes must point at B as well
-                        for base_entity in to_inheritance_graph:
-                            incoming_rels_for_base = self.ctx.corpus.fetch_incoming_relationships(base_entity)  # type: List[CdmE2ERelationship]
+                            # add current incoming relationship
+                            cache_key = in_rel.create_cache_key()
+                            if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
+                                await self._add_elevated_traits_and_relationships(in_rel)
+                                rel_cache.add(cache_key)
 
-                            if incoming_rels_for_base:
-                                for in_rel_base in incoming_rels_for_base:
-                                    new_rel = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, '')
-                                    new_rel.from_entity = in_rel_base.from_entity
-                                    new_rel.from_entity_attribute = in_rel_base.from_entity_attribute
-                                    new_rel.to_entity = in_rel.to_entity
-                                    new_rel.to_entity_attribute = in_rel.to_entity_attribute
+                            # if A points at B, A's base classes must point at B as well
+                            for base_entity in to_inheritance_graph:
+                                incoming_rels_for_base = self.ctx.corpus.fetch_incoming_relationships(base_entity)  # type: List[CdmE2ERelationship]
 
-                                    base_rel_cache_key = new_rel.create_cache_key()
-                                    if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
-                                        self.relationships.append(self._localize_rel_to_manifest(new_rel))
-                                        self._add_imports_for_elevated_traits(new_rel)
-                                        rel_cache.add(base_rel_cache_key)
+                                if incoming_rels_for_base:
+                                    for in_rel_base in incoming_rels_for_base:
+                                        new_rel = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, '')
+                                        new_rel.from_entity = in_rel_base.from_entity
+                                        new_rel.from_entity_attribute = in_rel_base.from_entity_attribute
+                                        new_rel.to_entity = in_rel.to_entity
+                                        new_rel.to_entity_attribute = in_rel.to_entity_attribute
+
+                                        base_rel_cache_key = new_rel.create_cache_key()
+                                        if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
+                                            await self._add_elevated_traits_and_relationships(new_rel)
+                                            rel_cache.add(base_rel_cache_key)
+
+                # Calls RefreshAsync on this manifest to resolve purpose traits in relationships
+                # after adding all imports and traits by calling `AddElevatedTraitsAndRelationships`
+                await self.refresh_async(out_res_opt)
+
             if self.sub_manifests:
                 for sub_manifest_def in self.sub_manifests:
                     corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(sub_manifest_def.definition, self)

@@ -79,16 +79,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                         return null;
                     }
 
-                    var formatType = tableProperties.StorageDescriptor.Format.FormatType;
-                    if (formatType != FormatType.Csv && formatType != FormatType.Parquet)
+                    string formatType = tableProperties.StorageDescriptor.Format.FormatType;
+                    if (!formatType.EqualsWithIgnoreCase(Utils.Csv) && !formatType.EqualsWithIgnoreCase(Utils.Parquet))
                     {
                         Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableFormatTypeNotSupported, tableName);
                         return null;
                     }
 
-                    if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".csv"))
+                    // check and get list of wildcards matches in path if any.
+                    var matches = Utils.GetWildcardsMatches(tableProperties.StorageDescriptor.Source.Location);
+                    if (System.IO.Path.GetExtension(tableProperties.StorageDescriptor.Source.Location) == String.Empty // check if its a folder
+                        || matches != null)
                     {
-                        if (formatType == FormatType.Parquet)
+                        var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, tableProperties.StorageDescriptor, $"{table.Name}PartitionPattern", symsRootPath, formatType, matches);
+                        localDec.DataPartitionPatterns.Add(dataPartitionPattern);
+                    }
+                    else if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".csv"))
+                    {
+                        if (formatType.EqualsWithIgnoreCase(Utils.Parquet))
                         {
                             Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "csv", formatType.ToString());
                             return null;
@@ -99,7 +107,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     }
                     else if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".parquet"))
                     {
-                        if (formatType == FormatType.Csv)
+                        if (formatType.EqualsWithIgnoreCase(Utils.Csv))
                         {
                             Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "parquet", formatType.ToString());
                             return null;
@@ -107,11 +115,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                         // Location points to file. create data partition.
                         var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath, formatType);
                         localDec.DataPartitions.Add(dataPartition);
-                    }
-                    else if (System.IO.Path.GetExtension(tableProperties.StorageDescriptor.Source.Location) == String.Empty)
-                    {
-                        var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, tableProperties.StorageDescriptor, $"{table.Name}PartitionPattern", symsRootPath, formatType);
-                        localDec.DataPartitionPatterns.Add(dataPartitionPattern);
                     }
                     else
                     {

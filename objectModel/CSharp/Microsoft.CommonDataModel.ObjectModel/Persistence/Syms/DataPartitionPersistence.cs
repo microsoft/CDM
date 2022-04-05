@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     {
         private static readonly string Tag = nameof(DataPartitionPersistence);
 
-        public static CdmDataPartitionDefinition FromData(CdmCorpusContext ctx, StorageDescriptor obj, string symsRootPath, FormatType formatType)
+        public static CdmDataPartitionDefinition FromData(CdmCorpusContext ctx, StorageDescriptor obj, string symsRootPath, string formatType)
         {
             var newPartition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef);
 
@@ -108,8 +108,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 {
                     InputFormat = "OrgapachehadoopmapredSequenceFileInputFormat",
                     OutputFormat = "OrgapachehadoophiveqlioHiveSequenceFileOutputFormat",
-                    SerializeLib = SerializeLib.Orgapachehadoophiveserde2lazyLazySimpleSerDe,
-                    FormatType = FormatType.Csv,
+                    SerializeLib = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe",
+                    FormatType = Utils.Csv,
                     Properties = properties
                 };
             }

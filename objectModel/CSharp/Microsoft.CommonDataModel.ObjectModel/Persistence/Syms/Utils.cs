@@ -12,7 +12,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;
-    using System.Collections;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
@@ -23,6 +22,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     public static class Utils
     {
         private static int NsNameIndex = 0;
+        internal static readonly string Csv = "csv";
+        internal static readonly string Parquet = "parquet";
 
         /// <summary>
         /// Create a copy of the reference object
@@ -213,14 +214,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return null;
         }
 
-        internal static CdmTraitReference CreatePartitionTrait(IDictionary<string, JToken> obj, CdmCorpusContext ctx, FormatType formatType)
+        /// <summary>
+        /// Create data partition trait csv or parquet
+        /// </summary>
+        internal static CdmTraitReference CreatePartitionTrait(IDictionary<string, JToken> obj, CdmCorpusContext ctx, string formatType)
         {
             CdmTraitReference formatTrait;
-            if (formatType == FormatType.Csv)
+            if (formatType.EqualsWithIgnoreCase(Utils.Csv))
             {
                 formatTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.partition.format.CSV", true);
             }
-            else if (formatType == FormatType.Parquet)
+            else if (formatType.EqualsWithIgnoreCase(Utils.Parquet))
             {
                 formatTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.partition.format.parquet", true);
             }
@@ -544,6 +548,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         }
 
         /// <summary>
+        /// Get wild card match in collection from path.
+        /// </summary>
+        internal static MatchCollection GetWildcardsMatches(string path)
+        {
+            if (!string.IsNullOrEmpty(path))
+            {
+                var result = new Regex("[^.]\\*").Matches(path);
+
+                if (result.Count > 0)
+                    return result;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Splits string into root and regex path using match collection.
+        /// </summary>
+        internal static Tuple<string, string> SplitRootLocationRegexFromPath(string path, MatchCollection matches)
+        {
+            if (!string.IsNullOrEmpty(path))
+            {
+                if (matches.Count > 0)
+                    return new Tuple<string, string>(path.Substring(0, matches[0].Index), path.Substring(matches[0].Index));
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Create source trait for syms Rest call.
         /// </summary>
         public static CdmTraitReference CreateSourceTrait(CdmCorpusContext ctx, string traitName, string traitArgName, string traitArgValue = null)
@@ -628,6 +661,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return new Tuple<string, string>(ns, adlsPath);
         }
 
+        /// <summary>
+        /// Extract table name from entity path.
+        /// </summary>
         internal static string ExtractTableNameFromEntityPath(string enitityPath)
         {
             var corpuspPath = FormatCorpusPath(enitityPath);
@@ -647,6 +683,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return null;
         }
 
+        /// <summary>
+        /// Format corpus path.
+        /// </summary>
         private static string FormatCorpusPath(string corpusPath)
         {
             var pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
@@ -788,13 +827,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return typeInfo;
         }
 
+        /// <summary>
+        /// Serialize Json object
+        /// </summary>
         private static string JsonConvertSerializeObject(dynamic obj)
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
         }
 
         /// <summary>
-        /// Convert to SyMs object to CDM object.
+        /// Convert to SyMS object to CDM object.
         /// </summary>
         internal static async Task<SymsManifestContent> GetSymsModel(StorageAdapterBase adapter, string databaseResponse, string docPath)
         {

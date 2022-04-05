@@ -32,7 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models
         /// 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'</param>
         /// <param name="properties">Property bag.</param>
         /// <param name="serDeName">SerDe name.</param>
-        public FormatInfo(string inputFormat, string outputFormat, FormatType formatType, SerializeLib serializeLib, System.Collections.Generic.IDictionary<string, JToken> properties = default(System.Collections.Generic.IDictionary<string, JToken>), string serDeName = default(string))
+        public FormatInfo(string inputFormat, string outputFormat, string formatType, string serializeLib, System.Collections.Generic.IDictionary<string, JToken> properties = default(System.Collections.Generic.IDictionary<string, JToken>), string serDeName = default(string))
         {
             InputFormat = inputFormat;
             OutputFormat = outputFormat;
@@ -62,7 +62,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models
         /// Gets or sets possible values include: 'csv', 'parquet'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "FormatType")]
-        public FormatType FormatType { get; set; }
+        public string FormatType { get; set; }
 
         /// <summary>
         /// Gets or sets property bag.
@@ -82,6 +82,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models
         /// 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
         /// </summary>
         [Newtonsoft.Json.JsonProperty(PropertyName = "SerializeLib")]
-        public SerializeLib SerializeLib { get; set; }
+        public string SerializeLib { get; set; }
     }
 }

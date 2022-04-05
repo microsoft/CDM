@@ -1526,7 +1526,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 }
 
                                 // Fetch purpose traits
-                                Dictionary<CdmTraitReference, string> traitRefsAndCorpusPaths = null;
+                                List<Tuple<CdmTraitReference, string>> traitRefsAndCorpusPaths = null;
                                 CdmEntityAttributeDefinition entityAtt = owner.FetchObjectDefinition<CdmObjectDefinition>(resOpt) as CdmEntityAttributeDefinition;
                                 if (entityAtt?.Purpose != null)
                                 {
@@ -1611,7 +1611,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="resOpt"></param>
         /// <param name="attributeCtx"></param>
-        private Dictionary<CdmTraitReference, string> FetchPurposeTraitRefsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx)
+        private List<Tuple<CdmTraitReference, string>> FetchPurposeTraitRefsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx)
         {
             CdmObjectDefinition def = attributeCtx.Definition?.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
             if (def?.ObjectType == CdmObjectType.EntityAttributeDef && (def as CdmEntityAttributeDefinition)?.Purpose != null)
@@ -1631,15 +1631,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="resOpt"></param>
         /// <param name="resolvedTraitSet"></param>
-        private Dictionary<CdmTraitReference, string> FindElevatedTraitRefsAndCorpusPaths(ResolveOptions resOpt, ResolvedTraitSet resolvedTraitSet)
+        private List<Tuple<CdmTraitReference, string>> FindElevatedTraitRefsAndCorpusPaths(ResolveOptions resOpt, ResolvedTraitSet resolvedTraitSet)
         {
-            var traitRefsAndCorpusPaths = new Dictionary<CdmTraitReference, string>();
+            var traitRefsAndCorpusPaths = new List<Tuple<CdmTraitReference, string>>();
             foreach (var resolvedTrait in resolvedTraitSet.Set)
             {
                 var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOpt, resolvedTrait);
                 if (traitRef != null && !string.IsNullOrWhiteSpace(resolvedTrait.Trait.InDocument?.AtCorpusPath))
                 {
-                    traitRefsAndCorpusPaths.Add(traitRef, resolvedTrait.Trait.InDocument.AtCorpusPath);
+                    traitRefsAndCorpusPaths.Add(new Tuple<CdmTraitReference, string>(traitRef, resolvedTrait.Trait.InDocument.AtCorpusPath));
                 }
             }
             return traitRefsAndCorpusPaths;
@@ -1661,7 +1661,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ResolveOptions resOpt,
             CdmEntityDefinition resEntity,
             List<CdmAttributeReference> fromAtts = null,
-            Dictionary<CdmTraitReference, string> traitRefsAndCorpusPaths = null)
+            List<Tuple<CdmTraitReference, string>> traitRefsAndCorpusPaths = null)
         {
             if (fromAtts != null)
             {
@@ -1833,14 +1833,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return outRels;
         }
 
-        private void AddTraitRefsAndCorpusPathsToRelationship(Dictionary<CdmTraitReference, string> traitRefsAndCorpusPaths, CdmE2ERelationship cdmE2ERel)
+        private void AddTraitRefsAndCorpusPathsToRelationship(List<Tuple<CdmTraitReference, string>> traitRefsAndCorpusPaths, CdmE2ERelationship cdmE2ERel)
         {
             if (traitRefsAndCorpusPaths != null)
             {
-                foreach (var pair in traitRefsAndCorpusPaths)
+                foreach (var tuple in traitRefsAndCorpusPaths)
                 {
-                    cdmE2ERel.ExhibitsTraits.Add(pair.Key);
-                    cdmE2ERel.ElevatedTraitCorpusPaths.Add(pair.Value);
+                    cdmE2ERel.ExhibitsTraits.Add(tuple.Item1);
+                    cdmE2ERel.ElevatedTraitCorpusPath.Add(tuple.Item1, tuple.Item2);
                 }
             }
         }

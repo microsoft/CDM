@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import * as timeUtils from '../Utilities/timeUtils';
+
 import {
     AttributeResolutionDirectiveSet,
     CdmCollection,
@@ -21,6 +23,7 @@ import {
     cdmObjectType,
     cdmRelationshipDiscoveryStyle,
     CdmTraitCollection,
+    CdmTraitReference,
     CdmTraitReferenceBase,
     copyOptions,
     importsLoadStrategy,
@@ -31,9 +34,9 @@ import {
     VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
-import * as timeUtils from '../Utilities/timeUtils';
-import { using } from "using-statement";
+
 import { enterScope } from '../Utilities/Logging/Logger';
+import { using } from "using-statement";
 
 export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmObjectDefinition, CdmFileStatus {
     private _TAG: string = CdmManifestDefinition.name;
@@ -91,7 +94,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             if (this.imports.visitArray(pathFrom, preChildren, postChildren)) {
                 return true;
             }
-        }
+        }        
         if (this.definitions) {
             if (this.definitions.visitArray(pathFrom, preChildren, postChildren)) {
                 return true;
@@ -306,91 +309,101 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.populateManifestRelationshipsAsync.name), async _ => {
             this.relationships.clear();
             const relCache: Set<string> = new Set<string>();
+            
+            if (this.entities !== undefined) {
+                // Indexes on this manifest before calling `AddElevatedTraitsAndRelationships`
+                // and calls `RefreshAsync` after adding all imports and traits to relationships
+                const outResOpt: resolveOptions = new resolveOptions(this);
+                this.indexIfNeeded(outResOpt, true);
 
-            for (const entDec of this.entities) {
-                const entPath: string = await this.getEntityPathFromDeclaration(entDec, this);
-                const currEntity: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entPath);
+                for (const entDec of this.entities) {
+                    const entPath: string = await this.getEntityPathFromDeclaration(entDec, this);
+                    const currEntity: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entPath);
 
-                if (!currEntity) {
-                    continue;
-                }
-
-                // handle the outgoing relationships
-                const outgoingRels: CdmE2ERelationship[] = this.ctx.corpus.fetchOutgoingRelationships(currEntity);
-                if (outgoingRels) {
-                    for (const rel of outgoingRels) {
-                        const cacheKey: string = rel.createCacheKey();
-                        if (!relCache.has(cacheKey) && this.isRelAllowed(rel, option)) {
-                            this.relationships.push(this.localizeRelToManifest(rel));
-                            this.addImportsForElevatedTraits(rel);
-                            relCache.add(cacheKey);
-                        }
+                    if (!currEntity) {
+                        continue;
                     }
-                }
 
-                const incomingRels: CdmE2ERelationship[] =
-                    (this.ctx.corpus).fetchIncomingRelationships(currEntity);
-
-                if (incomingRels) {
-                    for (const inRel of incomingRels) {
-                        // get entity object for current toEntity
-                        let currentInBase: CdmEntityDefinition =
-                            await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(inRel.toEntity, this);
-
-                        if (!currentInBase) {
-                            continue;
-                        }
-
-                        // create graph of inheritance for to currentInBase
-                        // graph represented by an array where entity at i extends entity at i+1
-                        const toInheritanceGraph: CdmEntityDefinition[] = [];
-                        while (currentInBase) {
-                            const resOpt: resolveOptions = new resolveOptions(currentInBase.inDocument);
-                            currentInBase = currentInBase.extendsEntity ? currentInBase.extendsEntity.fetchObjectDefinition(resOpt) : undefined;
-
-                            if (currentInBase) {
-                                toInheritanceGraph.push(currentInBase);
+                    // handle the outgoing relationships
+                    const outgoingRels: CdmE2ERelationship[] = this.ctx.corpus.fetchOutgoingRelationships(currEntity);
+                    if (outgoingRels) {
+                        for (const rel of outgoingRels) {
+                            const cacheKey: string = rel.createCacheKey();
+                            if (!relCache.has(cacheKey) && this.isRelAllowed(rel, option)) {
+                                await this.addElevatedTraitsAndRelationships(rel);
+                                relCache.add(cacheKey);
                             }
                         }
+                    }
 
-                        // add current incoming relationship
-                        const cacheKey: string = inRel.createCacheKey();
-                        if (!relCache.has(cacheKey) && this.isRelAllowed(inRel, option)) {
-                            this.relationships.push(this.localizeRelToManifest(inRel));
-                            this.addImportsForElevatedTraits(inRel);
-                            relCache.add(cacheKey);
-                        }
+                    const incomingRels: CdmE2ERelationship[] =
+                        (this.ctx.corpus).fetchIncomingRelationships(currEntity);
 
-                        // if A points at B, A's base classes must point at B as well
-                        for (const baseEntity of toInheritanceGraph) {
-                            const incomingRelsForBase: CdmE2ERelationship[] =
-                                this.ctx.corpus.fetchIncomingRelationships(baseEntity);
+                    if (incomingRels) {
+                        for (const inRel of incomingRels) {
+                            // get entity object for current toEntity
+                            let currentInBase: CdmEntityDefinition =
+                                await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(inRel.toEntity, this);
 
-                            if (incomingRelsForBase) {
-                                for (const inRelBase of incomingRelsForBase) {
-                                    const newRel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
-                                    newRel.fromEntity = inRelBase.fromEntity;
-                                    newRel.fromEntityAttribute = inRelBase.fromEntityAttribute;
-                                    newRel.toEntity = inRel.toEntity;
-                                    newRel.toEntityAttribute = inRel.toEntityAttribute;
+                            if (!currentInBase) {
+                                continue;
+                            }
 
-                                    const baseRelCacheKey: string = newRel.createCacheKey();
-                                    if (!relCache.has(baseRelCacheKey) && this.isRelAllowed(newRel, option)) {
-                                        this.relationships.push(this.localizeRelToManifest(newRel));
-                                        this.addImportsForElevatedTraits(newRel);
-                                        relCache.add(baseRelCacheKey);
+                            // create graph of inheritance for to currentInBase
+                            // graph represented by an array where entity at i extends entity at i+1
+                            const toInheritanceGraph: CdmEntityDefinition[] = [];
+                            while (currentInBase) {
+                                const resOpt: resolveOptions = new resolveOptions(currentInBase.inDocument);
+                                currentInBase = currentInBase.extendsEntity ? currentInBase.extendsEntity.fetchObjectDefinition(resOpt) : undefined;
+
+                                if (currentInBase) {
+                                    toInheritanceGraph.push(currentInBase);
+                                }
+                            }
+
+                            // add current incoming relationship
+                            const cacheKey: string = inRel.createCacheKey();
+                            if (!relCache.has(cacheKey) && this.isRelAllowed(inRel, option)) {
+                                await this.addElevatedTraitsAndRelationships(inRel);
+                                relCache.add(cacheKey);
+                            }
+
+                            // if A points at B, A's base classes must point at B as well
+                            for (const baseEntity of toInheritanceGraph) {
+                                const incomingRelsForBase: CdmE2ERelationship[] =
+                                    this.ctx.corpus.fetchIncomingRelationships(baseEntity);
+
+                                if (incomingRelsForBase) {
+                                    for (const inRelBase of incomingRelsForBase) {
+                                        const newRel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
+                                        newRel.fromEntity = inRelBase.fromEntity;
+                                        newRel.fromEntityAttribute = inRelBase.fromEntityAttribute;
+                                        newRel.toEntity = inRel.toEntity;
+                                        newRel.toEntityAttribute = inRel.toEntityAttribute;
+
+                                        const baseRelCacheKey: string = newRel.createCacheKey();
+                                        if (!relCache.has(baseRelCacheKey) && this.isRelAllowed(newRel, option)) {
+                                            await this.addElevatedTraitsAndRelationships(newRel);
+                                            relCache.add(baseRelCacheKey);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
+                // Calls RefreshAsync on this manifest to resolve purpose traits in relationships
+                // after adding all imports and traits by calling `AddElevatedTraitsAndRelationships`
+                this.refreshAsync(outResOpt);
             }
 
-            for (const subManifestDef of this.subManifests) {
-                const corpusPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(subManifestDef.definition, this);
-                const subManifest: CdmManifestDefinition = await this.ctx.corpus.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
-                await (subManifest as unknown as CdmManifestDefinition).populateManifestRelationshipsAsync(option);
+            if (this.subManifests !== undefined) {
+                for (const subManifestDef of this.subManifests) {
+                    const corpusPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(subManifestDef.definition, this);
+                    const subManifest: CdmManifestDefinition = await this.ctx.corpus.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                    await (subManifest as unknown as CdmManifestDefinition).populateManifestRelationshipsAsync(option);
+                }
             }
         });
     }
@@ -652,18 +665,33 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         }
     }
 
-    
     /**
-     * Adding imports for elevated purpose traits for relationships.
-     * The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+     * Adds imports for elevated purpose traits for relationships, then adds the relationships to the manifest.
+     * The last import has the highest priority, so we insert the imports for traits to the beginning of the list.
      */
-    private addImportsForElevatedTraits(rel: CdmE2ERelationship): void {
-        for (const path of rel.getElevatedTraitCorpusPaths()) {
-            const relativePath: string = this.ctx.corpus.storage.createRelativeCorpusPath(path, this);
-            if (this.imports.item(relativePath, null, false) === undefined) {
+    private async addElevatedTraitsAndRelationships(rel: CdmE2ERelationship): Promise<void> {
+        const resOpt: resolveOptions = new resolveOptions(this);
+        for (const traitRef of rel.exhibitsTraits) {
+            const traitDef = this.ctx.corpus.resolveSymbolReference(resOpt, this, traitRef.fetchObjectDefinitionName(), cdmObjectType.traitDef, true);
+            if (traitDef === undefined) {
+                const absPath: string = rel.getElevatedTraitCorpusPath().get(traitRef as CdmTraitReference);
+                const relativePath: string = this.ctx.corpus.storage.createRelativeCorpusPath(absPath, this);
+                // Adds the import to this manifest file
                 this.imports.insert(0, new CdmImport(this.ctx, relativePath, undefined));
+                // Fetches the actual file of the import and indexes it
+                var importDocument = await this.ctx.corpus.fetchObjectAsync<CdmDocumentDefinition>(absPath);
+                await importDocument.indexIfNeeded(resOpt);
+                // Resolves the imports in the manifests
+                await this.ctx.corpus.resolveImportsAsync(this, new Set(this.atCorpusPath), resOpt);
+                // Calls `GetImportPriorities` to prioritize all imports properly after a new import added (which requires `ImportPriorities` set to null)
+                this.importPriorities = undefined;
+                this.getImportPriorities();
+                // As adding a new import above set the manifest needsIndexing to true, we want to avoid over indexing for each import insertion
+                // so we handle the indexing for the new import above seperately in this case, no indexing needed at this point
+                this.needsIndexing = false;
             }
         }
-    }
 
+        this.relationships.push(this.localizeRelToManifest(rel));
+    }
 }

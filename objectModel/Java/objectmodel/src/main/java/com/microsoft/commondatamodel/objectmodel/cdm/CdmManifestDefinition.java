@@ -14,11 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -277,86 +273,94 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         this.getRelationships().clear();
         final Set<String> relCache = ConcurrentHashMap.newKeySet();
 
-        for (final CdmEntityDeclarationDefinition entDec : getEntities()) {
-          final String entPath = this.createEntityPathFromDeclarationAsync(entDec, this).join();
-          final CdmEntityDefinition currEntity = this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(entPath).join();
+        if (getEntities() != null) {
+          // Indexes on this manifest before calling `AddElevatedTraitsAndRelationships`
+          // and calls `RefreshAsync` after adding all imports and traits to relationships
+          final ResolveOptions outerResOpt = new ResolveOptions(this);
+          this.indexIfNeededAsync(outerResOpt, true).join();
 
-          if (currEntity == null) {
-            continue;
-          }
+          for (final CdmEntityDeclarationDefinition entDec : getEntities()) {
+            final String entPath = this.createEntityPathFromDeclarationAsync(entDec, this).join();
+            final CdmEntityDefinition currEntity = this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(entPath).join();
 
-          // handle the outgoing relationships
-          final ArrayList<CdmE2ERelationship> outgoingRels = this.getCtx().getCorpus().fetchOutgoingRelationships(currEntity);
-          if (outgoingRels != null) {
-            for (final CdmE2ERelationship outgoingRel : outgoingRels) {
-              final String cacheKey = outgoingRel.createCacheKey();
-              if (!relCache.contains(cacheKey) && isRelAllowed(outgoingRel, option)) {
-                this.getRelationships().add(localizeRelToManifest(outgoingRel));
-                this.addImportsForElevatedTraits(outgoingRel);
-                relCache.add(cacheKey);
-              }
+            if (currEntity == null) {
+              continue;
             }
-          }
 
-          final ArrayList<CdmE2ERelationship> incomingRels = this.getCtx().getCorpus().fetchIncomingRelationships(currEntity);
-
-          if (incomingRels != null) {
-            for (final CdmE2ERelationship inRel : incomingRels) {
-              // get entity object for current toEntity
-              CdmEntityDefinition currentInBase =
-                      this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(inRel.getToEntity(), this).join();
-
-              if (currentInBase == null) {
-                continue;
-              }
-
-              // create graph of inheritance for to currentInBase
-              // graph represented by an array where entity at i extends entity at i+1
-              final ArrayList<CdmEntityDefinition> toInheritanceGraph = new ArrayList<CdmEntityDefinition>();
-              while (currentInBase != null) {
-                final ResolveOptions resOpt = new ResolveOptions();
-                resOpt.setWrtDoc(currentInBase.getInDocument());
-                currentInBase = currentInBase.getExtendsEntity() != null
-                        ? currentInBase.getExtendsEntity().fetchObjectDefinition(resOpt)
-                        : null;
-                if (currentInBase != null) {
-                  toInheritanceGraph.add(currentInBase);
+            // handle the outgoing relationships
+            final ArrayList<CdmE2ERelationship> outgoingRels = this.getCtx().getCorpus().fetchOutgoingRelationships(currEntity);
+            if (outgoingRels != null) {
+              for (final CdmE2ERelationship outgoingRel : outgoingRels) {
+                final String cacheKey = outgoingRel.createCacheKey();
+                if (!relCache.contains(cacheKey) && isRelAllowed(outgoingRel, option)) {
+                  this.addElevatedTraitsAndRelationships(outgoingRel).join();
+                  relCache.add(cacheKey);
                 }
               }
+            }
 
-              // add current incoming relationship
-              final String cacheKey = inRel.createCacheKey();
-              if (!relCache.contains(cacheKey) && isRelAllowed(inRel, option)) {
-                this.getRelationships().add(localizeRelToManifest(inRel));
-                this.addImportsForElevatedTraits(inRel);
-                relCache.add(cacheKey);
-              }
+            final ArrayList<CdmE2ERelationship> incomingRels = this.getCtx().getCorpus().fetchIncomingRelationships(currEntity);
 
-              // if A points at B, A's base classes must point at B as well
-              for (final CdmEntityDefinition baseEntity : toInheritanceGraph) {
-                final ArrayList<CdmE2ERelationship> incomingRelsForBase = this.getCtx()
-                        .getCorpus()
-                        .fetchIncomingRelationships(baseEntity);
+            if (incomingRels != null) {
+              for (final CdmE2ERelationship inRel : incomingRels) {
+                // get entity object for current toEntity
+                CdmEntityDefinition currentInBase =
+                        this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(inRel.getToEntity(), this).join();
 
-                if (incomingRelsForBase != null) {
-                  for (final CdmE2ERelationship inRelBase : incomingRelsForBase) {
-                    final CdmE2ERelationship newRel = new CdmE2ERelationship(this.getCtx(), "");
-                    newRel.setFromEntity(inRelBase.getFromEntity());
-                    newRel.setFromEntityAttribute(inRelBase.getFromEntityAttribute());
-                    newRel.setToEntity(inRel.getToEntity());
-                    newRel.setToEntityAttribute(inRel.getToEntityAttribute());
+                if (currentInBase == null) {
+                  continue;
+                }
 
-                    final String baseRelCacheKey = newRel.createCacheKey();
-                    if (!relCache.contains(baseRelCacheKey) && isRelAllowed(newRel, option)) {
-                      this.getRelationships().add(localizeRelToManifest(newRel));
-                      this.addImportsForElevatedTraits(newRel);
-                      relCache.add(baseRelCacheKey);
+                // create graph of inheritance for to currentInBase
+                // graph represented by an array where entity at i extends entity at i+1
+                final ArrayList<CdmEntityDefinition> toInheritanceGraph = new ArrayList<CdmEntityDefinition>();
+                while (currentInBase != null) {
+                  final ResolveOptions resOpt = new ResolveOptions();
+                  resOpt.setWrtDoc(currentInBase.getInDocument());
+                  currentInBase = currentInBase.getExtendsEntity() != null
+                          ? currentInBase.getExtendsEntity().fetchObjectDefinition(resOpt)
+                          : null;
+                  if (currentInBase != null) {
+                    toInheritanceGraph.add(currentInBase);
+                  }
+                }
+
+                // add current incoming relationship
+                final String cacheKey = inRel.createCacheKey();
+                if (!relCache.contains(cacheKey) && isRelAllowed(inRel, option)) {
+                  this.addElevatedTraitsAndRelationships(inRel).join();
+                  relCache.add(cacheKey);
+                }
+
+                // if A points at B, A's base classes must point at B as well
+                for (final CdmEntityDefinition baseEntity : toInheritanceGraph) {
+                  final ArrayList<CdmE2ERelationship> incomingRelsForBase = this.getCtx()
+                          .getCorpus()
+                          .fetchIncomingRelationships(baseEntity);
+
+                  if (incomingRelsForBase != null) {
+                    for (final CdmE2ERelationship inRelBase : incomingRelsForBase) {
+                      final CdmE2ERelationship newRel = new CdmE2ERelationship(this.getCtx(), "");
+                      newRel.setFromEntity(inRelBase.getFromEntity());
+                      newRel.setFromEntityAttribute(inRelBase.getFromEntityAttribute());
+                      newRel.setToEntity(inRel.getToEntity());
+                      newRel.setToEntityAttribute(inRel.getToEntityAttribute());
+
+                      final String baseRelCacheKey = newRel.createCacheKey();
+                      if (!relCache.contains(baseRelCacheKey) && isRelAllowed(newRel, option)) {
+                        this.addElevatedTraitsAndRelationships(newRel).join();
+                        relCache.add(baseRelCacheKey);
+                      }
                     }
                   }
                 }
               }
             }
           }
+
+          // Calls RefreshAsync on this manifest to resolve purpose traits in relationships
+          // after adding all imports and traits by calling `AddElevatedTraitsAndRelationships`
+          this.refreshAsync(outerResOpt).join();
         }
 
         if (this.getSubManifests() != null) {
@@ -767,16 +771,35 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   }
 
   /**
-   * Adding imports for elevated purpose traits for relationships.
-   * The last import has the highest priority, so we add insert the imports for traits to the beginning of the list.
+   * Adds imports for elevated purpose traits for relationships, then adds the relationships to the manifest.
+   * The last import has the highest priority, so we insert the imports for traits to the beginning of the list.
    */
-  private void addImportsForElevatedTraits(final CdmE2ERelationship rel) {
-    for (final String path : rel.getElevatedTraitCorpusPaths()) {
-      final String relativePath = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(path, this);
-      if (this.getImports().item(relativePath,null,false) == null) {
-        this.getImports().add(0, new CdmImport(this.getCtx(), relativePath, null));
+  private CompletableFuture<Void> addElevatedTraitsAndRelationships(final CdmE2ERelationship rel) {
+    return CompletableFuture.runAsync(() -> {
+      final ResolveOptions resOpt = new ResolveOptions(this);
+      for (final CdmTraitReferenceBase traitRef : rel.getExhibitsTraits()) {
+        final CdmTraitDefinition traitDef = (CdmTraitDefinition) this.getCtx().getCorpus().resolveSymbolReference(resOpt, this, traitRef.fetchObjectDefinitionName(), CdmObjectType.TraitDef, true);
+        if (traitDef == null) {
+          final String absPath = rel.getElevatedTraitCorpusPath().get((CdmTraitReference) traitRef);
+          final String relativePath = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(absPath, this);
+          // Adds the import to this manifest file
+          this.getImports().add(0, new CdmImport(this.getCtx(), relativePath, null));
+          // Fetches the actual file of the import and indexes it
+          CdmDocumentDefinition importDocument = (CdmDocumentDefinition) this.getCtx().getCorpus().fetchObjectAsync(absPath).join();
+          importDocument.indexIfNeededAsync(resOpt, false).join();
+          // Resolves the imports in the manifests
+          this.getCtx().getCorpus().resolveImportsAsync(this, new HashSet<>(Collections.singletonList(this.getAtCorpusPath())), resOpt);
+          // Calls `GetImportPriorities` to prioritize all imports properly after a new import added (which requires `ImportPriorities` set to null)
+          this.setImportPriorities(null);
+          this.getImportPriorities();
+          // As adding a new import above set the manifest needsIndexing to true, we want to avoid over indexing for each import insertion
+          // so we handle the indexing for the new import above seperately in this case, no indexing needed at this point
+          this.setNeedsIndexing(false);
+        }
       }
-    }
+
+      this.getRelationships().add(localizeRelToManifest(rel));
+    });
   }
 
   CdmE2ERelationship localizeRelToManifest(final CdmE2ERelationship rel) {

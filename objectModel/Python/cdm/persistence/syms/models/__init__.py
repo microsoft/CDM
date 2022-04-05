@@ -40,13 +40,10 @@ from .query_artifacts_response import QueryArtifactsResponse
 from .sy_msapi_service_client_enums import (
     DDLType,
     SASEntityType,
-    FormatType,
-    SerializeLib,
     SortOrder,
     PublishStatus,
     RelationshipType,
     TableType,
-    PartitionFunctionType,
     ValidationType,
     ValidationStatus,
 )
@@ -86,13 +83,10 @@ __all__ = [
     'QueryArtifactsResponse',
     'DDLType',
     'SASEntityType',
-    'FormatType',
-    'SerializeLib',
     'SortOrder',
     'PublishStatus',
     'RelationshipType',
     'TableType',
-    'PartitionFunctionType',
     'ValidationType',
     'ValidationStatus',
 ]
