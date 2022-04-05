@@ -14,16 +14,13 @@ class FormatInfo(Model):
     :param input_format: Possible values include:
      'org.apache.hadoop.mapred.SequenceFileInputFormat',
      'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
-    :type input_format: str or :class:`InputFormat
-     <Microsoft.ADF.SyMSAPIClient.models.InputFormat>`
+    :type input_format: str
     :param output_format: Possible values include:
      'org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat',
      'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
-    :type output_format: str or :class:`OutputFormat
-     <Microsoft.ADF.SyMSAPIClient.models.OutputFormat>`
+    :type output_format: str
     :param format_type: Possible values include: 'csv', 'parquet'
-    :type format_type: str or :class:`FormatType
-     <Microsoft.ADF.SyMSAPIClient.models.FormatType>`
+    :type format_type: str
     :param properties: Property bag.
     :type properties: dict
     :param ser_de_name: SerDe name.
@@ -31,8 +28,7 @@ class FormatInfo(Model):
     :param serialize_lib: Possible values include:
      'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe',
      'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-    :type serialize_lib: str or :class:`SerializeLib
-     <Microsoft.ADF.SyMSAPIClient.models.SerializeLib>`
+    :type serialize_lib: str
     """ 
 
     _validation = {
@@ -45,10 +41,10 @@ class FormatInfo(Model):
     _attribute_map = {
         'input_format': {'key': 'InputFormat', 'type': 'str'},
         'output_format': {'key': 'OutputFormat', 'type': 'str'},
-        'format_type': {'key': 'FormatType', 'type': 'FormatType'},
+        'format_type': {'key': 'FormatType', 'type': 'str'},
         'properties': {'key': 'Properties', 'type': '{object}'},
         'ser_de_name': {'key': 'SerDeName', 'type': 'str'},
-        'serialize_lib': {'key': 'SerializeLib', 'type': 'SerializeLib'},
+        'serialize_lib': {'key': 'SerializeLib', 'type': 'str'},
     }
 
     def __init__(self, input_format, output_format, format_type, serialize_lib, properties=None, ser_de_name=None):

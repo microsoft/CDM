@@ -1593,7 +1593,7 @@ public class CdmCorpusDefinition {
               }
 
               // Fetch purpose traits
-              HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths = null;
+              List<Pair<CdmTraitReference, String>> traitRefsAndCorpusPaths = null;
               CdmObjectBase ownerDefinition = owner.fetchObjectDefinition(resOpt);
               CdmEntityAttributeDefinition entityAtt = null;
               if (ownerDefinition.getObjectType() == CdmObjectType.EntityAttributeDef) {
@@ -1710,7 +1710,7 @@ public class CdmCorpusDefinition {
       ResolveOptions resOpt,
       CdmEntityDefinition resEntity,
       List<CdmAttributeReference> fromAtts,
-      HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths) {
+      List<Pair<CdmTraitReference, String>> traitRefsAndCorpusPaths) {
     if (fromAtts != null) {
       ResolveOptions resOptCopy = resOpt.copy();
       resOptCopy.setWrtDoc(resEntity.getInDocument());
@@ -1742,11 +1742,11 @@ public class CdmCorpusDefinition {
     return (ArrayList<CdmE2ERelationship>) outRels;
   }
 
-  private void addTraitRefsAndCorpusPathsToRelationship(HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths, CdmE2ERelationship cdmE2ERel) {
+  private void addTraitRefsAndCorpusPathsToRelationship(List<Pair<CdmTraitReference, String>> traitRefsAndCorpusPaths, CdmE2ERelationship cdmE2ERel) {
     if (traitRefsAndCorpusPaths != null) {
-      for (Entry<CdmTraitReference, String> pair : traitRefsAndCorpusPaths.entrySet()) {
-        cdmE2ERel.getExhibitsTraits().add(pair.getKey());
-        cdmE2ERel.getElevatedTraitCorpusPaths().add(pair.getValue());
+      for (final Pair<CdmTraitReference, String> pair : traitRefsAndCorpusPaths) {
+        cdmE2ERel.getExhibitsTraits().add(pair.getLeft());
+        cdmE2ERel.getElevatedTraitCorpusPath().put(pair.getLeft(), pair.getRight());
       }
     }
   }
@@ -1757,7 +1757,7 @@ public class CdmCorpusDefinition {
    * @param resOpt Resolved options
    * @return List of CdmE2ERelationship
    */
-  private HashMap<CdmTraitReference, String> fetchPurposeTraitRefsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx) {
+  private List<Pair<CdmTraitReference, String>> fetchPurposeTraitRefsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx) {
     if (attributeCtx.getDefinition() != null) {
       CdmObjectDefinition def = attributeCtx.getDefinition().fetchObjectDefinition(resOpt);
       if (def != null && def.getObjectType() == CdmObjectType.EntityAttributeDef) {
@@ -1780,12 +1780,12 @@ public class CdmCorpusDefinition {
    * @param resOpt Resolved options
    * @return List of CdmE2ERelationship
    */
-  private HashMap<CdmTraitReference, String> findElevatedTraitRefsAndCorpusPaths(final ResolveOptions resOpt, final ResolvedTraitSet resolvedTraitSet) {
-    HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths = new HashMap<>();
+  private List<Pair<CdmTraitReference, String>> findElevatedTraitRefsAndCorpusPaths(final ResolveOptions resOpt, final ResolvedTraitSet resolvedTraitSet) {
+    List<Pair<CdmTraitReference, String>> traitRefsAndCorpusPaths = new LinkedList<>();
     for (final ResolvedTrait resolvedTrait : resolvedTraitSet.getSet()) {
       final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, resolvedTrait);
       if (traitRef != null && resolvedTrait.getTrait().getInDocument() != null && !StringUtils.isNullOrEmpty(resolvedTrait.getTrait().getInDocument().getAtCorpusPath())) {
-        traitRefsAndCorpusPaths.put(traitRef, resolvedTrait.getTrait().getInDocument().getAtCorpusPath());
+        traitRefsAndCorpusPaths.add(new ImmutablePair<CdmTraitReference, String> (traitRef, resolvedTrait.getTrait().getInDocument().getAtCorpusPath()));
       }
     }
     return traitRefsAndCorpusPaths;
@@ -1902,7 +1902,7 @@ public class CdmCorpusDefinition {
           }
         }
 
-        final HashMap<CdmTraitReference, String> traitRefsAndCorpusPaths = fetchPurposeTraitRefsFromAttCtx(resOpt, attributeCtx);
+        final List<Pair<CdmTraitReference, String>> traitRefsAndCorpusPaths = fetchPurposeTraitRefsFromAttCtx(resOpt, attributeCtx);
 
         for (Pair<String, String> attributeTuple : toAttList) {
           final String fromAtt = foreignKey

@@ -28,6 +28,7 @@ import {
     CdmFolderDefinition,
     CdmImport,
     CdmLocalEntityDeclarationDefinition,
+    cdmLogCode,
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     CdmObject,
@@ -35,19 +36,18 @@ import {
     CdmObjectDefinition,
     CdmObjectReference,
     cdmObjectType,
-    cdmLogCode,
+    CdmOperationAddArtifactAttribute,
     CdmOperationAddAttributeGroup,
     CdmOperationAddCountAttribute,
     CdmOperationAddSupportingAttribute,
     CdmOperationAddTypeAttribute,
+    CdmOperationAlterTraits,
     CdmOperationArrayExpansion,
     CdmOperationCombineAttributes,
     CdmOperationExcludeAttributes,
     CdmOperationIncludeAttributes,
     CdmOperationRenameAttributes,
     CdmOperationReplaceAsForeignKey,
-    CdmOperationAlterTraits,
-    CdmOperationAddArtifactAttribute,
     CdmParameterDefinition,
     CdmProjection,
     CdmPurposeDefinition,
@@ -55,7 +55,10 @@ import {
     CdmReferencedEntityDeclarationDefinition,
     cdmStatusLevel,
     CdmTraitDefinition,
+    CdmTraitGroupDefinition,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     CdmTypeAttributeDefinition,
     cdmValidationStep,
     DepthInfo,
@@ -64,6 +67,7 @@ import {
     EventCallback,
     ICdmProfiler,
     ImportInfo,
+    importsLoadStrategy,
     Logger,
     p,
     resolveContext,
@@ -72,14 +76,10 @@ import {
     resolveOptions,
     StorageAdapterBase,
     StorageManager,
+    StringUtils,
     SymbolSet,
-    TelemetryClient,
-    CdmTraitGroupDefinition,
-    CdmTraitGroupReference,
-    CdmTraitReferenceBase,
-    StringUtils
+    TelemetryClient
 } from '../internal';
-import { PersistenceLayer } from '../Persistence';
 import {
     isAttributeGroupDefinition,
     isCdmTraitDefinition,
@@ -103,10 +103,12 @@ import {
     isProjection,
     isPurposeDefinition
 } from '../Utilities/cdmObjectTypeGuards';
+
+import { PersistenceLayer } from '../Persistence';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { VisitCallback } from '../Utilities/VisitCallback';
-import { using } from "using-statement";
 import { enterScope } from '../Utilities/Logging/Logger';
+import { using } from "using-statement";
 
 export class CdmCorpusDefinition {
     private TAG: string = CdmCorpusDefinition.name;
@@ -413,7 +415,7 @@ export class CdmCorpusDefinition {
         } // no way to figure this out
         const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
 
-        if (wrtDoc.needsIndexing && !wrtDoc.currentlyIndexing) {
+        if (wrtDoc.needsIndexing && resOpt.importsLoadStrategy === importsLoadStrategy.doNotLoad) {
             Logger.error(this.ctx, this.TAG, this.resolveSymbolReference.name, wrtDoc.atCorpusPath, cdmLogCode.ErrSymbolNotFound, symbolDef, 'because the ImportsLoadStrategy is set to DoNotLoad"');
             return undefined;
         }
@@ -1363,7 +1365,7 @@ export class CdmCorpusDefinition {
                             }
 
                             // Fetch purpose traits
-                            let traitRefsAndCorpusPaths: Map<CdmTraitReference, string> = undefined;
+                            let traitRefsAndCorpusPaths: [CdmTraitReference, string][] = undefined;
                             const entityAtt: CdmEntityAttributeDefinition = owner.fetchObjectDefinition<CdmObjectDefinition>(resOpt) as CdmEntityAttributeDefinition;
                             if (entityAtt?.purpose !== undefined) {
                                 const resolvedTraitSet= entityAtt.purpose.fetchResolvedTraits(resOpt);
@@ -1416,7 +1418,7 @@ export class CdmCorpusDefinition {
     /**
      * Fetch resolved traits on purpose from attribute context (non-projection entity attribute).
      */
-    private fetchPurposeTraitRefsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): Map<CdmTraitReference, string> {
+    private fetchPurposeTraitRefsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): [CdmTraitReference, string][] {
         const def: CdmObjectDefinition = attributeCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
         if (def?.objectType == cdmObjectType.entityAttributeDef && (def as CdmEntityAttributeDefinition)?.purpose !== undefined) {
             var resolvedTraitSet = (def as CdmEntityAttributeDefinition).purpose.fetchResolvedTraits(resOpt);
@@ -1431,12 +1433,12 @@ export class CdmCorpusDefinition {
     /**
      * Find the corpus path for each elevated trait.
      */
-    private findElevatedTraitRefsAndCorpusPaths(resOpt: resolveOptions, resolvedTraitSet: ResolvedTraitSet): Map<CdmTraitReference, string> {
-        const traitRefsAndCorpusPaths = new Map<CdmTraitReference, string>();
+    private findElevatedTraitRefsAndCorpusPaths(resOpt: resolveOptions, resolvedTraitSet: ResolvedTraitSet): [CdmTraitReference, string][] {
+        const traitRefsAndCorpusPaths: [CdmTraitReference, string][] = [];
         resolvedTraitSet.set.forEach(rt => {
             var traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
             if (traitRef !== undefined && !StringUtils.isNullOrWhiteSpace(rt.trait.inDocument?.atCorpusPath)){
-                traitRefsAndCorpusPaths.set(traitRef, rt.trait.inDocument.atCorpusPath);
+                traitRefsAndCorpusPaths.push([traitRef, rt.trait.inDocument.atCorpusPath]);
             }
         })
         return traitRefsAndCorpusPaths;
@@ -1453,7 +1455,7 @@ export class CdmCorpusDefinition {
         resOpt: resolveOptions,
         resEntity: CdmEntityDefinition,
         fromAtts: CdmAttributeReference[] = undefined,
-        traitRefsAndCorpusPaths: Map<CdmTraitReference, string> = undefined
+        traitRefsAndCorpusPaths: [CdmTraitReference, string][] = undefined
     ): CdmE2ERelationship[] {
         if (fromAtts) {
             const resOptCopy: resolveOptions = resOpt.copy();
@@ -1545,7 +1547,7 @@ export class CdmCorpusDefinition {
                     }
                 }
 
-                const traitRefsAndCorpusPaths: Map<CdmTraitReference, string> = this.fetchPurposeTraitRefsFromAttCtx(resOpt, attributeCtx);
+                const traitRefsAndCorpusPaths: [CdmTraitReference, string][] = this.fetchPurposeTraitRefsFromAttCtx(resOpt, attributeCtx);
 
                 for (const attributeTuple of toAttList) {
                     const fromAtt: string = foreignKey.slice(foreignKey.lastIndexOf('/') + 1)
@@ -1592,11 +1594,11 @@ export class CdmCorpusDefinition {
         return outRels;
     }
 
-    private addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths: Map<CdmTraitReference, string>, cdmE2ERel: CdmE2ERelationship): void {
+    private addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths: [CdmTraitReference, string][], cdmE2ERel: CdmE2ERelationship): void {
         if (traitRefsAndCorpusPaths !== undefined) {
             for (const pair of traitRefsAndCorpusPaths) {
                 cdmE2ERel.exhibitsTraits.allItems.push(pair[0]);
-                cdmE2ERel.getElevatedTraitCorpusPaths().add(pair[1]);
+                cdmE2ERel.getElevatedTraitCorpusPath().set(pair[0], pair[1]);
             }
         }
     }

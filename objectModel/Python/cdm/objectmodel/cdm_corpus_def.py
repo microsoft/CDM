@@ -250,7 +250,7 @@ class CdmCorpusDefinition:
                         if entity_att and entity_att.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF and entity_att.purpose:
                             resolved_trait_set = entity_att.purpose._fetch_resolved_traits(res_opt)
                             if resolved_trait_set is not None:
-                                trait_refs_and_corpus_paths = self._find_elevated_trait_refs_and_corpus_paths(res_opt, resolved_trait_set)  # type: Dict['CdmTriatReference', str]
+                                trait_refs_and_corpus_paths = self._find_elevated_trait_refs_and_corpus_paths(res_opt, resolved_trait_set)  # type: List[Tuple['CdmTraitReference', str]]
 
                         out_rels = self._find_outgoing_relationships_for_projection(out_rels, child, res_opt,
                                                                                     res_entity, from_atts,
@@ -303,7 +303,7 @@ class CdmCorpusDefinition:
 
         return out_rels
 
-    def _fetch_purpose_trait_refs_from_att_ctx(self, res_opt: 'ResolveOptions', attribute_ctx: 'CdmAttributeContext') -> Dict['CdmTraitReference', str]:
+    def _fetch_purpose_trait_refs_from_att_ctx(self, res_opt: 'ResolveOptions', attribute_ctx: 'CdmAttributeContext') -> List[Tuple['CdmTraitReference', str]]:
         if attribute_ctx.definition is not None:
             definition = attribute_ctx.definition.fetch_object_definition(res_opt)
             if definition and definition.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF \
@@ -314,12 +314,12 @@ class CdmCorpusDefinition:
 
         return None
 
-    def _find_elevated_trait_refs_and_corpus_paths(self, res_opt: 'ResolveOptions', resolved_trait_set: 'ResolvedTraitSet') -> Dict['CdmTraitReference', str]:
-        trait_refs_and_corpus_paths = dict()
+    def _find_elevated_trait_refs_and_corpus_paths(self, res_opt: 'ResolveOptions', resolved_trait_set: 'ResolvedTraitSet') -> List[Tuple['CdmTraitReference', str]]:
+        trait_refs_and_corpus_paths = []
         for resolvedTrait in resolved_trait_set.rt_set:
             trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt, resolvedTrait)
             if trait_ref is not None and resolvedTrait.trait.in_document is not None and not StringUtils.is_null_or_white_space(resolvedTrait.trait.in_document.at_corpus_path):
-                trait_refs_and_corpus_paths[trait_ref] = resolvedTrait.trait.in_document.at_corpus_path
+                trait_refs_and_corpus_paths.append([trait_ref, resolvedTrait.trait.in_document.at_corpus_path])
 
         return trait_refs_and_corpus_paths
 
@@ -330,7 +330,7 @@ class CdmCorpusDefinition:
         res_opt: 'ResolveOptions',
         res_entity: 'CdmEntityDefinition',
         from_atts: Optional[List['CdmAttributeReference']] = None,
-        trait_refs_and_corpus_paths: Optional[Dict['CdmTriatReference', str]] = None
+        trait_refs_and_corpus_paths: Optional[List[Tuple['CdmTraitReference', str]]] = None
     ) -> List['CdmE2ERelationship']:
         """
         Find the outgoing relationships for Projections.
@@ -455,11 +455,11 @@ class CdmCorpusDefinition:
 
         return out_rels
 
-    def _add_trait_refs_and_corpus_paths_to_relationship(self, trait_refs_and_corpus_paths: Dict['CdmTriatReference', str], cdm_e2e_rel: 'CdmE2ERelationship') -> None:
+    def _add_trait_refs_and_corpus_paths_to_relationship(self, trait_refs_and_corpus_paths: List[Tuple['CdmTraitReference', str]], cdm_e2e_rel: 'CdmE2ERelationship') -> None:
         if trait_refs_and_corpus_paths is not None:
-            for key, value in trait_refs_and_corpus_paths.items():
-                cdm_e2e_rel.exhibits_traits.append(key)
-                cdm_e2e_rel._get_elevated_trait_corpus_paths().add(value)
+            for item1, item2 in trait_refs_and_corpus_paths:
+                cdm_e2e_rel.exhibits_traits.append(item1)
+                cdm_e2e_rel._get_elevated_trait_corpus_paths()[item1] = item2
 
     def _create_definition_cache_tag(self, res_opt: 'ResolveOptions', definition: 'CdmObject', kind: str,
                                      extra_tags: str = '',

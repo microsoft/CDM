@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
-    ArgumentValue,
     CdmAttributeContext,
     CdmCollection,
     CdmCorpusContext,
@@ -16,6 +15,8 @@ import {
     CdmFolderDefinition,
     CdmImport,
     CdmImportCollection,
+    CdmLocalEntityDeclarationDefinition,
+    cdmLogCode,
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     CdmObject,
@@ -29,22 +30,21 @@ import {
     CdmTraitDefinition,
     CdmTraitReference,
     copyOptions,
-    cdmLogCode,
     ImportInfo,
     ImportPriorities,
     importsLoadStrategy,
     isEntityDefinition,
     Logger,
     ParameterCollection,
-    ResolvedAttributeSetBuilder,
     resolveContext,
-    resolveOptions,
+    ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
-    VisitCallback,
-    CdmLocalEntityDeclarationDefinition
+    resolveOptions,
+    VisitCallback
 } from '../internal';
-import { using } from "using-statement";
+
 import { enterScope } from '../Utilities/Logging/Logger';
+import { using } from "using-statement";
 
 export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumentDefinition {
     private TAG: string = CdmDocumentDefinition.name;

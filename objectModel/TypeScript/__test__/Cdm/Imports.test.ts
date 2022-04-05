@@ -250,7 +250,6 @@ describe('Cdm/ImportsTest', () => {
         await corpus.calculateEntityGraphAsync(rootManifest);
         await rootManifest.populateManifestRelationshipsAsync(cdmRelationshipDiscoveryStyle.exclusive);
 
-        // Assert having relative path
         expect(rootManifest.imports.allItems[0].corpusPath)
             .toEqual('specialized/Gold.cdm.json');
         expect(subManifest.imports.allItems[0].corpusPath)
@@ -261,6 +260,9 @@ describe('Cdm/ImportsTest', () => {
         var co = new copyOptions();
         co.saveConfigFile = false;
         await rootManifest.saveAsAsync('output:/default.manifest.cdm.json', false, co);
+        // "acct.trait" in Acct.cdm.json. relationships in the manifests contain these 2 traits,
+        // so the manifest should import these two entity documents, but Lead.cdm.json imports Acct.cdm.json.
+        // Thus, the manifest can only import Lead.cdm.json
         await subManifest.saveAsAsync('output:/default-submanifest.manifest.cdm.json', false, co);
 
         // Compare the result.

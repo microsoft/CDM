@@ -26,18 +26,6 @@ class SASEntityType(Enum):
     relationship = "RELATIONSHIP"
 
 
-class FormatType(Enum):
-
-    csv = "csv"
-    parquet = "parquet"
-
-
-class SerializeLib(Enum):
-
-    orgapachehadoophiveserde2lazy_lazy_simple_ser_de = "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe"
-    orgapachehadoophiveqlioparquetserde_parquet_hive_ser_de = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
-
-
 class SortOrder(Enum):
 
     desc = "DESC"
@@ -61,11 +49,6 @@ class TableType(Enum):
 
     managed = "MANAGED"
     external = "EXTERNAL"
-
-
-class PartitionFunctionType(Enum):
-
-    value = "value"
 
 
 class ValidationType(Enum):

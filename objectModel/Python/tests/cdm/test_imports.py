@@ -196,7 +196,6 @@ class ImportsTests(unittest.TestCase):
         await corpus.calculate_entity_graph_async(root_manifest)
         await root_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
 
-        # Assert having relative path
         self.assertEqual('specialized/Gold.cdm.json', root_manifest.imports[0].corpus_path)
         self.assertEqual('/Lead.cdm.json', sub_manifest.imports[0].corpus_path)
 
@@ -205,6 +204,9 @@ class ImportsTests(unittest.TestCase):
         copy_options = CopyOptions()
         copy_options.save_config_file = False
         await root_manifest.save_as_async('output:/default.manifest.cdm.json', False, copy_options)
+        # "acct.trait" in Acct.cdm.json. relationships in the manifests contain these 2 traits, 
+        # so the manifest should import these two entity documents, but Lead.cdm.json imports Acct.cdm.json. 
+        # Thus, the manifest can only import Lead.cdm.json
         await sub_manifest.save_as_async('output:/default-submanifest.manifest.cdm.json', False, copy_options)
 
         TestHelper.compare_folder_files_equality(

@@ -10,7 +10,7 @@ from cdm.utilities import CopyOptions, ResolveOptions, StorageUtils, TraitToProp
 from cdm.enums import CdmLogCode
 
 from . import utils
-from cdm.persistence.syms.models import DataSource, FormatType, TableEntity, TableProperties
+from cdm.persistence.syms.models import DataSource, TableEntity, TableProperties
 from cdm.persistence.syms.data_partition_persistence import DataPartitionPersistence
 from cdm.persistence.syms.data_partition_pattern_persistence import DataPartitionPatternPersistence
 from cdm.persistence.syms import DocumentPersistence
@@ -54,28 +54,30 @@ class LocalEntityDeclarationPersistence:
                     logger.error(ctx, _TAG, LocalEntityDeclarationPersistence.from_data.__name__, local_dec.at_corpus_path, CdmLogCode.ERR_PERSIST_SYMS_TABLE_MISSING_DATA_LOCATION, table_name)
                     return None
                 format_type = table_properties.storage_descriptor.format.format_type
-                if table_properties.storage_descriptor.format.format_type is not FormatType.csv and table_properties.storage_descriptor.format.format_type is not FormatType.parquet:
+
+                if table_properties.storage_descriptor.format.format_type != utils.csv and table_properties.storage_descriptor.format.format_type != utils.parquet:
                     logger.error(ctx, _TAG, LocalEntityDeclarationPersistence.from_data.__name__, local_dec.at_corpus_path, CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_TABLE_FORMAT, table_name)
                     return None
-
-                if table_properties.storage_descriptor.source.location.lower().endswith('.csv'):
-                    if format_type == FormatType.parquet:
+                # check and get list of wildcards matches in path if any.
+                matches = utils.get_wildcards_matches(table_properties.storage_descriptor.source.location)
+                if os.path.splitext(table_properties.storage_descriptor.source.location)[1] == '' or matches is not None:
+                    data_partition_pattern = DataPartitionPatternPersistence.from_data(ctx, table_properties.storage_descriptor, table.name + 'PartitionPattern',  syms_root_path, format_type, matches)
+                    local_dec.data_partition_patterns.append(data_partition_pattern)
+                elif table_properties.storage_descriptor.source.location.lower().endswith('.csv'):
+                    if format_type == utils.parquet:
                         logger.error(ctx, _TAG, LocalEntityDeclarationPersistence.from_data.__name__, local_dec.at_corpus_path, CdmLogCode.ERR_PERSIST_SYMS_INCOMPATIBLE_FILE_TO_TYPE, 'csv', format_type)
                         return None
                     # location points to file.create data partition.
                     data_partition = DataPartitionPersistence.from_data(ctx, table_properties.storage_descriptor, syms_root_path, format_type)
                     local_dec.data_partitions.append(data_partition)
                 elif table_properties.storage_descriptor.source.location.lower().endswith('.parquet'):
-                    if format_type == FormatType.csv:
+                    if format_type == utils.csv:
                         logger.error(ctx, _TAG, LocalEntityDeclarationPersistence.from_data.__name__, local_dec.at_corpus_pathCdmLogCode.ERR_PERSIST_SYMS_INCOMPATIBLE_FILE_TO_TYPE, 'parquet', format_type)
                         return None
                     #Location points to file. Create data partition.
                     data_partition = DataPartitionPersistence.from_data(ctx, table_properties.storage_descriptor,
                                                                           syms_root_path, format_type)
                     local_dec.data_partitions.append(data_partition)
-                elif os.path.splitext(table_properties.storage_descriptor.source.location)[1] == '':
-                    data_partition_pattern = DataPartitionPatternPersistence.from_data(ctx, table_properties.storage_descriptor, table.name + 'PartitionPattern',  syms_root_path, format_type)
-                    local_dec.data_partition_patterns.append(data_partition_pattern)
                 else:
                     # restore data partition pattern if exist
                     if properties is not None and 'cdm:data_partition_patterns' in properties:

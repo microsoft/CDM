@@ -3,10 +3,11 @@
 
 import {
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    cdmLogCode,
+    CdmTraitReference,
     Logger,
     resolveOptions,
     VisitCallback
@@ -23,7 +24,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
     private lastFileModifiedTime: Date;
     private lastFileModifiedOldTime: Date;
-    private elevatedTraitCorpusPaths: Set<string>;
+    private elevatedTraitCorpusPath: Map<CdmTraitReference, string>;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.e2eRelationshipDef;
@@ -36,7 +37,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
         this.lastFileModifiedTime = null;
         this.lastFileModifiedOldTime = null;
-        this.elevatedTraitCorpusPaths = new Set<string>();
+        this.elevatedTraitCorpusPath = new Map<CdmTraitReference, string>();
     }
 
     public getObjectType(): cdmObjectType {
@@ -132,8 +133,8 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     /**
      * @internal
      */
-    public getElevatedTraitCorpusPaths(): Set<string> {
-        return this.elevatedTraitCorpusPaths;
+    public getElevatedTraitCorpusPath(): Map<CdmTraitReference, string> {
+        return this.elevatedTraitCorpusPath;
     }
 
     public resetLastFileModifiedOldTime(): void {

@@ -9,7 +9,7 @@ from cdm.objectmodel import CdmDataPartitionDefinition
 from cdm.utilities import time_utils, copy_data_utils, TraitToPropertyMap, logger
 
 from . import utils
-from cdm.persistence.syms.models import FormatInfo, SerializeLib, StorageDescriptor, FormatType
+from cdm.persistence.syms.models import FormatInfo, StorageDescriptor
 
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ _TAG = 'DataPartitionPersistence'
 
 class DataPartitionPersistence:
     @staticmethod
-    def from_data(ctx: 'CdmCorpusContext', obj: StorageDescriptor, syms_root_path: str, format_type: FormatType) -> CdmDataPartitionDefinition:
+    def from_data(ctx: 'CdmCorpusContext', obj: StorageDescriptor, syms_root_path: str, format_type: str) -> CdmDataPartitionDefinition:
         new_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF)  # type: CdmDataPartitionDefinition
         syms_path = utils.create_syms_absolute_path(syms_root_path, obj.source.location)
         new_partition.location = utils.syms_path_to_corpus_path(syms_path, ctx.corpus.storage)
@@ -72,8 +72,8 @@ class DataPartitionPersistence:
             obj.format = FormatInfo(
             input_format = 'OrgapachehadoopmapredSequenceFileInputFormat',
             output_format = 'OrgapachehadoophiveqlioHiveSequenceFileOutputFormat',
-            serialize_lib = SerializeLib.orgapachehadoophiveserde2lazy_lazy_simple_ser_de,
-            format_type = FormatType.csv,
+            serialize_lib = 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe',
+            format_type = utils.csv,
             properties = properties)
         else:
             #error

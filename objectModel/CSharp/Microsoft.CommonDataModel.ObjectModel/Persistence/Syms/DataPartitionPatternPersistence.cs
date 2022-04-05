@@ -6,15 +6,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
 
     class DataPartitionPatternPersistence
     {
         private static readonly string Tag = nameof(DataPartitionPatternPersistence);
 
-        public static CdmDataPartitionPatternDefinition FromData(CdmCorpusContext ctx, dynamic obj, string name, string symsRootPath, FormatType formatType)
+        public static CdmDataPartitionPatternDefinition FromData(CdmCorpusContext ctx, dynamic obj, string name, string symsRootPath, string formatType, MatchCollection matches = null)
         {
             var dataPartitionPattern = ctx.Corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, name);
             if ( obj is StorageDescriptor ) 
@@ -23,20 +25,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 var properties = sd.Properties;
 
                 var symsPath = Utils.CreateSymsAbsolutePath(symsRootPath, sd.Source.Location);
-                dataPartitionPattern.RootLocation = Utils.SymsPathToCorpusPath(symsPath, ctx.Corpus.Storage);
+                var corpusPath = Utils.SymsPathToCorpusPath(symsPath, ctx.Corpus.Storage);
 
-                if (formatType == FormatType.Csv)
+                if (matches != null && matches.Count > 0)
                 {
-                    dataPartitionPattern.GlobPattern = "/**/*.csv";
-                }
-                else if (formatType == FormatType.Parquet)
-                {
-                    dataPartitionPattern.GlobPattern = "/**/*.parquet";
+                    var splitCorpusPath = Utils.SplitRootLocationRegexFromPath(corpusPath, matches);
+                    dataPartitionPattern.RootLocation = splitCorpusPath.Item1;
+                    dataPartitionPattern.GlobPattern = splitCorpusPath.Item2;
                 }
                 else
                 {
-                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistSymsUnsupportedTableFormat);
-                    return null;
+                    dataPartitionPattern.RootLocation = corpusPath;
+                    if (formatType.EqualsWithIgnoreCase(Utils.Csv))
+                    {
+                        dataPartitionPattern.GlobPattern = "/**/*.csv";
+                    }
+                    else if (formatType.EqualsWithIgnoreCase(Utils.Parquet))
+                    {
+                        dataPartitionPattern.GlobPattern = "/**/*.parquet";
+                    }
+                    else
+                    {
+                        Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistSymsUnsupportedTableFormat);
+                        return null;
+                    }
                 }
 
                 var trait = Utils.CreatePartitionTrait(sd.Format.Properties, ctx, formatType);
