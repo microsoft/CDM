@@ -1,7 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Union, List, Optional, TYPE_CHECKING
+from typing import Union, List, Optional, TYPE_CHECKING, cast, Tuple
 
 from cdm.enums import CdmObjectType
 
@@ -13,9 +13,11 @@ if TYPE_CHECKING:
     from .cdm_trait_group_def import CdmTraitGroupDefinition
     from .cdm_trait_group_ref import CdmTraitGroupReference
     from .cdm_trait_ref_base import CdmTraitReferenceBase
+    from cdm.objectmodel import CdmArgumentValue
 
     CdmTraitDefOrRef = Union[str, CdmTraitDefinition, CdmTraitReference]
     CdmTraitGroupDefOrRef = Union[CdmTraitGroupDefinition, CdmTraitGroupReference]
+    Arguments = List[Tuple[str, 'CdmArgumentValue']]
 
 
 class CdmTraitCollection(CdmCollection):
@@ -26,18 +28,31 @@ class CdmTraitCollection(CdmCollection):
         self._clear_cache()
         super().insert(index, obj)
 
-    def append(self, obj: Union['CdmTraitDefOrRef', 'CdmTraitGroupDefOrRef'], simple_ref: Optional[bool] = False) \
-            -> 'CdmTraitReferenceBase':
+    def append(self, obj: Union['CdmTraitDefOrRef', 'CdmTraitGroupDefOrRef', str], simple_ref_or_args: Optional[Union[bool, List[Tuple[str, 'CdmArgumentValue']]]]=None) -> 'CdmTraitReferenceBase':
         self._clear_cache()
-        if not isinstance(obj, str):
-            if obj.object_type == CdmObjectType.TRAIT_DEF:
-                from .cdm_trait_ref import CdmTraitReference
-                obj = CdmTraitReference(self.ctx, obj, simple_ref)
-            elif obj.object_type == CdmObjectType.TRAIT_GROUP_DEF:
-                from .cdm_trait_group_ref import CdmTraitGroupReference
-                obj = CdmTraitGroupReference(self.ctx, obj, simple_ref)
-        # when the obj is a trait name or a trait reference
-        return super().append(obj, simple_ref)
+
+        if not simple_ref_or_args or simple_ref_or_args and isinstance(simple_ref_or_args, bool):
+            simple_ref = simple_ref_or_args if simple_ref_or_args else False
+            if not isinstance(obj, str):
+                if obj.object_type == CdmObjectType.TRAIT_DEF:
+                    from .cdm_trait_ref import CdmTraitReference
+                    obj = CdmTraitReference(self.ctx, obj, simple_ref)
+                elif obj.object_type == CdmObjectType.TRAIT_GROUP_DEF:
+                    from .cdm_trait_group_ref import CdmTraitGroupReference
+                    obj = CdmTraitGroupReference(self.ctx, obj, simple_ref)
+            # when the obj is a trait name or a trait reference
+            return super().append(obj, simple_ref)
+        else:
+            # Creates an non-simple-referenced CdmTraitReference object, assigns it the name passed as parameter,
+            # adds the supplied arguments to it if provided, and adds it to the collection.
+            trait_ref = cast('CdmTraitReference', super().append(obj))
+            if not trait_ref or not simple_ref_or_args:
+                return trait_ref
+
+            for item1, item2 in simple_ref_or_args:
+                trait_ref.arguments.append(item1, item2)
+
+            return trait_ref
 
     def extend(self, trait_list: Union[List['CdmTraitDefOrRef'], List['CdmTraitGroupDefOrRef']]) -> None:
         for element in trait_list:

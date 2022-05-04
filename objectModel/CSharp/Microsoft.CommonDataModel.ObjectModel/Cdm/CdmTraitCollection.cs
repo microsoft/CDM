@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -69,6 +70,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.ClearCache();
             return base.Add(name, simpleRef);
+        }
+
+        /// <summary>
+        /// Creates an non-simple-referenced CdmTraitReference object, assigns it the name passed as parameter, adds the supplied arguments to it if provided, and adds it to the collection.
+        /// </summary>
+        /// <param name="name">The name to be used for the newly created CdmTraitReference object.</param>
+        /// <param name="args">The trait reference's arguments. This is optional, call Add(string name, bool simpleRef = false) instead if creating a simpleNameReferenced CdmTraitReference object.</param>
+        /// <returns>The newly created object after it was added to the collection.</returns>
+        public CdmTraitReferenceBase Add(string name, List<Tuple<string, dynamic>> args)
+        {
+            this.ClearCache();
+            CdmTraitReference traitRef = base.Add(name) as CdmTraitReference;
+
+            if (traitRef == null || args == null)
+            {
+                return traitRef;
+            }
+
+            foreach (Tuple<string, dynamic> tuple in args)
+            {
+                traitRef.Arguments.Add(tuple.Item1, tuple.Item2);
+            }
+
+            return traitRef;
         }
 
         /// <summary>

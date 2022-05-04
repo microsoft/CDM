@@ -178,6 +178,8 @@ public class TraitToPropertyMap {
         break;
       case DEFAULT:
         return this.fetchDefaultValue(onlyFromProperty);
+      case IS_INCREMENTAL:
+        return this.fetchTraitReference(Constants.IncrementalTraitName) != null;
     }
     return null;
   }

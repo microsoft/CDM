@@ -4,7 +4,7 @@
 import importlib
 import json
 from collections import OrderedDict
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import AttributeResolutionDirectiveSet, CdmError, logger, ResolveOptions, StorageUtils
@@ -79,6 +79,11 @@ class PersistenceLayer:
                 logger.debug(self._ctx, self._TAG, self._load_document_from_path_async.__name__, doc_path,
                              'request file: {}'.format(doc_path))
                 json_data = await adapter.read_async(doc_path)
+                if StringUtils.is_blank_by_cdm_standard(json_data):
+                    error_msg = "Json Data is null or empty."
+                    logger.error(self._ctx, self._TAG, self._load_document_from_path_async.__name__, doc_path,
+                             CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, doc_path, folder._namespace, error_msg)
+                    return None
                 # log message used by navigator, do not change or remove
                 logger.debug(self._ctx, self._TAG, self._load_document_from_path_async.__name__, doc_path,
                              'received file: {}'.format(doc_path))
@@ -104,7 +109,7 @@ class PersistenceLayer:
             logger.warning(self._ctx, self._TAG, PersistenceLayer._load_document_from_path_async.__name__, doc_path,
                            CdmLogCode.WARN_PERSIST_FILE_MOD_COMPUTE_FAILED, e.Message)
 
-        if not doc_name:
+        if StringUtils.is_blank_by_cdm_standard(doc_name):
             logger.error(self._ctx, self._TAG, self._load_document_from_path_async.__name__, doc_path,
                          CdmLogCode.ERR_PERSIST_NULL_DOC_NAME)
             return None
@@ -249,7 +254,7 @@ class PersistenceLayer:
 
         # find out if the storage adapter is able to write.
         namespace = StorageUtils.split_namespace_path(new_name)[0]
-        if not namespace:
+        if StringUtils.is_blank_by_cdm_standard(namespace):
             namespace = doc._namespace
             if not namespace:
                 namespace = self._corpus.storage.default_namespace
@@ -264,7 +269,7 @@ class PersistenceLayer:
                          CdmLogCode.ERR_PERSIST_ADAPTER_WRITE_FAILURE, namespace)
             return False
 
-        if not new_name:
+        if StringUtils.is_blank_by_cdm_standard(new_name):
             logger.error(self._ctx, self._TAG, self._save_document_as_async.__name__, doc.at_corpus_path,
                          CdmLogCode.ERR_PERSIST_NULL_DOC_NAME)
             return None

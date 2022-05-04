@@ -15,6 +15,7 @@ public class E2ERelationshipPersistenceTest {
   public void toDataTest() {
     CdmCorpusDefinition corpus = new CdmCorpusDefinition();
     CdmE2ERelationship instance = corpus.makeObject(CdmObjectType.E2ERelationshipDef);
+    instance.setName("NAME");
     instance.setToEntity("TO_ENTITY");
     instance.setToEntityAttribute("TO_ENTITY_ATTRIBUTE");
     instance.setFromEntity("FROM_ENTITY");
@@ -25,11 +26,13 @@ public class E2ERelationshipPersistenceTest {
     AssertJUnit.assertEquals(result.getToEntityAttribute(), "TO_ENTITY_ATTRIBUTE");
     AssertJUnit.assertEquals(result.getFromEntity(), "FROM_ENTITY");
     AssertJUnit.assertEquals(result.getFromEntityAttribute(), "FROM_ENTITY_ATTRIBUTE");
+    AssertJUnit.assertEquals(result.getName(), "NAME");
   }
 
   @Test
   public void fromDataTest() {
     E2ERelationship dataObj = new E2ERelationship();
+    dataObj.setName("NAME");
     dataObj.setToEntity("TO_ENTITY");
     dataObj.setToEntityAttribute("TO_ENTITY_ATTRIBUTE");
     dataObj.setFromEntity("FROM_ENTITY");
@@ -40,5 +43,41 @@ public class E2ERelationshipPersistenceTest {
     AssertJUnit.assertEquals(result.getToEntityAttribute(), "TO_ENTITY_ATTRIBUTE");
     AssertJUnit.assertEquals(result.getFromEntity(), "FROM_ENTITY");
     AssertJUnit.assertEquals(result.getFromEntityAttribute(), "FROM_ENTITY_ATTRIBUTE");
+    AssertJUnit.assertEquals(result.getName(), "NAME");
+  }
+
+  @Test
+  public void toDataTestWithBlankName() {
+    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+    CdmE2ERelationship instance = corpus.makeObject(CdmObjectType.E2ERelationshipDef);
+    instance.setName("  ");
+    instance.setToEntity("TO_ENTITY");
+    instance.setToEntityAttribute("TO_ENTITY_ATTRIBUTE");
+    instance.setFromEntity("FROM_ENTITY");
+    instance.setFromEntityAttribute("FROM_ENTITY_ATTRIBUTE");
+
+    E2ERelationship result = E2ERelationshipPersistence.toData(instance, null, null);
+    AssertJUnit.assertEquals(result.getToEntity(), "TO_ENTITY");
+    AssertJUnit.assertEquals(result.getToEntityAttribute(), "TO_ENTITY_ATTRIBUTE");
+    AssertJUnit.assertEquals(result.getFromEntity(), "FROM_ENTITY");
+    AssertJUnit.assertEquals(result.getFromEntityAttribute(), "FROM_ENTITY_ATTRIBUTE");
+    AssertJUnit.assertNull(result.getName());
+  }
+
+  @Test
+  public void fromDataTestWithBlankName() {
+    E2ERelationship dataObj = new E2ERelationship();
+    dataObj.setName("  ");
+    dataObj.setToEntity("TO_ENTITY");
+    dataObj.setToEntityAttribute("TO_ENTITY_ATTRIBUTE");
+    dataObj.setFromEntity("FROM_ENTITY");
+    dataObj.setFromEntityAttribute("FROM_ENTITY_ATTRIBUTE");
+
+    CdmE2ERelationship result = E2ERelationshipPersistence.fromData(new CdmCorpusDefinition().getCtx(), dataObj);
+    AssertJUnit.assertEquals(result.getToEntity(), "TO_ENTITY");
+    AssertJUnit.assertEquals(result.getToEntityAttribute(), "TO_ENTITY_ATTRIBUTE");
+    AssertJUnit.assertEquals(result.getFromEntity(), "FROM_ENTITY");
+    AssertJUnit.assertEquals(result.getFromEntityAttribute(), "FROM_ENTITY_ATTRIBUTE");
+    AssertJUnit.assertNull(result.getName());
   }
 }

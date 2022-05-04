@@ -169,6 +169,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to convert string &apos;{0}&apos; to its corresponding enumeration value for Enum &apos;{1}&apos; on &apos;{2}&apos;..
+        /// </summary>
+        internal static string ErrEnumConversionFailure {
+            get {
+                return ResourceManager.GetString("ErrEnumConversionFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not index document..
         /// </summary>
         internal static string ErrIndexFailed {
@@ -183,6 +192,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrInvalidPath {
             get {
                 return ResourceManager.GetString("ErrInvalidPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to compute last modified time for manifest file {0}. Exception: {1}.
+        /// </summary>
+        internal static string ErrManifestFileModTimeFailure {
+            get {
+                return ResourceManager.GetString("ErrManifestFileModTimeFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This &apos;{0}&apos; object &apos;{1}&apos; does not contain the trait &apos;{2}&apos;, so it should not be in the collection &apos;{3}&apos;..
+        /// </summary>
+        internal static string ErrMissingIncrementalPartitionTrait {
+            get {
+                return ResourceManager.GetString("ErrMissingIncrementalPartitionTrait", resourceCulture);
             }
         }
         
@@ -385,6 +412,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to persist object &apos;{0}&apos;. This object contains the trait &apos;{1}&apos;, so it should not be in the collection &apos;{2}&apos;..
+        /// </summary>
+        internal static string ErrPersistIncrementalConversionError {
+            get {
+                return ResourceManager.GetString("ErrPersistIncrementalConversionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid maximum cardinality {0}. Value must be greater than or equal to 0 and less than maxCardinality..
         /// </summary>
         internal static string ErrPersistInvalidMaxCardinality {
@@ -570,6 +606,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrPersistModelJsonToAttrConversionFailure {
             get {
                 return ResourceManager.GetString("ErrPersistModelJsonToAttrConversionFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to persist object &apos;{0}&apos;. This object does not contain the trait &apos;{1}&apos;, so it should not be in the collection &apos;{2}&apos;..
+        /// </summary>
+        internal static string ErrPersistNonIncrementalConversionError {
+            get {
+                return ResourceManager.GetString("ErrPersistNonIncrementalConversionError", resourceCulture);
             }
         }
         
@@ -1141,7 +1186,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to no argument supplied for required parameter &apos;{0}&apos; of trait &apos;{1}&apos; on &apos;{2}&apos;.
+        ///   Looks up a localized string similar to No argument supplied for required parameter &apos;{0}&apos; of trait &apos;{1}&apos; on &apos;{2}&apos;.
         /// </summary>
         internal static string ErrTraitArgumentMissing {
             get {
@@ -1155,6 +1200,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrTraitAttrFetchError {
             get {
                 return ResourceManager.GetString("ErrTraitAttrFetchError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid type of argument value supplied for the parameter &apos;{0}&apos; of trait &apos;{1}&apos; on &apos;{2}&apos;..
+        /// </summary>
+        internal static string ErrTraitInvalidArgumentValueType {
+            get {
+                return ResourceManager.GetString("ErrTraitInvalidArgumentValueType", resourceCulture);
             }
         }
         
@@ -1173,6 +1227,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrUnexpectedDataType {
             get {
                 return ResourceManager.GetString("ErrUnexpectedDataType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This &apos;{0}&apos; object &apos;{1}&apos; contains the trait &apos;{2}&apos;, so it should not be in the collection &apos;{3}&apos;..
+        /// </summary>
+        internal static string ErrUnexpectedIncrementalPartitionTrait {
+            get {
+                return ResourceManager.GetString("ErrUnexpectedIncrementalPartitionTrait", resourceCulture);
             }
         }
         

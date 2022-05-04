@@ -13,6 +13,8 @@ public class LocalEntityDeclaration extends EntityDeclaration {
     private String entityPath;
     private List<DataPartition> dataPartitions;
     private List<DataPartitionPattern> dataPartitionPatterns;
+    private List<DataPartition> incrementalPartitions;
+    private List<DataPartitionPattern> incrementalPartitionPatterns;
     private OffsetDateTime lastFileStatusCheckTime;
     private OffsetDateTime lastFileModifiedTime;
     private OffsetDateTime lastChildFileModifiedTime;
@@ -43,6 +45,22 @@ public class LocalEntityDeclaration extends EntityDeclaration {
 
     public void setDataPartitionPatterns(final List<DataPartitionPattern> dataPartitionPatterns) {
         this.dataPartitionPatterns = dataPartitionPatterns;
+    }
+
+    public List<DataPartition> getIncrementalPartitions() {
+        return incrementalPartitions;
+    }
+
+    public void setIncrementalPartitions(final List<DataPartition> incrementalPartitions) {
+        this.incrementalPartitions = incrementalPartitions;
+    }
+
+    public List<DataPartitionPattern> getIncrementalPartitionPatterns() {
+        return incrementalPartitionPatterns;
+    }
+
+    public void setIncrementalPartitionPatterns(final List<DataPartitionPattern> incrementalPartitionPatterns) {
+        this.incrementalPartitionPatterns = incrementalPartitionPatterns;
     }
 
     public OffsetDateTime getLastFileStatusCheckTime() {

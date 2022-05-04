@@ -221,4 +221,23 @@ public class PersistenceLayerTest {
     boolean succeded = manifest.saveAsAsync("manifest.unSupportedExtension").join();
     Assert.assertFalse(succeded);
   }
+
+  /**
+   * Test that the persistence layer handles the case when the document is empty.
+   * @throws InterruptedException
+   * @throws ExecutionException
+   * @throws IOException
+   */
+  @Test
+  public void testLoadingEmptyJsonData() throws InterruptedException, ExecutionException, IOException {
+    String testName = "testLoadingEmptyJsonData";
+    HashSet<CdmLogCode> expectedCodes = new HashSet<>();
+    expectedCodes.add(CdmLogCode.ErrPersistFileReadFailure);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, testName, null, false, expectedCodes, false);
+    CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("empty.manifest.cdm.json").get();
+
+    Assert.assertNull(manifest);
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPersistFileReadFailure, true);
+  }
+
 }

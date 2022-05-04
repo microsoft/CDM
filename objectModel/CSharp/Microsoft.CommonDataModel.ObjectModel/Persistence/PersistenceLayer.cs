@@ -159,6 +159,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     // log message used by navigator, do not change or remove
                     Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, $"request file: {docPath}");
                     jsonData = await adapter.ReadAsync(docPath);
+                    if (StringUtils.IsBlankByCdmStandard(jsonData))
+                    {
+                        string errorMsg = "Json Data is null or empty.";
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistFileReadFailure, docPath, folder.Namespace, errorMsg);
+                        return null;
+                    }
                     // log message used by navigator, do not change or remove
                     Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, $"received file: {docPath}");
                 }
@@ -193,7 +199,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.WarnPersistFileModTimeFailure, e.Message);
             }
 
-            if (string.IsNullOrWhiteSpace(docName))
+            if (StringUtils.IsBlankByCdmStandard(docName))
             {
                 Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistNullDocName);
                 return null;
@@ -239,7 +245,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 }
                 else if (docName.EndWithOrdinalIgnoreCase(ModelJsonExtension))
                 {
-
                     docContent = await Persistence.ModelJson.ManifestPersistence.FromObject(this.Ctx, JsonConvert.DeserializeObject<Model>(jsonData), folder);
                 }
                 else if (docName.EndWithOrdinalIgnoreCase(CdmExtension))
@@ -299,10 +304,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
         {
             // Find out if the storage adapter is able to write.
             string ns = StorageUtils.SplitNamespacePath(newName).Item1;
-            if (string.IsNullOrWhiteSpace(ns))
+            if (StringUtils.IsBlankByCdmStandard(ns))
             {
                 ns = doc.Namespace;
-                if (string.IsNullOrWhiteSpace(ns))
+                if (StringUtils.IsBlankByCdmStandard(ns))
                 {
                     ns = this.Corpus.Storage.DefaultNamespace;
                 }
@@ -322,7 +327,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(newName))
+                if (StringUtils.IsBlankByCdmStandard(newName))
                 {
                     Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistNullDocName);
                     return false;

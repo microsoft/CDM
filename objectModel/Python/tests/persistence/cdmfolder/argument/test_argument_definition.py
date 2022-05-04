@@ -24,3 +24,18 @@ class TestArgument(unittest.TestCase):
 
         argument_to_data = ArgumentPersistence.to_data(argument, None, None)
         self.assertEqual(0, argument_to_data)
+
+    def test_loading_blank_name(self):
+        '''Test loading an argument with blank name & value 0 (number).'''
+
+        corpus = CdmCorpusDefinition()
+        argument_data = JObject({
+            'name': " ",
+            'value': 0
+        })
+
+        argument = ArgumentPersistence.from_data(corpus.ctx, argument_data)
+        self.assertEqual(0, argument.value)
+
+        argument_to_data = ArgumentPersistence.to_data(argument, None, None)
+        self.assertEqual(0, argument_to_data)

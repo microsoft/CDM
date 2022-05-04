@@ -22,6 +22,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionDirective;
+import com.microsoft.commondatamodel.objectmodel.utilities.Constants;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -496,8 +497,8 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         origDoc = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
         docRes.getImports().add(origDoc, "resolvedFrom");
 
-        if (this.getInDocument().getImports().item("cdm:/foundations.cdm.json") != null) {
-          docRes.getImports().add("cdm:/foundations.cdm.json");
+        if (this.getInDocument().getImports().item(Constants.FoundationsCorpusPath) != null) {
+          docRes.getImports().add(Constants.FoundationsCorpusPath);
         }
 
         docRes.setDocumentVersion(this.getInDocument().getDocumentVersion());

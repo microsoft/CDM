@@ -10,7 +10,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
-    using Microsoft.CommonDataModel.ObjectModel.Storage;
 
     public class CdmManifestDefinition : CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus
     {
@@ -517,6 +516,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
+            await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+        }
+
+        /// <inheritdoc />
+        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None)
+        {
             using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
                 using (this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace)?.CreateFileQueryCacheContext())
@@ -536,10 +541,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
 
                     foreach (var entity in this.Entities)
-                        await entity.FileStatusCheckAsync();
+                    {
+                        if (entity is CdmReferencedEntityDeclarationDefinition)
+                        {
+                            await entity.FileStatusCheckAsync();
+                        }
+                        else if (entity is CdmLocalEntityDeclarationDefinition)
+                        {
+                            await (entity as CdmLocalEntityDeclarationDefinition).FileStatusCheckAsync(partitionFileStatusCheckType, incrementalType);
+                        }
+                    }
 
                     foreach (var subManifest in this.SubManifests)
+                    {
                         await subManifest.FileStatusCheckAsync();
+                    }
                 }
             }
         }

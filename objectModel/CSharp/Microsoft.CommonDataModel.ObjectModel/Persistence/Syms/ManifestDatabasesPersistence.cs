@@ -39,9 +39,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             manifest.Namespace = nameSpace;
             manifest.Explanation = "This manifest contains list of syms DB as sub-manifest";
 
-            if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == "cdm:/foundations.cdm.json"))
+            if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == Constants.FoundationsCorpusPath))
             {
-                manifest.Imports.Add("cdm:/foundations.cdm.json");
+                manifest.Imports.Add(Constants.FoundationsCorpusPath);
             }
 
             if (dataObjs != null && dataObjs.Databases.Count > 0)

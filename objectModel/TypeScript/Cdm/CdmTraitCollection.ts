@@ -37,18 +37,35 @@ export class CdmTraitCollection extends CdmCollection<CdmTraitReferenceBase> {
         super.insert(index, traitReference);
     }
 
-    public push(trait: string | CdmTraitDefinition | CdmTraitGroupDefinition | CdmTraitReferenceBase, simpleRef: boolean = false)
+    public push(trait: string | CdmTraitDefinition | CdmTraitGroupDefinition | CdmTraitReferenceBase, simpleRefOrArgs: boolean | [string, any][] = undefined)
                 : CdmTraitReferenceBase {
         this.clearCache();
 
-        if (typeof trait === 'string') {
-            return super.push(trait, simpleRef);
-        } else if (isCdmTraitDefinition(trait)) {
-            return super.push(new CdmTraitReference(this.ctx, trait, simpleRef, false));
-        } else if (isCdmTraitGroupDefinition(trait)) {
-            return super.push(new CdmTraitGroupReference(this.ctx, trait, simpleRef));
+        if (simpleRefOrArgs === undefined || (simpleRefOrArgs !== undefined && typeof simpleRefOrArgs === 'boolean')) {
+            let simpleRef: boolean = simpleRefOrArgs !== undefined ? simpleRefOrArgs as boolean : false
+            if (typeof trait === 'string') {
+                return super.push(trait, simpleRef);
+            } else if (isCdmTraitDefinition(trait)) {
+                return super.push(new CdmTraitReference(this.ctx, trait, simpleRef, false));
+            } else if (isCdmTraitGroupDefinition(trait)) {
+                return super.push(new CdmTraitGroupReference(this.ctx, trait, simpleRef));
+            } else {
+                return super.push(trait);
+            }
         } else {
-            return super.push(trait);
+            if (typeof trait === 'string') {
+                const traitRef: CdmTraitReference = super.push(trait) as CdmTraitReference;
+                if (traitRef === undefined || simpleRefOrArgs === undefined) {
+                    return traitRef;
+                }
+    
+                for (const tupleList of simpleRefOrArgs as []) {
+                    traitRef.arguments.push(tupleList[0], tupleList[1]);
+                }
+    
+                return traitRef;
+            }
+            return undefined;
         }
     }
 

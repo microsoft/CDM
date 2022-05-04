@@ -42,8 +42,6 @@ import java.util.stream.Collectors;
 public class ManifestPersistence {
   private static final String TAG = ManifestPersistence.class.getSimpleName();
 
-  private static final String FOUNDATIONS = "cdm:/foundations.cdm.json";
-
   /**
    * Whether this persistence class has async methods.
    */
@@ -75,15 +73,18 @@ public class ManifestPersistence {
         .getAllItems()
         .parallelStream()
         .noneMatch(importPresent ->
-            Objects.equals(importPresent.getCorpusPath(), FOUNDATIONS))) {
-      manifest.getImports().add(FOUNDATIONS);
+            Objects.equals(importPresent.getCorpusPath(), Constants.FoundationsCorpusPath))) {
+      manifest.getImports().add(Constants.FoundationsCorpusPath);
     }
 
     manifest.setExplanation(obj.getDescription());
     manifest.setLastFileModifiedTime(obj.getModifiedTime());
     manifest.setLastChildFileModifiedTime(obj.getLastChildFileModifiedTime());
     manifest.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
-    manifest.setDocumentVersion(obj.getDocumentVersion());
+
+    if (!StringUtils.isBlankByCdmStandard(obj.getDocumentVersion())) {
+      manifest.setDocumentVersion(obj.getDocumentVersion());
+    }
 
     if (obj.getApplication() != null) {
       final CdmTraitReference applicationTrait = ctx.getCorpus()
@@ -346,7 +347,7 @@ public class ManifestPersistence {
                                 entity.getEntityPath()
                         );
 
-                if (StringUtils.isNullOrEmpty(location)) {
+                if (StringUtils.isBlankByCdmStandard(location)) {
                   Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
                   element = null;
                 }

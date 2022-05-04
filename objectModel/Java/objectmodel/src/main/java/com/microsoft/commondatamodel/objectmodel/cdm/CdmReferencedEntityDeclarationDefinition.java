@@ -236,4 +236,16 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
     // Intended to return null.
     return null;
   }
+
+  @Override
+  public CdmCollection<CdmDataPartitionDefinition> getIncrementalPartitions() {
+    // Intended to return null.
+    return null;
+  }
+
+  @Override
+  public CdmCollection<CdmDataPartitionPatternDefinition> getIncrementalPartitionPatterns () {
+    // Intended to return null.
+    return null;
+  }
 }

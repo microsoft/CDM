@@ -4,6 +4,7 @@
 from typing import Any, Callable, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType, CdmLogCode
+from . import Constants
 from .logging import logger
 
 if TYPE_CHECKING:
@@ -160,6 +161,8 @@ class TraitToPropertyMap:
                 return att_ref.fetch_object_definition_name()
         elif property_name == 'defaultValue':
             return self._fetch_default_value(only_from_property)
+        elif property_name == 'isIncremental':
+            return self._fetch_trait_reference(Constants._INCREMENTAL_TRAIT_NAME) is not None
 
         return None
 

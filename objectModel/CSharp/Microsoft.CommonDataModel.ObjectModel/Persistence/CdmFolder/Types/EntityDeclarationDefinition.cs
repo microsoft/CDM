@@ -57,6 +57,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public List<DataPartitionPattern> DataPartitionPatterns { get; set; }
 
         /// <summary>
+        /// Gets or sets the incremental partitions.
+        /// </summary>
+        public List<DataPartition> IncrementalPartitions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the incremental partition patterns.
+        /// </summary>
+        public List<DataPartitionPattern> IncrementalPartitionPatterns { get; set; }
+
+        /// <summary>
         /// The last file status check time.
         /// </summary>
         public string LastFileStatusCheckTime { get; set; }

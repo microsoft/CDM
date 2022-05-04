@@ -140,9 +140,8 @@ public class CdmCollectionTest {
   }
 
   @Test
-  public void testCdmCollectionChangeMakesDocumentDirty() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/nothing");
+  public void testCdmCollectionChangeMakesDocumentDirty() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmCollection<CdmEntityReference> collection =
         new CdmCollection<>(manifest.getCtx(), manifest, CdmObjectType.EntityRef);
 

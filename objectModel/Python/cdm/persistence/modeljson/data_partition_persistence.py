@@ -6,15 +6,15 @@ import dateutil.parser
 
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import logger, TraitToPropertyMap
+from cdm.utilities.string_utils import StringUtils
 
 from . import extension_helper, utils
 from .types import Partition
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDataPartitionDefinition, CdmFolderDefinition, CdmTraitDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext, CdmDataPartitionDefinition, CdmFolderDefinition, CdmTraitDefinition
     from cdm.utilities import CopyOptions, ResolveOptions
 
-    from .types import CsvFormatSettings
 
 _TAG = 'DataPartitionPersistence'
 
@@ -24,11 +24,11 @@ class DataPartitionPersistence:
                         local_extension_trait_def_list: List['CdmTraitDefinition'], document_folder: 'CdmFolderDefinition') \
             -> Optional['CdmDataPartitionDefinition']:
         data_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, data.name if data.get('name') else None)
-        if data.get('description') and not data.get('description').isspace():
+        if not StringUtils.is_blank_by_cdm_standard(data.get('description')):
             data_partition.description = data.get('description')
         data_partition.location = ctx.corpus.storage.create_relative_corpus_path(ctx.corpus.storage.adapter_path_to_corpus_path(data.location), document_folder)
 
-        if not data_partition.location:
+        if StringUtils.is_blank_by_cdm_standard(data_partition.location):
             logger.warning(ctx, _TAG,  DataPartitionPersistence.from_data.__name__, None,
                            CdmLogCode.WARN_PERSIST_PARTITION_LOC_MISSING , data_partition.name)
 
@@ -48,16 +48,19 @@ class DataPartitionPersistence:
 
         await utils.process_annotations_from_data(ctx, data, data_partition.exhibits_traits)
 
+        csv_format_trait = data_partition.exhibits_traits.item('is.partition.format.CSV')
+
         file_format_settings = data.get('fileFormatSettings')
-
         if file_format_settings and file_format_settings.type == 'CsvFormatSettings':
-            csv_format_trait = utils.create_csv_trait(file_format_settings, ctx)
+            partition_trait_existed = csv_format_trait is not None
+            csv_format_trait = utils.create_csv_trait(file_format_settings, ctx, csv_format_trait)
 
-            if csv_format_trait:
-                data_partition.exhibits_traits.append(csv_format_trait)
-            else:
+            if csv_format_trait is None:
                 logger.error(ctx, _TAG, DataPartitionPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_CSV_PROCESSING_ERROR)
                 return
+            
+            if not partition_trait_existed:
+                data_partition.exhibits_traits.append(csv_format_trait)
 
         extension_helper.process_extension_from_json(ctx, data, data_partition.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
 
@@ -79,7 +82,7 @@ class DataPartitionPersistence:
                            CdmLogCode.WARN_PERSIST_PARTITION_NAME_NULL)
             result.name = ''
 
-        if not result.location:
+        if StringUtils.is_blank_by_cdm_standard(result.location):
             logger.warning(instance.ctx, _TAG, DataPartitionPersistence.to_data.__name__, instance.at_corpus_path,
                            CdmLogCode.WARN_PERSIST_PARTITION_LOC_MISSING, result.Name)
 

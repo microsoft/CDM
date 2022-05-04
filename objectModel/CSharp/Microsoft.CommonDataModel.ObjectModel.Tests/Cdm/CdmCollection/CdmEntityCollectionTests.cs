@@ -18,7 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestManifestAddEntityWithLocalizedPaths()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var cdmCorpus = manifest.Ctx.Corpus;
             
             var entity = new CdmEntityDefinition(cdmCorpus.Ctx, "entityName", null);
@@ -50,7 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestManifestCanAddEntityDeclaration()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var entity = new CdmEntityDefinition(manifest.Ctx, "entityName", null);
 
             CdmCollectionHelperFunctions.CreateDocumentForEntity(manifest.Ctx.Corpus, entity);
@@ -73,7 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestManifestCanAddEntityDefinition()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var entity = new CdmEntityDefinition(manifest.Ctx, "entityName", null);
 
             CdmCollectionHelperFunctions.CreateDocumentForEntity(manifest.Ctx.Corpus, entity);
@@ -160,7 +160,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmEntityCollectionRemoveEntityDeclarationDefinition()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var entity = new CdmEntityDefinition(manifest.Ctx, "entityName", null);
             CdmCollectionHelperFunctions.CreateDocumentForEntity(manifest.Ctx.Corpus, entity);
             var otherEntity = new CdmEntityDefinition(manifest.Ctx, "otherEntityName", null);

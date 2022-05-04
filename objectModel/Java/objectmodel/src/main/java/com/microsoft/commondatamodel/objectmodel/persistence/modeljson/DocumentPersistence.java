@@ -15,6 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
+import com.microsoft.commondatamodel.objectmodel.utilities.Constants;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -41,7 +42,7 @@ public class DocumentPersistence {
               docName);
 
       // Import at least foundations.
-      document.getImports().add("cdm:/foundations.cdm.json");
+      document.getImports().add(Constants.FoundationsCorpusPath);
 
       final CdmEntityDefinition entity =
           EntityPersistence.fromData(
@@ -57,7 +58,7 @@ public class DocumentPersistence {
 
       if (obj.getImports() != null) {
         for (final Import anImport : obj.getImports()) {
-          if (Objects.equals("cdm:/foundations.cdm.json", anImport.getCorpusPath())) {
+          if (Objects.equals(Constants.FoundationsCorpusPath, anImport.getCorpusPath())) {
             // Don't add foundations twice.
             continue;
           }
@@ -102,7 +103,7 @@ public class DocumentPersistence {
                     String absolutePath = ctx.getCorpus()
                         .getStorage()
                         .createAbsoluteCorpusPath(cdmImport.getCorpusPath(), documentDefinition);
-                    if (!StringUtils.isNullOrEmpty(documentDefinition.getNamespace()) && absolutePath.startsWith(documentDefinition.getNamespace() + ":")) {
+                    if (!StringUtils.isBlankByCdmStandard(documentDefinition.getNamespace()) && absolutePath.startsWith(documentDefinition.getNamespace() + ":")) {
                       absolutePath = absolutePath.substring(documentDefinition.getNamespace().length() + 1);
                     }
                     cdmImport.setCorpusPath(ctx.getCorpus()

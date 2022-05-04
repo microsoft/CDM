@@ -6,7 +6,8 @@ from typing import List, Optional, Union, TYPE_CHECKING
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.objectmodel import CdmDocumentDefinition
 from cdm.persistence.cdmfolder.import_persistence import ImportPersistence as CdmImportPersistence
-from cdm.utilities import logger
+from cdm.utilities import logger, Constants
+from cdm.utilities.string_utils import StringUtils
 
 from .entity_persistence import EntityPersistence
 
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
 _TAG = 'DocumentPersistence'
 
+
 class DocumentPersistence:
     @staticmethod
     async def from_data(ctx: 'CdmCorpusContext', data_obj: 'LocalEntity', extension_trait_def_list: List['CdmTraitDefinition'],
@@ -25,7 +27,7 @@ class DocumentPersistence:
         doc = ctx.corpus.make_object(CdmObjectType.DOCUMENT_DEF, '{}.cdm.json'.format(data_obj.name))
 
         # import at least foundations
-        doc.imports.append('cdm:/foundations.cdm.json')
+        doc.imports.append(Constants._FOUNDATIONS_CORPUS_PATH)
 
         entity_dec = await EntityPersistence.from_data(ctx, data_obj, extension_trait_def_list, local_extension_trait_def_list)
 
@@ -35,7 +37,7 @@ class DocumentPersistence:
 
         if data_obj.get('imports'):
             for element in data_obj.imports:
-                if element.corpusPath == 'cdm:/foundations.cdm.json':
+                if element.corpusPath == Constants._FOUNDATIONS_CORPUS_PATH:
                     # don't add foundations twice
                     continue
 
@@ -67,7 +69,7 @@ class DocumentPersistence:
                     # so it is necessary to recalculate the path to be relative to the manifest.
                     absolute_path = ctx.corpus.storage.create_absolute_corpus_path(imp.corpusPath, document)
 
-                    if document._namespace and absolute_path.startswith(document._namespace + ':'):
+                    if not StringUtils.is_blank_by_cdm_standard(document._namespace) and absolute_path.startswith(document._namespace + ':'):
                         absolute_path = absolute_path[len(document._namespace) + 1:]
 
                     imp.corpusPath = ctx.corpus.storage.create_relative_corpus_path(absolute_path, manifest)

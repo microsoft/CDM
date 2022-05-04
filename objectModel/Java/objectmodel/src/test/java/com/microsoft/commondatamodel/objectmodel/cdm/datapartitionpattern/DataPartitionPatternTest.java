@@ -6,22 +6,41 @@ package com.microsoft.commondatamodel.objectmodel.cdm.datapartitionpattern;
 import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.*;
+
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionPatternDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmLocalEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmIncrementalPartitionType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.enums.PartitionFileStatusCheckType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.Constants;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
@@ -114,7 +133,7 @@ public class DataPartitionPatternTest {
    * Tests data partition objects created by a partition pattern do not share the same trait with the partition pattern
    */
   @Test
-  public void testRefreshesDataPartitionPatternsWithTrait() throws IOException, InterruptedException {
+  public void testRefreshesDataPartitionPatternsWithTrait() throws InterruptedException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshesDataPartitionPatternsWithTrait");
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
 
@@ -145,6 +164,387 @@ public class DataPartitionPatternTest {
     partitionTraitRef.getArguments().get(0).setValue(2);
 
     Assert.assertEquals(((CdmTraitReference)partitionEntity.getDataPartitions().get(1).getExhibitsTraits().item("testTrait")).getArguments().get(0).getValue(), 1);
+  }
+
+  /**
+   * Tests refreshing incremental partition files that match the regular expression
+   */
+  @Test
+  public void testIncrementalPatternsRefreshesFullAndIncremental() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testIncrementalPatternsRefreshesFullAndIncremental");
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getDataPartitionPatterns().size(), 1);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 2);
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.FullAndIncremental).join();
+
+    // Mac and Windows behave differently when listing file content, so we don't want to be strict about partition file order
+    int totalExpectedPartitionsFound = 0;
+
+    Assert.assertEquals(partitionEntity.getDataPartitionPatterns().size(), 1);
+    totalExpectedPartitionsFound++;
+    Assert.assertFalse(partitionEntity.getDataPartitions().get(0).isIncremental());
+
+    for (CdmDataPartitionDefinition partition : partitionEntity.getIncrementalPartitions()) {
+      switch (partition.getLocation()) {
+        case "/IncrementalData/2018/8/15/Deletes/delete1.csv":
+          totalExpectedPartitionsFound++;
+          Assert.assertEquals(partition.getArguments().size(), 4);
+          Assert.assertTrue(partition.getArguments().containsKey("year"));
+          Assert.assertEquals(partition.getArguments().get("year").get(0), "2018");
+          Assert.assertTrue(partition.getArguments().containsKey("month"));
+          Assert.assertEquals(partition.getArguments().get("month").get(0), "8");
+          Assert.assertTrue(partition.getArguments().containsKey("day"));
+          Assert.assertEquals(partition.getArguments().get("day").get(0), "15");
+          Assert.assertTrue(partition.getArguments().containsKey("deletePartitionNumber"));
+          Assert.assertEquals(partition.getArguments().get("deletePartitionNumber").get(0), "1");
+          CdmTraitReference trait1 = (CdmTraitReference)partition.getExhibitsTraits().get(0);
+          Assert.assertEquals(trait1.fetchObjectDefinitionName(), Constants.IncrementalTraitName);
+          Assert.assertEquals(trait1.getArguments().item(Constants.IncrementalPatternParameterName).getValue(), "DeletePattern");
+          Assert.assertEquals(trait1.getArguments().item("type").getValue(), CdmIncrementalPartitionType.Delete.toString());
+          Assert.assertEquals(trait1.getArguments().item("fullDataPartitionPatternName").getValue(), "FullDataPattern");
+          break;
+        case "/IncrementalData/2018/8/15/Deletes/delete2.csv":
+          totalExpectedPartitionsFound++;
+          Assert.assertEquals(partition.getArguments().size(), 4);
+          Assert.assertEquals(partition.getArguments().get("year").get(0), "2018");
+          Assert.assertEquals(partition.getArguments().get("month").get(0), "8");
+          Assert.assertEquals(partition.getArguments().get("day").get(0), "15");
+          Assert.assertEquals(partition.getArguments().get("deletePartitionNumber").get(0), "2");
+          CdmTraitReference trait2 = (CdmTraitReference)partition.getExhibitsTraits().get(0);
+          Assert.assertEquals(trait2.fetchObjectDefinitionName(), Constants.IncrementalTraitName);
+          Assert.assertEquals(trait2.getArguments().item(Constants.IncrementalPatternParameterName).getValue(), "DeletePattern");
+          Assert.assertEquals(trait2.getArguments().item("type").getValue(), CdmIncrementalPartitionType.Delete.toString());
+          Assert.assertEquals(trait2.getArguments().item("fullDataPartitionPatternName").getValue(), "FullDataPattern");
+          break;
+        case "/IncrementalData/2018/8/15/Upserts/upsert1.csv":
+          totalExpectedPartitionsFound++;
+          Assert.assertEquals(partition.getArguments().size(), 4);
+          Assert.assertEquals(partition.getArguments().get("year").get(0), "2018");
+          Assert.assertEquals(partition.getArguments().get("month").get(0), "8");
+          Assert.assertEquals(partition.getArguments().get("day").get(0), "15");
+          Assert.assertEquals(partition.getArguments().get("upsertPartitionNumber").get(0), "1");
+          CdmTraitReference trait3 = (CdmTraitReference)partition.getExhibitsTraits().get(0);
+          Assert.assertEquals(trait3.fetchObjectDefinitionName(), Constants.IncrementalTraitName);
+          Assert.assertEquals(trait3.getArguments().item(Constants.IncrementalPatternParameterName).getValue(), "UpsertPattern");
+          Assert.assertEquals(trait3.getArguments().item("type").getValue(), CdmIncrementalPartitionType.Upsert.toString());
+          break;
+        default:
+          totalExpectedPartitionsFound++;
+          break;
+      }
+    }
+    Assert.assertEquals(totalExpectedPartitionsFound, 4);
+  }
+
+  /**
+   * Tests refreshing incremental partition files that match the regular expression
+   */
+  @Test
+  public void testIncrementalPatternsRefreshesDeleteIncremental() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testIncrementalPatternsRefreshesDeleteIncremental");
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    // Test without incremental partition added
+    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 2);
+    CdmTraitReference trait0 = (CdmTraitReference)partitionEntity.getIncrementalPartitionPatterns().get(0).getExhibitsTraits().get(0);
+    Assert.assertEquals(trait0.getArguments().item("type").getValue().toString(), CdmIncrementalPartitionType.Upsert.toString());
+    CdmTraitReference trait1 = (CdmTraitReference)partitionEntity.getIncrementalPartitionPatterns().get(1).getExhibitsTraits().get(0);
+    Assert.assertEquals(trait1.getArguments().item("type").getValue().toString(), CdmIncrementalPartitionType.Delete.toString());
+
+    OffsetDateTime timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC);
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+
+    int totalExpectedPartitionsFound = 0;
+    for (final CdmDataPartitionDefinition partition : partitionEntity.getIncrementalPartitions()) {
+      if (partition.getLastFileStatusCheckTime().compareTo(timeBeforeLoad) > 0) {
+        totalExpectedPartitionsFound++;
+        CdmTraitReference traitRef = (CdmTraitReference)partition.getExhibitsTraits().item(Constants.IncrementalTraitName);
+        Assert.assertEquals(traitRef.getArguments().item("type").getValue().toString(), CdmIncrementalPartitionType.Delete.toString());
+      }
+    }
+
+    Assert.assertEquals(totalExpectedPartitionsFound, 2);
+
+    //////////////////////////////////////////////////////////////////
+
+    // Test with incremental partition added
+    partitionEntity.getIncrementalPartitions().clear();
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+
+    final CdmDataPartitionDefinition upsertIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "2019UpsertPartition1", false);
+    upsertIncrementalPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+    upsertIncrementalPartition.setLocation("/IncrementalData/Upserts/upsert1.csv");
+    upsertIncrementalPartition.setSpecializedSchema("csv");
+    upsertIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Upsert.toString())));
+
+    final CdmDataPartitionDefinition deleteIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "2019DeletePartition1", false);
+    deleteIncrementalPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+    deleteIncrementalPartition.setLocation("/IncrementalData/Deletes/delete1.csv");
+    deleteIncrementalPartition.setSpecializedSchema("csv");
+    deleteIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Delete.toString())));
+
+    partitionEntity.getIncrementalPartitions().add(upsertIncrementalPartition);
+    partitionEntity.getIncrementalPartitions().add(deleteIncrementalPartition);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 2);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 2);
+
+    totalExpectedPartitionsFound = 0;
+    timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).getLastFileStatusCheckTime().compareTo(timeBeforeLoad) <= 0);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).getLastFileStatusCheckTime().compareTo(timeBeforeLoad) <= 0);
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+
+    for (CdmDataPartitionDefinition partition : partitionEntity.getIncrementalPartitions()) {
+      if (partition.getLastFileStatusCheckTime().compareTo(timeBeforeLoad) > 0) {
+        totalExpectedPartitionsFound++;
+        final CdmTraitReference traitRef = (CdmTraitReference)partition.getExhibitsTraits().item(Constants.IncrementalTraitName);
+        Assert.assertEquals(traitRef.getArguments().item("type").getValue().toString(), CdmIncrementalPartitionType.Delete.toString());
+      }
+    }
+
+    Assert.assertEquals(totalExpectedPartitionsFound, 3);
+  }
+
+  /**
+   * Tests refreshing partition pattern with invalid incremental partition trait and invalid arguments.
+   */
+  @Test
+  public void testPatternRefreshesWithInvalidTraitAndArgument() throws InterruptedException {
+    // providing invalid enum value of CdmIncrementalPartitionType in string
+    // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+
+    HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrEnumConversionFailure));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitionPatterns().get(0).isIncremental());
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrEnumConversionFailure, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // providing invalid argument value - supply integer
+    // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrTraitInvalidArgumentValueType));
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitionPatterns().get(0).isIncremental());
+    CdmTraitReference traitRef = (CdmTraitReference)partitionEntity.getIncrementalPartitionPatterns().get(0).getExhibitsTraits().item(Constants.IncrementalTraitName);
+    traitRef.getArguments().item("type").setValue(123);
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitInvalidArgumentValueType, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // not providing argument
+    // "traitReference": "is.partition.incremental", "arguments": []]
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrTraitArgumentMissing));
+
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitionPatterns().get(0).isIncremental());
+    traitRef = (CdmTraitReference)partitionEntity.getIncrementalPartitionPatterns().get(0).getExhibitsTraits().item(Constants.IncrementalTraitName);
+    traitRef.getArguments().clear();
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitArgumentMissing, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // not providing trait
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrMissingIncrementalPartitionTrait));
+
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitionPatterns().get(0).isIncremental());
+    partitionEntity.getIncrementalPartitionPatterns().get(0).getExhibitsTraits().clear();
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrMissingIncrementalPartitionTrait, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // data partition pattern in DataPartitionPatterns collection contains incremental partition trait
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrUnexpectedIncrementalPartitionTrait));
+
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitionPatterns().get(0).isIncremental());
+    final CdmDataPartitionPatternDefinition patternCopy = (CdmDataPartitionPatternDefinition)partitionEntity.getIncrementalPartitionPatterns().get(0).copy();
+    partitionEntity.getDataPartitionPatterns().add(patternCopy);
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
+  }
+
+  /**
+   * Tests refreshing partition with invalid incremental partition trait and invalid arguments.
+   */
+  @Test
+  public void testPartitionRefreshesWithInvalidTraitAndArgument() throws InterruptedException {
+    // providing invalid enum value of CdmIncrementalPartitionType in string
+    // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+
+    HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrEnumConversionFailure));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/partition.manifest.cdm.json").join();
+
+    CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).isIncremental());
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrEnumConversionFailure, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // providing invalid argument value - supply integer
+    // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrTraitInvalidArgumentValueType));
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/partition.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).isIncremental());
+    CdmTraitReference traitRef = (CdmTraitReference)partitionEntity.getIncrementalPartitions().get(0).getExhibitsTraits().item(Constants.IncrementalTraitName);
+    traitRef.getArguments().item("type").setValue(123);
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitInvalidArgumentValueType, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // not providing argument
+    // "traitReference": "is.partition.incremental", "arguments": []]
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrTraitArgumentMissing));
+
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/partition.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).isIncremental());
+    traitRef = (CdmTraitReference)partitionEntity.getIncrementalPartitions().get(0).getExhibitsTraits().item(Constants.IncrementalTraitName);
+    traitRef.getArguments().clear();
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitArgumentMissing, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // not providing trait
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrMissingIncrementalPartitionTrait));
+
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/partition.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).isIncremental());
+    partitionEntity.getIncrementalPartitions().get(0).getExhibitsTraits().clear();
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrMissingIncrementalPartitionTrait, true);
+
+    //////////////////////////////////////////////////////////////////
+
+    // data partition in DataPartitions collection contains incremental partition trait
+    expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.ErrUnexpectedIncrementalPartitionTrait));
+
+    corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionRefreshesWithInvalidTraitAndArgument", false, expectedLogCodes);
+    manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/partition.manifest.cdm.json").join();
+
+    partitionEntity = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 1);
+    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).isIncremental());
+    final CdmDataPartitionDefinition partitionCopy = (CdmDataPartitionDefinition)partitionEntity.getIncrementalPartitions().get(0).copy();
+    partitionEntity.getDataPartitions().add(partitionCopy);
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full).join();
+    TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
+  }
+
+  /**
+   * Tests fileStatusCheckAsync(), fileStatusCheckAsync(PartitionFileStatusCheckType.Full), and fileStatusCheckAsync(PartitionFileStatusCheckType.None).
+   */
+  @Test
+  public void testPartitionFileRefreshTypeFullOrNone() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionFileRefreshTypeFullOrNone");
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
+
+    // Test manifest.fileStatusCheckAsync();
+    CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition) manifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getDataPartitionPatterns().size(), 1);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+
+    manifest.fileStatusCheckAsync().join();
+
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 1);
+    Assert.assertFalse(partitionEntity.getDataPartitions().get(0).isIncremental());
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+
+    //////////////////////////////////////////////////////////////////
+
+    // Test manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+    partitionEntity.getDataPartitions().clear();
+    partitionEntity.getIncrementalPartitions().clear();
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getDataPartitionPatterns().size(), 1);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full).join();
+
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 1);
+    Assert.assertFalse(partitionEntity.getDataPartitions().get(0).isIncremental());
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+
+    //////////////////////////////////////////////////////////////////
+
+    // Test manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.None);
+    partitionEntity.getDataPartitions().clear();
+    partitionEntity.getIncrementalPartitions().clear();
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getDataPartitionPatterns().size(), 1);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
+    OffsetDateTime timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC);
+    Thread.sleep(100);
+    Assert.assertTrue(manifest.getLastFileStatusCheckTime().compareTo(timeBeforeLoad) < 0);
+
+    manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.None).join();
+
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 0);
+    Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
+    Assert.assertTrue(manifest.getLastFileStatusCheckTime().compareTo(timeBeforeLoad) > 0);
   }
 
   /**

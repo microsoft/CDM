@@ -1,0 +1,37 @@
+{
+    "$schema": "CdmManifestDefinition.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "manifestName": "partition",
+    "explanation": "test cdm folder for cdm version 1.0+",
+    "imports": [
+        {
+            "uri": "/primitives.cdm.json"
+        }
+    ],
+    "entities": [
+        {
+            "entityName": "testEntity",
+            "explanation": "test explanation",
+            "entitySchema": "someEntity.cdm.json/SomeEntity",
+            "incrementalPartitions": [
+                {
+                    "name": "DeletePartition",
+                    "location": "/IncrementalData/2018/8/15/Deletes/delete1.csv",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.incremental",
+                            "arguments": [
+                                {
+                                    "name": "type",
+                                    "value": "typo"
+                                }
+                            ]
+                        }
+                    ],
+                    "specializedSchema": "csv"
+                }
+            ]
+        }
+    ],
+    "subManifests": []
+}

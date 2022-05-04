@@ -965,7 +965,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             errorMesg += await InvokeMethod(CreateOrUpdateTableEntity, symsManifestContent.Entities, symsManifestContent.Database.Name, adapter);
             errorMesg += await InvokeMethod(CreateOrUpdateRelationshipEntity, symsManifestContent.Relationships, symsManifestContent.Database.Name, adapter);
 
-            if (!string.IsNullOrEmpty(errorMesg))
+            if (!StringUtils.IsBlankByCdmStandard(errorMesg))
             {
                 throw new Exception(errorMesg);
             }

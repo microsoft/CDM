@@ -14,7 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmDefinitionCollectionAdd()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
 
             var attribute = new CdmAttributeContext(document.Ctx, "the attribute");
@@ -43,7 +43,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmDefinitionCollectionInsert()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
 
             var ent1 = document.Definitions.Add("ent1");
             var ent2 = document.Definitions.Add("ent2");
@@ -66,7 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmDefinitionCollectionAddEntityByProvidingName()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
 
             var entity = document.Definitions.Add("theNameOfTheEntity");
@@ -80,7 +80,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmDefinitionCollectionAddByProvidingTypeAndName()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
 
             var attribute = document.Definitions.Add(CdmObjectType.AttributeContextDef, "Name of attribute");
@@ -98,7 +98,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmDefinitionCollectionAddRange()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
 
             var attribute = new CdmAttributeContext(document.Ctx, "the attribute");

@@ -32,7 +32,7 @@ public class EntityPersistence {
       final List<CdmTraitDefinition> extensionTraitDefList,
       final List<CdmTraitDefinition> localExtensionTraitDefList) {
     final CdmEntityDefinition entity = ctx.getCorpus().makeObject(CdmObjectType.EntityDef, obj.getName());
-    if (!StringUtils.isNullOrTrimEmpty(obj.getDescription())) {
+    if (!StringUtils.isBlankByCdmStandard(obj.getDescription())) {
       entity.setDescription(obj.getDescription());
     }
 

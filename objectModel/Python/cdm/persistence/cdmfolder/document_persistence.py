@@ -7,6 +7,7 @@ from cdm.enums import CdmObjectType
 from cdm.persistence import PersistenceLayer
 from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityDefinition
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils, logger
+from cdm.utilities.string_utils import StringUtils
 
 from cdm.enums import CdmLogCode
 from .attribute_group_persistence import AttributeGroupPersistence
@@ -41,14 +42,14 @@ class DocumentPersistence:
         document._namespace = namespace
 
         if data:
-            if data.get('schema'):
+            if not StringUtils.is_blank_by_cdm_standard(data.schema):
                 document.schema = data.schema
 
             # support old model syntax
-            if data.get('schemaVersion'):
+            if not StringUtils.is_blank_by_cdm_standard(data.schemaVersion):
                 document.json_schema_semantic_version = data.schemaVersion
 
-            if data.get('documentVersion'):
+            if not StringUtils.is_blank_by_cdm_standard(data.documentVersion):
                 document.document_version = data.documentVersion
 
             if data.get('imports'):

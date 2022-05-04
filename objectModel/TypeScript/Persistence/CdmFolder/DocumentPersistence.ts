@@ -14,7 +14,8 @@ import {
     Logger,
     cdmLogCode,
     resolveOptions,
-    CdmTraitReferenceBase
+    CdmTraitReferenceBase,
+    StringUtils
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
@@ -47,15 +48,15 @@ export class DocumentPersistence {
         document.namespace = namespace;
 
         if (object) {
-            if (object.$schema) {
+            if (!StringUtils.isBlankByCdmStandard(object.$schema)) {
                 document.schema = object.$schema;
             }
             // support old model syntax
-            if (object.schemaVersion) {
+            if (!StringUtils.isBlankByCdmStandard(object.schemaVersion)) {
                 document.jsonSchemaSemanticVersion = object.schemaVersion;
             }
 
-            if (object.documentVersion) {
+            if (!StringUtils.isBlankByCdmStandard(object.documentVersion)) {
                 document.documentVersion = object.documentVersion;
             }
 
@@ -95,7 +96,7 @@ export class DocumentPersistence {
             isResolvedDoc = isResolvedDoc || !!entity.attributeContext;
         }
 
-        if (object.jsonSchemaSemanticVersion) {
+        if (!StringUtils.isBlankByCdmStandard(object.jsonSchemaSemanticVersion)) {
             document.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
             if (DocumentPersistence.compareJsonSemanticVersion(ctx, document.jsonSchemaSemanticVersion) > 0) {
                 if (isResolvedDoc) {

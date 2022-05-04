@@ -17,7 +17,7 @@ import { createDocumentForEntity, generateManifest } from './CdmCollectionHelper
 
 describe('Cdm/CdmCollection/CdmEntityCollection', () => {
     it('TestManifestAddEntityWithLocalizedPath', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const cdmCorpus: CdmCorpusDefinition = manifest.ctx.corpus;
 
         const entity: CdmEntityDefinition = new CdmEntityDefinition(cdmCorpus.ctx, 'entityName', undefined);
@@ -54,7 +54,7 @@ describe('Cdm/CdmCollection/CdmEntityCollection', () => {
      * Tests whether the CdmEntityDeclarationDefinition can be passed directly to Manifest.Entities.Add() .
      */
     it('TestManifestCanAddEntityDeclaration', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Root\\Path');
+        const manifest: CdmManifestDefinition = generateManifest();
         const entity: CdmEntityDefinition = new CdmEntityDefinition(manifest.ctx, 'entityName', undefined);
 
         createDocumentForEntity(manifest.ctx.corpus, entity);
@@ -80,7 +80,7 @@ describe('Cdm/CdmCollection/CdmEntityCollection', () => {
     });
 
     it('TestManifestCanAddEntityDefinition', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Root\\Path');
+        const manifest: CdmManifestDefinition = generateManifest();
         const entity: CdmEntityDefinition = new CdmEntityDefinition(manifest.ctx, 'entityName', null);
 
         createDocumentForEntity(manifest.ctx.corpus, entity);
@@ -156,7 +156,7 @@ describe('Cdm/CdmCollection/CdmEntityCollection', () => {
     });
 
     it('TestCdmEntityCollectionRemoveEntityDeclarationDefinition', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const entity: CdmEntityDefinition = new CdmEntityDefinition(manifest.ctx, 'entityName', undefined);
         createDocumentForEntity(manifest.ctx.corpus, entity);
         const otherEntity: CdmEntityDefinition = new CdmEntityDefinition(manifest.ctx, 'otherEntityName', undefined);

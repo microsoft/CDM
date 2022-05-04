@@ -14,7 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         public static dynamic ToData(CdmObjectReference instance, ResolveOptions resOpt, CopyOptions options)
         {
             dynamic copy = null;
-            if (!string.IsNullOrEmpty(instance.NamedReference))
+            if (!StringUtils.IsBlankByCdmStandard(instance.NamedReference))
             {
                 dynamic identifier = Utils.CopyIdentifierRef(instance, resOpt, options);
                 if (instance.SimpleNamedReference)

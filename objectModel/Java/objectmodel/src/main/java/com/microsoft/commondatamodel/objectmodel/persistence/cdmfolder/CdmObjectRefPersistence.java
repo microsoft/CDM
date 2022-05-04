@@ -23,7 +23,7 @@ public class CdmObjectRefPersistence {
   public static Object toData(final CdmObjectReference instance, final ResolveOptions resOpt, final CopyOptions options) {
     Object copy = null;
 
-    if (!StringUtils.isNullOrEmpty(instance.getNamedReference())) {
+    if (!StringUtils.isBlankByCdmStandard(instance.getNamedReference())) {
       final Object identifier = Utils.copyIdentifierRef(instance, resOpt, options);
 
       if (instance.isSimpleNamedReference()) {

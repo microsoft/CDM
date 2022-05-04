@@ -9,15 +9,16 @@ import {
     CdmCorpusContext,
     cdmDataFormat,
     CdmEntityReference,
+    cdmLogCode,
     CdmObject,
     CdmObjectDefinition,
     CdmObjectReference,
     cdmObjectType,
-    cdmLogCode,
     CdmTraitCollection,
-    CdmTraitReference,
     CdmTraitGroupReference,
+    CdmTraitReference,
     CdmTypeAttributeDefinition,
+    constants,
     Logger,
     ResolvedTrait
 } from '../internal';
@@ -201,6 +202,8 @@ export class traitToPropertyMap {
                 break;
             case 'defaultValue':
                 return this.fetchDefaultValue(fromProperty);
+            case 'isIncremental':
+                return this.fetchTraitReference(constants.INCREMENTAL_TRAIT_NAME) !== undefined;
             default:
         }
     }

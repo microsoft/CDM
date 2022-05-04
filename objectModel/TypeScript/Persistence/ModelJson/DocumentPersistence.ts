@@ -10,8 +10,10 @@ import {
     cdmObjectType,
     cdmLogCode,
     CdmTraitDefinition,
+    constants,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    StringUtils
 } from '../../internal';
 import { isDocumentDefinition } from '../../Utilities/cdmObjectTypeGuards';
 import { Logger } from '../../Utilities/Logging/Logger';
@@ -32,7 +34,7 @@ export class DocumentPersistence {
         const doc: CdmDocumentDefinition = ctx.corpus.MakeObject(cdmObjectType.documentDef, docName);
 
         // import at least foundations
-        doc.imports.push('cdm:/foundations.cdm.json');
+        doc.imports.push(constants.FOUNDATIONS_CORPUS_PATH);
 
         const entityDec: CdmEntityDefinition = await ModelJson.EntityPersistence.fromData(
             ctx,
@@ -48,7 +50,7 @@ export class DocumentPersistence {
 
         if (dataObj['cdm:imports']) {
             for (const element of dataObj['cdm:imports']) {
-                if (element.corpusPath === 'cdm:/foundations.cdm.json') {
+                if (element.corpusPath === constants.FOUNDATIONS_CORPUS_PATH) {
                     // don't add foundations twice
                     continue;
                 }
@@ -87,7 +89,7 @@ export class DocumentPersistence {
                         // when saving in model.json the documents are flattened to the manifest level
                         // so it is necessary to recalculate the path to be relative to the manifest.
                         let absolutePath: string = ctx.corpus.storage.createAbsoluteCorpusPath(currImport.corpusPath, document);
-                        if (document.namespace && absolutePath.startsWith(`${document.namespace}:`)) {
+                        if (!StringUtils.isBlankByCdmStandard(document.namespace) && absolutePath.startsWith(`${document.namespace}:`)) {
                             absolutePath = absolutePath.substring(document.namespace.length + 1);
                         }
                         currImport.corpusPath = ctx.corpus.storage.createRelativeCorpusPath(absolutePath, manifest);

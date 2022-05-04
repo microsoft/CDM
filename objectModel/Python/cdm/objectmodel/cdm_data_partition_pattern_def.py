@@ -6,18 +6,17 @@ from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 import regex
 
-from cdm.enums import CdmLogCode
-from cdm.utilities.string_utils import StringUtils
+from cdm.enums import CdmLogCode, PartitionFileStatusCheckType, CdmIncrementalPartitionType
 from cdm.enums import CdmObjectType
-from cdm.utilities import logger, ResolveOptions, StorageUtils
+from cdm.utilities import logger, ResolveOptions, StorageUtils, TraitToPropertyMap
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
 from .cdm_object_def import CdmObjectDefinition
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmAttributeItem, CdmCorpusContext, CdmCorpusDefinition, CdmObjectReference
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.objectmodel import CdmCorpusContext
+    from cdm.utilities import VisitCallback
 
 
 class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
@@ -48,6 +47,10 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
 
         self.last_file_modified_time = None  # type: Optional[datetime]
 
+        # --- internal ---
+
+        self._ttpm = TraitToPropertyMap(self)
+
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.DATA_PARTITION_PATTERN_DEF
@@ -59,6 +62,13 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
     @last_child_file_modified_time.setter
     def last_child_file_modified_time(self, val: datetime):
         raise NotImplementedError()
+
+    @property
+    def is_incremental(self) -> bool:
+        """
+         Gets whether the data partition pattern is incremental.
+        """
+        return cast(bool, self._ttpm._fetch_property_value('isIncremental'))
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataPartitionPatternDefinition'] = None) -> 'CdmDataPartitionPatternDefinition':
         if not res_opt:
@@ -117,6 +127,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                 file_info_list = [(namespace + ':' + fi)[len(root_corpus):] for fi in file_info_list]
 
                 if isinstance(self.owner, CdmLocalEntityDeclarationDefinition):
+                    local_ent_dec_def_owner = cast('CdmLocalEntityDeclarationDefinition', self.owner)
                     # if both are present log warning and use glob pattern, otherwise use regularExpression
                     if self.glob_pattern and not self.glob_pattern.isspace() and self.regular_expression and not self.regular_expression.isspace():
                         logger.warning(self.ctx, self._TAG,CdmDataPartitionPatternDefinition.file_status_check_async.__name__,
@@ -136,10 +147,16 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                     if reg:
                         # a set to check if the data partition exists
                         data_partition_path_set = set()
-                        if self.owner is not None and cast('CdmLocalEntityDeclarationDefinition', self.owner).data_partitions is not None:
-                            for data_partition in cast('CdmLocalEntityDeclarationDefinition', self.owner).data_partitions:
+                        if local_ent_dec_def_owner.data_partitions is not None:
+                            for data_partition in local_ent_dec_def_owner.data_partitions:
                                 data_partition_location_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(data_partition.location, self.in_document)
                                 data_partition_path_set.add(data_partition_location_full_path)
+
+                        incremental_partition_path_hash_set = set()
+                        if local_ent_dec_def_owner.data_partitions is not None:
+                            for incremental_partition in local_ent_dec_def_owner.incremental_partitions:
+                                incremental_partition_location_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(incremental_partition.location, self.in_document)
+                                incremental_partition_path_hash_set.add(incremental_partition_location_full_path)
 
                         for fi in file_info_list:
                             m = reg.fullmatch(fi)
@@ -170,8 +187,13 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                     return
                                 last_modified_time = await adapter.compute_last_modified_time_async(path_tuple[1])
 
-                                if (full_path not in data_partition_path_set):
-                                    cast('CdmLocalEntityDeclarationDefinition', self.owner)._create_partition_from_pattern(
+                                if self.is_incremental and full_path not in incremental_partition_path_hash_set:
+                                    local_ent_dec_def_owner._create_partition_from_pattern(
+                                        location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time, True, self.name)
+                                    incremental_partition_path_hash_set.add(full_path)
+
+                                if not self.is_incremental and full_path not in data_partition_path_set:
+                                    local_ent_dec_def_owner._create_partition_from_pattern(
                                         location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
                                     data_partition_path_set.add(full_path)
 

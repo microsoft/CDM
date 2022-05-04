@@ -25,7 +25,8 @@ public enum CdmPropertyName {
   SOURCE_ORDERING("sourceOrdering"),
   VALUE_CONSTRAINED_TO_LIST("valueConstrainedToList"),
   VERSION("version"),
-  IS_RESOLVED("isResolved");
+  IS_RESOLVED("isResolved"),
+  IS_INCREMENTAL("isIncremental");
 
   private final String propertyName;
 

@@ -38,6 +38,14 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         return None
 
     @property
+    def incremental_partitions(self) -> Optional['CdmCollection[CdmDataPartitionDefinition]']:
+        return None
+
+    @property
+    def incremental_partition_patterns(self) -> Optional['CdmCollection[CdmDataPartitionPatternDefinition]']:
+        return None
+
+    @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF
 

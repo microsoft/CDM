@@ -5,9 +5,17 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
+
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
-import com.microsoft.commondatamodel.objectmodel.utilities.*;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.OffsetDateTime;
@@ -35,6 +43,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   private String specializedSchema;
   private OffsetDateTime lastFileStatusCheckTime;
   private OffsetDateTime lastFileModifiedTime;
+  private TraitToPropertyMap t2pm;
   private OffsetDateTime lastChildFileModifiedTime;
 
   public CdmDataPartitionPatternDefinition(final CdmCorpusContext ctx, final String name) {
@@ -98,6 +107,14 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     this.copyDef(resOpt, copy);
 
     return copy;
+  }
+
+  private TraitToPropertyMap getTraitToPropertyMap() {
+    if (this.t2pm == null) {
+      this.t2pm = new TraitToPropertyMap(this);
+    }
+
+    return this.t2pm;
   }
 
   @Override
@@ -207,6 +224,14 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   }
 
   /**
+   * Gets whether the data partition is incremental.
+   * @return boolean
+   */
+  public boolean isIncremental() {
+    return (boolean) getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.IS_INCREMENTAL);
+  }
+
+  /**
    * Last time the modified times were updated.
    * @return Offset time
    */
@@ -302,7 +327,8 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             fileInfoList.set(i, StringUtils.slice(fileInfoList.get(i), rootCorpus.length()));
           }
 
-          if (getOwner() instanceof CdmLocalEntityDeclarationDefinition) {
+          if (this.getOwner() instanceof CdmLocalEntityDeclarationDefinition) {
+            final CdmLocalEntityDeclarationDefinition localEntDecDefOwner = (CdmLocalEntityDeclarationDefinition) this.getOwner();
             // if both are present log warning and use glob pattern, otherwise use regularExpression
             if (!StringUtils.isNullOrTrimEmpty(this.getGlobPattern()) && !StringUtils.isNullOrTrimEmpty(this.getRegularExpression())) {
               Logger.warning(this.getCtx(), TAG,
@@ -325,10 +351,18 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             if (regexPattern != null) {
               // a hashset to check if the data partition exists
               HashSet<String> dataPartitionPathHashSet = new HashSet<>();
-              if (getOwner() != null && ((CdmLocalEntityDeclarationDefinition) getOwner()).getDataPartitions() != null) {
-                for (final CdmDataPartitionDefinition dataPartition : ((CdmLocalEntityDeclarationDefinition) getOwner()).getDataPartitions()) {
+              if (localEntDecDefOwner.getDataPartitions() != null) {
+                for (final CdmDataPartitionDefinition dataPartition : localEntDecDefOwner.getDataPartitions()) {
                   final String fullPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(dataPartition.getLocation(), this.getInDocument());
                   dataPartitionPathHashSet.add(fullPath);
+                }
+              }
+
+              HashSet<String> incrementalPartitionPathHashSet = new HashSet<>();
+              if (localEntDecDefOwner.getIncrementalPartitions() != null) {
+                for (final CdmDataPartitionDefinition incrementalPartition : localEntDecDefOwner.getIncrementalPartitions()) {
+                  final String fullPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(incrementalPartition.getLocation(), this.getInDocument());
+                  incrementalPartitionPathHashSet.add(fullPath);
                 }
               }
 
@@ -364,8 +398,11 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                   final OffsetDateTime lastModifiedTime =
                           adapter.computeLastModifiedTimeAsync(pathTuple.getRight()).join();
 
-                  if (!dataPartitionPathHashSet.contains(fullPath)) {
-                    ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
+                  if (this.isIncremental() && !incrementalPartitionPathHashSet.contains(fullPath)) {
+                    localEntDecDefOwner.createDataPartitionFromPattern(locationCorpusPath, this.getExhibitsTraits(), args, this.getSpecializedSchema(), lastModifiedTime, true, this.getName());
+                    incrementalPartitionPathHashSet.add(fullPath);
+                  } else if (!this.isIncremental() && !dataPartitionPathHashSet.contains(fullPath)) {
+                    localEntDecDefOwner.createDataPartitionFromPattern(
                       locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
                     dataPartitionPathHashSet.add(fullPath);
                   }

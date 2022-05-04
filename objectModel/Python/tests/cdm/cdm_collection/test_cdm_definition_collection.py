@@ -11,7 +11,7 @@ from .cdm_collection_helper_functions import generate_manifest
 class CdmDefinitionCollectionTest(unittest.TestCase):
     @async_test
     def test_cdm_definition_collection_add(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
         document._is_dirty = False
 
         attribute = CdmAttributeContext(document.ctx, 'the attribute')
@@ -38,7 +38,7 @@ class CdmDefinitionCollectionTest(unittest.TestCase):
 
     @async_test
     def test_cdm_definition_collection_insert(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
 
         ent1 = document.definitions.append('ent1')
         ent2 = document.definitions.append('ent2')
@@ -59,7 +59,7 @@ class CdmDefinitionCollectionTest(unittest.TestCase):
 
     @async_test
     def test_cdm_definition_collection_add_entity_by_providing_name(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
 
         document._is_dirty = False
         entity = document.definitions.append('theNameOfTheEntity')
@@ -71,7 +71,7 @@ class CdmDefinitionCollectionTest(unittest.TestCase):
 
     @async_test
     def test_cdm_definition_collection_add_by_providing_type_and_name(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
         document._is_dirty = False
 
         attribute = document.definitions.append('Name of attribute', CdmObjectType.ATTRIBUTE_CONTEXT_DEF)
@@ -87,7 +87,7 @@ class CdmDefinitionCollectionTest(unittest.TestCase):
 
     @async_test
     def test_cdm_definition_collection_add_range(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
         document._is_dirty = False
 
         attribute = CdmAttributeContext(document.ctx, 'the attribute')

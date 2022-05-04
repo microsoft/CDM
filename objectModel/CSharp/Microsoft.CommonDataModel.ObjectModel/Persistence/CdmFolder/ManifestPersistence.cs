@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Linq;
 
@@ -29,9 +28,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         public static CdmManifestDefinition FromObject(CdmCorpusContext ctx, string name, string nameSpace, string path, ManifestContent dataObj)
         {
             // Determine name of the manifest
-            var manifestName = !string.IsNullOrEmpty(dataObj.ManifestName) ? dataObj.ManifestName : dataObj.FolioName;
+            var manifestName = !StringUtils.IsBlankByCdmStandard(dataObj.ManifestName) ? dataObj.ManifestName : dataObj.FolioName;
             // We haven't found the name in the file, use one provided in the call but without the suffixes
-            if (string.IsNullOrEmpty(manifestName))
+            if (StringUtils.IsBlankByCdmStandard(manifestName))
                 manifestName = name.Replace(PersistenceLayer.ManifestExtension, "").Replace(PersistenceLayer.FolioExtension, "");
 
             var manifest = ctx.Corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, manifestName);
@@ -41,23 +40,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             manifest.Namespace = nameSpace;
             manifest.Explanation = dataObj.Explanation;
 
-            if (!string.IsNullOrEmpty(dataObj.Schema))
+            if (!StringUtils.IsBlankByCdmStandard(dataObj.Schema))
                 manifest.Schema = dataObj.Schema;
-            if (DynamicObjectExtensions.HasProperty(dataObj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(dataObj.JsonSchemaSemanticVersion))
+            if (DynamicObjectExtensions.HasProperty(dataObj, "JsonSchemaSemanticVersion") && !StringUtils.IsBlankByCdmStandard(dataObj.JsonSchemaSemanticVersion))
             {
                 manifest.JsonSchemaSemanticVersion = dataObj.JsonSchemaSemanticVersion;
             }
 
-            if (!string.IsNullOrEmpty(dataObj.DocumentVersion))
+            if (!StringUtils.IsBlankByCdmStandard(dataObj.DocumentVersion))
             {
                 manifest.DocumentVersion = dataObj.DocumentVersion;
             }
 
-            if (!string.IsNullOrEmpty(dataObj.ManifestName))
+            if (!StringUtils.IsBlankByCdmStandard(dataObj.ManifestName))
             {
                 manifest.ManifestName = dataObj.ManifestName;
             }
-            else if (!string.IsNullOrEmpty(dataObj.FolioName))
+            else if (!StringUtils.IsBlankByCdmStandard(dataObj.FolioName))
             {
                 // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
                 manifest.ManifestName = dataObj.FolioName;
@@ -111,7 +110,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (dataObj.Entities != null)
             {
-                var fullPath = !string.IsNullOrEmpty(nameSpace) ? $"{nameSpace}:{path}" : path;
+                var fullPath = !StringUtils.IsBlankByCdmStandard(nameSpace) ? $"{nameSpace}:{path}" : path;
                 foreach (var entityObj in dataObj.Entities)
                 {
                     CdmEntityDeclarationDefinition entity = null;
@@ -148,6 +147,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     
                     manifest.Entities.Add(entity);
                 }
+
+                // Checks if incremental trait is needed from foundations.cdm.json
+                ImportFoundationsIfIncrementalPartitionTraitExist(manifest);
             }
 
             if (dataObj.Relationships != null)
@@ -185,6 +187,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
         public static ManifestContent ToData(CdmManifestDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
+            // Checks if incremental trait is needed from foundations.cdm.json
+            ImportFoundationsIfIncrementalPartitionTraitExist(instance);
+
             var documentContent = DocumentPersistence.ToData(instance, resOpt, options);
             var manifestContent = new ManifestContent()
             {
@@ -210,6 +215,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             return manifestContent;
+        }
+
+        /// <summary>
+        /// Checks if incremental trait is needed from foundations.cdm.json
+        /// </summary>
+        private static void ImportFoundationsIfIncrementalPartitionTraitExist(CdmManifestDefinition manifest)
+        {
+            if (manifest.Entities == null)
+            {
+                return;
+            }
+
+            foreach (var ent in manifest.Entities)
+            {
+                if (ent is CdmLocalEntityDeclarationDefinition localEntityDef)
+                {
+                    if (localEntityDef.IncrementalPartitions?.Count > 0 || localEntityDef.IncrementalPartitionPatterns?.Count > 0)
+                    {
+                        if (manifest.Imports.Item(Constants.FoundationsCorpusPath, checkMoniker: false) == null)
+                        {
+                            manifest.Imports.Add(Constants.FoundationsCorpusPath);
+                            // Find one is enough
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

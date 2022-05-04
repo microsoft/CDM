@@ -36,12 +36,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             doc.FolderPath = path;
             doc.Namespace = nameSpace;
 
-            if (!string.IsNullOrEmpty(obj.Schema))
+            if (!StringUtils.IsBlankByCdmStandard(obj.Schema))
             {
                 doc.Schema = obj.Schema;
             }
 
-            if (!string.IsNullOrEmpty(obj.DocumentVersion))
+            if (!StringUtils.IsBlankByCdmStandard(obj.DocumentVersion))
             {
                 doc.DocumentVersion = obj.DocumentVersion;
             }
@@ -100,7 +100,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 isResolvedDoc = isResolvedDoc || entity.AttributeContext != null;
             }
 
-            if (!string.IsNullOrEmpty(obj.JsonSchemaSemanticVersion))
+            if (!StringUtils.IsBlankByCdmStandard(obj.JsonSchemaSemanticVersion))
             {
                 doc.JsonSchemaSemanticVersion = obj.JsonSchemaSemanticVersion;
                 if (CompareJsonSemanticVersion(ctx, doc.JsonSchemaSemanticVersion) > 0)

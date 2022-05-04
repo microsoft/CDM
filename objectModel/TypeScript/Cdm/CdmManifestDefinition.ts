@@ -15,6 +15,7 @@ import {
     CdmFileStatus,
     CdmFolderDefinition,
     CdmImport,
+    cdmIncrementalPartitionType,
     CdmLocalEntityDeclarationDefinition,
     cdmLogCode,
     CdmManifestDeclarationDefinition,
@@ -28,6 +29,7 @@ import {
     copyOptions,
     importsLoadStrategy,
     Logger,
+    partitionFileStatusCheckType,
     resolveOptions,
     StorageAdapterBase,
     StorageAdapterCacheContext,
@@ -411,7 +413,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     /**
      * @inheritdoc
      */
-    public async fileStatusCheckAsync(): Promise<void> {
+    public async fileStatusCheckAsync(partitionCheckType: partitionFileStatusCheckType = partitionFileStatusCheckType.Full, incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None): Promise<void> {
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
             let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
             let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
@@ -431,7 +433,11 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 }
 
                 for (const entity of this.entities) {
-                    await entity.fileStatusCheckAsync();
+                    if (isReferencedEntityDeclarationDefinition(entity)) {
+                        await entity.fileStatusCheckAsync();
+                    } else if (isLocalEntityDeclarationDefinition(entity)) {
+                        await entity.fileStatusCheckAsync(partitionCheckType, incrementalType);
+                    }
                 }
 
                 for (const subManifest of this.subManifests) {

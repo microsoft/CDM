@@ -117,7 +117,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 source = instance.Source;
             }
-            else if (instance.Source != null && !string.IsNullOrWhiteSpace(instance.Source.NamedReference) && instance.Source.ExplicitReference == null)
+            else if (instance.Source != null && !StringUtils.IsBlankByCdmStandard(instance.Source.NamedReference) && instance.Source.ExplicitReference == null)
             {
                 source = instance.Source.NamedReference;
             }

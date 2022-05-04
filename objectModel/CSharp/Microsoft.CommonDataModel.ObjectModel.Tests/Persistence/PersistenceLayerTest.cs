@@ -401,5 +401,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
 
             await SymsTestHelper.CleanDatabase(symsAdapter, SymsTestHelper.DatabaseName);
         }
+
+        /// <summary>
+        /// Test that the persistence layer handles the case when the document is empty.
+        /// </summary>
+        [TestMethod]
+        public async Task TestLoadingEmptyJsonData()
+        {
+            HashSet<CdmLogCode> expectedCodes = new HashSet<CdmLogCode>();
+            expectedCodes.Add(CdmLogCode.ErrPersistFileReadFailure);
+
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestLoadingEmptyJsonData), null, false, expectedCodes, false);
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("empty.Manifest.cdm.json");
+            Assert.IsNull(manifest);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPersistFileReadFailure, true);
+        }
     }
 }

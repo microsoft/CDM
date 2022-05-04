@@ -40,7 +40,7 @@ namespace search_partition_pattern
             }, CdmStatusLevel.Warning);
 
             Console.WriteLine("Configure storage adapters");
-            
+
             // Configure storage adapters to point at the target local manifest location and at the fake public standards
             string pathFromExeToExampleRoot = "../../../../../../";
             string sampleEntityName = "Account";
@@ -95,7 +95,7 @@ namespace search_partition_pattern
 
             // List all data partition locations.
             Console.WriteLine($"\nlist of all data partition locations for the entity Account matches the data partition pattern:");
-            
+
             foreach (CdmDataPartitionDefinition dataPartition in personDeclarationDefinition.DataPartitions)
             {
                 Console.WriteLine($"    {dataPartition.Location}");

@@ -146,7 +146,7 @@ describe('Cdm/CdmCollection/CdmCollection', () => {
     });
 
     it('TestCdmCollectionChangeMakesDocumentDirty', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const collection: CdmCollection<CdmEntityReference> =
             new CdmCollection<CdmEntityReference>(manifest.ctx, manifest, cdmObjectType.entityRef);
         manifest.isDirty = false;

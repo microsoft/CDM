@@ -13,7 +13,7 @@ from .cdm_collection_helper_functions import generate_manifest, create_document_
 class CdmEntityCollectionTests(unittest.TestCase):
     @async_test
     def test_manifest_add_entity_with_localized_paths(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         cdm_corpus = manifest.ctx.corpus
 
         entity = CdmEntityDefinition(cdm_corpus.ctx, 'entityName', None)
@@ -39,7 +39,7 @@ class CdmEntityCollectionTests(unittest.TestCase):
 
     @async_test
     def test_manifest_can_add_entity_declaration(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         entity = CdmEntityDefinition(manifest.ctx, 'entityName', None)
 
         create_document_for_entity(manifest.ctx.corpus, entity)
@@ -58,7 +58,7 @@ class CdmEntityCollectionTests(unittest.TestCase):
 
     @async_test
     def test_manifest_can_add_entity_definition(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         entity = CdmEntityDefinition(manifest.ctx, 'entityName', None)
 
         create_document_for_entity(manifest.ctx.corpus, entity)
@@ -123,7 +123,7 @@ class CdmEntityCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_entity_collection_remove_entity_declaration_definition(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         entity = CdmEntityDefinition(manifest.ctx, 'entityName', None)
         create_document_for_entity(manifest.ctx.corpus, entity)
         other_entity = CdmEntityDefinition(manifest.ctx, 'otherEntityName', None)

@@ -306,4 +306,28 @@ public class ManifestImplTest {
     corpus.getStorage().createAbsoluteCorpusPath("Abc", manifest);
     TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
   }
+
+  /**
+   * Test passing blank or empty values for manifest schema, name etc.
+   */
+  @Test
+  public void testManifestWithBlankFields() throws IOException, InterruptedException {
+    final String content = TestHelper.getInputFileContent(
+            TESTS_SUBPATH,
+            "testManifestWithBlankFields",
+            "blank.manifest.cdm.json");
+    final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(
+            new ResolveContext(new CdmCorpusDefinition()), "","", "",
+                               JMapper.MAP.readValue(content, ManifestContent.class));
+
+    Assert.assertNull(cdmManifest.getSchema());
+    Assert.assertNull(cdmManifest.getDocumentVersion());
+    Assert.assertEquals(TimeUtils.formatDateStringIfNotNull(cdmManifest.getLastFileModifiedTime()), "2008-09-15T23:53:23Z");
+    Assert.assertEquals(cdmManifest.getExplanation(), "test cdm folder for cdm version 1.0+");
+    Assert.assertEquals(cdmManifest.getImports().size(), 1);
+    Assert.assertEquals(cdmManifest.getImports().get(0).getCorpusPath(), "/primitives.cdm.json");
+    Assert.assertEquals(cdmManifest.getEntities().size(), 0);
+    Assert.assertEquals(cdmManifest.getExhibitsTraits().size(), 1);
+    Assert.assertEquals(cdmManifest.getSubManifests().size(), 0);
+  }
 }

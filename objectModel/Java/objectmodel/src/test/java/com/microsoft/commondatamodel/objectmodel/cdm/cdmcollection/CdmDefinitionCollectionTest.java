@@ -19,9 +19,8 @@ import org.testng.annotations.Test;
 
 public class CdmDefinitionCollectionTest {
   @Test
-  public void testCdmDefinitionCollectionAdd() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmDefinitionCollectionAdd() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
 
     final CdmAttributeContext attribute = new CdmAttributeContext(document.getCtx(), "the attribute");
@@ -49,9 +48,8 @@ public class CdmDefinitionCollectionTest {
   }
 
   @Test
-  public void testCdmDefinitionCollectionInsert() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmDefinitionCollectionInsert() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
 
     final CdmEntityDefinition ent1 = document.getDefinitions().add("ent1");
     final CdmEntityDefinition ent2 = document.getDefinitions().add("ent2");
@@ -73,9 +71,8 @@ public class CdmDefinitionCollectionTest {
   }
 
   @Test
-  public void TestCdmDefinitionCollectionAddEntityByProvidingName() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void TestCdmDefinitionCollectionAddEntityByProvidingName() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
 
     final CdmEntityDefinition entity = document.getDefinitions().add("theNameOfTheEntity");
@@ -87,9 +84,8 @@ public class CdmDefinitionCollectionTest {
   }
 
   @Test
-  public void testCdmDefinitionCollectionAddByProvidingTypeAndName() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmDefinitionCollectionAddByProvidingTypeAndName() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
 
     final CdmObjectDefinition attribute =
@@ -107,9 +103,8 @@ public class CdmDefinitionCollectionTest {
   }
 
   @Test
-  public void testCdmDefinitionCollectionAddRange() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmDefinitionCollectionAddRange() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
 
     final CdmAttributeContext attribute = new CdmAttributeContext(document.getCtx(), "the attribute");
@@ -133,8 +128,8 @@ public class CdmDefinitionCollectionTest {
   }
 
   @Test
-  public void testDocumentCollectionRemoveAt() {
-    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest("c:/Root/Path");
+  public void testDocumentCollectionRemoveAt() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmFolderDefinition folder = new CdmFolderDefinition(manifest.getCtx(), "Folder");
     folder.setCorpus(manifest.getCtx().getCorpus());
     folder.setFolderPath("FolderPath/");

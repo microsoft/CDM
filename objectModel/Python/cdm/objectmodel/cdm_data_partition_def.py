@@ -11,7 +11,7 @@ from .cdm_file_status import CdmFileStatus
 from .cdm_object_def import CdmObjectDefinition
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition
+    from cdm.objectmodel import CdmCorpusContext
     from cdm.utilities import VisitCallback
 
 
@@ -58,6 +58,13 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
     @description.setter
     def description(self, val: str) -> None:
         self._ttpm._update_property_value('description', val)
+
+    @property
+    def is_incremental(self) -> bool:
+        """
+         Gets whether the data partition is incremental.
+        """
+        return cast(bool, self._ttpm._fetch_property_value('isIncremental'))
 
     @property
     def last_child_file_modified_time(self) -> datetime:

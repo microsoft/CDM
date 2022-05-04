@@ -10,6 +10,7 @@ import {
     CdmTraitCollection,
     CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     isCdmTraitReference,
     Logger
 } from '../../internal';
@@ -29,7 +30,6 @@ export const ignoredTraits: Set<string> = new Set<string>().add('is.modelConvers
     .add('is.modelConversion.modelVersion')
     .add('means.measurement.version')
     .add('is.CDM.entityVersion')
-    .add('is.partition.format.CSV')
     .add('is.partition.culture')
     .add('is.managedBy')
     .add('is.hidden');
@@ -38,6 +38,14 @@ export const ignoredTraits: Set<string> = new Set<string>().add('is.modelConvers
 // These traits become properties on the model.json. To avoid persisting both a trait
 // and a property on the model.json, we filter these traits out.
 export const modelJsonPropertyTraits: Set<string> = new Set<string>().add('is.localized.describedAs');
+
+// Arguments natively supported by the fileFormatSettings property.
+export const partitionSettingsSupportedArguments: Set<string> = new Set<string>()
+    .add('columnHeaders')
+    .add('csvStyle')
+    .add('delimiter')
+    .add('quoteStyle')
+    .add('encoding');
 
 export function shouldAnnotationGoIntoASingleTrait(name: string): boolean {
     return annotationToTraitMap.has(name);
@@ -51,35 +59,52 @@ export function convertTraitToAnnotation(name: string): string {
     return traitToAnnotationMap.get(name);
 }
 
-export function createCsvTrait(object: CsvFormatSettings, ctx: CdmCorpusContext): CdmTraitReference {
-    const csvFormatTrait: CdmTraitReference = ctx.corpus.MakeObject(cdmObjectType.traitRef, 'is.partition.format.CSV');
-    csvFormatTrait.simpleNamedReference = false;
+export function shouldPersistTrait(traitBase: CdmTraitReferenceBase): boolean {
+    if (!(traitBase instanceof CdmTraitReference)) {
+        return true;
+    }
 
-    if (object.columnHeaders !== undefined) {
+    const trait = traitBase as CdmTraitReference;
+    switch (trait.namedReference) {
+        case "is.partition.format.CSV":
+            var argumentNames = trait.arguments.allItems.filter(arg => !!arg.name).map(arg => arg.name);
+
+            // Checks if the trait contains arguments that are not supported natively by the model.json CsvFormatSettings property.
+            return argumentNames.filter(argName => !partitionSettingsSupportedArguments.has(argName)).length > 0;
+        default:
+            return true;
+    }
+}
+
+export function createCsvTrait(object: CsvFormatSettings, ctx: CdmCorpusContext, host: CdmTraitReference): CdmTraitReference {
+    const csvFormatTrait: CdmTraitReference = host ?? ctx.corpus.MakeObject(cdmObjectType.traitRef, 'is.partition.format.CSV', false);
+    var argumentNames = new Set<string>(csvFormatTrait.arguments.allItems.filter(arg => !arg.name).map(arg => arg.name));
+
+    if (object.columnHeaders !== undefined && !argumentNames.has('columnHeaders')) {
         const columnHeadersArg: CdmArgumentDefinition = ctx.corpus.MakeObject(cdmObjectType.argumentDef, 'columnHeaders');
-        columnHeadersArg.value = object.columnHeaders ? 'true' : 'false';
+        columnHeadersArg.value = object.columnHeaders === 'true' || object.columnHeaders === true ? 'true' : 'false';
         csvFormatTrait.arguments.push(columnHeadersArg);
     }
 
-    if (object.csvStyle !== undefined) {
+    if (object.csvStyle !== undefined && !argumentNames.has('csvStyle')) {
         const csvStyleArg: CdmArgumentDefinition = ctx.corpus.MakeObject(cdmObjectType.argumentDef, 'csvStyle');
         csvStyleArg.value = object.csvStyle;
         csvFormatTrait.arguments.push(csvStyleArg);
     }
 
-    if (object.delimiter !== undefined) {
+    if (object.delimiter !== undefined && !argumentNames.has('delimiter')) {
         const delimiterArg: CdmArgumentDefinition = ctx.corpus.MakeObject(cdmObjectType.argumentDef, 'delimiter');
         delimiterArg.value = object.delimiter;
         csvFormatTrait.arguments.push(delimiterArg);
     }
 
-    if (object.quoteStyle !== undefined) {
+    if (object.quoteStyle !== undefined && !argumentNames.has('quoteStyle')) {
         const quoteStyleArg: CdmArgumentDefinition = ctx.corpus.MakeObject(cdmObjectType.argumentDef, 'quoteStyle');
         quoteStyleArg.value = object.quoteStyle;
         csvFormatTrait.arguments.push(quoteStyleArg);
     }
 
-    if (object.encoding !== undefined) {
+    if (object.encoding !== undefined && !argumentNames.has('encoding')) {
         const encodingArg: CdmArgumentDefinition = ctx.corpus.MakeObject(cdmObjectType.argumentDef, 'encoding');
         encodingArg.value = object.encoding;
         csvFormatTrait.arguments.push(encodingArg);
@@ -195,7 +220,8 @@ export async function processTraitsAndAnnotationsToData(
             annotations.push(element);
         } else if (!ignoredTraits.has(trait.namedReference)
                     && !trait.namedReference.startsWith('is.dataFormat')
-                    && !(modelJsonPropertyTraits.has(trait.namedReference) && trait instanceof CdmTraitReference && (trait as CdmTraitReference).isFromProperty)) {
+                    && !(modelJsonPropertyTraits.has(trait.namedReference) && trait instanceof CdmTraitReference && (trait as CdmTraitReference).isFromProperty)
+                    && shouldPersistTrait(trait)) {
             if (trait instanceof CdmTraitGroupReference) {
                 extensions.push(CdmFolder.TraitGroupReferencePersistence.toData(trait, undefined, undefined));
             } else {

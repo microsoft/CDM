@@ -47,11 +47,11 @@ public class DocumentPersistence {
     doc.setFolderPath(path);
     doc.setNamespace(nameSpace);
 
-    if (!StringUtils.isNullOrEmpty(obj.getSchema())) {
+    if (!StringUtils.isBlankByCdmStandard(obj.getSchema())) {
       doc.setSchema(obj.getSchema());
     }
 
-    if (!StringUtils.isNullOrEmpty(obj.getDocumentVersion())) {
+    if (!StringUtils.isBlankByCdmStandard(obj.getDocumentVersion())) {
       doc.setDocumentVersion(obj.getDocumentVersion());
     }
 
@@ -93,7 +93,7 @@ public class DocumentPersistence {
       isResolvedDoc = isResolvedDoc || entity.getAttributeContext() != null;
     }
 
-    if (!StringUtils.isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
+    if (!StringUtils.isBlankByCdmStandard(obj.getJsonSchemaSemanticVersion())) {
       doc.setJsonSchemaSemanticVersion(obj.getJsonSchemaSemanticVersion());
       if (compareJsonSemanticVersion(ctx, doc.getJsonSchemaSemanticVersion()) > 0) {
           String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersion + " at maximum.";

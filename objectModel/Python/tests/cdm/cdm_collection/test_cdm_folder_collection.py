@@ -10,7 +10,7 @@ from .cdm_collection_helper_functions import generate_manifest
 class CdmFolderCollectionTests(unittest.TestCase):
     @async_test
     def test_folder_collection_add(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         parent_folder = CdmFolderDefinition(manifest.ctx, 'ParentFolder')
         parent_folder._namespace = 'TheNamespace'
@@ -32,7 +32,7 @@ class CdmFolderCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_insert(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
         parent_folder.in_document = manifest
         parent_folder._namespace = 'TheNamespace'
@@ -60,7 +60,7 @@ class CdmFolderCollectionTests(unittest.TestCase):
 
     @async_test
     def test_folder_collection_add_with_name_parameter(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
         parent_folder._namespace = 'TheNamespace'
         parent_folder._folder_path = 'ParentFolderPath/'
@@ -79,7 +79,7 @@ class CdmFolderCollectionTests(unittest.TestCase):
 
     @async_test
     def test_folder_collection_add_range(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
         parent_folder._namespace = 'TheNamespace'
         parent_folder._folder_path = 'ParentFolderPath/'
@@ -108,7 +108,7 @@ class CdmFolderCollectionTests(unittest.TestCase):
 
     @async_test
     def test_folder_collection_remove(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
         parent_folder = CdmFolderDefinition(manifest. ctx, 'ParentFolder')
         parent_folder._namespace = 'TheNamespace'
         parent_folder._folder_path = 'ParentFolderPath/'

@@ -8,25 +8,15 @@ from typing import List
 from cdm.enums import CdmLogCode, CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmManifestDefinition
 from cdm.persistence import PersistenceLayer
-from cdm.utilities import CopyOptions, ResolveOptions, StorageUtils, TraitToPropertyMap, copy_data_utils, logger, time_utils
+from cdm.utilities import CopyOptions, ResolveOptions, StorageUtils, TraitToPropertyMap, copy_data_utils, logger, \
+    time_utils, Constants
 
 from . import utils
-from .attribute_group_persistence import AttributeGroupPersistence
-from .constant_entity_persistence import ConstantEntityPersistence
-from .data_type_persistence import DataTypePersistence
-from .entity_persistence import EntityPersistence
 from .e2e_relationship_persistence import E2ERelationshipPersistence
-from .manifest_declaration_persistence import ManifestDeclarationPersistence
 from .import_persistence import ImportPersistence
 from .local_entity_declaration_persistence import LocalEntityDeclarationPersistence
-from .purpose_persistence import PurposePersistence
-from .referenced_entity_declaration_persistence import ReferencedEntityDeclarationPersistence
-from .trait_persistence import TraitPersistence
-from .types import ManifestContent
-from cdm.persistence.syms.models import ColumnRelationshipInformation, DataColumn, DataSource, DatabaseEntity, \
-    DatabaseProperties, FormatInfo, Namespace, PartitionInfo, PartitionInfoNamespace, PartitionInfoProperties, \
-    RelationshipEntity, RelationshipProperties, ScalarTypeInfo, SchemaEntity, StorageDescriptor, TableEntity, \
-    TableNamespace, TablePartitioning, TableProperties, TypeInfo
+from cdm.persistence.syms.models import ColumnRelationshipInformation, DataSource, DatabaseEntity, \
+    DatabaseProperties, RelationshipEntity, TableEntity
 from cdm.persistence.syms.types import SymsManifestContent
 from cdm.persistence.syms.models.sy_msapi_service_client_enums import SASEntityType
 
@@ -108,8 +98,8 @@ class ManifestPersistence:
                     else:
                         logger.warning(ctx, _TAG, 'from_object', None, CdmLogCode.WARN_PERSIST_SYMS_ENTITY_SKIPPED, entity_obj.name)
 
-        if not (x for x in manifest.imports if x.corpus_path == "cdm:/foundations.cdm.json") or len(manifest.imports) == 0:
-            manifest.imports.append("cdm:/foundations.cdm.json")
+        if not (x for x in manifest.imports if x.corpus_path == Constants._FOUNDATIONS_CORPUS_PATH) or len(manifest.imports) == 0:
+            manifest.imports.append(Constants._FOUNDATIONS_CORPUS_PATH)
 
         if data_obj.relationships is not None:
             for item in data_obj.relationships.items:

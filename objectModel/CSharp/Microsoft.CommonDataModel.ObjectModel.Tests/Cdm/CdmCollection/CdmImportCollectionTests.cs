@@ -13,7 +13,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmImportCollectionAdd()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
             Assert.AreEqual(false, document.IsDirty);
             var import = new CdmImport(document.Ctx, "corpusPath", "moniker");
@@ -31,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmImportCollectionAddCorpusPath()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
             var import = document.Imports.Add("corpusPath");
 
@@ -46,7 +46,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmImportCollectionAddCorpusPathAndMoniker()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
             var import = document.Imports.Add("corpusPath", "moniker");
 
@@ -61,7 +61,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmImportCollectionAddRange()
         {
-            var document = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var document = CdmCollectionHelperFunctions.GenerateManifest();
             document.IsDirty = false;
             var importList = new List<CdmImport>()
             {

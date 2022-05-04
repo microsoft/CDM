@@ -31,7 +31,7 @@ public class DataPartitionPersistence {
       final List<CdmTraitDefinition> localExtensionTraitDefList,
       final CdmFolderDefinition documentFolder) {
     final CdmDataPartitionDefinition partition = ctx.getCorpus().makeObject(CdmObjectType.DataPartitionDef, obj.getName());
-    if (!StringUtils.isNullOrTrimEmpty(obj.getDescription())) {
+    if (!StringUtils.isBlankByCdmStandard(obj.getDescription())) {
       partition.setDescription(obj.getDescription());
     }
     partition.setLocation(
@@ -42,7 +42,7 @@ public class DataPartitionPersistence {
     partition.setLastFileModifiedTime(obj.getLastFileModifiedTime());
     partition.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
 
-    if (StringUtils.isNullOrEmpty(partition.getLocation())) {
+    if (StringUtils.isBlankByCdmStandard(partition.getLocation())) {
       Logger.warning(ctx , TAG, "fromData", null, CdmLogCode.WarnPersistPartitionLocMissing , partition.getName());
     }
 
@@ -52,22 +52,28 @@ public class DataPartitionPersistence {
     }
 
     return Utils.processAnnotationsFromData(ctx, obj, partition.getExhibitsTraits()).thenCompose(v -> {
-      if (obj.getFileFormatSettings() != null) {
-        final CdmTraitReference csvFormatTrait = Utils.createCsvTrait(obj.getFileFormatSettings(), ctx);
-        if (csvFormatTrait == null) {
-          Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistCsvProcessingError);
-
-          return CompletableFuture.completedFuture(null);
-        }
-        partition.getExhibitsTraits().add(csvFormatTrait);
-      }
-
       ExtensionHelper.processExtensionFromJson(
           ctx,
           obj,
           partition.getExhibitsTraits(),
           extensionTraitDefList,
           localExtensionTraitDefList);
+
+      CdmTraitReference csvFormatTrait = (CdmTraitReference) partition.getExhibitsTraits().item("is.partition.format.CSV");
+      if (obj.getFileFormatSettings() != null) {
+        boolean partitionTraitExisted = csvFormatTrait != null;
+        csvFormatTrait = Utils.createCsvTrait(obj.getFileFormatSettings(), ctx, csvFormatTrait);
+        if (csvFormatTrait == null) {
+          Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistCsvProcessingError);
+
+          return CompletableFuture.completedFuture(null);
+        }
+
+        if (!partitionTraitExisted) {
+          partition.getExhibitsTraits().add(csvFormatTrait);
+        }
+      }
+
       return CompletableFuture.completedFuture(partition);
     });
   }
@@ -95,7 +101,7 @@ public class DataPartitionPersistence {
       result.setName("");
     }
 
-    if (StringUtils.isNullOrEmpty(result.getLocation())) {
+    if (StringUtils.isBlankByCdmStandard(result.getLocation())) {
       Logger.warning(instance.getCtx() , TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionLocMissing, result.getName());
     }
 

@@ -82,7 +82,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -105,7 +105,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -133,7 +133,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -156,7 +156,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -184,7 +184,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -256,7 +256,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -279,7 +279,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -308,7 +308,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -337,7 +337,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.4"
+              "value": "2.5"
             }
           ]
         }
@@ -705,6 +705,76 @@
           "name": "culture",
           "dataType": "string",
           "defaultValue": "en-us"
+        }
+      ]
+    },
+    {
+      "traitName": "is.partition.incremental",
+      "extendsTrait": "is.partition",
+      "explanation": "The base trait for describing incremental partitions and incremental partition patterns.",
+      "hasParameters": [
+        {
+          "name": "type",
+          "dataType": {
+            "dataTypeReference": "string",
+            "appliedTraits": [
+              {
+                "traitReference": "is.constrainedList.string",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "explanation": "The constant values table below provides a list of valid argument values and their descriptions. The table's schema corresponds to the 'listLookupStringValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                      "entityShape": "listLookupStringValues",
+                      "constantValues": [
+                        [
+                          "en",
+                          "A string indicating that the partition file contains newly inserted table records only.",
+                          "Insert",
+                          "0"
+                        ],
+                        [
+                          "en",
+                          "A string indicating that the partition file contains updated table records only.",
+                          "Update",
+                          "1"
+                        ],
+                        [
+                          "en",
+                          "A string indicating that the partition file contains deleted table records only.",
+                          "Delete",
+                          "2"
+                        ],
+                        [
+                          "en",
+                          "A string indicating that the partition file contains newly inserted or updated table records.",
+                          "Upsert",
+                          "3"
+                        ],
+                        [
+                          "en",
+                          "A string indicating that the partition file contains newly inserted, updated and deleted table records. Example would be a delta-lake partition file.",
+                          "UpsertAndDelete",
+                          "4"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "explanation": "The type for the incremental partition or incremental partition pattern objects. It can only be one of these values: Insert, Update, Delete, Upsert, and UpsertAndDelete.",
+          "required": true
+        },
+        {
+          "name": "incrementPartitionPatternName",
+          "dataType": "string",
+          "explanation": "If applying this trait to a partition object, this value is the associated partition pattern object's name. Otherwise, this trait should be applied to a partition pattern object, and this value should be the name of the partition pattern object."
+        },
+        {
+          "name": "fullDataPartitionPatternName",
+          "dataType": "string",
+          "explanation": "The associated incremental partition pattern object object's name (may not applicable for UpsertAndDelete)."
         }
       ]
     },
@@ -1126,5 +1196,5 @@
       ]
     }
   ],
-  "documentVersion": "2.4"
+  "documentVersion": "2.5"
 }

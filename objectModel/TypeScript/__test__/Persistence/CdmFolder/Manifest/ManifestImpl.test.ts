@@ -326,4 +326,38 @@ describe('Persistence.CdmFolder.Manifest', () => {
         corpus.storage.createAbsoluteCorpusPath('Abc', obj);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
     });
+
+        /**
+         * Testpassing blank or empty values for manifest schema, name etc.
+         */
+        it('TestManifestWithBlankFields', () => {
+            const content: string = testHelper.getInputFileContent(
+                testsSubpath,
+                'testManifestWithBlankFields',
+                'blank.manifest.cdm.json'
+            );
+    
+            const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
+                new resolveContext(new CdmCorpusDefinition(), undefined), 'cdmTest', 'someNamespace', '/', JSON.parse(content));
+            expect(cdmManifest.getName())
+                .toBe('cdmTest');
+            expect(cdmManifest.schema)
+                .toBeUndefined();
+            expect(cdmManifest.documentVersion)
+                .toBeUndefined();
+            expect(cdmManifest.lastFileModifiedTime.toUTCString())
+                .toBe('Mon, 15 Sep 2008 23:53:23 GMT');
+            expect(cdmManifest.explanation)
+                .toBe('test cdm folder for cdm version 1.0+');
+            expect(cdmManifest.imports.length)
+                .toBe(1);
+            expect(cdmManifest.imports.allItems[0].corpusPath)
+                .toBe('/primitives.cdm.json');
+            expect(cdmManifest.entities.length)
+                .toBe(0);
+            expect(cdmManifest.exhibitsTraits.length)
+                .toBe(1);
+            expect(cdmManifest.subManifests.length)
+                .toBe(0);
+        });
 });

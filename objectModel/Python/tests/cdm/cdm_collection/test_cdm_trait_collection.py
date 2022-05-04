@@ -3,6 +3,8 @@
 
 from typing import cast
 import unittest
+
+from cdm.utilities import Constants
 from tests.common import async_test
 from cdm.objectmodel import CdmTraitDefinition, CdmTraitReference
 from .cdm_collection_helper_functions import generate_manifest
@@ -11,7 +13,7 @@ from .cdm_collection_helper_functions import generate_manifest
 class CdmTraitCollectionTests(unittest.TestCase):
     @async_test
     def test_cdm_trait_collection_add(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitDefinition(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitDefinition(manifest.ctx, 'Name of other Trait', None)
@@ -19,19 +21,25 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
         added_trait = manifest.exhibits_traits.append(trait)
         added_other_trait = manifest.exhibits_traits.append(other_trait)
+        list_of_args = [[Constants._INCREMENTAL_PATTERN_PARAMETER_NAME, 'test'], ['fullDataPartitionPatternName', 'name']]
+        added_incremental_trait = manifest.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME, list_of_args)
 
         self.assertEqual(None, manifest._trait_cache)
-        self.assertEqual(2, len(manifest.exhibits_traits))
+        self.assertEqual(3, len(manifest.exhibits_traits))
         self.assertEqual(trait, manifest.exhibits_traits[0].explicit_reference)
         self.assertEqual(other_trait, manifest.exhibits_traits[1].explicit_reference)
         self.assertEqual(added_trait, manifest.exhibits_traits[0])
         self.assertEqual(added_other_trait, manifest.exhibits_traits[1])
+        self.assertEqual(added_incremental_trait, manifest.exhibits_traits[2])
+        self.assertEqual(2, len(manifest.exhibits_traits[2].arguments))
+        self.assertEqual('test', manifest.exhibits_traits[2].arguments.fetch_value(Constants._INCREMENTAL_PATTERN_PARAMETER_NAME))
+        self.assertEqual('name', manifest.exhibits_traits[2].arguments.fetch_value('fullDataPartitionPatternName'))
 
         self.assertEqual(manifest, manifest.exhibits_traits[0].owner)
 
     @async_test
     def test_cdm_trait_collection_insert(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitReference(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitReference(manifest.ctx, 'Name of other Trait', None)
@@ -48,7 +56,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_add_range(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitDefinition(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitDefinition(manifest.ctx, 'Name of other Trait', None)
@@ -62,7 +70,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_remove(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitDefinition(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitDefinition(manifest.ctx, 'Name of other Trait', None)
@@ -92,7 +100,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_remove_at(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitDefinition(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitDefinition(manifest.ctx, 'Name of other Trait', None)
@@ -113,7 +121,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_index_of(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitDefinition(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitDefinition(manifest.ctx, 'Name of other Trait', None)
@@ -138,7 +146,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_remove_only_from_property(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitReference(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitReference(manifest.ctx, 'Name of other Trait', None)
@@ -164,7 +172,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_remove_prioritize_from_property(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitReference(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitReference(manifest.ctx, 'Name of other Trait', None)
@@ -185,7 +193,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_remove_trait_definition_prioritize_from_property(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitDefinition(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitDefinition(manifest.ctx, 'Name of other Trait', None)
@@ -209,7 +217,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_index_of_only_from_property(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         trait = CdmTraitDefinition(manifest.ctx, 'TraitName', None)
         other_trait = CdmTraitDefinition(manifest.ctx, 'Name of other Trait', None)
@@ -237,7 +245,7 @@ class CdmTraitCollectionTests(unittest.TestCase):
 
     @async_test
     def test_cdm_trait_collection_clear(self):
-        manifest = generate_manifest('C:\\Root\\Path')
+        manifest = generate_manifest()
 
         manifest.exhibits_traits.append('trait1')
         manifest.exhibits_traits.append('trait2')

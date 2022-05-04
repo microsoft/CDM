@@ -5,7 +5,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
@@ -20,6 +19,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmDataPartitionPatternDefinition : CdmObjectDefinitionBase, CdmFileStatus
     {
         private static readonly string Tag = nameof(CdmDataPartitionPatternDefinition);
+
+        private TraitToPropertyMap TraitToPropertyMap { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmDataPartitionPatternDefinition"/> class.
         /// </summary>
@@ -29,6 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.ObjectType = CdmObjectType.DataPartitionPatternDef;
             this.Name = name;
+            this.TraitToPropertyMap = new TraitToPropertyMap(this);
         }
 
         /// <summary>
@@ -77,6 +80,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public DateTimeOffset? LastChildFileModifiedTime { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        /// <summary>
+        /// Gets or sets whether the data partition pattern is incremental.
+        /// </summary>
+        public bool IsIncremental { get => this.TraitToPropertyMap.FetchPropertyValue(nameof(IsIncremental).Substring(0, 1).ToLower() + nameof(IsIncremental).Substring(1)); }
+
         /// <inheritdoc />
         [Obsolete]
         public override CdmObjectType GetObjectType()
@@ -90,7 +98,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (string.IsNullOrWhiteSpace(this.RootLocation))
             {
                 IEnumerable<string> missingFields = new List<string>() { "RootLocation" };
-                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             return true;
@@ -225,7 +233,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         fileInfoList[i] = fileInfoList[i].Slice(rootCorpus.Length);
                     }
 
-                    if (this.Owner is CdmLocalEntityDeclarationDefinition)
+                    if (this.Owner is CdmLocalEntityDeclarationDefinition localEntDecDefOwner)
                     {
                         // if both are present log warning and use glob pattern, otherwise use regularExpression
                         if (!String.IsNullOrWhiteSpace(this.GlobPattern) && !String.IsNullOrWhiteSpace(this.RegularExpression))
@@ -258,12 +266,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             // a hashset to check if the data partition exists
                             HashSet<string> dataPartitionPathHashSet = new HashSet<string>();
-                            if (this.Owner != null && (this.Owner as CdmLocalEntityDeclarationDefinition).DataPartitions != null)
+                            if (localEntDecDefOwner.DataPartitions != null)
                             {
-                                foreach (var dataPartition in (this.Owner as CdmLocalEntityDeclarationDefinition).DataPartitions.AllItems)
+                                foreach (var dataPartition in localEntDecDefOwner.DataPartitions)
                                 {
                                     var fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(dataPartition.Location, this.InDocument);
                                     dataPartitionPathHashSet.Add(fullPath);
+                                }
+                            }
+
+                            HashSet<string> incrementalPartitionPathHashSet = new HashSet<string>();
+                            if (localEntDecDefOwner.IncrementalPartitions != null)
+                            {
+                                foreach (var incrementalPartition in localEntDecDefOwner.IncrementalPartitions)
+                                {
+                                    var fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(incrementalPartition.Location, this.InDocument);
+                                    incrementalPartitionPathHashSet.Add(fullPath);
                                 }
                             }
 
@@ -310,10 +328,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     try
                                     {
                                         DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
-
-                                        if (!dataPartitionPathHashSet.Contains(fullPath))
+                                        if (this.IsIncremental && !incrementalPartitionPathHashSet.Contains(fullPath))
                                         {
-                                            (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+                                            localEntDecDefOwner.CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime, true, this.Name);
+                                            incrementalPartitionPathHashSet.Add(fullPath);
+                                        }
+                                        else if (!this.IsIncremental && !dataPartitionPathHashSet.Contains(fullPath))
+                                        {
+                                            localEntDecDefOwner.CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
                                             dataPartitionPathHashSet.Add(fullPath);
                                         }
                                     }

@@ -1,0 +1,45 @@
+{
+    "$schema": "CdmManifestDefinition.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "manifestName": "pattern",
+    "explanation": "test cdm folder for cdm version 1.0+",
+    "imports": [
+        {
+            "uri": "/primitives.cdm.json"
+        }
+    ],
+    "entities": [
+        {
+            "entityName": "testEntity",
+            "explanation": "test explanation",
+            "entitySchema": "someEntity.cdm.json/SomeEntity",
+            "dataPartitionPatterns": [],
+            "incrementalPartitionPatterns": [
+                {
+                    "name": "DeletePattern",
+                    "rootLocation": "/IncrementalData",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.incremental",
+                            "arguments": [
+                                {
+                                    "name": "type",
+                                    "value": "typo"
+                                }
+                            ]
+                        }
+                    ],
+                    "regularExpression": "/(.*)/(.*)/(.*)/Deletes/delete(\\d+)\\.csv$",
+                    "parameters": [
+                        "year",
+                        "month",
+                        "day",
+                        "deletePartitionNumber"
+                    ],
+                    "specializedSchema": "csv"
+                }
+            ]
+        }
+    ],
+    "subManifests": []
+}

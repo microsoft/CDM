@@ -14,7 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestFolderCollectionAdd()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";
@@ -37,7 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestFolderCollectionInsert()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.InDocument = manifest;
             parentFolder.Namespace = "TheNamespace";
@@ -67,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestFolderCollectionAddWithNameParameter()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";
@@ -88,7 +88,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestFolderCollectionAddRange()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";
@@ -118,7 +118,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestFolderCollectionRemove()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var parentFolder = new CdmFolderDefinition(manifest.Ctx, "ParentFolder");
             parentFolder.Namespace = "TheNamespace";
             parentFolder.FolderPath = "ParentFolderPath/";

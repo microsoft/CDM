@@ -63,7 +63,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 foreach (var dataPartition in obj["dataPartitions"])
                 {
-                    localDec.DataPartitions.Add(DataPartitionPersistence.FromData(ctx, dataPartition));
+                    var dataPartitionDef = DataPartitionPersistence.FromData(ctx, dataPartition);
+                    if (dataPartitionDef.IsIncremental)
+                    {
+                        ErrorMessage((ResolveContext)ctx, nameof(FromData), null, dataPartitionDef, true);
+                    }
+                    else
+                    {
+                        localDec.DataPartitions.Add(dataPartitionDef);
+                    }
                 }
             }
 
@@ -71,7 +79,47 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 foreach (var pattern in obj["dataPartitionPatterns"])
                 {
-                    localDec.DataPartitionPatterns.Add(DataPartitionPatternPersistence.FromData(ctx, pattern));
+                    var dataPartitionPatternDef = DataPartitionPatternPersistence.FromData(ctx, pattern);
+                    if (dataPartitionPatternDef.IsIncremental)
+                    {
+                        ErrorMessage((ResolveContext)ctx, nameof(FromData), null, dataPartitionPatternDef, true);
+                    }
+                    else
+                    {
+                        localDec.DataPartitionPatterns.Add(dataPartitionPatternDef);
+                    }
+                }
+            }
+
+            if (obj["incrementalPartitions"] != null)
+            {
+                foreach (var incrementalPartition in obj["incrementalPartitions"])
+                {
+                    var incrementalPartitionDef = DataPartitionPersistence.FromData(ctx, incrementalPartition);
+                    if (!incrementalPartitionDef.IsIncremental)
+                    {
+                        ErrorMessage((ResolveContext)ctx, nameof(FromData), null, incrementalPartitionDef, false);
+                    }
+                    else
+                    {
+                        localDec.IncrementalPartitions.Add(incrementalPartitionDef);
+                    }
+                }
+            }
+
+            if (obj["incrementalPartitionPatterns"] != null)
+            {
+                foreach (var incrementalPattern in obj["incrementalPartitionPatterns"])
+                {
+                    var incrementalPartitionPatternDef = DataPartitionPatternPersistence.FromData(ctx, incrementalPattern);
+                    if (!incrementalPartitionPatternDef.IsIncremental)
+                    {
+                        ErrorMessage((ResolveContext)ctx, nameof(FromData), null, incrementalPartitionPatternDef, false);
+                    }
+                    else
+                    {
+                        localDec.IncrementalPartitionPatterns.Add(incrementalPartitionPatternDef);
+                    }
                 }
             }
 
@@ -90,11 +138,67 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime),
                 LastChildFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastChildFileModifiedTime),
                 EntityPath = instance.EntityPath,
-                DataPartitions = Utils.ListCopyData<DataPartition>(resOpt, instance.DataPartitions, options),
-                DataPartitionPatterns = Utils.ListCopyData<DataPartitionPattern>(resOpt, instance.DataPartitionPatterns, options)
+                DataPartitions = Utils.ListCopyData<DataPartition>(resOpt, instance.DataPartitions, options, ensureNonIncremental(instance)),
+                DataPartitionPatterns = Utils.ListCopyData<DataPartitionPattern>(resOpt, instance.DataPartitionPatterns, options, ensureNonIncremental(instance)),
+                IncrementalPartitions = Utils.ListCopyData<DataPartition>(resOpt, instance.IncrementalPartitions, options, ensureIncremental(instance)),
+                IncrementalPartitionPatterns = Utils.ListCopyData<DataPartitionPattern>(resOpt, instance.IncrementalPartitionPatterns, options, ensureIncremental(instance))
             };
 
             return result;
+        }
+
+        private static void ErrorMessage(CdmCorpusContext ctx, string methodName, string corpusPath, CdmDataPartitionDefinition obj, bool isIncremental)
+        {
+            if (isIncremental)
+            {
+                Logger.Error(ctx, Tag, methodName, corpusPath, CdmLogCode.ErrPersistIncrementalConversionError, obj.Name, Constants.IncrementalTraitName, nameof(CdmLocalEntityDeclarationDefinition.DataPartitions));
+            }
+            else
+            {
+                Logger.Error(ctx, Tag, methodName, corpusPath, CdmLogCode.ErrPersistNonIncrementalConversionError, obj.Name, Constants.IncrementalTraitName, nameof(CdmLocalEntityDeclarationDefinition.IncrementalPartitions));
+            }
+        }
+
+        private static void ErrorMessage(CdmCorpusContext ctx, string methodName, string corpusPath, CdmDataPartitionPatternDefinition obj, bool isIncremental)
+        {
+            if (isIncremental)
+            {
+                Logger.Error(ctx, Tag, methodName, corpusPath, CdmLogCode.ErrPersistIncrementalConversionError, obj.Name, Constants.IncrementalTraitName, nameof(CdmLocalEntityDeclarationDefinition.DataPartitionPatterns));
+            }
+            else
+            {
+                Logger.Error(ctx, Tag, methodName, corpusPath, CdmLogCode.ErrPersistNonIncrementalConversionError, obj.Name, Constants.IncrementalTraitName, nameof(CdmLocalEntityDeclarationDefinition.IncrementalPartitionPatterns));
+            }
+        }
+
+        private static Func<dynamic, bool> ensureNonIncremental(CdmLocalEntityDeclarationDefinition instance)
+        {
+            bool compare(dynamic obj)
+            {
+                if ((obj is CdmDataPartitionDefinition && (obj as CdmDataPartitionDefinition).IsIncremental) ||
+                    (obj is CdmDataPartitionPatternDefinition && (obj as CdmDataPartitionPatternDefinition).IsIncremental))
+                {
+                    ErrorMessage(instance.Ctx, nameof(ToData), instance.AtCorpusPath, obj, true);
+                    return false;
+                }
+                return true;
+            }
+            return compare;
+        }
+
+        private static Func<dynamic, bool> ensureIncremental(CdmLocalEntityDeclarationDefinition instance)
+        {
+            bool compare(dynamic obj)
+            {
+                if ((obj is CdmDataPartitionDefinition && !(obj as CdmDataPartitionDefinition).IsIncremental) ||
+                    (obj is CdmDataPartitionPatternDefinition && !(obj as CdmDataPartitionPatternDefinition).IsIncremental))
+                {
+                    ErrorMessage(instance.Ctx, nameof(ToData), instance.AtCorpusPath, obj, false);
+                    return false;
+                }
+                return true;
+            }
+            return compare;
         }
     }
 }

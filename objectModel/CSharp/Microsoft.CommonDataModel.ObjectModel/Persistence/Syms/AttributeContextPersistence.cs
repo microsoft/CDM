@@ -24,7 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             if (obj.Value<string>("parent") != null)
                 attributeContext.Parent = AttributeContextReferencePersistence.FromData(ctx, obj.Value<string>("parent"));
             string explanation = obj.Value<string>("explanation");
-            if (!string.IsNullOrEmpty(explanation))
+            if (!StringUtils.IsBlankByCdmStandard(explanation))
                 attributeContext.Explanation = explanation;
             if (obj.Value<string>("definition") != null)
             {

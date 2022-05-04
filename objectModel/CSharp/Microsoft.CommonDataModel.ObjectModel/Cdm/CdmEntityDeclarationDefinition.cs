@@ -24,5 +24,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets the data partition patterns, implemented only by LocalEntityDeclaration.
         /// </summary>
         CdmCollection<CdmDataPartitionPatternDefinition> DataPartitionPatterns { get; }
+
+        /// <summary>
+        /// Gets the incremental partitions, implemented only by LocalEntityDeclaration.
+        /// </summary>
+        CdmCollection<CdmDataPartitionDefinition> IncrementalPartitions { get; }
+
+        /// <summary>
+        /// Gets the incremental partition patterns, implemented only by LocalEntityDeclaration.
+        /// </summary>
+        CdmCollection<CdmDataPartitionPatternDefinition> IncrementalPartitionPatterns { get; }
     }
 }

@@ -47,7 +47,7 @@ public class ArgumentPersistence {
         }
 
         // skip the argument if just a value
-        if (StringUtils.isNullOrEmpty(instance.getName()))
+        if (StringUtils.isBlankByCdmStandard(instance.getName()))
             return val;
 
         final Argument result = new Argument();

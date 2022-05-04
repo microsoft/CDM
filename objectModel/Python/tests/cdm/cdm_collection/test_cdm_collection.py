@@ -116,7 +116,7 @@ class CdmCollectionTests(unittest.TestCase):
             self.assertEqual('entityName_{}'.format(i), collection[i].entity_name)
 
     def test_cdm_collection_change_makes_document_dirty(self):
-        manifest = generate_manifest('C:\\Nothing')
+        manifest = generate_manifest()
 
         collection = CdmCollection(manifest.ctx, manifest, CdmObjectType.ENTITY_REF)
 

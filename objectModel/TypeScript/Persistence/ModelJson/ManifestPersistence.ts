@@ -19,7 +19,9 @@ import {
     CdmTraitReference,
     copyOptions,
     resolveOptions,
-    traitToPropertyMap
+    traitToPropertyMap,
+    StringUtils,
+    constants
 } from '../../internal';
 import {
     isLocalEntityDeclarationDefinition,
@@ -57,8 +59,8 @@ export class ManifestPersistence {
             });
         }
 
-        if (!manifest.imports.allItems.some((importPresent: CdmImport) => importPresent.corpusPath === 'cdm:/foundations.cdm.json')) {
-            manifest.imports.push('cdm:/foundations.cdm.json');
+        if (!manifest.imports.allItems.some((importPresent: CdmImport) => importPresent.corpusPath === constants.FOUNDATIONS_CORPUS_PATH)) {
+            manifest.imports.push(constants.FOUNDATIONS_CORPUS_PATH);
         }
 
         manifest.explanation = obj.description;
@@ -75,7 +77,7 @@ export class ManifestPersistence {
             manifest.lastFileStatusCheckTime = new Date(obj['cdm:lastFileStatusCheckTime']);
         }
 
-        if (obj['cdm:documentVersion']) {
+        if (!StringUtils.isBlankByCdmStandard(obj['cdm:documentVersion'])) {
             manifest.documentVersion = obj['cdm:documentVersion'];
         }
 
@@ -291,7 +293,7 @@ export class ManifestPersistence {
                         let entityLocation: string = instance.ctx.corpus.storage.corpusPathToAdapterPath(
                             entity.entityPath);
 
-                        if (!entityLocation) {
+                        if (StringUtils.isBlankByCdmStandard(entityLocation)) {
                             Logger.error(instance.ctx, ManifestPersistence.TAG, ManifestPersistence.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonInvalidEntityPath, entity.entityName);
                             element = undefined;
                         }

@@ -101,6 +101,13 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     }
 
     /**
+     * Gets whether the data partition is incremental.
+     */
+    public get isIncremental(): boolean {
+        return this.traitToPropertyMap.fetchPropertyValue('isIncremental') as boolean;
+    }
+
+    /**
      * @inheritdoc
      */
     public getObjectType(): cdmObjectType {

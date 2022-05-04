@@ -6,7 +6,8 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    StringUtils
 } from '../../internal';
 import {
     Argument,
@@ -46,7 +47,7 @@ export class ArgumentPersistence {
             }
         }
         // skip the argument if just a value
-        if (!instance.name) {
+        if (StringUtils.isBlankByCdmStandard(instance.name)) {
             return value;
         }
 

@@ -1,5 +1,6 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
+
 from re import Match
 from typing import Union, Tuple, List, Optional, TYPE_CHECKING
 import threading
@@ -10,6 +11,7 @@ from cdm.storage.syms import SymsAdapter
 from cdm.objectmodel import CdmArgumentValue, CdmAttribute, CdmCorpusContext, \
     CdmObjectReference, CdmTraitReference, CdmTraitGroupReference, CdmCollection, CdmLocalEntityDeclarationDefinition
 from cdm.utilities import JObject, IdentifierRef, ResolveOptions, CopyOptions, StorageUtils
+from cdm.utilities.string_utils import StringUtils
 from cdm.persistence.syms.types import SymsManifestContent
 from cdm.persistence.syms.models import DatabaseEntity, RelationshipEntity, TableEntity, TypeInfo
 from .attribute_group_reference_persistence import AttributeGroupReferencePersistence
@@ -583,7 +585,7 @@ async def create_or_update_syms_entities(syms_manifest_content: 'SymsManifestCon
         if len(failed_updated_relationships) > 0:
             error_mesg += 'Failed updated relationships : ' + str(failed_updated_relationships)
 
-    if error_mesg != '':
+    if not StringUtils.is_blank_by_cdm_standard(error_mesg):
         raise Exception (error_mesg)
 
 async def remove_table_entity(table_name: str, database_name: str, adapter: 'StorageAdapter'):

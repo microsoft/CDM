@@ -28,6 +28,10 @@ export class EntityDeclarationDefinition {
 
     public dataPartitionPatterns?: DataPartitionPattern[];
 
+    public incrementalPartitions?: DataPartition[];
+
+    public incrementalPartitionPatterns?: DataPartitionPattern[];
+
     public lastFileStatusCheckTime: string;
 
     public lastFileModifiedTime: string;

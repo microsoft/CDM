@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmObjectReference, cdmObjectType, CdmTraitReference, copyOptions, identifierRef, resolveOptions } from '../../internal';
+import { CdmObjectReference, cdmObjectType, CdmTraitReference, copyOptions, identifierRef, resolveOptions, StringUtils } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     Argument,
@@ -26,7 +26,7 @@ export class cdmObjectRefPersistence {
         // We don't know what object we are creating to initialize to any
         // tslint:disable-next-line:no-any
         let copy: any = {};
-        if (instance.namedReference) {
+        if (!StringUtils.isBlankByCdmStandard(instance.namedReference)) {
             const identifier: (string | identifierRef)
                 = utils.copyIdentifierRef(instance, resOpt, options);
             if (instance.simpleNamedReference) {

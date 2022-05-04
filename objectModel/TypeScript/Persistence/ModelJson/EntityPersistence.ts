@@ -10,7 +10,8 @@ import {
     CdmTypeAttributeDefinition,
     cdmLogCode,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    StringUtils
 } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as extensionHelper from './ExtensionHelper';
@@ -27,7 +28,7 @@ export class EntityPersistence {
     ): Promise<CdmEntityDefinition> {
         const entity: CdmEntityDefinition = ctx.corpus.MakeObject(cdmObjectType.entityDef, object.name);
 
-        if (object.description && object.description.trim() !== '') {
+        if (!StringUtils.isBlankByCdmStandard(object.description)) {
             entity.description = object.description;
         }
 

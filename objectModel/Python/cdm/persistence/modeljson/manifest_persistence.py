@@ -9,7 +9,8 @@ import dateutil.parser
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.persistence import PersistenceLayer
 from cdm.persistence.cdmfolder import ImportPersistence
-from cdm.utilities import logger, TraitToPropertyMap
+from cdm.utilities import logger, TraitToPropertyMap, Constants
+from cdm.utilities.string_utils import StringUtils
 
 from . import extension_helper, utils
 from .types import Model, ReferenceModel
@@ -18,7 +19,7 @@ from .referenced_entity_declaration_persistence import ReferencedEntityDeclarati
 from .relationship_persistence import RelationshipPersistence
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition, CdmImport, CdmTraitDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmFolderDefinition, CdmManifestDefinition, CdmImport, CdmTraitDefinition
     from cdm.utilities import CopyOptions, ResolveOptions
 
 _TAG = 'ManifestPersistence'
@@ -48,8 +49,8 @@ class ManifestPersistence:
                 import_obj = ImportPersistence.from_data(ctx, an_import)
                 manifest.imports.append(import_obj)
 
-        if not any((import_present.corpus_path == 'cdm:/foundations.cdm.json' for import_present in manifest.imports)):
-            manifest.imports.append('cdm:/foundations.cdm.json')
+        if not any((import_present.corpus_path == Constants._FOUNDATIONS_CORPUS_PATH for import_present in manifest.imports)):
+            manifest.imports.append(Constants._FOUNDATIONS_CORPUS_PATH)
 
         if obj.get('modifiedTime'):
             manifest.last_file_modified_time = dateutil.parser.parse(obj.get('modifiedTime'))
@@ -60,7 +61,7 @@ class ManifestPersistence:
         if obj.get('lastFileStatusCheckTime'):
             manifest.last_file_status_check_time = dateutil.parser.parse(obj.get('lastFileStatusCheckTime'))
 
-        if obj.get('documentVersion'):
+        if not StringUtils.is_blank_by_cdm_standard(obj.get('documentVersion')):
             manifest.document_version = obj.get('documentVersion')
 
         if obj.get('application'):
@@ -205,7 +206,7 @@ class ManifestPersistence:
 
                     location = instance.ctx.corpus.storage.corpus_path_to_adapter_path(entity.entity_path)
 
-                    if not location:
+                    if StringUtils.is_blank_by_cdm_standard(location):
                         logger.error(instance.ctx, _TAG,'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_INVALID_ENTITY_PATH, entity.entity_name)
                         element = None
 

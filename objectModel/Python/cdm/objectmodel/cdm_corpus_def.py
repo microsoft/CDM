@@ -1182,7 +1182,7 @@ class CdmCorpusDefinition:
                 return await adapter.compute_last_modified_time_async(path_tuple[1])
             except Exception as e:
                 logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
-                             CdmLogCode.ERR_PARTITION_FILE_MOD_TIME_FAILURE, path_tuple[1], e)
+                             CdmLogCode.ERR_MANIFEST_FILE_MOD_TIME_FAILURE, path_tuple[1], e)
                 return None
         else:
             return await self._get_last_modified_time_from_object_async(curr_object.in_document)

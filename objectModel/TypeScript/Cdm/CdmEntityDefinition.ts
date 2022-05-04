@@ -53,7 +53,8 @@ import {
     TraitSpec,
     traitToPropertyMap,
     VisitCallback,
-    CdmTraitReferenceBase
+    CdmTraitReferenceBase,
+    constants
 } from '../internal';
 import { isAttributeReference, isEntityAttributeDefinition } from '../Utilities/cdmObjectTypeGuards';
 import { using } from 'using-statement';
@@ -668,8 +669,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 origDoc = this.ctx.corpus.storage.createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.imports.push(origDoc, 'resolvedFrom');
 
-                if (this.inDocument.imports.item('cdm:/foundations.cdm.json') !== undefined) {
-                    docRes.imports.push('cdm:/foundations.cdm.json');
+                if (this.inDocument.imports.item(constants.FOUNDATIONS_CORPUS_PATH) !== undefined) {
+                    docRes.imports.push(constants.FOUNDATIONS_CORPUS_PATH);
                 }
 
                 docRes.documentVersion = this.inDocument.documentVersion;

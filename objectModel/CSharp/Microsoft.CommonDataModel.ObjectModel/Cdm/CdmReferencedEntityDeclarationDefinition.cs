@@ -57,6 +57,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public CdmCollection<CdmDataPartitionPatternDefinition> DataPartitionPatterns => null;
 
+        /// <inheritdoc />
+        public CdmCollection<CdmDataPartitionDefinition> IncrementalPartitions => null;
+
+        /// <inheritdoc />
+        public CdmCollection<CdmDataPartitionPatternDefinition> IncrementalPartitionPatterns => null;
+
         /// <summary>
         /// Gets or sets the last child file modified time.
         /// </summary>

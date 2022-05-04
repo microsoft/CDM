@@ -9,12 +9,23 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
-import com.microsoft.commondatamodel.objectmodel.utilities.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmIncrementalPartitionType;
+import com.microsoft.commondatamodel.objectmodel.enums.PartitionFileStatusCheckType;
+import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -376,6 +387,14 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
+    return fileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+  }
+
+  public CompletableFuture<Void> fileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType) {
+    return fileStatusCheckAsync(partitionFileStatusCheckType, CdmIncrementalPartitionType.None);
+  }
+
+  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType) {
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
         StorageAdapterBase adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
@@ -402,7 +421,11 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           }
 
           for (final CdmEntityDeclarationDefinition entity : getEntities()) {
-            entity.fileStatusCheckAsync().join();
+            if (entity instanceof CdmReferencedEntityDeclarationDefinition) {
+              entity.fileStatusCheckAsync().join();
+            } else if (entity instanceof CdmLocalEntityDeclarationDefinition) {
+              ((CdmLocalEntityDeclarationDefinition)entity).fileStatusCheckAsync(partitionFileStatusCheckType, incrementalType).join();
+            }
           }
 
           for (final CdmManifestDeclarationDefinition subManifest : getSubManifests()) {

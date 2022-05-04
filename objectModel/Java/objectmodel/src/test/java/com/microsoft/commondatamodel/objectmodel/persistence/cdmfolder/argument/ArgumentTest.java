@@ -30,4 +30,21 @@ public class ArgumentTest {
     Object argumentToData = ArgumentPersistence.toData(argument, null, null);
     Assert.assertEquals(argumentToData, 0);
   }
+
+  /**
+   * Test loading an argument with blank name & value 0 (number).
+   */
+  @Test
+  public void TestLoadingBlankName() {
+    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+    ObjectNode argumentData = JsonNodeFactory.instance.objectNode();
+    argumentData.put("name", "  ");
+    argumentData.put("value", 0);
+
+    CdmArgumentDefinition argument = ArgumentPersistence.fromData(corpus.getCtx(), argumentData);
+    Assert.assertEquals(argument.getValue(), 0);
+
+    Object argumentToData = ArgumentPersistence.toData(argument, null, null);
+    Assert.assertEquals(argumentToData, 0);
+  }
 }

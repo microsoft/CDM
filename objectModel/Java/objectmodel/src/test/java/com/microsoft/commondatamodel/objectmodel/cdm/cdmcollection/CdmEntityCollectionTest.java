@@ -27,9 +27,8 @@ public class CdmEntityCollectionTest {
    * Tests whether manifest.getEntities().add() can be used with {@link CdmEntityDefinition} parameter.
    */
   @Test
-  public void testManifestAddEntityWithLocalizedPaths() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testManifestAddEntityWithLocalizedPaths() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmCorpusDefinition cdmCorpus = manifest.getCtx().getCorpus();
 
     final CdmEntityDefinition entity =
@@ -68,8 +67,8 @@ public class CdmEntityCollectionTest {
    * Tests whether the EntityDefinition can be passed directly to manifest.getEntities().add().
    */
   @Test
-  public void testManifestCanAddEntityDefinition() {
-    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testManifestCanAddEntityDefinition() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
 
     final CdmEntityDefinition entity = new CdmEntityDefinition(
         manifest.getCtx(),
@@ -168,9 +167,8 @@ public class CdmEntityCollectionTest {
   }
 
   @Test
-  public void testCdmEntityCollectionRemoveEntityDeclarationDefinition() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testCdmEntityCollectionRemoveEntityDeclarationDefinition() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmEntityDefinition entity =
         new CdmEntityDefinition(manifest.getCtx(), "entityName", null);
     CdmCollectionHelperFunctions.createDocumentForEntity(manifest.getCtx().getCorpus(), entity);

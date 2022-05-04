@@ -136,7 +136,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmCollectionChangeMakesDocumentDirty()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\nothing");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             var collection = new CdmCollection<CdmEntityReference>(manifest.Ctx, manifest, Enums.CdmObjectType.EntityRef);
 
             manifest.IsDirty = false;

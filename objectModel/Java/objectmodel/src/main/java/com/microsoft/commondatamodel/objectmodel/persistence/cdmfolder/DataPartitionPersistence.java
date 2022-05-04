@@ -3,11 +3,8 @@
 
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataPartition;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.KeyValuePair;
@@ -16,7 +13,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class DataPartitionPersistence {
     public static CdmDataPartitionDefinition fromData(final CdmCorpusContext ctx, final DataPartition obj) {

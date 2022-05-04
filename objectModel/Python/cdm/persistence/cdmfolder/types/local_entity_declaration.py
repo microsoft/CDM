@@ -20,5 +20,11 @@ class LocalEntityDeclaration(EntityDeclarationDefinition):
         self.dataPartitionPatterns = None  # type: List[DataPartitionPattern]
         """The data partition patterns."""
 
+        self.incrementalPartitions = None  # type: List[DataPartition]
+        """The incremental partitions"""
+
+        self.incrementalPartitionPatterns = None  # type: List[DataPartitionPattern]
+        """The incremental partition patterns."""
+
         self.entitySchema = None  # type: Optional[str]
         """The entity schema."""

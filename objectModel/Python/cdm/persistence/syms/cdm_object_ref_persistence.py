@@ -7,6 +7,7 @@ from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmObjectReference
 from cdm.persistence import PersistenceLayer
 from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
+from cdm.utilities.string_utils import StringUtils
 
 from . import utils
 from .types import AttributeGroupReference, CdmJsonType, \
@@ -20,7 +21,7 @@ class CdmObjectRefPersistence:
         copy = None
         replace = None
 
-        if instance.named_reference:
+        if not StringUtils.is_blank_by_cdm_standard(instance.named_reference):
             identifier = utils.copy_identifier_ref(instance, res_opt, options)
             if instance.simple_named_reference:
                 return identifier

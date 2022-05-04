@@ -11,7 +11,8 @@ import {
     CdmTypeAttributeDefinition,
     copyOptions,
     resolveOptions,
-    traitToPropertyMap
+    traitToPropertyMap,
+    StringUtils
 } from '../../internal';
 import { processExtensionFromJson } from './ExtensionHelper';
 import { Attribute, attributeBaseProperties, DataType } from './types';
@@ -29,7 +30,7 @@ export class TypeAttributePersistence {
         // Do a conversion between CDM data format and model.json data type.
         attribute.dataFormat = this.dataTypeFromData(object.dataType);
 
-        if (object.description && object.description.trim() !== '') {
+        if (!StringUtils.isBlankByCdmStandard(object.description)) {
             attribute.description = object.description;
         }
 

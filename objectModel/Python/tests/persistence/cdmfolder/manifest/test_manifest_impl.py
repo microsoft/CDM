@@ -233,3 +233,19 @@ class ManifestImplTest(unittest.TestCase):
         manifest._folder_path = 'Mnp/../Qrs'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
         TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_PATH_FORMAT, True, self)
+
+    def test_manifest_with_blank_fields(self):
+        """Testing for manifest impl instance with blank or empty values for manifest schema, name etc."""
+        test_name = 'test_manifest_with_blank_fields'
+        corpus = self.get_corpus()
+        content = TestHelper.get_input_file_content(self.tests_subpath, test_name, 'blank.manifest.cdm.json')
+        cdm_manifest = ManifestPersistence.from_object(corpus.ctx, 'cdmTest', 'someNamespace', '/', ManifestContent().decode(content))
+        self.assertIsNone(cdm_manifest.schema)
+        self.assertIsNone(cdm_manifest.document_version)
+        self.assertEqual(time_utils._get_formatted_date_string(cdm_manifest.last_file_modified_time), '2008-09-15T23:53:23.000Z')
+        self.assertEqual(cdm_manifest.explanation, 'test cdm folder for cdm version 1.0+')
+        self.assertEqual(1, len(cdm_manifest.imports))
+        self.assertEqual(cdm_manifest.imports[0].corpus_path, '/primitives.cdm.json')
+        self.assertEqual(0, len(cdm_manifest.entities))
+        self.assertEqual(1, len(cdm_manifest.exhibits_traits))
+        self.assertEqual(0, len(cdm_manifest.sub_manifests))

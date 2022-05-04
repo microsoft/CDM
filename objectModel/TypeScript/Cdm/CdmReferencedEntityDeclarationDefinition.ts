@@ -38,6 +38,10 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
 
     public dataPartitionPatterns: CdmCollection<CdmDataPartitionPatternDefinition>;
 
+    public incrementalPartitions: CdmCollection<CdmDataPartitionDefinition>;
+
+    public incrementalPartitionPatterns: CdmCollection<CdmDataPartitionPatternDefinition>;
+
     /**
      * @inheritdoc
      */

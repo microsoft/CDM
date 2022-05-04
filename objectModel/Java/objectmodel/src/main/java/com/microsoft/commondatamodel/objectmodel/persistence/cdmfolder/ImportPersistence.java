@@ -25,7 +25,7 @@ public class ImportPersistence {
         final CdmImport theImport = ctx.getCorpus().makeObject(CdmObjectType.Import);
 
         String corpusPath = obj.getCorpusPath();
-        if (StringUtils.isNullOrEmpty(corpusPath))
+        if (StringUtils.isBlankByCdmStandard(corpusPath))
             corpusPath = obj.getUri();
 
         theImport.setCorpusPath(corpusPath);
@@ -36,8 +36,8 @@ public class ImportPersistence {
 
   public static Import toData(final CdmImport instance, final ResolveOptions resOpt, final CopyOptions options) {
         final Import result = new Import();
-        result.setMoniker(StringUtils.isNullOrEmpty(instance.getMoniker()) ? null : instance.getMoniker());
-        result.setCorpusPath(StringUtils.isNullOrEmpty(instance.getCorpusPath()) ? null : instance.getCorpusPath());
+        result.setMoniker(StringUtils.isBlankByCdmStandard(instance.getMoniker()) ? null : instance.getMoniker());
+        result.setCorpusPath(StringUtils.isBlankByCdmStandard(instance.getCorpusPath()) ? null : instance.getCorpusPath());
         return result;
   }
 }

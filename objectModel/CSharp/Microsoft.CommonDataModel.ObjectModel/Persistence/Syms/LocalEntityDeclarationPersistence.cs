@@ -87,7 +87,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     }
 
                     // check and get list of wildcards matches in path if any.
-                    var matches = Utils.GetWildcardsMatches(tableProperties.StorageDescriptor.Source.Location);
+                    var symsPath = Utils.CreateSymsAbsolutePath(symsRootPath, tableProperties.StorageDescriptor.Source.Location);
+                    var corpusPath = Utils.SymsPathToCorpusPath(symsPath, ctx.Corpus.Storage);
+                    var matches = Utils.GetWildcardsMatches(corpusPath);
+
                     if (System.IO.Path.GetExtension(tableProperties.StorageDescriptor.Source.Location) == String.Empty // check if its a folder
                         || matches != null)
                     {

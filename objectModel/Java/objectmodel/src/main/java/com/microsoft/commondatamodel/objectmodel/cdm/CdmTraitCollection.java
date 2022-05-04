@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import java.util.List;
 import java.util.Objects;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * {@link CdmCollection} customized for {@link CdmTraitReferenceBase}
@@ -103,6 +104,29 @@ public class CdmTraitCollection extends CdmCollection<CdmTraitReferenceBase> {
                     simpleRef);
     super.add(traitGroupReference);
     return traitGroupReference;
+  }
+
+  /**
+   * Creates an non-simple-referenced {@link CdmTraitGroupReference} object,
+   * assigns it the name passed as parameter, adds the supplied arguments to it if provided, and adds it to the collection.
+   *
+   * @param name The name to be used for the newly created CdmTraitReference object.
+   * @param args The trait reference's arguments. This is optional, call add(string name, bool simpleRef) instead if creating a simpleNameReferenced {@link CdmTraitGroupReference} object.
+   * @return The created Trait Reference that was added to the CdmCollection.
+   */
+  public CdmTraitReferenceBase add(final String name, final List<Pair<String, Object>> args) {
+    this.clearCache();
+    CdmTraitReference traitRef = (CdmTraitReference)super.add(name);
+
+    if (traitRef == null || args == null) {
+      return traitRef;
+    }
+
+    for (final Pair<String, Object> tuple : args) {
+      traitRef.getArguments().add(tuple.getLeft(), tuple.getRight());
+    }
+
+    return traitRef;
   }
 
   /**

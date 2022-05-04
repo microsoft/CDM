@@ -10,7 +10,7 @@ import {generateManifest} from './CdmCollectionHelperFunctions';
 
 describe ('Cdm/CdmCollection/CdmFolderCollection', () => {
     it ('TestFolderCollectionAdd', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const parentFolder : CdmFolderDefinition = new CdmFolderDefinition(manifest.ctx, 'parentFolder');
         parentFolder.namespace = 'theNamespace';
         parentFolder.folderPath = 'parentFolderPath/';
@@ -40,7 +40,7 @@ describe ('Cdm/CdmCollection/CdmFolderCollection', () => {
     });
 
     it ('TestFolderCollectionInsert', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const parentFolder: CdmFolderDefinition = new CdmFolderDefinition(manifest.ctx, 'parentFolder');
         parentFolder.inDocument = manifest;
         parentFolder.namespace = 'namespace';
@@ -78,7 +78,7 @@ describe ('Cdm/CdmCollection/CdmFolderCollection', () => {
     });
 
     it ('TestFolderCollectionAddWithNameParameter', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const parentFolder: CdmFolderDefinition = new CdmFolderDefinition(manifest.ctx, 'parentFolder');
         parentFolder.namespace = 'namespace';
         parentFolder.folderPath = 'parentFolderPath/';
@@ -105,7 +105,7 @@ describe ('Cdm/CdmCollection/CdmFolderCollection', () => {
     });
 
     it ('TestFolderCollectionAddRange', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const parentFolder: CdmFolderDefinition = new CdmFolderDefinition(manifest.ctx, 'parentFolder');
         parentFolder.namespace = 'namespace';
         parentFolder.folderPath = 'parentFolderPath/';
@@ -135,7 +135,7 @@ describe ('Cdm/CdmCollection/CdmFolderCollection', () => {
     });
 
     it ('TestFolderCollectionRemove', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const parentFolder: CdmFolderDefinition = new CdmFolderDefinition(manifest.ctx, 'parentFolder');
         parentFolder.namespace = 'namespace';
         parentFolder.folderPath = 'parentFolderPath/';
