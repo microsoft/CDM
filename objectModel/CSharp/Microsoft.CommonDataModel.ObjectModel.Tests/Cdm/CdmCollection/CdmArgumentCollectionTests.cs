@@ -67,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
                 Value = 123
             };
             argList.Add(argumentDefinition);
-            var valOfArg2 = CdmCollectionHelperFunctions.GenerateManifest("C://Nothing");
+            var valOfArg2 = CdmCollectionHelperFunctions.GenerateManifest();
             argumentDefinition = new CdmArgumentDefinition(trait.Ctx, null)
             {
                 Name = "Arg2",
@@ -132,7 +132,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmCollectionAddPopulatesInDocumentWithVisit()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var entityReference = new CdmLocalEntityDeclarationDefinition(manifest.Ctx, "entityName");
 
@@ -150,7 +150,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
 
         private CdmTraitReference GenerateTrait()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Nothing");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
             return new CdmTraitReference(manifest.Ctx, "traitName", false, false);
         }
     }

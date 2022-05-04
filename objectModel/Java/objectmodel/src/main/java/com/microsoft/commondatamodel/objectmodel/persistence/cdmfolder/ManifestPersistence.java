@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmLocalEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
@@ -19,6 +20,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Imp
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.LocalEntityDeclaration;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestDeclaration;
+import com.microsoft.commondatamodel.objectmodel.utilities.Constants;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -57,19 +59,19 @@ public class ManifestPersistence {
     manifest.setNamespace(nameSpace);
     manifest.setExplanation(dataObj.getExplanation());
 
-    if (!StringUtils.isNullOrEmpty(dataObj.getSchema())) {
+    if (!StringUtils.isBlankByCdmStandard(dataObj.getSchema())) {
       manifest.setSchema(dataObj.getSchema());
     }
 
-    if (!StringUtils.isNullOrEmpty(dataObj.getJsonSchemaSemanticVersion())) {
+    if (!StringUtils.isBlankByCdmStandard(dataObj.getJsonSchemaSemanticVersion())) {
       manifest.setJsonSchemaSemanticVersion(dataObj.getJsonSchemaSemanticVersion());
     }
 
-    if (!StringUtils.isNullOrEmpty(dataObj.getDocumentVersion())) {
+    if (!StringUtils.isBlankByCdmStandard(dataObj.getDocumentVersion())) {
       manifest.setDocumentVersion(dataObj.getDocumentVersion());
     }
   
-    if (!StringUtils.isNullOrEmpty(dataObj.getManifestName())) {
+    if (!StringUtils.isBlankByCdmStandard(dataObj.getManifestName())) {
       manifest.setManifestName(dataObj.getManifestName());
     }
 
@@ -112,7 +114,7 @@ public class ManifestPersistence {
     }
 
     if (dataObj.getEntities() != null) {
-      final String fullPath = !StringUtils.isNullOrEmpty(nameSpace) ? nameSpace + ":" + path : path;
+      final String fullPath = !StringUtils.isBlankByCdmStandard(nameSpace) ? nameSpace + ":" + path : path;
       for (final JsonNode entityNode : dataObj.getEntities()) {
         CdmEntityDeclarationDefinition entity = null;
         try {
@@ -141,6 +143,8 @@ public class ManifestPersistence {
           Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistDeserializeError, ex.getLocalizedMessage());
         }
       }
+      // Checks if incremental trait is needed from foundations.cdm.json
+      importFoundationsIfIncrementalPartitionTraitExist(manifest);
     }
 
     if (dataObj.getRelationships() != null) {
@@ -171,6 +175,8 @@ public class ManifestPersistence {
   }
 
   public static ManifestContent toData(final CdmManifestDefinition instance, final ResolveOptions resOpt, final CopyOptions options) {
+    // Checks if incremental trait is needed from foundations.cdm.json
+    importFoundationsIfIncrementalPartitionTraitExist(instance);
     final DocumentContent documentContent = DocumentPersistence.toData(instance, resOpt, options);
 
     final ManifestContent manifestContent = new ManifestContent();
@@ -201,12 +207,32 @@ public class ManifestPersistence {
 
   private static String extractManifestName(final ManifestContent dataObj, final String name) {
     final String manifestName = dataObj.getManifestName();
-    if (!StringUtils.isNullOrEmpty(manifestName)) {
+    if (!StringUtils.isBlankByCdmStandard(manifestName)) {
       return manifestName;
     }
 
     return name.contains(CdmConstants.MANIFEST_EXTENSION)
             ? name.replace(CdmConstants.MANIFEST_EXTENSION, "")
             : name.replace(CdmConstants.FOLIO_EXTENSION, "");
+  }
+
+  private static void importFoundationsIfIncrementalPartitionTraitExist(CdmManifestDefinition manifest) {
+    if (manifest.getEntities() == null) {
+      return;
+    }
+
+    for(final CdmEntityDeclarationDefinition ent : manifest.getEntities()) {
+      if (ent instanceof CdmLocalEntityDeclarationDefinition) {
+        final CdmLocalEntityDeclarationDefinition localEntityDef = (CdmLocalEntityDeclarationDefinition)ent;
+        if (localEntityDef.getIncrementalPartitions() != null && localEntityDef.getIncrementalPartitions().size() > 0 ||
+                localEntityDef.getIncrementalPartitionPatterns() != null && localEntityDef.getIncrementalPartitionPatterns().size() > 0){
+          if (manifest.getImports().item(Constants.FoundationsCorpusPath, null, false) == null) {
+            manifest.getImports().add(Constants.FoundationsCorpusPath);
+            // Find one is enough
+            break;
+          }
+        }
+      }
+    }
   }
 }

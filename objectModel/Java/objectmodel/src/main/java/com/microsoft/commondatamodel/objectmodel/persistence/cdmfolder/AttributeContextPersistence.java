@@ -34,7 +34,7 @@ public class AttributeContextPersistence {
     if (obj.getParent() != null)
       attributeContext.setParent(AttributeContextReferencePersistence.fromData(ctx, obj.getParent()));
 
-    if (!StringUtils.isNullOrEmpty(obj.getExplanation()))
+    if (!StringUtils.isBlankByCdmStandard(obj.getExplanation()))
       attributeContext.setExplanation(obj.getExplanation());
 
     if (obj.getDefinition() != null) {

@@ -59,7 +59,9 @@ class LocalEntityDeclarationPersistence:
                     logger.error(ctx, _TAG, LocalEntityDeclarationPersistence.from_data.__name__, local_dec.at_corpus_path, CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_TABLE_FORMAT, table_name)
                     return None
                 # check and get list of wildcards matches in path if any.
-                matches = utils.get_wildcards_matches(table_properties.storage_descriptor.source.location)
+                syms_path = utils.create_syms_absolute_path(syms_root_path, table_properties.storage_descriptor.source.location)
+                corpus_path = utils.syms_path_to_corpus_path(syms_path, ctx.corpus.storage)
+                matches = utils.get_wildcards_matches(corpus_path)
                 if os.path.splitext(table_properties.storage_descriptor.source.location)[1] == '' or matches is not None:
                     data_partition_pattern = DataPartitionPatternPersistence.from_data(ctx, table_properties.storage_descriptor, table.name + 'PartitionPattern',  syms_root_path, format_type, matches)
                     local_dec.data_partition_patterns.append(data_partition_pattern)

@@ -1888,7 +1888,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrManifestFileModTimeFailure, pathTuple.Item2, e.Message);
                     return null;
                 }
             }

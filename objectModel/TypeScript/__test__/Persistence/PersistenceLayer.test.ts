@@ -228,4 +228,19 @@ describe('Persistence.PersistenceLayerTest', () => {
             .toBeFalsy();
         done();
     });
+
+    /**
+     * Test that the persistence layer handles the case when the document is empty.
+     */
+     it('TestLoadingEmptyJsonData', async (done) => {
+        const testName: string = 'TestLoadingEmptyJsonData';
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrPersistFileReadFailure]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName, null, false, expectedLogCodes, false);
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('empty.Manifest.cdm.json');
+        expect(manifest).toBeUndefined();
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPersistFileReadFailure, true);
+
+        done();
+    });
 });

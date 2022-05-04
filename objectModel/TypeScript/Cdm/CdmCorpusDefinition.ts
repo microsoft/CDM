@@ -1153,7 +1153,7 @@ export class CdmCorpusDefinition {
             try {
                 return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
             } catch (e) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrManifestFileModTimeFailure, pathTuple[1], (e as Error).toString());
                 return undefined;
             }
         } else {

@@ -1,0 +1,52 @@
+{
+    "$schema": "CdmFolder.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "manifestName": "cdmTest",
+    "explanation": "test cdm folder for cdm version 1.0+",
+    "imports": [
+        {
+            "uri": "/primitives.cdm.json"
+        }
+    ],
+    "exhibitsTraits": [
+        "is"
+    ],
+    "entities": [
+        {
+            "type": "LocalEntity",
+            "entityName": "testEntity",
+            "explanation": "test explanation",
+            "entityPath": "testPath",
+            "exhibitsTraits": [
+                "is"
+            ],
+            "dataPartitionPatterns": [],
+            "incrementalPartitionPatterns": [],
+            "incrementalPartitions": [],
+            "dataPartitions": [
+                {
+                    "name": "UpsertPartition",
+                    "Location": "/IncrementalData",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.incremental",
+                            "arguments": [
+                                {
+                                    "name": "type",
+                                    "value": "Upsert"
+                                }
+                            ]
+                        }
+                    ],
+                    "specializedSchema": "csv"
+                },
+                {
+                    "name": "TestingPartition",
+                    "Location": "/testingData",
+                    "specializedSchema": "csv"
+                }
+            ]
+        }
+    ],
+    "subManifests": []
+}

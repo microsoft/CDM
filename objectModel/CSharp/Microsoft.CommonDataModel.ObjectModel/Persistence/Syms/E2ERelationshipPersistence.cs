@@ -79,7 +79,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             };
 
              var relationshipName = instance.Name;
-            if (string.IsNullOrEmpty(instance.Name))
+            if (StringUtils.IsBlankByCdmStandard(instance.Name))
                 relationshipName = $"{relationshipProperties.FromTableName}_{relationshipProperties.ToTableName}_relationship";
 
             relationshipProperties.ColumnRelationshipInformations = new List<ColumnRelationshipInformation>();

@@ -2386,7 +2386,7 @@ public class CdmCorpusDefinition {
       try {
         return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
       } catch (Exception e) {
-        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.getRight(), e.getMessage());
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrManifestFileModTimeFailure, pathTuple.getRight(), e.getMessage());
         return null;
       }
     } else {

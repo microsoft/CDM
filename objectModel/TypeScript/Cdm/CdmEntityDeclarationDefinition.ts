@@ -23,4 +23,12 @@ export interface CdmEntityDeclarationDefinition extends CdmObjectDefinition, Cdm
      * DataPartitionPatters is only implemented by LocalEntityDeclaration
      */
     dataPartitionPatterns: CdmCollection<CdmDataPartitionPatternDefinition>;
+    /**
+     * incrementalPartitions is only implemented by LocalEntityDeclaration
+     */
+    incrementalPartitions: CdmCollection<CdmDataPartitionDefinition>;    
+    /**
+     * incrementalPartitionPatterns is only implemented by LocalEntityDeclaration
+     */
+    incrementalPartitionPatterns: CdmCollection<CdmDataPartitionPatternDefinition>;
 }

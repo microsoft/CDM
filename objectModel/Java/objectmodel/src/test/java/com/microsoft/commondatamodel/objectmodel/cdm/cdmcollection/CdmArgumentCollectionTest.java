@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
 
 public class CdmArgumentCollectionTest {
   @Test
-  public void testCdmArgumentCollectionAdd() {
+  public void testCdmArgumentCollectionAdd() throws InterruptedException {
     final CdmTraitReference trait = generateTrait();
 
     final CdmArgumentDefinition argumentDefinition =
@@ -38,7 +38,7 @@ public class CdmArgumentCollectionTest {
   }
 
   @Test
-  public void testCdmArgumentCollectionInsert() {
+  public void testCdmArgumentCollectionInsert() throws InterruptedException {
     final CdmTraitReference trait = generateTrait();
 
     final CdmArgumentDefinition toInsert = new CdmArgumentDefinition(trait.getCtx(), null);
@@ -58,7 +58,7 @@ public class CdmArgumentCollectionTest {
   }
 
   @Test
-  public void testCdmArgumentCollectionAddAll() {
+  public void testCdmArgumentCollectionAddAll() throws InterruptedException {
     final CdmTraitReference trait = generateTrait();
     trait.setResolvedArguments(true);
     final List<CdmArgumentDefinition> argList = new ArrayList<>();
@@ -67,8 +67,7 @@ public class CdmArgumentCollectionTest {
     argumentDefinition.setValue(123);
 
     argList.add(argumentDefinition);
-    final CdmManifestDefinition valOfArg2 =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+    final CdmManifestDefinition valOfArg2 = CdmCollectionHelperFunctions.generateManifest();
     argumentDefinition = new CdmArgumentDefinition(null, null);
     argumentDefinition.setName("Arg2");
     argumentDefinition.setValue(valOfArg2);
@@ -87,7 +86,7 @@ public class CdmArgumentCollectionTest {
   }
 
   @Test
-  public void testCdmArgumentCollectionFetchValueOrOnlyValue() {
+  public void testCdmArgumentCollectionFetchValueOrOnlyValue() throws InterruptedException {
     final CdmTraitReference trait = generateTrait();
 
     trait.setResolvedArguments(true);
@@ -110,7 +109,7 @@ public class CdmArgumentCollectionTest {
   }
 
   @Test
-  public void testCdmArgumentCollectionUpdateArgument() {
+  public void testCdmArgumentCollectionUpdateArgument() throws InterruptedException {
     final CdmTraitReference trait = generateTrait();
 
     trait.getArguments().add("nameOfTrait", "ValueOfTrait");
@@ -128,9 +127,8 @@ public class CdmArgumentCollectionTest {
   }
 
   @Test
-  public void testCdmCollectionAddPopulatesInDocumentWithVisit() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmCollectionAddPopulatesInDocumentWithVisit() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
 
     final CdmLocalEntityDeclarationDefinition entityReference =
         new CdmLocalEntityDeclarationDefinition(manifest.getCtx(), "entityName");
@@ -148,8 +146,8 @@ public class CdmArgumentCollectionTest {
     Assert.assertEquals(manifest, argument.getInDocument());
   }
 
-  private CdmTraitReference generateTrait() {
-    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  private CdmTraitReference generateTrait() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     return new CdmTraitReference(manifest.getCtx(), "traitName", false, false);
   }
 }

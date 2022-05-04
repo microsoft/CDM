@@ -134,9 +134,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 }
             }
 
-            if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == "cdm:/foundations.cdm.json"))
+            if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == Constants.FoundationsCorpusPath))
             {
-                manifest.Imports.Add("cdm:/foundations.cdm.json");
+                manifest.Imports.Add(Constants.FoundationsCorpusPath);
             }
 
             if (dataObj.Relationships != null)

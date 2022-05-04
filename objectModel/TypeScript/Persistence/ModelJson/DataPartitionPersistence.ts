@@ -13,7 +13,8 @@ import {
     copyOptions,
     Logger,
     resolveOptions,
-    traitToPropertyMap
+    traitToPropertyMap,
+    StringUtils
 } from '../../internal';
 import * as timeUtils from '../../Utilities/timeUtils';
 import { processExtensionFromJson } from './ExtensionHelper';
@@ -29,45 +30,49 @@ export class DataPartitionPersistence {
         localExtensionTraitDefList: CdmTraitDefinition[],
         documentFolder: CdmFolderDefinition):
         Promise<CdmDataPartitionDefinition> {
-        const newPartition: CdmDataPartitionDefinition = ctx.corpus.MakeObject(cdmObjectType.dataPartitionDef, object.name);
+        const dataPartition: CdmDataPartitionDefinition = ctx.corpus.MakeObject(cdmObjectType.dataPartitionDef, object.name);
 
-        if (object.description && object.description.trim() !== '') {
-            newPartition.description = object.description;
+        if (!StringUtils.isBlankByCdmStandard(object.description)) {
+            dataPartition.description = object.description;
         }
 
-        newPartition.location = ctx.corpus.storage.createRelativeCorpusPath(
+        dataPartition.location = ctx.corpus.storage.createRelativeCorpusPath(
             ctx.corpus.storage.adapterPathToCorpusPath(object.location),
             documentFolder);
 
-        newPartition.refreshTime = object.refreshTime;
+        dataPartition.refreshTime = object.refreshTime;
 
         if (object['cdm:lastFileModifiedTime'] !== undefined) {
-            newPartition.lastFileModifiedTime = new Date(object['cdm:lastFileModifiedTime']);
+            dataPartition.lastFileModifiedTime = new Date(object['cdm:lastFileModifiedTime']);
         }
 
         if (object['cdm:lastFileStatusCheckTime'] !== undefined) {
-            newPartition.lastFileStatusCheckTime = new Date(object['cdm:lastFileStatusCheckTime']);
+            dataPartition.lastFileStatusCheckTime = new Date(object['cdm:lastFileStatusCheckTime']);
         }
 
-        if (!newPartition.location) {
-            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistPartitionLocMissing, newPartition.name);
+        if (StringUtils.isBlankByCdmStandard(dataPartition.location)) {
+            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistPartitionLocMissing, dataPartition.name);
         }
 
         if (object.isHidden === true) {
             const isHiddenTrait: CdmTraitReference = ctx.corpus.MakeRef(cdmObjectType.traitRef, 'is.hidden', true);
-            newPartition.exhibitsTraits.push(isHiddenTrait);
+            dataPartition.exhibitsTraits.push(isHiddenTrait);
         }
 
-        await ModelJson.utils.processAnnotationsFromData(ctx, object, newPartition.exhibitsTraits);
+        await ModelJson.utils.processAnnotationsFromData(ctx, object, dataPartition.exhibitsTraits);
 
+        let csvFormatTrait: CdmTraitReference = dataPartition.exhibitsTraits.item('is.partition.format.CSV') as CdmTraitReference;
         if (object.fileFormatSettings !== undefined && object.fileFormatSettings.$type === 'CsvFormatSettings') {
-            const csvFormatTrait: CdmTraitReference = ModelJson.utils.createCsvTrait(object.fileFormatSettings, ctx);
+            const partitionTraitExisted = !!csvFormatTrait;
+            csvFormatTrait = ModelJson.utils.createCsvTrait(object.fileFormatSettings, ctx, csvFormatTrait);
 
-            if (csvFormatTrait !== undefined) {
-                newPartition.exhibitsTraits.push(csvFormatTrait);
-            } else {
+            if (csvFormatTrait === undefined) {
                 Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistCsvProcessingError);
                 return undefined;
+            }
+
+            if (!partitionTraitExisted) {
+                dataPartition.exhibitsTraits.push(csvFormatTrait);
             }
         }
 
@@ -75,12 +80,12 @@ export class DataPartitionPersistence {
             ctx,
             object,
             partitionBaseProperties,
-            newPartition.exhibitsTraits,
+            dataPartition.exhibitsTraits,
             extensionTraitDefList,
             localExtensionTraitDefList
         );
 
-        return newPartition;
+        return dataPartition;
     }
 
     public static async toData(instance: CdmDataPartitionDefinition, resOpt: resolveOptions, options: copyOptions): Promise<Partition> {
@@ -106,7 +111,7 @@ export class DataPartitionPersistence {
             result.name = '';
         }
 
-        if (!result.location) {
+        if (StringUtils.isBlankByCdmStandard(result.location)) {
             Logger.warning(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.WarnPersistPartitionLocMissing, result.name);
         }
 

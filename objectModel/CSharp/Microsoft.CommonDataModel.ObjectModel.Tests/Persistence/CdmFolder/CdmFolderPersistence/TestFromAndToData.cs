@@ -25,7 +25,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// <summary>
         /// Test loading and saving cdm folder files.
         /// </summary>
-        [Ignore]     // TODO: Investigating why it failed, Bug 985: TestFromAndToData() failed in C# and Java
         [TestMethod]
         public async Task TestFromAndToData()
         {

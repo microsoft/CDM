@@ -22,7 +22,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         {
             var partition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, obj.Name);
 
-            if (!string.IsNullOrWhiteSpace(obj.Description))
+            if (!StringUtils.IsBlankByCdmStandard(obj.Description))
                 partition.Description = obj.Description;
             partition.Location = ctx.Corpus.Storage.CreateRelativeCorpusPath(
                 ctx.Corpus.Storage.AdapterPathToCorpusPath(obj.Location),
@@ -32,7 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             partition.LastFileStatusCheckTime = obj.LastFileStatusCheckTime;
 
 
-            if (string.IsNullOrEmpty(partition.Location))
+            if (StringUtils.IsBlankByCdmStandard(partition.Location))
             {
                 Logger.Warning(ctx as ResolveContext, Tag, nameof(FromData), null, CdmLogCode.WarnPersistPartitionLocMissing, partition.Name);
             }
@@ -45,16 +45,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             await Utils.ProcessAnnotationsFromData(ctx, obj, partition.ExhibitsTraits);
 
+            var csvFormatTrait = partition.ExhibitsTraits.Item("is.partition.format.CSV") as CdmTraitReference;
             if (obj.FileFormatSettings != null)
             {
-                var csvFormatTrait = Utils.CreateCsvTrait(obj.FileFormatSettings, ctx);
+                var partitionTraitExisted = csvFormatTrait != null;
+                csvFormatTrait = Utils.CreateCsvTrait(obj.FileFormatSettings, ctx, csvFormatTrait);
 
                 if (csvFormatTrait == null) {
                     Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCsvProcessingError);
                     return null;
                 }
 
-                partition.ExhibitsTraits.Add(csvFormatTrait);
+                if (!partitionTraitExisted)
+                {
+                    partition.ExhibitsTraits.Add(csvFormatTrait);
+                }
             }
             ExtensionHelper.ProcessExtensionFromJson(ctx, obj, partition.ExhibitsTraits, extensionTraitDefList, localExtensionTraitDefList);
 
@@ -78,11 +83,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (result.Name == null)
             {
-                Logger.Warning(instance.Ctx, Tag, instance.AtCorpusPath, nameof(ToData), CdmLogCode.WarnPersistPartitionNameNull);
+                Logger.Warning(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.WarnPersistPartitionNameNull);
                 result.Name = "";
             }
 
-            if (string.IsNullOrEmpty(result.Location))
+            if (StringUtils.IsBlankByCdmStandard(result.Location))
             {
                 Logger.Warning(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.WarnPersistPartitionLocMissing, result.Name);
             }

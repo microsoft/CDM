@@ -40,6 +40,10 @@ class StringUtils:
         return s is None or s.strip() == ''
 
     @staticmethod
+    def is_blank_by_cdm_standard(s: str) -> bool:
+        return StringUtils.is_null_or_white_space(s)
+
+    @staticmethod
     def _capitalize_value(s: str) -> str:
         """
         Capitalizes first letter of the given string.

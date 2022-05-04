@@ -82,6 +82,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
         public DateTimeOffset? LastChildFileModifiedTime { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        /// <summary>
+        /// Gets whether the data partition is incremental.
+        /// </summary>
+        public bool IsIncremental { get => this.TraitToPropertyMap.FetchPropertyValue(nameof(IsIncremental).Substring(0, 1).ToLower() + nameof(IsIncremental).Substring(1)); }
+
         /// <inheritdoc />
         [Obsolete]
         public override CdmObjectType GetObjectType()

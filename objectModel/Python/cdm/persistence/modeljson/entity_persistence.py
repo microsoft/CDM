@@ -5,6 +5,7 @@ from typing import List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import logger
+from cdm.utilities.string_utils import StringUtils
 
 from . import extension_helper, utils
 from .type_attribute_persistence import TypeAttributePersistence
@@ -21,7 +22,7 @@ class EntityPersistence:
                         local_extension_trait_def_list: List['CdmTraitDefinition']) -> Optional['CdmEntityDefinition']:
         entity = ctx.corpus.make_object(CdmObjectType.ENTITY_DEF, data.name)
 
-        if data.get('description'):
+        if not StringUtils.is_blank_by_cdm_standard(data.get('description')):
             entity.description = data.description
 
         await utils.process_annotations_from_data(ctx, data, entity.exhibits_traits)

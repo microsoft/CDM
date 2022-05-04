@@ -57,21 +57,37 @@ public class Utils {
       add("is.modelConversion.modelVersion");
       add("means.measurement.version");
       add("is.CDM.entityVersion");
-      add("is.partition.format.CSV");
       add("is.partition.culture");
       add("is.managedBy");
       add("is.hidden");
     }
   };
 
-  // Traits to ignore if they come from properties.
-  // These traits become properties on the model.json. To avoid persisting both a trait
-  // and a property on the model.json, we filter these traits out.
+  /**
+   * Traits to ignore if they come from properties.
+   * These traits become properties on the model.json. To avoid persisting both a trait
+   * and a property on the model.json, we filter these traits out.
+   */
   public static final Set<String> modelJsonPropertyTraits = new LinkedHashSet<String>() {
     private static final long serialVersionUID = 1560087956924063099L;
 
     {
       add("is.localized.describedAs");
+    }
+  };
+
+  /**
+   * Arguments natively supported by the fileFormatSettings property.
+   */
+  public static  final Set<String> partitionSettingsSupportedArguments = new LinkedHashSet<String>() {
+    private static final long serialVersionUID = 1560087956924063099L;
+
+    {
+      add("columnHeaders");
+      add("csvStyle");
+      add("delimiter");
+      add("quoteStyle");
+      add("encoding");
     }
   };
 
@@ -173,6 +189,7 @@ public class Utils {
                 && !trait.getNamedReference().startsWith("is.dataFormat")
                 && !(modelJsonPropertyTraits.contains(trait.getNamedReference())
                 && trait instanceof CdmTraitReference && ((CdmTraitReference) trait).isFromProperty())
+                && ShouldPersistTrait(trait)
         ) {
           final Object extension = trait instanceof CdmTraitGroupReference ?
                   TraitGroupReferencePersistence.toData((CdmTraitGroupReference) trait, null, null)
@@ -191,40 +208,46 @@ public class Utils {
     });
   }
 
-  static CdmTraitReference createCsvTrait(final CsvFormatSettings obj, final CdmCorpusContext ctx) {
-    final CdmTraitReference csvFormatTrait = ctx.getCorpus()
-            .makeRef(CdmObjectType.TraitRef, "is.partition.format.CSV", true);
-    csvFormatTrait.setSimpleNamedReference(false);
+  static CdmTraitReference createCsvTrait(final CsvFormatSettings obj, final CdmCorpusContext ctx, CdmTraitReference host) {
+    final CdmTraitReference csvFormatTrait = host != null ? host : ctx.getCorpus()
+            .makeRef(CdmObjectType.TraitRef, "is.partition.format.CSV", false);
+    
+    Set<String> argumentNames = new LinkedHashSet<String>();
+    for (CdmArgumentDefinition argument : csvFormatTrait.getArguments()) {
+      if (argument.getName() != null) {
+        argumentNames.add(argument.getName());
+      }
+    }
 
-    if (obj.isColumnHeaders() != null) {
+    if (obj.isColumnHeaders() != null && !argumentNames.contains("columnHeaders")) {
       final CdmArgumentDefinition columnHeadersArg = ctx.getCorpus()
               .makeObject(CdmObjectType.ArgumentDef, "columnHeaders");
       columnHeadersArg.setValue(obj.isColumnHeaders() ? "true" : "false");
       csvFormatTrait.getArguments().add(columnHeadersArg);
     }
 
-    if (obj.getCsvStyle() != null) {
+    if (obj.getCsvStyle() != null && !argumentNames.contains("csvStyle")) {
       final CdmArgumentDefinition csvStyleArg = ctx.getCorpus()
               .makeObject(CdmObjectType.ArgumentDef, "csvStyle");
       csvStyleArg.setValue(obj.getCsvStyle());
       csvFormatTrait.getArguments().add(csvStyleArg);
     }
 
-    if (obj.getDelimiter() != null) {
+    if (obj.getDelimiter() != null && !argumentNames.contains("delimiter")) {
       final CdmArgumentDefinition delimiterArg = ctx.getCorpus()
               .makeObject(CdmObjectType.ArgumentDef, "delimiter");
       delimiterArg.setValue(obj.getDelimiter());
       csvFormatTrait.getArguments().add(delimiterArg);
     }
 
-    if (obj.getQuoteStyle() != null) {
+    if (obj.getQuoteStyle() != null && !argumentNames.contains("quoteStyle")) {
       final CdmArgumentDefinition quoteStyleArg = ctx.getCorpus()
               .makeObject(CdmObjectType.ArgumentDef, "quoteStyle");
       quoteStyleArg.setValue(obj.getQuoteStyle());
       csvFormatTrait.getArguments().add(quoteStyleArg);
     }
 
-    if (obj.getEncoding() != null) {
+    if (obj.getEncoding() != null && !argumentNames.contains("encoding")) {
       final CdmArgumentDefinition encodingArg = ctx.getCorpus()
               .makeObject(CdmObjectType.ArgumentDef, "encoding");
       encodingArg.setValue(obj.getEncoding());
@@ -270,6 +293,29 @@ public class Utils {
 
   private static String convertTraitToAnnotation(final String name) {
     return traitToAnnotationMap.get(name);
+  }
+
+  private static boolean ShouldPersistTrait(CdmTraitReferenceBase traitBase) {
+    if (!(traitBase instanceof CdmTraitReference)) {
+      return true;
+    }
+
+    CdmTraitReference trait = (CdmTraitReference) traitBase;
+    switch (trait.getNamedReference()) {
+      case "is.partition.format.CSV":
+        Set<String> argumentNames = new LinkedHashSet<String>();
+        for (CdmArgumentDefinition argument : trait.getArguments()) {
+          if (argument.getName() != null) {
+            argumentNames.add(argument.getName());
+          }
+        }
+
+        // Checks if the trait contains arguments that are not supported natively by the model.json CsvFormatSettings property.
+        argumentNames.removeAll(partitionSettingsSupportedArguments);
+        return argumentNames.size() > 0;
+      default:
+        return true;
+    }
   }
 
   

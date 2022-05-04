@@ -254,3 +254,14 @@ class PersistenceLayerTest(unittest.TestCase):
 
         await self.run_syms_smart_adls_adapter_mount_logic()
         await SymsTestHelper.clean_database(syms_adapter, SymsTestHelper.DATABASE_NAME)
+
+    @async_test
+    async def test_loading_empty_json_data(self):
+        expected_log_codes = {CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE}
+
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_loading_empty_json_data', None, False, expected_log_codes, False)
+
+        # We are trying to load an empty file, so fetch_object_async should just return None.
+        manifest = await corpus.fetch_object_async('empty.Manifest.cdm.json')
+        self.assertIsNone(manifest)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, True, self)

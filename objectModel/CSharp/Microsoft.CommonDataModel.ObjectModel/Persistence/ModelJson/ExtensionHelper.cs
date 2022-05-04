@@ -4,6 +4,7 @@
 using Microsoft.CommonDataModel.ObjectModel.Cdm;
 using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
+using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using Newtonsoft.Json.Linq;
 using System;
@@ -312,7 +313,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// <returns>Whether the trait is an extension.</returns>
         public static bool TraitNameHasExtensionMark(string traitName)
         {
-            if (string.IsNullOrEmpty(traitName))
+            if (StringUtils.IsBlankByCdmStandard(traitName))
             {
                 return false;
             }

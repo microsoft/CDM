@@ -1,0 +1,66 @@
+{
+    "$schema": "CdmFolder.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "manifestName": "cdmTest",
+    "explanation": "test cdm folder for cdm version 1.0+",
+    "imports": [
+        {
+            "uri": "/primitives.cdm.json"
+        }
+    ],
+    "exhibitsTraits": [
+        "is"
+    ],
+    "entities": [
+        {
+            "type": "LocalEntity",
+            "entityName": "testEntity",
+            "explanation": "test explanation",
+            "entityPath": "testPath",
+            "exhibitsTraits": [
+                "is"
+            ],
+            "dataPartitions": [],
+            "incrementalPartitionPatterns": [],
+            "incrementalPartitions": [],
+            "dataPartitionPatterns": [
+                {
+                    "name": "UpsertPattern",
+                    "rootLocation": "/IncrementalData",
+                    "exhibitsTraits": [
+                        {
+                            "traitReference": "is.partition.incremental",
+                            "arguments": [
+                                {
+                                    "name": "type",
+                                    "value": "Upsert"
+                                }
+                            ]
+                        }
+                    ],
+                    "regularExpression": "/(.*)/(.*)/(.*)/Upserts/upsert(\\d+)\\.csv$",
+                    "parameters": [
+                        "year",
+                        "month",
+                        "day",
+                        "upsertPartitionNumber"
+                    ],
+                    "specializedSchema": "csv"
+                },
+                {
+                    "name": "TestingPattern",
+                    "rootLocation": "/testingData",
+                    "regularExpression": "/(.*)/(.*)/(.*)/Deletes/delete(\\d+)\\.csv$",
+                    "parameters": [
+                        "year",
+                        "month",
+                        "day",
+                        "deletePartitionNumber"
+                    ],
+                    "specializedSchema": "csv"
+                }
+            ]
+        }
+    ],
+    "subManifests": []
+}

@@ -12,7 +12,8 @@ import {
     CdmTraitReference,
     CdmTraitReferenceBase,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    StringUtils
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { AttributeContextReferencePersistence } from './AttributeContextReferencePersistence';
@@ -32,7 +33,7 @@ export class AttributeContextPersistence {
         if (object.parent) {
             attributeContext.parent = CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.parent);
         }
-        if (object.explanation) {
+        if (!StringUtils.isBlankByCdmStandard(object.explanation)) {
             attributeContext.explanation = object.explanation;
         }
         if (object.definition) {

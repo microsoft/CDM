@@ -4,6 +4,7 @@
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmImport
 from cdm.utilities import ResolveOptions, CopyOptions
+from cdm.utilities.string_utils import StringUtils
 
 from .types import Import
 
@@ -14,7 +15,7 @@ class ImportPersistence:
         imp = ctx.corpus.make_object(CdmObjectType.IMPORT)
         corpus_path = obj.get('corpusPath')
 
-        if not corpus_path:
+        if StringUtils.is_blank_by_cdm_standard(corpus_path):
             corpus_path = obj.uri
 
         imp.corpus_path = corpus_path
@@ -25,8 +26,9 @@ class ImportPersistence:
     @staticmethod
     def to_data(instance: CdmImport, res_opt: ResolveOptions, options: CopyOptions) -> Import:
         result = Import()
-        result.corpusPath = instance.corpus_path
-        if instance.moniker:
+        if not StringUtils.is_blank_by_cdm_standard(instance.corpus_path):
+            result.corpusPath = instance.corpus_path
+        if not StringUtils.is_blank_by_cdm_standard(instance.moniker):
             result.moniker = instance.moniker
 
         return result

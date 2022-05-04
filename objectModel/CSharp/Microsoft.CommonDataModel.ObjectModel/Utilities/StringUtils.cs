@@ -75,5 +75,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             string result = source.Replace($"{{{lowerCasePattern}}}", value);
             return result.Replace($"{{{upperCasePattern}}}", upperCaseValue);
         }
+
+        /// <summary>
+        /// Check if the string is null or empty ("") or blank by CDM standard.
+        /// </summary>
+        /// <param name="str">The source string to be verified.</param>
+        /// <returns>Returns true if string is blank by CDM standard, false otherwise.</returns>
+        public static bool IsBlankByCdmStandard(this string str)
+        {
+            return string.IsNullOrWhiteSpace(str);
+        }
     }
 }

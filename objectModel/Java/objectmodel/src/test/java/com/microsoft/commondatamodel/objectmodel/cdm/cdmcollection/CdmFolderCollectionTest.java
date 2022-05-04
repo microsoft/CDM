@@ -13,9 +13,8 @@ import org.testng.annotations.Test;
 
 public class CdmFolderCollectionTest {
   @Test
-  public void testFolderCollectionAdd() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testFolderCollectionAdd() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmFolderDefinition parentFolder =
         new CdmFolderDefinition(manifest.getCtx(), "ParentFolder");
     parentFolder.setNamespace("TheNamespace");
@@ -43,9 +42,8 @@ public class CdmFolderCollectionTest {
   }
 
   @Test
-  public void testFolderCollectionInsert() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testFolderCollectionInsert() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmFolderDefinition parentFolder =
         new CdmFolderDefinition(manifest.getCtx(), "ParentFolder");
     parentFolder.setInDocument(manifest);
@@ -77,9 +75,8 @@ public class CdmFolderCollectionTest {
   }
 
   @Test
-  public void testFolderCollectionAddWithNameParameter() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testFolderCollectionAddWithNameParameter() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmFolderDefinition parentFolder =
         new CdmFolderDefinition(manifest.getCtx(), "ParentFolder");
     parentFolder.setNamespace("TheNamespace");
@@ -101,9 +98,8 @@ public class CdmFolderCollectionTest {
   }
 
   @Test
-  public void testFolderCollectionAddRange() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testFolderCollectionAddRange() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmFolderDefinition parentFolder =
         new CdmFolderDefinition(manifest.getCtx(), "ParentFolder");
     parentFolder.setNamespace("TheNamespace");
@@ -138,9 +134,8 @@ public class CdmFolderCollectionTest {
   }
 
   @Test
-  public void testFolderCollectionRemove() {
-    final CdmManifestDefinition manifest =
-        CdmCollectionHelperFunctions.generateManifest("C:/Root/Path");
+  public void testFolderCollectionRemove() throws InterruptedException {
+    final CdmManifestDefinition manifest = CdmCollectionHelperFunctions.generateManifest();
     final CdmFolderDefinition parentFolder =
         new CdmFolderDefinition(manifest.getCtx(), "ParentFolder");
     parentFolder.setNamespace("TheNamespace");

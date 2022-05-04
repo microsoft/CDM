@@ -23,6 +23,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class Utils {
   // TODO-BQ: This class needs to be removed, as it is not sustainable.
@@ -324,13 +325,17 @@ public class Utils {
    */
   public static <T, U extends CdmObject> ArrayList<T> listCopyDataAsCdmObject(final Iterable<U> source,
       final ResolveOptions resOpt, final CopyOptions options) {
+    return listCopyDataAsCdmObject(source, resOpt, options, null);
+  }
+
+  public static <T, U extends CdmObject> ArrayList<T> listCopyDataAsCdmObject(final Iterable<U> source, final ResolveOptions resOpt, final CopyOptions options, Function<Object, Boolean> condition) {
     if (source == null) {
       return null;
     }
 
     final ArrayList<T> casted = new ArrayList<>();
     for (final Object element : source) {
-      if (element instanceof CdmObject) {
+      if (element instanceof CdmObject && ((condition == null) || (condition != null) && condition.apply(element))) {
         casted.add((T) ((CdmObject) element).copyData(resOpt, options));
       }
     }

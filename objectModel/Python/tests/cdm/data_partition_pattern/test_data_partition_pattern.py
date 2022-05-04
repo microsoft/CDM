@@ -1,22 +1,24 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
-from typing import cast
 
 from cdm.storage.local import LocalAdapter
 from datetime import datetime, timezone
 import os
+import time
 import unittest
 
 from cdm.objectmodel import CdmManifestDefinition, CdmLocalEntityDeclarationDefinition, CdmTraitDefinition, CdmParameterDefinition, CdmTraitReference
+from cdm.utilities import Constants
 
 from tests.common import async_test, TestHelper
 from cdm.persistence.cdmfolder import ManifestPersistence
 from cdm.persistence.cdmfolder.types import ManifestContent
 from cdm.objectmodel.cdm_corpus_context import CdmCorpusContext
-from cdm.enums import CdmStatusLevel
+from cdm.enums import CdmStatusLevel, PartitionFileStatusCheckType, CdmIncrementalPartitionType, CdmObjectType, \
+    CdmLogCode
 
 
-class _data_partition_patternTest(unittest.TestCase):
+class DataPartitionPatternTest(unittest.TestCase):
     test_subpath = os.path.join('Cdm', 'DataPartitionPattern')
 
     @async_test
@@ -114,6 +116,355 @@ class _data_partition_patternTest(unittest.TestCase):
         self.assertEqual(1, partition_entity.data_partitions[1].exhibits_traits.item('testTrait').arguments[0].value)
 
     @async_test
+    async def test_incremental_patterns_refreshes_full_and_incremental(self):
+        """
+        Tests refreshing incremental partition files that match the regular expression
+        """
+        test_name = 'test_incremental_patterns_refreshes_full_and_incremental'
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(0, len(partition_entity.data_partitions))
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+        self.assertEqual(1, len(partition_entity.data_partition_patterns))
+        self.assertEqual(2, len(partition_entity.incremental_partition_patterns))
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.FULL_AND_INCREMENTAL)
+
+        # Mac and Windows behave differently when listing file content, so we don't want to be strict about partition file order
+        total_expected_partitions_found = 0
+        self.assertEqual(1, len(partition_entity.data_partitions))
+        total_expected_partitions_found += 1
+        self.assertFalse(partition_entity.data_partitions[0].is_incremental)
+
+        for partition in partition_entity.incremental_partitions:
+            if partition.location == '/IncrementalData/2018/8/15/Deletes/delete1.csv':
+                total_expected_partitions_found += 1
+                self.assertEqual(4, len(partition.arguments))
+                self.assertTrue('year' in partition.arguments)
+                self.assertEqual('2018', partition.arguments['year'][0])
+                self.assertTrue('month' in partition.arguments)
+                self.assertEqual('8', partition.arguments['month'][0])
+                self.assertTrue('day' in partition.arguments)
+                self.assertEqual('15', partition.arguments['day'][0])
+                self.assertTrue('deletePartitionNumber' in partition.arguments)
+                self.assertEqual('1', partition.arguments['deletePartitionNumber'][0])
+                self.assertEqual(1, len(partition.exhibits_traits))
+                trait1 = partition.exhibits_traits[0]  # type: 'CdmTraitReference'
+                self.assertEqual(Constants._INCREMENTAL_TRAIT_NAME, trait1.fetch_object_definition_name())
+                self.assertEqual('DeletePattern', trait1.arguments.item(Constants._INCREMENTAL_PATTERN_PARAMETER_NAME).value)
+                self.assertEqual(CdmIncrementalPartitionType.DELETE.value, trait1.arguments.item('type').value)
+                self.assertEqual('FullDataPattern', trait1.arguments.item('fullDataPartitionPatternName').value)
+            elif partition.location == '/IncrementalData/2018/8/15/Deletes/delete2.csv':
+                total_expected_partitions_found += 1
+                self.assertEqual(4, len(partition.arguments))
+                self.assertEqual('2018', partition.arguments['year'][0])
+                self.assertEqual('8', partition.arguments['month'][0])
+                self.assertEqual('15', partition.arguments['day'][0])
+                self.assertEqual('2', partition.arguments['deletePartitionNumber'][0])
+                trait2 = partition.exhibits_traits[0]  # type: 'CdmTraitReference'
+                self.assertEqual(Constants._INCREMENTAL_TRAIT_NAME, trait2.fetch_object_definition_name())
+                self.assertEqual('DeletePattern', trait2.arguments.item(Constants._INCREMENTAL_PATTERN_PARAMETER_NAME).value)
+                self.assertEqual(CdmIncrementalPartitionType.DELETE.value, trait2.arguments.item('type').value)
+                self.assertEqual('FullDataPattern', trait2.arguments.item('fullDataPartitionPatternName').value)
+            elif partition.location == '/IncrementalData/2018/8/15/Upserts/upsert1.csv':
+                total_expected_partitions_found += 1
+                self.assertEqual(4, len(partition.arguments))
+                self.assertEqual('2018', partition.arguments['year'][0])
+                self.assertEqual('8', partition.arguments['month'][0])
+                self.assertEqual('15', partition.arguments['day'][0])
+                self.assertEqual('1', partition.arguments['upsertPartitionNumber'][0])
+                trait3 = partition.exhibits_traits[0]  # type: 'CdmTraitReference'
+                self.assertEqual(Constants._INCREMENTAL_TRAIT_NAME, trait3.fetch_object_definition_name())
+                self.assertEqual('UpsertPattern', trait3.arguments.item(Constants._INCREMENTAL_PATTERN_PARAMETER_NAME).value)
+                self.assertEqual(CdmIncrementalPartitionType.UPSERT.value, trait3.arguments.item('type').value)
+        self.assertEqual(4, total_expected_partitions_found)
+
+    @async_test
+    async def test_incremental_patterns_refreshes_delete_incremental(self):
+        """
+        Tests only refreshing delete type incremental partition files.
+        """
+        test_name = 'test_incremental_patterns_refreshes_delete_incremental'
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        # Test without incremental partition added
+        partition_entity = manifest.entities[0]
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+        self.assertEqual(2, len(partition_entity.incremental_partition_patterns))
+        trait_ref0 = partition_entity.incremental_partition_patterns[0].exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+        self.assertEqual(CdmIncrementalPartitionType.UPSERT.value, trait_ref0.arguments.item('type').value)
+        trait_ref1 = partition_entity.incremental_partition_patterns[1].exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+        self.assertEqual(CdmIncrementalPartitionType.DELETE.value, trait_ref1.arguments.item('type').value)
+        time_before_load = datetime.now(timezone.utc)
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+        total_expected_partitions_found = 0
+        for partition in partition_entity.incremental_partitions:
+            if partition.last_file_status_check_time > time_before_load:
+                total_expected_partitions_found += 1
+                trait_ref = partition.exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+                self.assertEqual(CdmIncrementalPartitionType.DELETE.value, trait_ref.arguments.item('type').value)
+
+        self.assertEqual(2, total_expected_partitions_found)
+
+        ##########################################################################################################
+
+        # Test with incremental partition added
+        partition_entity.incremental_partitions.clear()
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+
+        upsert_incremental_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, '2019UpsertPartition1', False)
+        upsert_incremental_partition.last_file_status_check_time = datetime.now(timezone.utc)
+        upsert_incremental_partition.location = '/IncrementalData/Upserts/upsert1.csv'
+        upsert_incremental_partition.specialized_schema = 'csv'
+        upsert_incremental_partition.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME, [['type', CdmIncrementalPartitionType.UPSERT.value]])
+
+        delete_incremental_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, '2019UpsertPartition1', False)
+        delete_incremental_partition.last_file_status_check_time = datetime.now(timezone.utc)
+        delete_incremental_partition.location = '/IncrementalData/Deletes/delete1.csv'
+        delete_incremental_partition.specialized_schema = 'csv'
+        delete_incremental_partition.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME, [['type', CdmIncrementalPartitionType.DELETE.value]])
+
+        partition_entity.incremental_partitions.append(upsert_incremental_partition)
+        partition_entity.incremental_partitions.append(delete_incremental_partition)
+        self.assertEqual(2, len(partition_entity.incremental_partitions))
+        self.assertEqual(2, len(partition_entity.incremental_partition_patterns))
+        total_expected_partitions_found = 0
+
+        time_before_load = datetime.now(timezone.utc)
+        self.assertTrue(partition_entity.incremental_partitions[0].last_file_status_check_time <= time_before_load)
+        self.assertTrue(partition_entity.incremental_partitions[1].last_file_status_check_time <= time_before_load)
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+
+        for partition in partition_entity.incremental_partitions:
+            if partition.last_file_status_check_time > time_before_load:
+                total_expected_partitions_found += 1
+                trait_ref = partition.exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+                self.assertEqual(CdmIncrementalPartitionType.DELETE.value, trait_ref.arguments.item('type').value)
+
+        self.assertEqual(3, total_expected_partitions_found)
+
+    @async_test
+    async def test_pattern_refreshes_with_invalid_trait_and_argument(self):
+        """
+        Tests refreshing partition pattern with invalid incremental partition trait and invalid arguments.
+        """
+
+        # providing invalid enum value of CdmIncrementalPartitionType in string
+        # "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+        test_name = 'test_pattern_refreshes_with_invalid_trait_and_argument'
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_ENUM_CONVERSION_FAILURE])
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+        self.assertTrue(partition_entity.incremental_partition_patterns[0].is_incremental)
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_ENUM_CONVERSION_FAILURE, True, self)
+
+        ##########################################################################################################
+
+        # providing invalid argument value - supply integer
+        # traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_TRAIT_INVALID_ARGUMENT_VALUE_TYPE])
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+        self.assertTrue(partition_entity.incremental_partition_patterns[0].is_incremental)
+        trait_ref = partition_entity.incremental_partition_patterns[0].exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+        trait_ref.arguments.item('type').value = 123
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_TRAIT_INVALID_ARGUMENT_VALUE_TYPE, True, self)
+
+        ##########################################################################################################
+
+        # not providing argument
+        # "traitReference": "is.partition.incremental", "arguments": []]
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_TRAIT_ARGUMENT_MISSING])
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+        self.assertTrue(partition_entity.incremental_partition_patterns[0].is_incremental)
+        trait_ref = partition_entity.incremental_partition_patterns[0].exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+        trait_ref.arguments.clear()
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_TRAIT_ARGUMENT_MISSING, True, self)
+
+        ##########################################################################################################
+
+        # not providing trait
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_MISSING_INCREMENTAL_PARTITION_TRAIT])
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+        self.assertTrue(partition_entity.incremental_partition_patterns[0].is_incremental)
+        partition_entity.incremental_partition_patterns[0].exhibits_traits.clear()
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_MISSING_INCREMENTAL_PARTITION_TRAIT, True, self)
+
+        ##########################################################################################################
+
+        # data partition pattern in DataPartitionPatterns collection contains incremental partition trait
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_UNEXPECTED_INCREMENTAL_PARTITION_TRAIT])
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+        self.assertTrue(partition_entity.incremental_partition_patterns[0].is_incremental)
+        pattern_copy = partition_entity.incremental_partition_patterns[0].copy()
+        partition_entity.data_partition_patterns.append(pattern_copy)
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.FULL)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_UNEXPECTED_INCREMENTAL_PARTITION_TRAIT, True, self)
+
+    @async_test
+    async def test_partition_refreshes_with_invalid_trait_and_argument(self):
+        """
+        Tests refreshing partition with invalid incremental partition trait and invalid arguments.
+        """
+
+        # providing invalid enum value of CdmIncrementalPartitionType in string
+        # "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+        test_name = 'test_partition_refreshes_with_invalid_trait_and_argument'
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_ENUM_CONVERSION_FAILURE])
+        manifest = await corpus.fetch_object_async('local:/partition.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partitions))
+        self.assertTrue(partition_entity.incremental_partitions[0].is_incremental)
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_ENUM_CONVERSION_FAILURE, True, self)
+
+        ##########################################################################################################
+
+        # providing invalid argument value - supply integer
+        # traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_TRAIT_INVALID_ARGUMENT_VALUE_TYPE])
+        manifest = await corpus.fetch_object_async('local:/partition.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partitions))
+        self.assertTrue(partition_entity.incremental_partitions[0].is_incremental)
+        trait_ref = partition_entity.incremental_partitions[0].exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+        trait_ref.arguments.item('type').value = 123
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_TRAIT_INVALID_ARGUMENT_VALUE_TYPE, True, self)
+
+        ##########################################################################################################
+
+        # not providing argument
+        # "traitReference": "is.partition.incremental", "arguments": []]
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_TRAIT_ARGUMENT_MISSING])
+        manifest = await corpus.fetch_object_async('local:/partition.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partitions))
+        self.assertTrue(partition_entity.incremental_partitions[0].is_incremental)
+        trait_ref = partition_entity.incremental_partitions[0].exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
+        trait_ref.arguments.clear()
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_TRAIT_ARGUMENT_MISSING, True, self)
+
+        ##########################################################################################################
+
+        # not providing trait
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_MISSING_INCREMENTAL_PARTITION_TRAIT])
+        manifest = await corpus.fetch_object_async('local:/partition.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partitions))
+        self.assertTrue(partition_entity.incremental_partitions[0].is_incremental)
+        partition_entity.incremental_partitions[0].exhibits_traits.clear()
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_MISSING_INCREMENTAL_PARTITION_TRAIT, True, self)
+
+        ##########################################################################################################
+
+        # data partition in DataPartitions collection contains incremental partition trait
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name, expected_codes=[CdmLogCode.ERR_UNEXPECTED_INCREMENTAL_PARTITION_TRAIT])
+        manifest = await corpus.fetch_object_async('local:/partition.manifest.cdm.json')
+
+        partition_entity = manifest.entities[0]
+        self.assertEqual(1, len(partition_entity.incremental_partitions))
+        self.assertTrue(partition_entity.incremental_partitions[0].is_incremental)
+        partition_copy = partition_entity.incremental_partitions[0].copy()
+        partition_entity.data_partitions.append(partition_copy)
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.FULL)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_UNEXPECTED_INCREMENTAL_PARTITION_TRAIT, True, self)
+
+    @async_test
+    async def test_partition_file_refresh_type_full_or_none(self):
+        """
+        Tests file_status_check_async(), file_status_check_async(PartitionFileStatusCheckType.FULL), and file_status_check_async(PartitionFileStatusCheckType.NONE).
+        """
+        test_name = 'test_partition_file_refresh_type_full_or_none'
+        corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
+        manifest = await corpus.fetch_object_async('local:/pattern.manifest.cdm.json')
+
+        # Test manifest.file_status_check_async()
+        partition_entity = manifest.entities[0]
+        self.assertEqual(0, len(partition_entity.data_partitions))
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+        self.assertEqual(1, len(partition_entity.data_partition_patterns))
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+
+        await manifest.file_status_check_async()
+
+        self.assertEqual(1, len(partition_entity.data_partitions))
+        self.assertFalse(partition_entity.data_partitions[0].is_incremental)
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+
+        ##########################################################################################################
+
+        # Test manifest.file_status_check_async(PartitionFileStatusCheckType.FULL)
+        partition_entity.data_partitions.clear()
+        partition_entity.incremental_partitions.clear()
+        self.assertEqual(0, len(partition_entity.data_partitions))
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+        self.assertEqual(1, len(partition_entity.data_partition_patterns))
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.FULL)
+
+        self.assertEqual(1, len(partition_entity.data_partitions))
+        self.assertFalse(partition_entity.data_partitions[0].is_incremental)
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+
+        ##########################################################################################################
+
+        # Test manifest.file_status_check_async(PartitionFileStatusCheckType.NONE)
+        partition_entity.data_partitions.clear()
+        partition_entity.incremental_partitions.clear()
+        self.assertEqual(0, len(partition_entity.data_partitions))
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+        self.assertEqual(1, len(partition_entity.data_partition_patterns))
+        self.assertEqual(1, len(partition_entity.incremental_partition_patterns))
+        time_before_load = datetime.now(timezone.utc)
+        time.sleep(1)
+        self.assertTrue(manifest.last_file_status_check_time < time_before_load)
+
+        await manifest.file_status_check_async(PartitionFileStatusCheckType.NONE)
+
+        self.assertEqual(0, len(partition_entity.data_partitions))
+        self.assertEqual(0, len(partition_entity.incremental_partitions))
+        self.assertTrue(manifest.last_file_status_check_time >= time_before_load)
+
+    @async_test
     async def test_pattern_with_non_existing_folder(self):
         corpus = TestHelper.get_local_corpus(self.test_subpath, "test_pattern_with_non_existing_folder")
         content = TestHelper.get_input_file_content(self.test_subpath, "test_pattern_with_non_existing_folder", "entities.manifest.cdm.json")
@@ -144,7 +495,7 @@ class _data_partition_patternTest(unittest.TestCase):
         cdm_manifest = await cdm_corpus.fetch_object_async('local:/patternManifest.manifest.cdm.json')
 
         await cdm_manifest.file_status_check_async()
-        
+
         self.assertEqual(1, len(cdm_manifest.entities[0].data_partitions))
 
     @async_test

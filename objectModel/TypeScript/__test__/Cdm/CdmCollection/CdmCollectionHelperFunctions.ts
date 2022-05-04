@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
+import { testHelper } from '../../testHelper';
 import {
     CdmCorpusDefinition,
     CdmDocumentDefinition,
@@ -10,17 +10,9 @@ import {
     CdmManifestDefinition,
     cdmObjectType
 } from '../../../internal';
-import { LocalAdapter } from '../../../Storage';
 
-export function generateManifest(localRootPath: string): CdmManifestDefinition {
-    const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
-    cdmCorpus.storage.defaultNamespace = 'local';
-    // tslint:disable-next-line: no-empty
-    cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
-    cdmCorpus.storage.mount('local', new LocalAdapter(localRootPath));
-
-    // add cdm namespace
-    cdmCorpus.storage.mount('cdm', new LocalAdapter(localRootPath));
+export function generateManifest(): CdmManifestDefinition {
+    const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(null, this.generateManifest.name, undefined, false, undefined, true);
 
     const manifest: CdmManifestDefinition = new CdmManifestDefinition(cdmCorpus.ctx, 'manifest');
     manifest.folderPath = '/';

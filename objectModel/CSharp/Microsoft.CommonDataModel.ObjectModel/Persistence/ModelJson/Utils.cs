@@ -10,7 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -37,7 +37,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             "is.modelConversion.modelVersion",
             "means.measurement.version",
             "is.CDM.entityVersion",
-            "is.partition.format.CSV",
             "is.partition.culture",
             "is.managedBy",
             "is.hidden"
@@ -51,6 +50,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             "is.localized.describedAs"
         });
 
+        /// <summary>
+        /// Arguments natively supported by the fileFormatSettings property.
+        /// </summary>
+        private static ReadOnlySet<string> PartitionSettingsSupportedArguments => new ReadOnlySet<string>(new HashSet<string>
+        {
+            "columnHeaders", "csvStyle", "delimiter", "quoteStyle", "encoding"
+        });
 
         internal static async Task ProcessAnnotationsFromData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
@@ -160,7 +166,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 else if (
                     !ignoredTraits.Contains(trait.NamedReference)
                     && !trait.NamedReference.StartsWith("is.dataFormat")
-                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait is CdmTraitReference && (trait as CdmTraitReference).IsFromProperty))
+                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait is CdmTraitReference && (trait as CdmTraitReference).IsFromProperty)
+                    && ShouldPersistTrait(trait))
                 {
                     var extension = trait is CdmTraitGroupReference ?
                         CdmFolder.TraitGroupReferencePersistence.ToData(trait as CdmTraitGroupReference, null, null) :
@@ -180,40 +187,59 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             }
         }
 
-        internal static CdmTraitReference CreateCsvTrait(CsvFormatSettings obj, CdmCorpusContext ctx)
+        private static bool ShouldPersistTrait(CdmTraitReferenceBase traitBase)
         {
-            var csvFormatTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.partition.format.CSV", true);
-            csvFormatTrait.SimpleNamedReference = false;
+            if (!(traitBase is CdmTraitReference trait))
+            {
+                return true;
+            }
 
-            if (obj.ColumnHeaders != null)
+            switch (trait.NamedReference)
+            {
+                case "is.partition.format.CSV":
+                    var argumentNames = new HashSet<string>(trait.Arguments.AllItems.Where(arg => arg.Name != null).Select(arg => arg.Name));
+
+                    // Checks if the trait contains arguments that are not supported natively by the model.json CsvFormatSettings property.
+                    return argumentNames.Except(PartitionSettingsSupportedArguments).Count() > 0;
+                default:
+                    return true;
+            }
+        }
+
+        internal static CdmTraitReference CreateCsvTrait(CsvFormatSettings obj, CdmCorpusContext ctx, CdmTraitReference host = null)
+        {
+            var csvFormatTrait = host ?? ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.partition.format.CSV", false);
+            var argumentNames = new HashSet<string>(csvFormatTrait.Arguments.AllItems.Where(arg => arg.Name != null).Select(arg => arg.Name));
+
+            if (obj.ColumnHeaders != null && !argumentNames.Contains("columnHeaders"))
             {
                 var columnHeadersArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "columnHeaders");
                 columnHeadersArg.Value = obj.ColumnHeaders == true ? "true" : "false";
                 csvFormatTrait.Arguments.Add(columnHeadersArg);
             }
 
-            if (obj.CsvStyle != null)
+            if (obj.CsvStyle != null && !argumentNames.Contains("csvStyle"))
             {
                 var csvStyleArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "csvStyle");
                 csvStyleArg.Value = obj.CsvStyle;
                 csvFormatTrait.Arguments.Add(csvStyleArg);
             }
 
-            if (obj.Delimiter != null)
+            if (obj.Delimiter != null && !argumentNames.Contains("delimiter"))
             {
                 var delimiterArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "delimiter");
                 delimiterArg.Value = obj.Delimiter;
                 csvFormatTrait.Arguments.Add(delimiterArg);
             }
 
-            if (obj.QuoteStyle != null)
+            if (obj.QuoteStyle != null && !argumentNames.Contains("quoteStyle"))
             {
                 var quoteStyleArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "quoteStyle");
                 quoteStyleArg.Value = obj.QuoteStyle;
                 csvFormatTrait.Arguments.Add(quoteStyleArg);
             }
 
-            if (obj.Encoding != null)
+            if (obj.Encoding != null && !argumentNames.Contains("encoding"))
             {
                 var encodingArg = ctx.Corpus.MakeObject<CdmArgumentDefinition>(CdmObjectType.ArgumentDef, "encoding");
                 encodingArg.Value = obj.Encoding;

@@ -6,6 +6,7 @@ from typing import List, Dict, Optional, Tuple, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import JObject, logger
+from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmTraitCollection, CdmTraitDefinition
@@ -63,7 +64,7 @@ async def standard_import_detection(ctx: 'CdmCorpusContext', extension_trait_def
     while trait_index >= 0:
         extension_trait_def = local_extension_trait_def_list[trait_index]
 
-        if not extension_trait_def.trait_name or not extension_trait_def.trait_name.startswith(EXTENSION_TRAIT_NAME_PREFIX):
+        if StringUtils.is_blank_by_cdm_standard(extension_trait_def.trait_name) or not extension_trait_def.trait_name.startswith(EXTENSION_TRAIT_NAME_PREFIX):
             logger.error(ctx, _TAG, standard_import_detection.__name__, extension_trait_def.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_INVALID_EXTENSION_TRAIT, extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX)
             return None
 

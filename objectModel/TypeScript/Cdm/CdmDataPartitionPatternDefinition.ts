@@ -10,7 +10,9 @@ import {
     cdmLogCode,
     resolveOptions,
     StorageAdapterBase,
-    VisitCallback
+    VisitCallback,
+    traitToPropertyMap,
+    CdmLocalEntityDeclarationDefinition
 } from '../internal';
 import { isLocalEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
 import { Logger, enterScope } from '../Utilities/Logging/Logger';
@@ -83,6 +85,8 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         return cdmObjectType.dataPartitionPatternDef;
     }
 
+    private readonly traitToPropertyMap: traitToPropertyMap;
+
     /**
      * Creates a new instance of Data Partition Pattern Impl.
      * @param ctx The context.
@@ -92,6 +96,14 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         super(ctx);
         this.objectType = cdmObjectType.dataPartitionPatternDef;
         this.name = name;
+        this.traitToPropertyMap = new traitToPropertyMap(this);
+    }
+
+    /**
+     * Gets whether the data partition pattern is incremental.
+     */
+    public get isIncremental(): boolean {
+        return this.traitToPropertyMap.fetchPropertyValue('isIncremental') as boolean;
     }
 
     /**
@@ -230,6 +242,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                 }
 
                 if (isLocalEntityDeclarationDefinition(this.owner)) {
+                    const localEntDecDefOwner: CdmLocalEntityDeclarationDefinition = this.owner;
                     // if both are present log warning and use glob pattern, otherwise use regularExpression
                     if (this.globPattern && this.globPattern.trim() !== '' && this.regularExpression && this.regularExpression.trim() !== '') {
                         Logger.warning(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.WarnPartitionGlobAndRegexPresent, this.globPattern, this.regularExpression);
@@ -246,12 +259,20 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
                     if (regexPattern !== undefined) {
                         const dataPartitionPathSet: Set<string> = new Set<string>();
-                        if (this.owner && (this.owner).dataPartitions) {
-                            for (const dataPartition of (this.owner).dataPartitions) {
+                        if (localEntDecDefOwner.dataPartitions) {
+                            for (const dataPartition of localEntDecDefOwner.dataPartitions) {
                                 const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(dataPartition.location, this.inDocument);
                                 dataPartitionPathSet.add(fullPath);
                             }
                         }
+
+                        const incrementalPartitionPathHashSet: Set<string> = new Set<string>();
+                        if (localEntDecDefOwner.incrementalPartitions) {
+                            for (const incrementalPartition of localEntDecDefOwner.incrementalPartitions) {
+                                const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(incrementalPartition.location, this.inDocument);
+                                incrementalPartitionPathHashSet.add(fullPath);
+                            }
+                        }                        
 
                         for (const fi of fileInfoList) {
                             const m: RegExpExecArray = regexPattern.exec(fi);
@@ -282,8 +303,12 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                                 }
                                 const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(pathTuple[1]);
 
-                                if (!dataPartitionPathSet.has(fullPath)) {
-                                    (this.owner).createDataPartitionFromPattern(
+                                if (this.isIncremental && ! incrementalPartitionPathHashSet.has(fullPath)) {
+                                    localEntDecDefOwner.createDataPartitionFromPattern(
+                                        locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime, true, this.name);
+                                    dataPartitionPathSet.add(fullPath);
+                                } else if (!this.isIncremental && !dataPartitionPathSet.has(fullPath)) {
+                                    localEntDecDefOwner.createDataPartitionFromPattern(
                                         locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
                                     dataPartitionPathSet.add(fullPath);
                                 }

@@ -5,7 +5,8 @@ import asyncio
 from datetime import datetime, timezone
 from typing import cast, Iterable, Optional, Union, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle, ImportsLoadStrategy
+from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle, ImportsLoadStrategy, PartitionFileStatusCheckType, \
+    CdmIncrementalPartitionType
 from cdm.utilities import AttributeResolutionDirectiveSet, logger, ResolveOptions, time_utils
 from cdm.enums import CdmLogCode
 
@@ -19,8 +20,8 @@ from .cdm_trait_collection import CdmTraitCollection
 from .cdm_import import CdmImport
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, CdmEntityDefinition, CdmTraitReference, \
-        CdmEntityDeclarationDefinition, CdmFolderDefinition, CdmManifestDeclarationDefinition, CdmObject
+    from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, CdmEntityDefinition, \
+    CdmEntityDeclarationDefinition, CdmFolderDefinition, CdmManifestDeclarationDefinition, CdmObject
     from cdm.utilities import CopyOptions, VisitCallback
 
 
@@ -232,8 +233,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             resolved_manifest._is_dirty = True
             return resolved_manifest
 
-    async def file_status_check_async(self) -> None:
-        """Check the modified time for this object and any children."""
+    async def file_status_check_async(self, partition_file_status_check_type: Optional['PartitionFileStatusCheckType'] = PartitionFileStatusCheckType.FULL, incremental_type: Optional['CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE) -> None:
+        """
+        Check the modified time for this object and any children.
+        """
         with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
             adapter = self.ctx.corpus.storage.fetch_adapter(self.in_document._namespace)
             if adapter:
@@ -252,7 +255,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                         self._file_system_modified_time = self.last_file_modified_time
 
                     for entity in self.entities:
-                        await entity.file_status_check_async()
+                        from cdm.objectmodel import CdmLocalEntityDeclarationDefinition
+                        if isinstance(entity, CdmReferencedEntityDeclarationDefinition):
+                            await entity.file_status_check_async()
+                        elif isinstance(entity, CdmLocalEntityDeclarationDefinition):
+                            await cast(CdmLocalEntityDeclarationDefinition, entity).file_status_check_async(partition_file_status_check_type, incremental_type)
 
                     for sub_manifest in self.sub_manifests:
                         await sub_manifest.file_status_check_async()

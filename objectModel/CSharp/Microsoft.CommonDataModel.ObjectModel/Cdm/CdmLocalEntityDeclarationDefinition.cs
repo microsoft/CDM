@@ -29,6 +29,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.EntityName = entityName;
             this.DataPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.Ctx, this, CdmObjectType.DataPartitionDef);
             this.DataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.Ctx, this, CdmObjectType.DataPartitionPatternDef);
+            this.IncrementalPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.Ctx, this, CdmObjectType.DataPartitionDef);
+            this.IncrementalPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.Ctx, this, CdmObjectType.DataPartitionPatternDef);
             this.LastFileModifiedTime = null;
             this.LastFileModifiedOldTime = null;
         }
@@ -72,6 +74,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmCollection<CdmDataPartitionPatternDefinition> DataPartitionPatterns { get; }
 
+        /// <summary>
+        /// Gets the incremental partitions.
+        /// </summary>
+        public CdmCollection<CdmDataPartitionDefinition> IncrementalPartitions { get; }
+
+        /// <summary>
+        /// Gets the incremental partition patterns.
+        /// </summary>
+        public CdmCollection<CdmDataPartitionPatternDefinition> IncrementalPartitionPatterns { get; }
+
         /// <inheritdoc />
         [Obsolete]
         public override CdmObjectType GetObjectType()
@@ -110,6 +122,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.EntityName = this.EntityName;
                 copy.DataPartitionPatterns.Clear();
                 copy.DataPartitions.Clear();
+                copy.IncrementalPartitions.Clear();
+                copy.IncrementalPartitionPatterns.Clear();
             }
 
             copy.EntityPath = this.EntityPath;
@@ -121,6 +135,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.DataPartitions.Add(partition.Copy(resOpt) as CdmDataPartitionDefinition);
             foreach (var pattern in this.DataPartitionPatterns)
                 copy.DataPartitionPatterns.Add(pattern.Copy(resOpt) as CdmDataPartitionPatternDefinition);
+            foreach (var incrementalPartitions in this.IncrementalPartitions)
+                copy.IncrementalPartitions.Add(incrementalPartitions.Copy(resOpt) as CdmDataPartitionDefinition);
+            foreach (var incrementalPartitionPatterns in this.IncrementalPartitionPatterns)
+                copy.IncrementalPartitionPatterns.Add(incrementalPartitionPatterns.Copy(resOpt) as CdmDataPartitionPatternDefinition);
             this.CopyDef(resOpt, copy);
 
             return copy;
@@ -154,6 +172,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (this.DataPartitionPatterns.VisitList(path + "/dataPartitionPatterns/", preChildren, postChildren))
                     return true;
 
+            if (this.IncrementalPartitions != null)
+                if (this.IncrementalPartitions.VisitList(path + "/incrementalPartitions/", preChildren, postChildren))
+                    return true;
+
+            if (this.IncrementalPartitionPatterns != null)
+                if (this.IncrementalPartitionPatterns.VisitList(path + "/incrementalPartitionPatterns/", preChildren, postChildren))
+                    return true;
+
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
@@ -171,21 +197,63 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            using (this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace)?.CreateFileQueryCacheContext())
+            await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+        }
+
+        /// <inheritdoc />
+        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None)
+        {
+            using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
             {
                 string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
                 DateTimeOffset? modifiedTime = await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
 
                 // check patterns first as this is a more performant way of querying file modification times 
                 // from ADLS and we can cache the times for reuse in the individual partition checks below
-                foreach (var pattern in this.DataPartitionPatterns)
+
+                if (partitionFileStatusCheckType == PartitionFileStatusCheckType.Full || partitionFileStatusCheckType == PartitionFileStatusCheckType.FullAndIncremental)
                 {
-                    await pattern.FileStatusCheckAsync();
+                    foreach (var pattern in this.DataPartitionPatterns)
+                    {
+                        if (pattern.IsIncremental)
+                        {
+                            Logger.Error(pattern.Ctx, Tag, nameof(FileStatusCheckAsync), pattern.AtCorpusPath, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
+                                nameof(CdmDataPartitionPatternDefinition), pattern.FetchObjectDefinitionName(), Constants.IncrementalTraitName, nameof(DataPartitionPatterns));
+                        }
+                        else
+                        {
+                            await pattern.FileStatusCheckAsync();
+                        }
+                    }
+
+                    foreach (var partition in this.DataPartitions)
+                    {
+                        if (partition.IsIncremental)
+                        {
+                            Logger.Error(partition.Ctx, Tag, nameof(FileStatusCheckAsync), partition.AtCorpusPath, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
+                                nameof(CdmDataPartitionDefinition), partition.FetchObjectDefinitionName(), Constants.IncrementalTraitName, nameof(DataPartitions));
+                        }
+                        else
+                        {
+                            await partition.FileStatusCheckAsync();
+                        }
+                    }
                 }
 
-                foreach (var partition in this.DataPartitions)
+                if (partitionFileStatusCheckType == PartitionFileStatusCheckType.Incremental || partitionFileStatusCheckType == PartitionFileStatusCheckType.FullAndIncremental)
                 {
-                    await partition.FileStatusCheckAsync();
+                    foreach (var pattern in this.IncrementalPartitionPatterns)
+                    {
+                        if (this.ShouldCallFileStatusCheck(incrementalType, true, pattern)) {
+                            await pattern.FileStatusCheckAsync();
+                        }
+                    }
+
+                    foreach (var partition in this.IncrementalPartitions)
+                    if (this.ShouldCallFileStatusCheck(incrementalType, false, partition))
+                    {
+                        await partition.FileStatusCheckAsync();
+                    }
                 }
 
                 // update modified times
@@ -194,6 +262,63 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
             }
+        }
+
+        /// <summary>
+        /// Determine if calling FileStatusCheckAsync on the given pattern or the given partition is needed.
+        /// </summary>
+        /// <param name="incrementalType">The incremental type.</param>
+        /// <param name="isPattern">Whether the object is a pattern object or a partition object.</param>
+        /// <param name="patternOrPartitionObj">The pattern object if isPattern is true, otherwise the partition object.</param>
+        private bool ShouldCallFileStatusCheck(CdmIncrementalPartitionType incrementalType, bool isPattern, CdmObjectDefinitionBase patternOrPartitionObj)
+        {
+            var update = true;
+
+            CdmTraitReference traitRef = patternOrPartitionObj.ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+            if (traitRef == null)
+            {
+                Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrMissingIncrementalPartitionTrait, 
+                    isPattern ? nameof(CdmDataPartitionPatternDefinition) : nameof(CdmDataPartitionDefinition), patternOrPartitionObj.FetchObjectDefinitionName(), 
+                    Constants.IncrementalTraitName, isPattern ? nameof(IncrementalPartitionPatterns) : nameof(IncrementalPartitions));
+            }
+            else
+            {
+                // None means update by default
+                if (incrementalType == CdmIncrementalPartitionType.None)
+                {
+                    return update;
+                }
+                var traitRefIncrementalTypeValue = traitRef.Arguments?.FetchValue("type");
+                if (traitRefIncrementalTypeValue == null)
+                {
+                    update = false;
+                    Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrTraitArgumentMissing, 
+                        "type", Constants.IncrementalTraitName, patternOrPartitionObj.FetchObjectDefinitionName());
+                }
+                else if (traitRefIncrementalTypeValue is string == false)
+                {
+                    update = false;
+                    Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrTraitInvalidArgumentValueType,
+                        "type", Constants.IncrementalTraitName, patternOrPartitionObj.FetchObjectDefinitionName());
+                }
+                else
+                {
+                    bool success = Enum.TryParse(traitRefIncrementalTypeValue.ToString(), out CdmIncrementalPartitionType traitRefIncrementalType);
+                    if (success)
+                    {
+                        update = traitRefIncrementalType == incrementalType;
+                    }
+                    else
+                    {
+                        update = false;
+                        Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrEnumConversionFailure,
+                            traitRefIncrementalTypeValue, nameof(CdmIncrementalPartitionType), 
+                            $"parameter 'type' of trait '{Constants.IncrementalTraitName}' from '{patternOrPartitionObj.FetchObjectDefinitionName()}'");
+                    }
+                }
+            }
+
+            return update;
         }
 
         /// <inheritdoc />
@@ -213,20 +338,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Creates a data partition object using the input. Should be called by a DataPartitionPattern object.
         /// This function doesn't check if the data partition exists.
         /// </summary>
-        internal void CreateDataPartitionFromPattern(string filePath, CdmTraitCollection exhibitsTraits, Dictionary<string, List<string>> args, string schema, DateTimeOffset? modifiedTime)
+        /// <param name="filePath">The file path.</param>
+        /// <param name="exhibitsTraits">The exihibits traits of the caller DataPartitionPattern object.</param>
+        /// <param name="args">The arguments of capture groups for the regular expression from the caller DataPartitionPattern object.</param>
+        /// <param name="schema">The specialized schema.</param>
+        /// <param name="modifiedTime">The last modified time.</param>
+        /// <param name="isIncrementalPartition">True if this is an incremental partition.</param>
+        /// <param name="incrementPartitionPatternName">The name of caller DataPartitionPattern object if this is an incremental partition.</param>
+        internal void CreateDataPartitionFromPattern(string filePath, CdmTraitCollection exhibitsTraits, Dictionary<string, List<string>> args, string schema, DateTimeOffset? modifiedTime, bool isIncrementalPartition = false, string incrementPartitionPatternName = null)
         {
             var newPartition = this.Ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef);
             newPartition.Location = filePath;
             newPartition.SpecializedSchema = schema;
             newPartition.LastFileModifiedTime = modifiedTime;
             newPartition.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-
             foreach (var trait in exhibitsTraits)
                 newPartition.ExhibitsTraits.Add((CdmTraitReferenceBase)trait.Copy());
             foreach (KeyValuePair<string, List<string>> entry in args)
                 newPartition.Arguments[entry.Key] = entry.Value;
 
-            this.DataPartitions.Add(newPartition);
+            if (!isIncrementalPartition)
+            {
+                this.DataPartitions.Add(newPartition);
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(incrementPartitionPatternName))
+                {
+                    (newPartition.ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference).Arguments.Add(Constants.IncrementalPatternParameterName, incrementPartitionPatternName);
+                }
+                this.IncrementalPartitions.Add(newPartition);
+            }
         }
 
         /// <summary>

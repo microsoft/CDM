@@ -208,6 +208,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     break;
                 case "defaultValue":
                     return this.FetchDefaultValue(onlyFromProperty);
+                case "isIncremental":
+                    return this.FetchTraitReference(Constants.IncrementalTraitName) != null;
             }
             return null;
         }

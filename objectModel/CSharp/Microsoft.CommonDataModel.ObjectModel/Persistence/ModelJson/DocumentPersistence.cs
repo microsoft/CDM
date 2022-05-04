@@ -25,7 +25,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             var document = ctx.Corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, docName);
 
             // import at least foundations
-            document.Imports.Add("cdm:/foundations.cdm.json");
+            document.Imports.Add(Constants.FoundationsCorpusPath);
 
             var entity = await EntityPersistence.FromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList);
 
@@ -39,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 foreach (var import in obj.Imports)
                 {
-                    if (import.CorpusPath?.Equals("cdm:/foundations.cdm.json") == true)
+                    if (import.CorpusPath?.Equals(Constants.FoundationsCorpusPath) == true)
                     {
                         // don't add foundations twice
                         continue;
@@ -73,7 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                                 // so it is necessary to recalculate the path to be relative to the manifest.
                                 var absolutePath = ctx.Corpus.Storage.CreateAbsoluteCorpusPath(import.CorpusPath, document);
 
-                                if (!string.IsNullOrEmpty(document.Namespace) && absolutePath.StartsWith(document.Namespace + ":"))
+                                if (!StringUtils.IsBlankByCdmStandard(document.Namespace) && absolutePath.StartsWith(document.Namespace + ":"))
                                 {
                                     absolutePath = absolutePath.Substring(document.Namespace.Length + 1);
                                 }

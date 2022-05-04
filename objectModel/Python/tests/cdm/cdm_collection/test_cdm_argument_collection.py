@@ -56,7 +56,7 @@ class CdmArgumentCollectionTests(unittest.TestCase):
         arg_list.append(argument_definition)
 
         argument_definition = CdmArgumentDefinition(trait.ctx, 'Arg2')
-        valOfArg2 = generate_manifest('C://Nothing')
+        valOfArg2 = generate_manifest()
         argument_definition.value = valOfArg2
         arg_list.append(argument_definition)
 
@@ -108,7 +108,7 @@ class CdmArgumentCollectionTests(unittest.TestCase):
         self.assertEqual(trait, trait.arguments[2].owner)
 
     def test_cdm_collection_add_populates_in_document_with_visit(self):
-        manifest = generate_manifest('C:\\Nothing')
+        manifest = generate_manifest()
         entity_reference = CdmLocalEntityDeclarationDefinition(manifest.ctx, 'entityName')
         trait = entity_reference.exhibits_traits.append('theTrait')
         argument = trait.arguments.append('GreatArgumentName', 'GreatValue')
@@ -121,5 +121,5 @@ class CdmArgumentCollectionTests(unittest.TestCase):
         self.assertEqual(manifest, argument.in_document)
 
     def _generate_trait(self) -> 'CdmTraitReference':
-        manifest = generate_manifest('C:\\Nothing')
+        manifest = generate_manifest()
         return CdmTraitReference(manifest.ctx, 'traitName', False)

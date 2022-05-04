@@ -7,6 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types.Projections;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Newtonsoft.Json.Linq;
+    using System;
     using System.Collections.Generic;
 
     public static class Utils
@@ -185,15 +186,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         /// <summary>
         /// Creates a list object that is a copy of the input IEnumerable object
         /// </summary>
-        public static List<T> ListCopyData<T>(ResolveOptions resOpt, IEnumerable<dynamic> source, CopyOptions options)
+        public static List<T> ListCopyData<T>(ResolveOptions resOpt, IEnumerable<dynamic> source, CopyOptions options, Func<dynamic, bool> condition = null)
         {
             if (source == null)
                 return null;
             List<T> casted = new List<T>();
             foreach (var element in source)
             {
-                T newElement = ((CdmObject)element)?.CopyData(resOpt, options);
-                casted.Add(newElement);
+                if (condition == null || (condition != null && condition(element))) {
+                    T newElement = ((CdmObject)element)?.CopyData(resOpt, options);
+                    casted.Add(newElement);
+                }
             }
             if (casted.Count == 0)
                 return null;

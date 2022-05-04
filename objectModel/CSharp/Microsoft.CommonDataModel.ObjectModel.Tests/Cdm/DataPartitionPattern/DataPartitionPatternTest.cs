@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using System;
@@ -146,6 +145,391 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             partitionTraitRef.Arguments[0].Value = 2;
 
             Assert.AreEqual(1, (partitionEntity.DataPartitions[1].ExhibitsTraits.Item("testTrait") as CdmTraitReference).Arguments[0].Value);
+        }
+
+        /// <summary>
+        /// Tests refreshing incremental partition files that match the regular expression
+        /// </summary>
+        [TestMethod]
+        public async Task TestIncrementalPatternsRefreshesFullAndIncremental()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestIncrementalPatternsRefreshesFullAndIncremental));
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            var partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(0, partitionEntity.DataPartitions.Count);
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+            Assert.AreEqual(1, partitionEntity.DataPartitionPatterns.Count);
+            Assert.AreEqual(2, partitionEntity.IncrementalPartitionPatterns.Count);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.FullAndIncremental);
+
+            // Mac and Windows behave differently when listing file content, so we don't want to be strict about partition file order
+            int totalExpectedPartitionsFound = 0;
+
+            Assert.AreEqual(1, partitionEntity.DataPartitions.Count);
+            totalExpectedPartitionsFound++;
+            Assert.IsFalse(partitionEntity.DataPartitions[0].IsIncremental);
+
+            foreach (CdmDataPartitionDefinition partition in partitionEntity.IncrementalPartitions)
+            {
+                switch (partition.Location)
+                {
+                    case "/IncrementalData/2018/8/15/Deletes/delete1.csv":
+                        totalExpectedPartitionsFound++;
+                        Assert.AreEqual(4, partition.Arguments.Count);
+                        Assert.IsTrue(partition.Arguments.ContainsKey("year"));
+                        Assert.AreEqual("2018", partition.Arguments["year"][0]);
+                        Assert.IsTrue(partition.Arguments.ContainsKey("month"));
+                        Assert.AreEqual("8", partition.Arguments["month"][0]);
+                        Assert.IsTrue(partition.Arguments.ContainsKey("day"));
+                        Assert.AreEqual("15", partition.Arguments["day"][0]);
+                        Assert.IsTrue(partition.Arguments.ContainsKey("deletePartitionNumber"));
+                        Assert.AreEqual("1", partition.Arguments["deletePartitionNumber"][0]);
+                        Assert.AreEqual(1, partition.ExhibitsTraits.Count);
+                        var trait1 = partition.ExhibitsTraits[0];
+                        Assert.AreEqual(Constants.IncrementalTraitName, trait1.FetchObjectDefinitionName());
+                        Assert.AreEqual("DeletePattern", (trait1 as CdmTraitReference).Arguments.Item(Constants.IncrementalPatternParameterName).Value);
+                        Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), (trait1 as CdmTraitReference).Arguments.Item("type").Value);
+                        Assert.AreEqual("FullDataPattern", (trait1 as CdmTraitReference).Arguments.Item("fullDataPartitionPatternName").Value);
+                        break;
+                    case "/IncrementalData/2018/8/15/Deletes/delete2.csv":
+                        totalExpectedPartitionsFound++;
+                        Assert.AreEqual(4, partition.Arguments.Count);
+                        Assert.AreEqual("2018", partition.Arguments["year"][0]);
+                        Assert.AreEqual("8", partition.Arguments["month"][0]);
+                        Assert.AreEqual("15", partition.Arguments["day"][0]);
+                        Assert.AreEqual("2", partition.Arguments["deletePartitionNumber"][0]);
+                        var trait2 = partition.ExhibitsTraits[0];
+                        Assert.AreEqual(Constants.IncrementalTraitName, trait2.FetchObjectDefinitionName());
+                        Assert.AreEqual("DeletePattern", (trait2 as CdmTraitReference).Arguments.Item(Constants.IncrementalPatternParameterName).Value);
+                        Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), (trait2 as CdmTraitReference).Arguments.Item("type").Value);
+                        Assert.AreEqual("FullDataPattern", (trait2 as CdmTraitReference).Arguments.Item("fullDataPartitionPatternName").Value);
+                        break;
+                    case "/IncrementalData/2018/8/15/Upserts/upsert1.csv":
+                        totalExpectedPartitionsFound++;
+                        Assert.AreEqual(4, partition.Arguments.Count);
+                        Assert.AreEqual("2018", partition.Arguments["year"][0]);
+                        Assert.AreEqual("8", partition.Arguments["month"][0]);
+                        Assert.AreEqual("15", partition.Arguments["day"][0]);
+                        Assert.AreEqual("1", partition.Arguments["upsertPartitionNumber"][0]);
+                        var trait3 = partition.ExhibitsTraits[0];
+                        Assert.AreEqual(Constants.IncrementalTraitName, trait3.FetchObjectDefinitionName());
+                        Assert.AreEqual("UpsertPattern", (trait3 as CdmTraitReference).Arguments.Item(Constants.IncrementalPatternParameterName).Value);
+                        Assert.AreEqual(CdmIncrementalPartitionType.Upsert.ToString(), (trait3 as CdmTraitReference).Arguments.Item("type").Value);
+                        break;
+                    default:
+                        totalExpectedPartitionsFound++;
+                        break;
+                }
+            }
+
+            Assert.AreEqual(4, totalExpectedPartitionsFound);
+        }
+
+        /// <summary>
+        /// Tests only refreshing delete type incremental partition files.
+        /// </summary>
+        [TestMethod]
+        public async Task TestIncrementalPatternsRefreshesDeleteIncremental()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestIncrementalPatternsRefreshesDeleteIncremental));
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            // Test without incremental partition added
+            var partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+            Assert.AreEqual(2, partitionEntity.IncrementalPartitionPatterns.Count);
+            var traitRef0 = partitionEntity.IncrementalPartitionPatterns[0].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+            Assert.AreEqual(CdmIncrementalPartitionType.Upsert.ToString(), traitRef0.Arguments.Item("type").Value.ToString());
+            var traitRef1 = partitionEntity.IncrementalPartitionPatterns[1].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+            Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), traitRef1.Arguments.Item("type").Value.ToString());
+            
+            var timeBeforeLoad = DateTime.Now;
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+
+            int totalExpectedPartitionsFound = 0;
+            foreach (CdmDataPartitionDefinition partition in partitionEntity.IncrementalPartitions)
+            {
+                if (partition.LastFileStatusCheckTime > timeBeforeLoad)
+                {
+                    totalExpectedPartitionsFound++;
+                    var traitRef = partition.ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+                    Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), traitRef.Arguments.Item("type").Value.ToString());
+                }
+            }
+
+            Assert.AreEqual(2, totalExpectedPartitionsFound);
+
+            //////////////////////////////////////////////////////////////////
+
+            // Test with incremental partition added
+            partitionEntity.IncrementalPartitions.Clear();
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+
+            var upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "2019UpsertPartition1", false);
+            upsertIncrementalPartition.LastFileStatusCheckTime = DateTime.Now;
+            upsertIncrementalPartition.Location = "/IncrementalData/Upserts/upsert1.csv";
+            upsertIncrementalPartition.SpecializedSchema = "csv";
+            upsertIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Upsert.ToString()) });
+
+            var deleteIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "2019DeletePartition1", false);
+            deleteIncrementalPartition.LastFileStatusCheckTime = DateTime.Now;
+            deleteIncrementalPartition.Location = "/IncrementalData/Deletes/delete1.csv";
+            deleteIncrementalPartition.SpecializedSchema = "csv";
+            deleteIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Delete.ToString()) });
+
+            partitionEntity.IncrementalPartitions.Add(upsertIncrementalPartition);
+            partitionEntity.IncrementalPartitions.Add(deleteIncrementalPartition);
+            Assert.AreEqual(2, partitionEntity.IncrementalPartitionPatterns.Count);
+            Assert.AreEqual(2, partitionEntity.IncrementalPartitions.Count);
+
+            totalExpectedPartitionsFound = 0;
+
+            timeBeforeLoad = DateTime.Now;
+            Assert.IsTrue(partitionEntity.IncrementalPartitions[0].LastFileStatusCheckTime <= timeBeforeLoad);
+            Assert.IsTrue(partitionEntity.IncrementalPartitions[1].LastFileStatusCheckTime <= timeBeforeLoad);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+
+            foreach (CdmDataPartitionDefinition partition in partitionEntity.IncrementalPartitions)
+            {
+                if (partition.LastFileStatusCheckTime > timeBeforeLoad)
+                { 
+                    totalExpectedPartitionsFound++;
+                    var traitRef = partition.ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+                    Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), traitRef.Arguments.Item("type").Value.ToString());
+                }
+            }
+
+            Assert.AreEqual(3, totalExpectedPartitionsFound);
+        }
+
+        /// <summary>
+        /// Tests refreshing partition pattern with invalid incremental partition trait and invalid arguments.
+        /// </summary>
+        [TestMethod]
+        public async Task TestPatternRefreshesWithInvalidTraitAndArgument()
+        {
+            // providing invalid enum value of CdmIncrementalPartitionType in string
+            // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrEnumConversionFailure };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPatternRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            var partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitionPatterns[0].IsIncremental);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrEnumConversionFailure, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // providing invalid argument value - supply integer
+            // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrTraitInvalidArgumentValueType };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPatternRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitionPatterns[0].IsIncremental);
+            var traitRef = partitionEntity.IncrementalPartitionPatterns[0].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+            traitRef.Arguments.Item("type").Value = 123;
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitInvalidArgumentValueType, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // not providing argument
+            // "traitReference": "is.partition.incremental", "arguments": []]
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrTraitArgumentMissing };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPatternRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitionPatterns[0].IsIncremental);
+            traitRef = partitionEntity.IncrementalPartitionPatterns[0].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+            traitRef.Arguments.Clear();
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitArgumentMissing, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // not providing trait
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrMissingIncrementalPartitionTrait };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPatternRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitionPatterns[0].IsIncremental);
+            partitionEntity.IncrementalPartitionPatterns[0].ExhibitsTraits.Clear();
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrMissingIncrementalPartitionTrait, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // data partition pattern in DataPartitionPatterns collection contains incremental partition trait
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrUnexpectedIncrementalPartitionTrait };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPatternRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitionPatterns[0].IsIncremental);
+            var patternCopy = partitionEntity.IncrementalPartitionPatterns[0].Copy() as CdmDataPartitionPatternDefinition;
+            partitionEntity.DataPartitionPatterns.Add(patternCopy);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
+        }
+
+        /// <summary>
+        /// Tests refreshing incremental partition with invalid incremental partition trait and invalid arguments.
+        /// </summary>
+        [TestMethod]
+        public async Task TestPartitionRefreshesWithInvalidTraitAndArgument()
+        {
+            // providing invalid enum value of CdmIncrementalPartitionType in string
+            // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrEnumConversionFailure };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPartitionRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/partition.manifest.cdm.json");
+
+            var partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitions.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitions[0].IsIncremental);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrEnumConversionFailure, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // providing invalid argument value - supply integer
+            // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrTraitInvalidArgumentValueType };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPartitionRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/partition.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitions.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitions[0].IsIncremental);
+            var traitRef = partitionEntity.IncrementalPartitions[0].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+            traitRef.Arguments.Item("type").Value = 123;
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitInvalidArgumentValueType, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // not providing argument
+            // "traitReference": "is.partition.incremental", "arguments": []]
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrTraitArgumentMissing };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPartitionRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/partition.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitions.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitions[0].IsIncremental);
+            traitRef = partitionEntity.IncrementalPartitions[0].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
+            traitRef.Arguments.Clear();
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrTraitArgumentMissing, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // not providing trait
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrMissingIncrementalPartitionTrait };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPartitionRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/partition.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitions.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitions[0].IsIncremental);
+            partitionEntity.IncrementalPartitions[0].ExhibitsTraits.Clear();
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrMissingIncrementalPartitionTrait, true);
+
+            //////////////////////////////////////////////////////////////////
+
+            // data partition in DataPartitions collection contains incremental partition trait
+            expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrUnexpectedIncrementalPartitionTrait };
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPartitionRefreshesWithInvalidTraitAndArgument), expectedCodes: expectedLogCodes);
+            manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/partition.manifest.cdm.json");
+
+            partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitions.Count);
+            Assert.IsTrue(partitionEntity.IncrementalPartitions[0].IsIncremental);
+            var partitionCopy = partitionEntity.IncrementalPartitions[0].Copy() as CdmDataPartitionDefinition;
+            partitionEntity.DataPartitions.Add(partitionCopy);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
+        }
+
+        /// <summary>
+        /// Tests FileStatusCheckAsync(), FileStatusCheckAsync(PartitionFileStatusCheckType.Full), and FileStatusCheckAsync(PartitionFileStatusCheckType.None).
+        /// </summary>
+        [TestMethod]
+        public async Task TestPartitionFileRefreshTypeFullOrNone()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPartitionFileRefreshTypeFullOrNone));
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/pattern.manifest.cdm.json");
+
+            // Test manifest.FileStatusCheckAsync();
+            var partitionEntity = manifest.Entities[0];
+            Assert.AreEqual(0, partitionEntity.DataPartitions.Count);
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+            Assert.AreEqual(1, partitionEntity.DataPartitionPatterns.Count);
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+
+            await manifest.FileStatusCheckAsync();
+
+            Assert.AreEqual(1, partitionEntity.DataPartitions.Count);
+            Assert.IsFalse(partitionEntity.DataPartitions[0].IsIncremental);
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+
+            //////////////////////////////////////////////////////////////////
+
+            // Test manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+            partitionEntity.DataPartitions.Clear();
+            partitionEntity.IncrementalPartitions.Clear();
+            Assert.AreEqual(0, partitionEntity.DataPartitions.Count);
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+            Assert.AreEqual(1, partitionEntity.DataPartitionPatterns.Count);
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
+
+            Assert.AreEqual(1, partitionEntity.DataPartitions.Count);
+            Assert.IsFalse(partitionEntity.DataPartitions[0].IsIncremental);
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+
+            //////////////////////////////////////////////////////////////////
+
+            // Test manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.None);
+            partitionEntity.DataPartitions.Clear();
+            partitionEntity.IncrementalPartitions.Clear();
+            Assert.AreEqual(0, partitionEntity.DataPartitions.Count);
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+            Assert.AreEqual(1, partitionEntity.DataPartitionPatterns.Count);
+            Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+            var timeBeforeLoad = DateTime.Now;
+            Assert.IsTrue(manifest.LastFileStatusCheckTime < timeBeforeLoad);
+
+            await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.None);
+
+            Assert.AreEqual(0, partitionEntity.DataPartitions.Count);
+            Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
+            Assert.IsTrue(manifest.LastFileStatusCheckTime > timeBeforeLoad);
         }
 
         /// <summary>

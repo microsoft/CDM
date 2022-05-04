@@ -9,10 +9,11 @@ import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntity
 import { CdmManifestDefinition } from '../../../Cdm/CdmManifestDefinition';
 import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
 import { cdmObjectType } from '../../../Enums/cdmObjectType';
-import { CdmEntityDefinition, CdmParameterDefinition, CdmTraitDefinition, CdmTraitReference } from '../../../internal';
+import { CdmEntityDefinition, cdmIncrementalPartitionType, cdmLogCode, CdmParameterDefinition, CdmTraitDefinition, CdmTraitReference, constants, partitionFileStatusCheckType } from '../../../internal';
 import { CdmFolder } from '../../../Persistence';
 import { resolveContext } from '../../../Utilities/resolveContext';
 import { testHelper } from '../../testHelper';
+import { CdmDataPartitionPatternDefinition } from '../../../Cdm/CdmDataPartitionPatternDefinition';
 
 // tslint:disable-next-line: max-func-body-length
 describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
@@ -128,7 +129,6 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         expect(partitionEntity.dataPartitions.length)
             .toBe(0);
 
-            
         const traitDef = new CdmTraitDefinition(corpus.ctx, 'testTrait');
         traitDef.parameters.allItems.push(new CdmParameterDefinition(corpus.ctx, 'argument value'));
         let patternTraitRef = partitionEntity.dataPartitionPatterns.allItems[0].exhibitsTraits.push('testTrait') as CdmTraitReference;
@@ -158,6 +158,478 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         partitionTraitRef.arguments.allItems[0].value = 2;
         expect((partitionEntity.dataPartitions.allItems[1].exhibitsTraits.item("testTrait") as CdmTraitReference).arguments.allItems[0].value)
             .toBe(1);
+        done();
+    });
+
+    /**
+     * Tests refreshing incremental partition files that match the regular expression
+     */
+    it('TestIncrementalPatternsRefreshesFullAndIncremental', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestIncrementalPatternsRefreshesFullAndIncremental');
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        const partitionEntity: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.dataPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(2);
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.FullAndIncremental);
+
+        // Mac and Windows behave differently when listing file content, so we don't want to be strict about partition file order
+        let totalExpectedPartitionsFound: number = 0;
+
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(1);
+        totalExpectedPartitionsFound++;
+        expect(partitionEntity.dataPartitions.allItems[0].isIncremental)
+            .toBeFalsy;
+
+        for (const partition of partitionEntity.incrementalPartitions) {
+            switch (partition.location) {
+                case '/IncrementalData/2018/8/15/Deletes/delete1.csv':
+                    totalExpectedPartitionsFound++;                    
+                    expect(partition.arguments.size)
+                        .toBe(4);
+                    expect(partition.arguments.has('year'))
+                        .toBeTruthy();
+                    expect(partition.arguments.get('year')[0])
+                        .toBe('2018');
+                    expect(partition.arguments.has('month'))
+                        .toBeTruthy();
+                    expect(partition.arguments.get('month')[0])
+                        .toBe('8');
+                    expect(partition.arguments.has('day'))
+                        .toBeTruthy();
+                    expect(partition.arguments.get('day')[0])
+                        .toBe('15');
+                    expect(partition.arguments.has('deletePartitionNumber'))
+                        .toBeTruthy();
+                    expect(partition.arguments.get('deletePartitionNumber')[0])
+                        .toBe('1');
+                    expect(partition.exhibitsTraits.length)
+                        .toBe(1);
+                    const trait1: CdmTraitReference = partition.exhibitsTraits.allItems[0] as CdmTraitReference;
+                    expect(trait1.fetchObjectDefinitionName())
+                        .toBe(constants.INCREMENTAL_TRAIT_NAME);
+                    expect(trait1.arguments.item(constants.INCREMENTAL_PATTERN_PARAMETER_NAME).getValue())
+                        .toBe('DeletePattern');
+                    expect(trait1.arguments.item('type').getValue())
+                        .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]);
+                    expect(trait1.arguments.item('fullDataPartitionPatternName').getValue())
+                        .toBe('FullDataPattern');
+                    break;
+                case '/IncrementalData/2018/8/15/Deletes/delete2.csv':
+                    totalExpectedPartitionsFound++;                
+                    expect(partition.arguments.size)
+                        .toBe(4);
+                    expect(partition.arguments.get('year')[0])
+                        .toBe('2018');
+                    expect(partition.arguments.get('month')[0])
+                        .toBe('8');
+                    expect(partition.arguments.get('day')[0])
+                        .toBe('15');
+                    expect(partition.arguments.get('deletePartitionNumber')[0])
+                        .toBe('2');
+                    const trait2: CdmTraitReference = partition.exhibitsTraits.allItems[0] as CdmTraitReference;
+                    expect(trait2.fetchObjectDefinitionName())
+                        .toBe(constants.INCREMENTAL_TRAIT_NAME);
+                    expect(trait2.arguments.item(constants.INCREMENTAL_PATTERN_PARAMETER_NAME).getValue())
+                        .toBe('DeletePattern');
+                    expect(trait2.arguments.item('type').getValue())
+                        .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]);
+                    expect(trait2.arguments.item('fullDataPartitionPatternName').getValue())
+                        .toBe('FullDataPattern');                    
+                    break;
+                case "/IncrementalData/2018/8/15/Upserts/upsert1.csv":
+                    totalExpectedPartitionsFound++;                    
+                    expect(partition.arguments.size)
+                        .toBe(4);
+                    expect(partition.arguments.get('year')[0])
+                        .toBe('2018');
+                    expect(partition.arguments.get('month')[0])
+                        .toBe('8');
+                    expect(partition.arguments.get('day')[0])
+                        .toBe('15');
+                    expect(partition.arguments.get('upsertPartitionNumber')[0])
+                        .toBe('1');
+                    expect(partition.exhibitsTraits.length)
+                        .toBe(1);
+                    const trait3: CdmTraitReference = partition.exhibitsTraits.allItems[0] as CdmTraitReference;
+                    expect(trait3.fetchObjectDefinitionName())
+                        .toBe(constants.INCREMENTAL_TRAIT_NAME);
+                    expect(trait3.arguments.item(constants.INCREMENTAL_PATTERN_PARAMETER_NAME).getValue())
+                        .toBe('UpsertPattern');
+                    expect(trait3.arguments.item('type').getValue())
+                        .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]);
+                    break;
+                default:
+                    totalExpectedPartitionsFound++;
+                    break;
+            }
+        }        
+        expect(totalExpectedPartitionsFound)
+            .toBe(4);
+        done();
+    });
+
+    /**
+     * Tests only refreshing delete type incremental partition files.
+     */
+     it('TestIncrementalPatternsRefreshesDeleteIncremental', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestIncrementalPatternsRefreshesDeleteIncremental');
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        // Test without incremental partition added
+        const partitionEntity: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(2);
+
+        var traitRef0 = partitionEntity.incrementalPartitionPatterns.allItems[0].exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+        expect(traitRef0.arguments.item('type').getValue())
+            .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]);
+        var traitRef1 = partitionEntity.incrementalPartitionPatterns.allItems[1].exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+        expect(traitRef1.arguments.item('type').getValue())
+            .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]);
+
+        let timeBeforeLoad: Date = new Date();
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+        let totalExpectedPartitionsFound: number = 0;
+        for (const partition of partitionEntity.incrementalPartitions){
+            if (partition.lastFileStatusCheckTime > timeBeforeLoad){
+                totalExpectedPartitionsFound++;
+                const traitRef = partition.exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+                expect(traitRef.arguments.item('type').getValue())
+                    .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]);
+            }
+        }
+
+        expect(totalExpectedPartitionsFound)
+            .toBe(2);
+
+        //////////////////////////////////////////////////////////////////
+
+        // Test without incremental partition added
+        partitionEntity.incrementalPartitions.clear();
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+
+        const upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, '2019UpsertPartition1', false);
+        upsertIncrementalPartition.lastFileStatusCheckTime = new Date();
+        upsertIncrementalPartition.location = '/IncrementalData/Upserts/upsert1.csv';
+        upsertIncrementalPartition.specializedSchema = 'csv';
+        upsertIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]]]);
+
+        var deleteIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, "2019DeletePartition1", false);
+        deleteIncrementalPartition.lastFileStatusCheckTime = new Date();
+        deleteIncrementalPartition.location = '/IncrementalData/Deletes/delete1.csv';
+        deleteIncrementalPartition.specializedSchema = 'csv';
+        deleteIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]]]);
+
+        partitionEntity.incrementalPartitions.push(upsertIncrementalPartition);
+        partitionEntity.incrementalPartitions.push(deleteIncrementalPartition);
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(2);
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(2);
+
+        totalExpectedPartitionsFound = 0;
+
+        timeBeforeLoad = new Date();
+
+        expect(partitionEntity.incrementalPartitions.allItems[0].lastFileStatusCheckTime <= timeBeforeLoad)
+            .toBeTruthy();
+        expect(partitionEntity.incrementalPartitions.allItems[1].lastFileStatusCheckTime <= timeBeforeLoad)
+            .toBeTruthy();
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+
+        for (const partition of partitionEntity.incrementalPartitions){
+            if (partition.lastFileStatusCheckTime > timeBeforeLoad){
+                totalExpectedPartitionsFound++;
+                const traitRef = partition.exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+                expect(traitRef.arguments.item('type').getValue())
+                    .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]);
+            }
+        }
+
+        expect(totalExpectedPartitionsFound)
+            .toBe(3);
+
+        done();
+    });
+
+    /**
+     * Tests refreshing partition pattern with invalid incremental partition trait and invalid arguments.
+     */
+    it('TestPatternRefreshesWithInvalidTraitAndArgument', async (done) => {
+        // providing invalid enum value of CdmIncrementalPartitionType in string
+        // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+        let expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrEnumConversionFailure ]);
+        let corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        let manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        let partitionEntity: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.allItems[0].isIncremental)
+            .toBeTruthy();
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrEnumConversionFailure, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // providing invalid argument value - supply integer
+        // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitInvalidArgumentValueType ]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.allItems[0].isIncremental)
+            .toBeTruthy();
+        let traitRef = partitionEntity.incrementalPartitionPatterns.allItems[0].exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+        traitRef.arguments.item('type').setValue(123)
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrTraitInvalidArgumentValueType, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // not providing argument
+        // "traitReference": "is.partition.incremental", "arguments": []]
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitArgumentMissing ]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.allItems[0].isIncremental)
+            .toBeTruthy();
+        traitRef = partitionEntity.incrementalPartitionPatterns.allItems[0].exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+        traitRef.arguments.clear()
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrTraitArgumentMissing, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // not trait argument
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrMissingIncrementalPartitionTrait]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.allItems[0].isIncremental)
+            .toBeTruthy();
+        partitionEntity.incrementalPartitionPatterns.allItems[0].exhibitsTraits.clear()
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrMissingIncrementalPartitionTrait, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // data partition pattern in DataPartitionPatterns collection contains incremental partition trait
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrUnexpectedIncrementalPartitionTrait]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.allItems[0].isIncremental)
+            .toBeTruthy();
+        const patternCopy: CdmDataPartitionPatternDefinition = partitionEntity.incrementalPartitionPatterns.allItems[0].copy(undefined);
+        partitionEntity.dataPartitionPatterns.push(patternCopy)
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
+
+        done();
+    });
+
+    /**
+     * Tests refreshing partition with invalid incremental partition trait and invalid arguments.
+     */
+     it('TestPartitionRefreshesWithInvalidTraitAndArgument', async (done) => {
+        // providing invalid enum value of CdmIncrementalPartitionType in string
+        // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
+        let expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrEnumConversionFailure ]);
+        let corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        let manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
+
+        let partitionEntity: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitions.allItems[0].isIncremental)
+            .toBeTruthy();
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrEnumConversionFailure, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // providing invalid argument value - supply integer
+        // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitInvalidArgumentValueType ]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitions.allItems[0].isIncremental)
+            .toBeTruthy();
+        let traitRef = partitionEntity.incrementalPartitions.allItems[0].exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+        traitRef.arguments.item('type').setValue(123)
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrTraitInvalidArgumentValueType, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // not providing argument
+        // "traitReference": "is.partition.incremental", "arguments": []]
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitArgumentMissing ]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitions.allItems[0].isIncremental)
+            .toBeTruthy();
+        traitRef = partitionEntity.incrementalPartitions.allItems[0].exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
+        traitRef.arguments.clear()
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrTraitArgumentMissing, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // not trait argument
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrMissingIncrementalPartitionTrait]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitions.allItems[0].isIncremental)
+            .toBeTruthy();
+        partitionEntity.incrementalPartitions.allItems[0].exhibitsTraits.clear()
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrMissingIncrementalPartitionTrait, true);
+
+        //////////////////////////////////////////////////////////////////
+
+        // data partition in DataPartitions collection contains incremental partition trait
+        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrUnexpectedIncrementalPartitionTrait]);
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
+        manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
+
+        partitionEntity = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitions.allItems[0].isIncremental)
+            .toBeTruthy();
+        const partitionCopy: CdmDataPartitionDefinition = partitionEntity.incrementalPartitions.allItems[0].copy(undefined);
+        partitionEntity.dataPartitions.push(partitionCopy)
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
+
+        done();
+    });
+
+    /**
+     * Tests fileStatusCheckAsync(), fileStatusCheckAsync(partitionFileStatusCheckType.Full), and fileStatusCheckAsync(partitionFileStatusCheckType.None).
+     */
+    it('TestPartitionFileRefreshTypeFullOrNone', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionFileRefreshTypeFullOrNone');
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
+
+        // Test manifest.fileStatusCheckAsync();
+        const partitionEntity: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.dataPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+
+        await manifest.fileStatusCheckAsync();
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(1);
+        expect(partitionEntity.dataPartitions.allItems[0].isIncremental)
+            .toBeFalsy();
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);            
+
+        //////////////////////////////////////////////////////////////////
+
+        // Test manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full);
+        partitionEntity.dataPartitions.clear();
+        partitionEntity.incrementalPartitions.clear();
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.dataPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full);
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(1);
+        expect(partitionEntity.dataPartitions.allItems[0].isIncremental)
+            .toBeFalsy();
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+
+        //////////////////////////////////////////////////////////////////
+
+        // Test manifest.fileStatusCheckAsync(partitionFileStatusCheckType.None);
+        partitionEntity.dataPartitions.clear();
+        partitionEntity.incrementalPartitions.clear();
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.dataPartitionPatterns.length)
+            .toBe(1);
+        expect(partitionEntity.incrementalPartitionPatterns.length)
+            .toBe(1);
+        const timeBeforeLoad: Date = new Date();
+        expect(partitionEntity.lastFileStatusCheckTime <= timeBeforeLoad)
+            .toBe(true);
+        
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.None);
+
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.incrementalPartitions.length)
+            .toBe(0);
+        expect(partitionEntity.lastFileStatusCheckTime > timeBeforeLoad)
+            .toBe(true);
+        
         done();
     });
 

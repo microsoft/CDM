@@ -20,6 +20,7 @@ import {
     Logger,
     resolveOptions,
     StorageAdapterBase,
+    StringUtils
 } from '../internal';
 import { DocumentPersistence } from './CdmFolder/DocumentPersistence';
 import { IPersistence } from './Common/IPersistence';
@@ -133,6 +134,11 @@ export class PersistenceLayer {
                 // log message used by navigator, do not change or remove
                 Logger.debug(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, `request file: ${docPath}`);
                 jsonData = await adapter.readAsync(docPath);
+                if (StringUtils.isBlankByCdmStandard(jsonData)) {
+                    let errorMsg: string = 'Json data is null or empty.';
+                    Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistFileReadFailure, docPath, folder.namespace, errorMsg);
+                    return undefined;
+                }
                 // log message used by navigator, do not change or remove
                 Logger.debug(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, `received file: ${docPath}`);
             } else {
@@ -158,7 +164,7 @@ export class PersistenceLayer {
             Logger.warning(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.WarnPersistFileModTimeFailure, e);
         }
 
-        if (!docName) {
+        if (StringUtils.isBlankByCdmStandard(docName)) {
             Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistNullDocName);
             return undefined;
         }
@@ -242,7 +248,7 @@ export class PersistenceLayer {
         saveReferenced: boolean): Promise<boolean> {
         // find out if the storage adapter is able to write.
         let ns: string = doc.namespace;
-        if (ns === undefined) {
+        if (StringUtils.isBlankByCdmStandard(ns)) {
             ns = this.corpus.storage.defaultNamespace;
         }
         const adapter: StorageAdapterBase = this.corpus.storage.fetchAdapter(ns);
@@ -253,7 +259,7 @@ export class PersistenceLayer {
             Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistAdapterWriteFailure, ns);
             return false;
         } else {
-            if (!newName) {
+            if (StringUtils.isBlankByCdmStandard(newName)) {
                 Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistNullDocName);
                 return false;
             }

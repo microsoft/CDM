@@ -5,6 +5,7 @@ from typing import Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.persistence import PersistenceLayer
+from cdm.utilities.string_utils import StringUtils
 
 from . import utils
 from .types import Argument, CdmJsonType
@@ -48,7 +49,7 @@ class ArgumentPersistence:
                 value = instance.value
 
         # Skip the argument if just a value
-        if not instance.name:
+        if StringUtils.is_blank_by_cdm_standard(instance.name):
             return value
 
         arg = Argument()

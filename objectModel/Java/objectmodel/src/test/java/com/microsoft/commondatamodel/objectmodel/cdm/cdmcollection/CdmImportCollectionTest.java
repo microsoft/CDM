@@ -13,9 +13,8 @@ import org.testng.annotations.Test;
 
 public class CdmImportCollectionTest {
   @Test
-  public void testCdmImportCollectionAdd() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmImportCollectionAdd() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
     Assert.assertFalse(document.isDirty());
     final CdmImport cdmImport = new CdmImport(document.getCtx(), "corpusPath", "moniker");
@@ -31,9 +30,8 @@ public class CdmImportCollectionTest {
   }
 
   @Test
-  public void testCdmImportCollectionAddCorpusPath() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmImportCollectionAddCorpusPath() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
     final CdmImport cdmImport = document.getImports().add("corpusPath");
 
@@ -46,9 +44,8 @@ public class CdmImportCollectionTest {
   }
 
   @Test
-  public void testCdmImportCollectionAddCorpusPathAndMoniker() {
-    final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+  public void testCdmImportCollectionAddCorpusPathAndMoniker() throws InterruptedException {
+    final CdmManifestDefinition document = CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
     final CdmImport cdmImport = document.getImports().add("corpusPath", "moniker");
 
@@ -61,9 +58,9 @@ public class CdmImportCollectionTest {
   }
 
   @Test
-  public void testCdmImportCollectionAddRange() {
+  public void testCdmImportCollectionAddRange() throws InterruptedException {
     final CdmManifestDefinition document =
-        CdmCollectionHelperFunctions.generateManifest("C:/Nothing");
+        CdmCollectionHelperFunctions.generateManifest();
     document.setDirty(false);
     final List<CdmImport> importList =
         new ArrayList<>(Arrays.asList(

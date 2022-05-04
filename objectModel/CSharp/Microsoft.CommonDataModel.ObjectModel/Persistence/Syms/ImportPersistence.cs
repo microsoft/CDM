@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
 
             CdmImport import = ctx.Corpus.MakeObject<CdmImport>(CdmObjectType.Import);
             string corpusPath = obj.CorpusPath;
-            if (string.IsNullOrEmpty(corpusPath))
+            if (StringUtils.IsBlankByCdmStandard(corpusPath))
             {
                 corpusPath = obj.URI;
             }
@@ -32,7 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         public static Import ToData(CdmImport instance, ResolveOptions resOpt, CopyOptions options)
         {
             return new Import {
-                Moniker = string.IsNullOrEmpty(instance.Moniker) ? null: instance.Moniker,
+                Moniker = StringUtils.IsBlankByCdmStandard(instance.Moniker) ? null: instance.Moniker,
                 CorpusPath = instance.CorpusPath
             };
         }

@@ -21,7 +21,8 @@ import {
     CdmTraitDefinition,
     CdmTraitReference,
     CdmTraitReferenceBase,
-    Logger
+    Logger,
+    StringUtils
 } from '../../internal';
 import { isCdmTraitDefinition } from '../../Utilities/cdmObjectTypeGuards';
 
@@ -305,7 +306,7 @@ async function fetchDefDoc(ctx: CdmCorpusContext, fileName: string): Promise<Cdm
  * @returns Whether the traitName has the mark of an extension.
  */
 function traitNameHasExtensionMark(traitName: string): boolean {
-    if (!traitName) {
+    if (StringUtils.isBlankByCdmStandard(traitName)) {
         return false;
     }
 

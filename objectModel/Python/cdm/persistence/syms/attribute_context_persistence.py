@@ -7,6 +7,7 @@ from cdm.enums import CdmObjectType, CdmAttributeContextType
 from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext, CdmCollection, CdmTraitGroupReference
 from cdm.persistence import PersistenceLayer
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
+from cdm.utilities.string_utils import StringUtils
 
 from . import utils
 from .attribute_context_reference_persistence import AttributeContextReferencePersistence
@@ -93,7 +94,7 @@ class AttributeContextPersistence:
         if data.get('parent'):
             attribute_context.parent = AttributeContextReferencePersistence.from_data(ctx, data.get('parent'))
 
-        if data.get('explanation'):
+        if not StringUtils.is_blank_by_cdm_standard(data.get('explanation')):
             attribute_context.explanation = data.get('explanation')
 
         if data.get('definition'):

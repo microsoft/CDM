@@ -32,4 +32,16 @@ public interface CdmEntityDeclarationDefinition extends CdmObjectDefinition, Cdm
    * @return CdmCollection of CdmDataPartitionPatternDefinition
    */
   CdmCollection<CdmDataPartitionPatternDefinition> getDataPartitionPatterns();
+
+  /**
+   * Gets the incremental partitions, implemented only by CdmLocalEntityDeclarationDefinition.
+   * @return CdmCollection of CdmDataPartitionDefinition
+   */
+  CdmCollection<CdmDataPartitionDefinition> getIncrementalPartitions();
+
+  /**
+   * Gets the incremental partition patterns, implemented only by CdmLocalEntityDeclarationDefinition.
+   * @return CdmCollection of CdmDataPartitionPatternDefinition
+   */
+  CdmCollection<CdmDataPartitionPatternDefinition> getIncrementalPartitionPatterns();
 }

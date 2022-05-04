@@ -32,5 +32,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder.Argu
             var argumentToData = ArgumentPersistence.ToData(argument, null, null);
             Assert.AreEqual(0, argumentToData);
         }
+
+        /// <summary>
+        /// Test loading an argument with blank name & value 0 (number).
+        /// </summary>
+        [TestMethod]
+        public void TestLoadingBlankName()
+        {
+            var corpus = new CdmCorpusDefinition();
+
+            var argumentData = new JObject()
+            {
+                ["name"] = " ",
+                ["value"] = 0
+            };
+
+            var argument = ArgumentPersistence.FromData(corpus.Ctx, argumentData);
+            Assert.AreEqual(0, argument.Value);
+
+            var argumentToData = ArgumentPersistence.ToData(argument, null, null);
+            Assert.AreEqual(0, argumentToData);
+        }
     }
 }

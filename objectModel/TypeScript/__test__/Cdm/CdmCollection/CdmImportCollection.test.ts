@@ -9,7 +9,7 @@ import {generateManifest} from './CdmCollectionHelperFunctions';
 
 describe('Cdm/CdmCollection/CdmImportCollection', () => {
     it('TestImportCollectionAdd', () => {
-        const document: CdmDocumentDefinition = generateManifest('C:\\Nothing');
+        const document: CdmDocumentDefinition = generateManifest();
         document.isDirty = false;
         expect(document.isDirty)
             .toEqual(false);
@@ -33,7 +33,7 @@ describe('Cdm/CdmCollection/CdmImportCollection', () => {
     });
 
     it('TestCdmImportCollectionAddCorpusPath', () => {
-        const document: CdmDocumentDefinition = generateManifest('C:\\Nothing');
+        const document: CdmDocumentDefinition = generateManifest();
         document.isDirty = false;
         const imp: CdmImport = document.imports.push('corpusPath');
 
@@ -52,7 +52,7 @@ describe('Cdm/CdmCollection/CdmImportCollection', () => {
     });
 
     it ('TestCdmImportCollectionAddCorpusPathAndMoniker', () => {
-        const document: CdmDocumentDefinition = generateManifest('C:\\Nothing');
+        const document: CdmDocumentDefinition = generateManifest();
         document.isDirty = false;
         const imp: CdmImport = document.imports.push('corpusPath', 'moniker');
 
@@ -71,7 +71,7 @@ describe('Cdm/CdmCollection/CdmImportCollection', () => {
     });
 
     it ('TestCdmImportCollectionAddRange', () => {
-        const document: CdmDocumentDefinition = generateManifest('C:\\Nothing');
+        const document: CdmDocumentDefinition = generateManifest();
         document.isDirty = false;
         const importList: CdmImport[] = [
             new CdmImport(document.ctx, 'corpusPath1', 'moniker1'),

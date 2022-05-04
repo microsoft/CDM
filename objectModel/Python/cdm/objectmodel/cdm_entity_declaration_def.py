@@ -30,3 +30,13 @@ class CdmEntityDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
     @abc.abstractmethod
     def data_partition_patterns(self) -> Optional['CdmCollection[CdmDataPartitionPatternDefinition]']:
         raise NotImplementedError()
+
+    @property
+    @abc.abstractmethod
+    def incremental_partitions(self) -> Optional['CdmCollection[CdmDataPartitionDefinition]']:
+        raise NotImplementedError()
+
+    @property
+    @abc.abstractmethod
+    def incremental_partition_patterns(self) -> Optional['CdmCollection[CdmDataPartitionPatternDefinition]']:
+        raise NotImplementedError()

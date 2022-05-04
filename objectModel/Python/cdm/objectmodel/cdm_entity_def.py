@@ -7,7 +7,7 @@ from typing import Any, cast, Dict, Iterable, List, Optional, Set, Union, TYPE_C
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.persistence import PersistenceLayer
 from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSet
-from cdm.utilities import AttributeContextParameters, logger, ResolveOptions
+from cdm.utilities import AttributeContextParameters, logger, ResolveOptions, Constants
 from cdm.enums import CdmLogCode
 
 from .cdm_argument_def import CdmArgumentDefinition
@@ -390,8 +390,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             orig_doc = self.ctx.corpus.storage.create_relative_corpus_path(orig_doc, doc_res)  # just in case we missed the prefix
             doc_res.imports.append(orig_doc, "resolvedFrom")
 
-            if self.in_document.imports.item('cdm:/foundations.cdm.json') is not None:
-                doc_res.imports.append('cdm:/foundations.cdm.json')
+            if self.in_document.imports.item(Constants._FOUNDATIONS_CORPUS_PATH) is not None:
+                doc_res.imports.append(Constants._FOUNDATIONS_CORPUS_PATH)
 
             doc_res.document_version = self.in_document.document_version
 

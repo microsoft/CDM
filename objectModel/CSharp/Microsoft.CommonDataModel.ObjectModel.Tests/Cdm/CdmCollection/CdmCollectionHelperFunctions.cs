@@ -14,19 +14,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         /// <summary>
         /// Creates a manifest used for the tests.
         /// </summary>
-        /// <param name="localRootPath">A string used as root path for "local" namespace.</param>
         /// <returns>Created corpus.</returns>
-        public static CdmManifestDefinition GenerateManifest(string localRootPath)
+        public static CdmManifestDefinition GenerateManifest()
         {
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.Storage.DefaultNamespace = "local";
-
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(localRootPath));
-
-            // Add CDM namespace.
-            cdmCorpus.Storage.Mount("cdm", new LocalAdapter(localRootPath));
+            var cdmCorpus = TestHelper.GetLocalCorpus(null, nameof(GenerateManifest), noInputAndOutputFolder: true);
 
             var manifest = new CdmManifestDefinition(cdmCorpus.Ctx, "manifest");
             manifest.FolderPath = "/";

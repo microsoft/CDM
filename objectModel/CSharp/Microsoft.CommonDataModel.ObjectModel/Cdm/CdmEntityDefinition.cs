@@ -659,9 +659,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 origDoc = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.Imports.Add(origDoc, "resolvedFrom");
 
-                if (this.InDocument.Imports.Item("cdm:/foundations.cdm.json") != null)
+                if (this.InDocument.Imports.Item(Constants.FoundationsCorpusPath) != null)
                 {
-                    docRes.Imports.Add("cdm:/foundations.cdm.json");
+                    docRes.Imports.Add(Constants.FoundationsCorpusPath);
                 }
 
                 docRes.DocumentVersion = this.InDocument.DocumentVersion;

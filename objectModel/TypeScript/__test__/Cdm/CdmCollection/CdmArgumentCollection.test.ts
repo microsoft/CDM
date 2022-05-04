@@ -80,7 +80,7 @@ describe('Cdm/CdmCollection/CdmArgumentCollection', () => {
 
         argList.push(argumentDefinition);
 
-        const valOfArg2: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const valOfArg2: CdmManifestDefinition = generateManifest();
         argumentDefinition = new CdmArgumentDefinition(trait.ctx, undefined);
         argumentDefinition.name = 'arg2';
         argumentDefinition.value = valOfArg2;
@@ -154,7 +154,7 @@ describe('Cdm/CdmCollection/CdmArgumentCollection', () => {
     });
 
     it('TestCdmCollectionAddPopulatesInDocumentWithVisit', () => {
-        const manifest: CdmManifestDefinition = generateManifest('C:/nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
         const entityReference: CdmLocalEntityDeclarationDefinition = new CdmLocalEntityDeclarationDefinition(manifest.ctx, 'entityName');
         const trait: CdmTraitReferenceBase = entityReference.exhibitsTraits.push('theTrait');
         const argument: CdmArgumentDefinition = (trait as CdmTraitReference).arguments.push('GreatArgumentName', 'GreatValue');
@@ -171,7 +171,7 @@ describe('Cdm/CdmCollection/CdmArgumentCollection', () => {
     });
 
     function generateTrait(): CdmTraitReference {
-        const manifest: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const manifest: CdmManifestDefinition = generateManifest();
 
         return new CdmTraitReference(manifest.ctx, 'traitName', false, false);
     }

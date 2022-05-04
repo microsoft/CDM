@@ -14,6 +14,10 @@ export class StringUtils {
         return s === null || s === undefined || s.trim() === '';
     }
 
+    public static isBlankByCdmStandard(s: string) : boolean {
+        return StringUtils.isNullOrWhiteSpace(s);
+    }
+
     /**
      * Capitalizes first letter of the given string.
      * @param str The source string to be capitalized.</param>

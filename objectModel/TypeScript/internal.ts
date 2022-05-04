@@ -146,3 +146,7 @@ export * from './ResolvedModel/Projections/SearchResult';
 export * from './ResolvedModel/Projections/SearchStructure';
 export * from './ResolvedModel/Projections/ProjectionAttributeContextTreeBuilder';
 export * from './Utilities/Logging/EventList';
+export * from './Enums/partitionFileStatusCheckType';
+export * from './Enums/cdmIncrementalPartitionType';
+export * from './Utilities/constants';
+

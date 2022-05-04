@@ -6,7 +6,8 @@ import {
     CdmImport,
     cdmObjectType,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    StringUtils
 } from '../../internal';
 import { Import } from './types';
 
@@ -14,7 +15,7 @@ export class ImportPersistence {
     public static fromData(ctx: CdmCorpusContext, object: Import): CdmImport {
         const imp: CdmImport = ctx.corpus.MakeObject(cdmObjectType.import);
         let corpusPath: string = object.corpusPath;
-        if (!corpusPath) {
+        if (StringUtils.isBlankByCdmStandard(corpusPath)) {
             corpusPath = object.uri;
         }
 
@@ -28,7 +29,7 @@ export class ImportPersistence {
             corpusPath: instance.corpusPath
         };
 
-        if (instance.moniker) {
+        if (!StringUtils.isBlankByCdmStandard(instance.moniker)) {
             result.moniker = instance.moniker;
         }
 

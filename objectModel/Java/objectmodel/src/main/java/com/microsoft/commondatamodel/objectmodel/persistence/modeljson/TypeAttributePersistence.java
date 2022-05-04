@@ -29,7 +29,7 @@ public class TypeAttributePersistence {
     final CdmTypeAttributeDefinition attribute = ctx.getCorpus().makeObject(CdmObjectType.TypeAttributeDef, obj.getName());
     // Do a conversion between CDM data format and model.json data type.
     attribute.updateDataFormat(dataTypeFromData(obj.getDataType()));
-    if (!StringUtils.isNullOrTrimEmpty(obj.getDescription())) {
+    if (!StringUtils.isBlankByCdmStandard(obj.getDescription())) {
       attribute.updateDescription(obj.getDescription());
     }
 

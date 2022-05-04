@@ -21,16 +21,18 @@ export function arrayCopyData<T>(
     | CdmDocumentCollection |
     CdmDefinitionCollection | CdmEntityCollection | CdmTraitCollection
      | CdmFolderCollection | CdmImportCollection | CdmObject[],
-    options: copyOptions): T[] {
+    options: copyOptions,
+    condition?: (obj: CdmObject) => boolean): T[] {
     if (!source || !source.length) {
         return undefined;
     }
     const casted: T[] = [];
     const l: number = source.length;
     for (let i: number = 0; i < l; i++) {
-        const element: CdmObject = (source as CdmCollection<CdmObject>).allItems ?
-         (source as CdmCollection<CdmObject>).allItems[i] : source[i];
-        casted.push(element ? element.copyData(resOpt, options) as unknown as T : undefined);
+        const element: CdmObject = (source as CdmCollection<CdmObject>).allItems ? (source as CdmCollection<CdmObject>).allItems[i] : source[i];
+        if (condition === undefined || (condition !== undefined && condition(element))) {
+            casted.push(element ? element.copyData(resOpt, options) as unknown as T : undefined);
+        }
     }
 
     return casted;

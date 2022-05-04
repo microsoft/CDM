@@ -362,7 +362,7 @@ final class ExtensionHelper {
    * @return Whether the trait is an extension.
    */
   private static boolean traitNameHasExtensionMark(final String traitName) {
-    if (StringUtils.isNullOrEmpty(traitName)) {
+    if (StringUtils.isBlankByCdmStandard(traitName)) {
       return false;
     }
 

@@ -4,9 +4,10 @@
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
+from cdm.utilities.string_utils import StringUtils
 from typing import List
 from . import utils
-from cdm.persistence.syms.models import ColumnRelationshipInformation, DataColumn, DataSource, DatabaseEntity, DatabaseProperties, FormatInfo, Namespace, PartitionInfo, PartitionInfoNamespace, PartitionInfoProperties, PublishStatus, RelationshipEntity, RelationshipProperties, RelationshipType, SASEntityType, ScalarTypeInfo, SchemaEntity, StorageDescriptor, TableEntity, TableNamespace, TablePartitioning, TableProperties, TypeInfo
+from cdm.persistence.syms.models import ColumnRelationshipInformation, Namespace, PublishStatus, RelationshipEntity, RelationshipProperties, RelationshipType, SASEntityType
 
 
 class E2ERelationshipPersistence:
@@ -61,7 +62,7 @@ class E2ERelationshipPersistence:
         column_relationship_informations = column_relationship_informations)
 
         relationship_name = instance.name
-        if instance.name == None or instance.name == '':
+        if StringUtils.is_blank_by_cdm_standard(instance.name):
             relationship_name = "{}_{}_relationship".format(relationship_properties.from_table_name, relationship_properties.to_table_name)
         
         rel = RelationshipEntity(name=relationship_name, properties=relationship_properties, type=SASEntityType.relationship)

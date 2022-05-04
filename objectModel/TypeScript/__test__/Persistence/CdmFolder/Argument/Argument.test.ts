@@ -26,4 +26,23 @@ describe('Persistence.CdmFolder.Argument', () => {
     expect(argumentToData)
       .toEqual(0);
   });
+
+   /**
+   * Test loading an argument with blank name & value 0 (number).
+   */
+    it('TestLoadingZeroValue', () => {
+      const corpus = new CdmCorpusDefinition();
+      const argumentData: Argument = {
+        'name': ' ',
+        'value': 0
+      };
+  
+      var argument = CdmFolder.ArgumentPersistence.fromData(corpus.ctx, argumentData);
+      expect(argument.value)
+        .toEqual(0);
+  
+      var argumentToData = CdmFolder.ArgumentPersistence.toData(argument, null, null);
+      expect(argumentToData)
+        .toEqual(0);
+    });
 });

@@ -14,7 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 public class E2ERelationshipPersistence {
   public static CdmE2ERelationship fromData(final CdmCorpusContext ctx, final E2ERelationship dataObj) {
     final CdmE2ERelationship relationship = ctx.getCorpus().makeObject(CdmObjectType.E2ERelationshipDef);
-    if (!StringUtils.isNullOrTrimEmpty(dataObj.getName())) {
+    if (!StringUtils.isBlankByCdmStandard(dataObj.getName())) {
       relationship.setName(dataObj.getName());
     }
     relationship.setFromEntity(dataObj.getFromEntity());
@@ -29,7 +29,7 @@ public class E2ERelationshipPersistence {
   public static E2ERelationship toData(final CdmE2ERelationship instance, final ResolveOptions resOpt,
                                        final CopyOptions options) {
     final E2ERelationship e2ERelationship = new E2ERelationship();
-    if (!StringUtils.isNullOrTrimEmpty(instance.getName())) {
+    if (!StringUtils.isBlankByCdmStandard(instance.getName())) {
       e2ERelationship.setName(instance.getName());
     }
     e2ERelationship.setFromEntity(instance.getFromEntity());

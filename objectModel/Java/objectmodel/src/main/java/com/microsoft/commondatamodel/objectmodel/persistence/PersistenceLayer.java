@@ -164,6 +164,11 @@ public class PersistenceLayer {
                     // log message used by navigator, do not change or remove
                     Logger.debug(this.ctx, TAG, "loadDocumentFromPathAsync", docPath, Logger.format("request file: {0}", docPath));
                     jsonData = adapter.readAsync(docPath).get();
+                    if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isBlankByCdmStandard(jsonData)) {
+                        final String errorMsg = "Json Data is null or empty.";
+                        Logger.error(ctx, TAG, "loadDocumentFromPathAsync", docPath, CdmLogCode.ErrPersistFileReadFailure, docPath, folder.getNamespace(), errorMsg);
+                        return null;
+                    }
                     // log message used by navigator, do not change or remove
                     Logger.debug(this.ctx, TAG, "loadDocumentFromPathAsync", docPath, Logger.format("received file: {0}", docPath));
                 } else {
@@ -188,7 +193,7 @@ public class PersistenceLayer {
                 Logger.error(ctx, TAG, "loadDocumentFromPathAsync", docPath, CdmLogCode.WarnPersistFileModTimeFailure, e.getMessage());
             }
 
-            if (StringUtils.isEmpty(docName)) {
+            if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isBlankByCdmStandard(docName)) {
                 Logger.error(ctx, TAG, "loadDocumentFromPathAsync", docPath, CdmLogCode.ErrPersistNullDocName);
                 return null;
             }
@@ -292,7 +297,7 @@ public class PersistenceLayer {
         // Find out if the storage adapter is able to write.
         return CompletableFuture.supplyAsync(() -> {
             String ns = doc.getNamespace();
-            if (StringUtils.isEmpty(ns)) {
+            if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isBlankByCdmStandard(ns)) {
                 ns = this.corpus.getStorage().getDefaultNamespace();
             }
             final StorageAdapterBase adapter = this.corpus.getStorage().fetchAdapter(ns);
@@ -304,7 +309,7 @@ public class PersistenceLayer {
                 Logger.error(ctx, TAG, "saveDocumentAsAsync", doc.getAtCorpusPath(), CdmLogCode.ErrPersistAdapterWriteFailure, ns);
                 return false;
             } else {
-                if (StringUtils.isEmpty(newName)) {
+                if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isBlankByCdmStandard(newName)) {
                     Logger.error(ctx, TAG, "saveDocumentAsAsync", doc.getAtCorpusPath(), CdmLogCode.ErrPersistNullDocName);
                     return false;
                 }

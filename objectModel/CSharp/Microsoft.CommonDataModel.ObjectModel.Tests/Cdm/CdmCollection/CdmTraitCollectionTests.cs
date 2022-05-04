@@ -5,7 +5,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
     using System.Collections.Generic;
 
     [TestClass]
@@ -14,7 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmTraitCollectionAdd()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitDefinition(manifest.Ctx, "TraitName", null);
             var otherTrait = new CdmTraitDefinition(manifest.Ctx, "Name of other Trait", null);
@@ -22,13 +24,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
 
             var addedTrait = manifest.ExhibitsTraits.Add(trait);
             var addedOtherTrait = manifest.ExhibitsTraits.Add(otherTrait);
+            var listOfArgs = new List<Tuple<string, dynamic>>()
+            {
+                new Tuple<string, dynamic>(Constants.IncrementalPatternParameterName, "test"),
+                new Tuple<string, dynamic>("fullDataPartitionPatternName", "name")
+            };
+            var addedIncrementalTrait = manifest.ExhibitsTraits.Add(Constants.IncrementalTraitName, listOfArgs);
 
             Assert.IsNull(manifest.TraitCache);
-            Assert.AreEqual(2, manifest.ExhibitsTraits.Count);
+            Assert.AreEqual(3, manifest.ExhibitsTraits.Count);
             Assert.AreEqual(trait, manifest.ExhibitsTraits[0].ExplicitReference);
             Assert.AreEqual(otherTrait, manifest.ExhibitsTraits[1].ExplicitReference);
             Assert.AreEqual(addedTrait, manifest.ExhibitsTraits[0]);
             Assert.AreEqual(addedOtherTrait, manifest.ExhibitsTraits[1]);
+            Assert.AreEqual(addedIncrementalTrait, manifest.ExhibitsTraits[2]);
+            Assert.AreEqual(2, (manifest.ExhibitsTraits[2] as CdmTraitReference).Arguments.Count);
+            Assert.AreEqual("test" , (manifest.ExhibitsTraits[2] as CdmTraitReference).Arguments.FetchValue(Constants.IncrementalPatternParameterName));
+            Assert.AreEqual("name" , (manifest.ExhibitsTraits[2] as CdmTraitReference).Arguments.FetchValue("fullDataPartitionPatternName"));
 
             Assert.AreEqual(manifest, manifest.ExhibitsTraits[0].Owner);
         }
@@ -36,7 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void TestCdmTraitCollectionInsert()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitReference(manifest.Ctx, "TraitName", false, false);
             var otherTrait = new CdmTraitReference(manifest.Ctx, "Name of other Trait", false, false);
@@ -57,7 +69,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionAddRange()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitDefinition(manifest.Ctx, "TraitName", null);
             var otherTrait = new CdmTraitDefinition(manifest.Ctx, "Name of other Trait", null);
@@ -76,7 +88,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionRemove()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitDefinition(manifest.Ctx, "TraitName", null);
             var otherTrait = new CdmTraitDefinition(manifest.Ctx, "Name of other Trait", null);
@@ -112,7 +124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionRemoveAt()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitDefinition(manifest.Ctx, "TraitName", null);
             var otherTrait = new CdmTraitDefinition(manifest.Ctx, "Name of other Trait", null);
@@ -133,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionIndexOf()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitDefinition(manifest.Ctx, "TraitName", null);
             var otherTrait = new CdmTraitDefinition(manifest.Ctx, "Name of other Trait", null);
@@ -160,7 +172,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionRemoveOnlyFromProperty()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitReference(manifest.Ctx, "TraitName", false, false);
             var otherTrait = new CdmTraitReference(manifest.Ctx, "Name of other Trait", false, false);
@@ -187,7 +199,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionRemovePrioritizeFromProperty()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitReference(manifest.Ctx, "TraitName", false, false);
             var otherTrait = new CdmTraitReference(manifest.Ctx, "Name of other Trait", false, false);
@@ -214,7 +226,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionRemoveTraitDefinitionPrioritizeFromProperty()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitDefinition(manifest.Ctx, "TraitName", null);
             var otherTrait = new CdmTraitDefinition(manifest.Ctx, "Name of other Trait", null);
@@ -240,7 +252,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionIndexOfOnlyFromProperty()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             var trait = new CdmTraitDefinition(manifest.Ctx, "TraitName", null);
             var otherTrait = new CdmTraitDefinition(manifest.Ctx, "Name of other Trait", null);
@@ -270,7 +282,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
         [TestMethod]
         public void CdmTraitCollectionClear()
         {
-            var manifest = CdmCollectionHelperFunctions.GenerateManifest("C:\\Root\\Path");
+            var manifest = CdmCollectionHelperFunctions.GenerateManifest();
 
             new CdmTraitReference(manifest.Ctx, "TraitName", false, false);
             new CdmTraitReference(manifest.Ctx, "Name of other Trait", false, false);

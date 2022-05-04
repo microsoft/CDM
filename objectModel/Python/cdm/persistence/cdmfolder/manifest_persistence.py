@@ -3,10 +3,11 @@
 
 import dateutil.parser
 
-from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmManifestDefinition
+from cdm.enums import CdmObjectType, CdmLogCode
+from cdm.objectmodel import CdmCorpusContext, CdmManifestDefinition, CdmLocalEntityDeclarationDefinition
 from cdm.persistence import PersistenceLayer
-from cdm.utilities import logger, CopyOptions, ResolveOptions, time_utils, copy_data_utils
+from cdm.utilities import logger, CopyOptions, ResolveOptions, time_utils, copy_data_utils, Constants
+from cdm.utilities.string_utils import StringUtils
 
 from . import utils
 from .attribute_group_persistence import AttributeGroupPersistence
@@ -41,10 +42,10 @@ class ManifestPersistence:
         if data is None:
             return None
 
-        if data.get('manifestName'):
+        if not StringUtils.is_blank_by_cdm_standard(data.manifestName):
             manifest_name = data.manifestName
-        elif data.get('folioName'):
-            manifest_name = data.folioName
+        elif not StringUtils.is_blank_by_cdm_standard(data.get('folioName')):
+            manifest_name = data.get('folioName')
         elif name:
             manifest_name = name.replace(PersistenceLayer.MANIFEST_EXTENSION, '').replace(PersistenceLayer.FOLIO_EXTENSION, '')
         else:
@@ -56,20 +57,21 @@ class ManifestPersistence:
         manifest._namespace = namespace
         manifest.explanation = data.get('explanation')
 
-        if data.schema:
+        if not StringUtils.is_blank_by_cdm_standard(data.schema):
             manifest.schema = data.schema
 
         # support old model syntax
-        if data.get('schemaVersion'):
-            manifest.json_schema_semantic_version = data.schema_version
+        if not StringUtils.is_blank_by_cdm_standard(data.schemaVersion):
+            manifest.json_schema_semantic_version = data.schemaVersion
 
-        manifest.json_schema_semantic_version = data.get('jsonSchemaSemanticVersion')
+        if not StringUtils.is_blank_by_cdm_standard(data.jsonSchemaSemanticVersion):
+            manifest.json_schema_semantic_version = data.jsonSchemaSemanticVersion
 
         if manifest.json_schema_semantic_version != '0.9.0' and manifest.json_schema_semantic_version != '1.0.0':
             # TODO: validate that this is a version we can understand with the OM
             pass
 
-        if data.get('documentVersion'):
+        if not StringUtils.is_blank_by_cdm_standard(data.documentVersion):
             manifest.document_version = data.documentVersion
 
         utils.add_list_to_cdm_collection(manifest.exhibits_traits,
@@ -104,7 +106,7 @@ class ManifestPersistence:
             manifest.last_child_file_modified_time = dateutil.parser.parse(data.lastChildFileModifiedTime)
 
         if data.get('entities'):
-            full_path = '{}:{}'.format(namespace, path) if namespace else path
+            full_path = '{}:{}'.format(namespace, path) if not StringUtils.is_blank_by_cdm_standard(namespace) else path
             for entity_obj in data.entities:
                 if entity_obj.get('type') == 'LocalEntity' or 'entitySchema' in entity_obj:
                     manifest.entities.append(LocalEntityDeclarationPersistence.from_data(ctx, full_path, entity_obj))
@@ -113,6 +115,9 @@ class ManifestPersistence:
                 else:
                     logger.error(ctx, _TAG, ManifestPersistence.from_object.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_DECLARATION_MISSING, entity_obj.get('entityName'))
                     return None
+
+            # Checks if incremental trait is needed from foundations.cdm.json
+            ManifestPersistence._import_foundations_if_incremental_partition_trait_exist(manifest)
 
         if data.get('relationships'):
             for relationship in data.relationships:
@@ -132,6 +137,8 @@ class ManifestPersistence:
 
     @staticmethod
     def to_data(instance: CdmManifestDefinition, res_opt: ResolveOptions, options: CopyOptions) -> ManifestContent:
+        # Checks if incremental trait is needed from foundations.cdm.json
+        ManifestPersistence._import_foundations_if_incremental_partition_trait_exist(instance)
         manifest = ManifestContent()
 
         manifest.manifestName = instance.manifest_name
@@ -149,3 +156,19 @@ class ManifestPersistence:
         manifest.relationships = copy_data_utils._array_copy_data(res_opt, instance.relationships, options)
 
         return manifest
+
+    @staticmethod
+    def _import_foundations_if_incremental_partition_trait_exist(manifest: CdmManifestDefinition) -> None:
+        """
+        Checks if incremental trait is needed from foundations.cdm.json
+        """
+        if manifest.entities == None:
+            return
+
+        for ent in manifest.entities:
+            if isinstance(ent, CdmLocalEntityDeclarationDefinition):
+                if ent.incremental_partitions and len(ent.incremental_partitions) > 0 or ent.incremental_partition_patterns and len(ent.incremental_partition_patterns) > 0:
+                    if manifest.imports.item(Constants._FOUNDATIONS_CORPUS_PATH, check_moniker=False) is None:
+                        manifest.imports.append(Constants._FOUNDATIONS_CORPUS_PATH)
+                        # Find one is enough
+                        break

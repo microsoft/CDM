@@ -56,9 +56,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 }
             }
 
-            if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == "cdm:/foundations.cdm.json"))
+            if (!manifest.Imports.Any((CdmImport importPresent) => importPresent.CorpusPath == Constants.FoundationsCorpusPath))
             {
-                manifest.Imports.Add("cdm:/foundations.cdm.json");
+                manifest.Imports.Add(Constants.FoundationsCorpusPath);
             }
 
             manifest.Explanation = obj.Description;
@@ -66,7 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             manifest.LastChildFileModifiedTime = obj.LastChildFileModifiedTime;
             manifest.LastFileStatusCheckTime = obj.LastFileStatusCheckTime;
 
-            if (!string.IsNullOrEmpty(obj.DocumentVersion))
+            if (!StringUtils.IsBlankByCdmStandard(obj.DocumentVersion))
             {
                 manifest.DocumentVersion = obj.DocumentVersion;
             }
@@ -327,7 +327,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                                );
 
                             var location = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(entity.EntityPath);
-                            if (string.IsNullOrEmpty(location))
+                            if (StringUtils.IsBlankByCdmStandard(location))
                             {
                                 Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
                                 element = null;

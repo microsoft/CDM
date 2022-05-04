@@ -50,7 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 }
             }
             // skip the argument if just a value
-            if (string.IsNullOrEmpty(instance.Name))
+            if (StringUtils.IsBlankByCdmStandard(instance.Name))
                 return val;
 
             return new Argument {

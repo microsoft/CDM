@@ -10,7 +10,7 @@ from .cdm_collection_helper_functions import generate_manifest
 class TestCdmImportCollectionAdd(unittest.TestCase):
     @async_test
     def test_cdm_import_collection_add(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
         document._is_dirty = False
         self.assertFalse(document._is_dirty)
         import_value = CdmImport(document.ctx, 'corpusPath', 'moniker')
@@ -26,7 +26,7 @@ class TestCdmImportCollectionAdd(unittest.TestCase):
 
     # @async_test
     def test_cdm_import_collection_add_corpus_path(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
         document._is_dirty = False
         import_value = document.imports.append('corpusPath')
 
@@ -39,7 +39,7 @@ class TestCdmImportCollectionAdd(unittest.TestCase):
 
     # @async_test
     def test_cdm_import_collection_add_corpus_path_and_moniker(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
         document._is_dirty = False
         import_value = document.imports.append('corpusPath', 'moniker')
 
@@ -52,7 +52,7 @@ class TestCdmImportCollectionAdd(unittest.TestCase):
 
     # @async_test
     def test_cdm_import_collection_add_range(self):
-        document = generate_manifest('C:\\Nothing')
+        document = generate_manifest()
         document._is_dirty = False
 
         import_list = [CdmImport(document.ctx, 'CorpusPath1', 'Moniker1'),

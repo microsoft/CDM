@@ -243,5 +243,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             corpus.Storage.CreateAbsoluteCorpusPath("Abc", new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp/../Qrs" });
             TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
         }
+
+        /// <summary>
+        /// Test passing blank or empty values for manifest schema, name etc.
+        /// </summary>
+        [TestMethod]
+        public void TestManifestWithBlankFields()
+        {
+            var content = TestHelper.GetInputFileContent(testsSubpath, "testManifestWithBlankFields", "blank.manifest.cdm.json");
+            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "cdmTest", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
+            Assert.IsNull(cdmManifest.Schema);
+            Assert.IsNull(cdmManifest.DocumentVersion);
+            Assert.AreEqual(TimeUtils.GetFormattedDateString((DateTimeOffset)cdmManifest.LastFileModifiedTime), "2008-09-15T23:53:23.000Z");
+            Assert.AreEqual(cdmManifest.Explanation, "test cdm folder for cdm version 1.0+");
+            Assert.AreEqual(cdmManifest.Imports.Count, 1);
+            Assert.AreEqual(cdmManifest.Imports[0].CorpusPath, "/primitives.cdm.json");
+            Assert.AreEqual(cdmManifest.Entities.Count, 0);
+            Assert.AreEqual(cdmManifest.ExhibitsTraits.Count, 1);
+            Assert.AreEqual(cdmManifest.SubManifests.Count, 0);
+        }
     }
 }

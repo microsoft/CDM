@@ -59,6 +59,17 @@ public class StringUtils {
   }
 
   /**
+   * Returns true if the string is null or empty ("") or blank by CDM standard.
+   *
+   * @param str String to check
+   *
+   * @return {@code true} if the string is null or empty ("") or blank by CDM standard, {@code false} otherwise.
+   */
+  public static boolean isBlankByCdmStandard(final String str) {
+    return StringUtils.isNullOrTrimEmpty(str);
+  }
+
+  /**
    * Capitalizes first letter of the given string.
    * @param str String to capitalize
    * @return Capitalized string

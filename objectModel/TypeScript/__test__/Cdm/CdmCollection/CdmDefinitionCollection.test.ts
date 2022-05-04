@@ -15,7 +15,7 @@ import {generateManifest} from './CdmCollectionHelperFunctions';
 
 describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     it ('TestCdmDefinitionCollectionAdd', () => {
-        const document: CdmManifestDefinition = generateManifest('c:\\Nothing');
+        const document: CdmManifestDefinition = generateManifest();
         document.isDirty = false;
 
         const attribute: CdmAttributeContext = new CdmAttributeContext(document.ctx, 'the attribute');
@@ -55,7 +55,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionInsert', () => {
-        const document: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const document: CdmManifestDefinition = generateManifest();
 
         const ent1: CdmObjectDefinition = document.definitions.push('ent1');
         const ent2: CdmObjectDefinition = document.definitions.push('ent2');
@@ -83,7 +83,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionAddEntityByProvidingName', () => {
-        const document: CdmManifestDefinition = generateManifest('C:\\Noting');
+        const document: CdmManifestDefinition = generateManifest();
         document.isDirty = false;
 
         const entity: CdmObjectDefinition = document.definitions.push('TheNameOfTheEntity');
@@ -100,7 +100,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionAddByProvidingTypeAndName', () => {
-        const document: CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const document: CdmManifestDefinition = generateManifest();
         document.isDirty = false;
 
         const attribute: CdmObjectDefinition = document.definitions.push(cdmObjectType.attributeContextDef, 'attrctx');
@@ -121,7 +121,7 @@ describe('Cdm.CdmCollection.CdmDefinitionCollection', () => {
     });
 
     it ('TestCdmDefinitionCollectionAddRange', () => {
-        const document : CdmManifestDefinition = generateManifest('C:\\Nothing');
+        const document : CdmManifestDefinition = generateManifest();
         document.isDirty = false;
 
         const attribute: CdmAttributeContext = new CdmAttributeContext(document.ctx, 'the attribute');

@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
-from cdm.objectmodel import CdmTraitReference
+from cdm.objectmodel import CdmTraitReference, CdmTraitReferenceBase
 from cdm.persistence.cdmfolder import TraitReferencePersistence, TraitGroupReferencePersistence
 from cdm.utilities import logger
 
@@ -27,23 +27,27 @@ trait_to_annotation_map = {
     'is.CDM.entityVersion': 'version'
 }
 
-ignored_traits = (
+ignored_traits = {
     'is.propertyContent.multiTrait',
     'is.modelConversion.referenceModelMap',
     'is.modelConversion.modelVersion',
     'means.measurement.version',
     'is.CDM.entityVersion',
-    'is.partition.format.CSV',
     'is.partition.culture',
     'is.managedBy',
     'is.hidden'
-)
+}
 
 # Traits to ignore if they come from properties.
 # These traits become properties on the model.json. To avoid persisting both a trait
 # and a property on the model.json, we filter these traits out.
 model_json_property_traits = {
     'is.localized.describedAs'
+}
+
+# Arguments natively supported by the fileFormatSettings property.
+partition_settings_supported_arguments = {
+    'columnHeaders', 'csvStyle', 'delimiter', 'quoteStyle', 'encoding'
 }
 
 _TAG = 'Utils'
@@ -64,32 +68,46 @@ def convert_annotation_to_trait(name: str) -> str:
 def convert_trait_to_annotation(name: str) -> str:
     return trait_to_annotation_map[name]
 
+def should_persist_trait(trait_base: CdmTraitReferenceBase):
+    if trait_base.object_type != CdmObjectType.TRAIT_REF:
+        return True
 
-def create_csv_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext') -> 'CdmTraitReference':
-    csv_format_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.partition.format.CSV')
-    csv_format_trait.simple_named_reference = False
+    trait = trait_base  # type: CdmTraitReference
 
-    if obj.get('columnHeaders') is not None:
+    if trait.named_reference == 'is.partition.format.CSV':
+        argument_names = set([argument.name for argument in trait.arguments if argument.name is not None])
+
+        # Checks if the trait contains arguments that are not supported natively by the model.json CsvFormatSettings property.
+        return len(argument_names.difference(partition_settings_supported_arguments)) > 0
+
+    return True
+
+
+def create_csv_trait(obj: 'CsvFormatSettings', ctx: 'CdmCorpusContext', host: 'CdmTraitReference') -> 'CdmTraitReference':
+    csv_format_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.partition.format.CSV', False) if not host else host
+    argument_names = set([argument.name for argument in csv_format_trait.arguments if argument.name is not None])
+
+    if obj.get('columnHeaders') is not None and 'columnHeaders' not in argument_names:
         column_headers_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'columnHeaders')
         column_headers_arg.value = str(obj.get('columnHeaders')).lower()
         csv_format_trait.arguments.append(column_headers_arg)
 
-    if obj.get('csvStyle') is not None:
+    if obj.get('csvStyle') is not None and 'csvStyle' not in argument_names:
         csv_style_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'csvStyle')
         csv_style_arg.value = obj.csvStyle
         csv_format_trait.arguments.append(csv_style_arg)
 
-    if obj.get('delimiter') is not None:
+    if obj.get('delimiter') is not None and 'delimiter' not in argument_names:
         delimiter_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'delimiter')
         delimiter_arg.value = obj.delimiter
         csv_format_trait.arguments.append(delimiter_arg)
 
-    if obj.get('quoteStyle') is not None:
+    if obj.get('quoteStyle') is not None and 'quoteStyle' not in argument_names:
         quote_style_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'quoteStyle')
         quote_style_arg.value = obj.quoteStyle
         csv_format_trait.arguments.append(quote_style_arg)
 
-    if obj.get('encoding') is not None:
+    if obj.get('encoding') is not None and 'encoding' not in argument_names:
         encoding_arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'encoding')
         encoding_arg.value = obj.encoding
         csv_format_trait.arguments.append(encoding_arg)
@@ -177,8 +195,9 @@ async def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity
             element.name = convert_trait_to_annotation(trait.named_reference)
             annotations.append(element)
         elif trait.named_reference not in ignored_traits and not trait.named_reference.startswith('is.dataFormat') \
-                and not (trait.named_reference in model_json_property_traits
-                         and trait.object_type == CdmObjectType.TRAIT_REF and trait.is_from_property):
+                and not (trait.named_reference in model_json_property_traits \
+                and trait.object_type == CdmObjectType.TRAIT_REF and trait.is_from_property) \
+                and should_persist_trait(trait):
             if trait.object_type == CdmObjectType.TRAIT_GROUP_REF:
                 extension = TraitGroupReferencePersistence.to_data(trait, None, None)
             else:

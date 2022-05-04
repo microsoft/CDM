@@ -14,7 +14,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
@@ -201,6 +205,14 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   public void setDescription(final String value) {
     getTraitToPropertyMap().updatePropertyValue(CdmPropertyName.DESCRIPTION, value);
+  }
+
+  /**
+   * Gets whether the data partition is incremental.
+   * @return boolean
+   */
+  public boolean isIncremental() {
+    return (boolean) getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.IS_INCREMENTAL);
   }
 
   /**

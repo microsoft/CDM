@@ -25,6 +25,7 @@ from cdm.persistence.cdmfolder.projections.operation_add_artifact_attribute_pers
 from cdm.persistence.cdmfolder.types import Projection, EntityReference
 from cdm.persistence.cdmfolder.types.projections.operation_base import OperationBase
 from cdm.utilities.logging import logger
+from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmProjection
@@ -112,7 +113,7 @@ class ProjectionPersistence:
 
         if instance.source and isinstance(instance.source, str):
             source = instance.source
-        elif instance.source and instance.source.named_reference and instance.source.explicit_reference == None:
+        elif instance.source and not StringUtils.is_blank_by_cdm_standard(instance.source.named_reference) and instance.source.explicit_reference is None:
             source = instance.source.named_reference
         elif instance.source and instance.source.object_type == CdmObjectType.ENTITY_REF:
             source = EntityReferencePersistence.to_data(instance.source, res_opt, options)
