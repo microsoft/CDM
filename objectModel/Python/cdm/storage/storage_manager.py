@@ -191,12 +191,14 @@ class StorageManager:
             prefix = None
             namespace_from_obj = None
 
-            if obj and hasattr(obj, 'namespace') and hasattr(obj, 'folder_path'):
-                prefix = obj._folder_path
-                namespace_from_obj = obj._namespace
-            elif obj and obj.in_document:
-                prefix = obj.in_document._folder_path
-                namespace_from_obj = obj.in_document._namespace
+            if obj:
+                obj_doc = getattr(obj, "owner", obj)
+                if hasattr(obj_doc, 'namespace') and hasattr(obj_doc, 'folder_path'):
+                    prefix = obj_doc.folder_path
+                    namespace_from_obj = obj_doc.namespace
+                elif obj.in_document:
+                    prefix = obj.in_document._folder_path
+                    namespace_from_obj = obj.in_document._namespace
 
             if prefix and self._contains_unsupported_path_format(prefix):
                 # Already called status_rpt when checking for unsupported path format.
