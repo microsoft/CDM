@@ -183,14 +183,12 @@ class DataPartitionPatternTest(unittest.TestCase):
 
         upsert_incremental_partition_pattern = corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, 'UpsertPattern', False)
         upsert_incremental_partition_pattern.root_location = '/IncrementalData'
-        upsert_incremental_partition_pattern.specialized_schema = 'csv'
         upsert_incremental_partition_pattern.regular_expression = '/(.*)/(.*)/(.*)/Upserts/upsert(\\d+)\\.csv$'
         upsert_incremental_partition_pattern.parameters = ['year', 'month', 'day', 'upsertPartitionNumber']
         upsert_incremental_partition_pattern.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME, [['type', CdmIncrementalPartitionType.UPSERT.value]])
 
         delete_partition_pattern = corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, 'DeletePartitionPattern', False)
         delete_partition_pattern.root_location = '/IncrementalData'
-        delete_partition_pattern.specialized_schema = 'csv'
         delete_partition_pattern.regular_expression = '/(.*)/(.*)/(.*)/Delete/detele(\\d+)\\.csv$'
         delete_partition_pattern.parameters = ['year', 'month', 'day', 'deletePartitionNumber']
         localized_entity_declaration.incremental_partition_patterns.append(upsert_incremental_partition_pattern)
@@ -236,13 +234,11 @@ class DataPartitionPatternTest(unittest.TestCase):
         upsert_incremental_partition_pattern = corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, 'UpsertPartitionPattern',
                                                           False)
         upsert_incremental_partition_pattern.root_location = '/IncrementalData'
-        upsert_incremental_partition_pattern.specialized_schema = 'csv'
         upsert_incremental_partition_pattern.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME,
                                                                     [['type', CdmIncrementalPartitionType.UPSERT.value]])
 
         delete_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, 'TestingPartitionPattern', False)
         delete_partition.root_location = '/testingData'
-        delete_partition.specialized_schema = 'csv'
         localized_entity_declaration.data_partition_patterns.append(upsert_incremental_partition_pattern)
         localized_entity_declaration.data_partition_patterns.append(delete_partition)
 

@@ -22,6 +22,10 @@ public class CdmImport extends CdmObjectSimple {
   private String moniker;
   private String corpusPath;
   private CdmDocumentDefinition document;
+  /**
+   * Used when creating a copy of an import to figure out the new corpus path.
+   */
+  CdmObject previousOwner;
 
   public CdmImport(final CdmCorpusContext ctx, final String corpusPath, final String moniker) {
     super(ctx);
@@ -123,6 +127,8 @@ public class CdmImport extends CdmObjectSimple {
     copy.setDocument(
             this.getDocument() != null
                     ? (CdmDocumentDefinition) this.getDocument().copy(resOpt) : null);
+    copy.previousOwner = this.getOwner();
+
     return copy;
   }
 }

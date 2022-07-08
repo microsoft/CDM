@@ -19,13 +19,15 @@ from cdm.utilities import AttributeResolutionDirectiveSet, DocsResult, ImportInf
 from .cdm_attribute_ref import CdmAttributeReference
 from .cdm_corpus_context import CdmCorpusContext
 from .cdm_document_def import CdmDocumentDefinition
+from .cdm_entity_def import CdmEntityDefinition
 from .cdm_e2e_relationship import CdmE2ERelationship
+from .cdm_manifest_def import CdmManifestDefinition
 from .cdm_object import CdmObject
 from ._document_library import DocumentLibrary
 from ..utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmTraitReference, CdmAttributeContext, CdmDocumentDefinition, CdmEntityDefinition, \
+    from cdm.objectmodel import CdmTraitReference, CdmAttributeContext, CdmDocumentDefinition, \
         CdmManifestDefinition, CdmObject, CdmObjectDefinition, \
         CdmObjectReference, CdmTypeAttributeDefinition
     from cdm.resolvedmodel import ResolvedTraitSet
@@ -121,7 +123,11 @@ class CdmCorpusDefinition:
                     entity_path = await curr_manifest._get_entity_path_from_declaration(entity_dec, curr_manifest)
                     entity = await self.fetch_object_async(entity_path)  # type: Optional[CdmEntityDefinition]
 
-                    if entity is None:
+                    if not isinstance(entity, CdmEntityDefinition):
+                        logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, curr_manifest.at_corpus_path,
+                                     CdmLogCode.ERR_INVALID_CAST, entity_path, 'CdmEntityDefinition')
+                        continue
+                    elif entity is None:
                         continue
 
                     res_entity = None  # type: Optional[CdmEntityDefinition]
@@ -153,6 +159,10 @@ class CdmCorpusDefinition:
                             # remove any relationships that no longer exist
                             if not has_rel:
                                 target_ent = await self.fetch_object_async(rel.to_entity, curr_manifest)  # type: CdmEntityDefinition
+                                if not isinstance(target_ent, CdmEntityDefinition):
+                                    logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, curr_manifest.at_corpus_path,
+                                                 CdmLogCode.ERR_INVALID_CAST, rel.to_entity, 'CdmEntityDefinition')
+                                    continue
                                 if target_ent is not None:
                                     currIncoming = self._incoming_relationships.get(target_ent.at_corpus_path)  # type: List[CdmE2ERelationship]
                                     if currIncoming is not None:
@@ -167,6 +177,10 @@ class CdmCorpusDefinition:
                     if new_outgoing_relationships:
                         for rel in new_outgoing_relationships:
                             target_ent = await self.fetch_object_async(rel.to_entity, curr_manifest)
+                            if not isinstance(target_ent, CdmEntityDefinition):
+                                logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, curr_manifest.at_corpus_path,
+                                             CdmLogCode.ERR_INVALID_CAST, rel.to_entity, 'CdmEntityDefinition')
+                                continue
                             if target_ent is not None:
                                 self._incoming_relationships[target_ent.at_corpus_path].append(rel)
 
@@ -177,11 +191,20 @@ class CdmCorpusDefinition:
             for sub_manifest_def in curr_manifest.sub_manifests:
                 sub_manifest = await self.fetch_object_async(sub_manifest_def.definition,
                                                              curr_manifest)  # type: Optional[CdmManifestDefinition]
+                if not isinstance(sub_manifest, CdmManifestDefinition):
+                    logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, curr_manifest.at_corpus_path,
+                                 CdmLogCode.ERR_INVALID_CAST, sub_manifest_def.definition, 'CdmManifestDefinition')
+                    continue
                 await self.calculate_entity_graph_async(sub_manifest)
 
     async def create_root_manifest_async(self, corpus_path: str) -> Optional['CdmManifestDefinition']:
         if self._is_path_manifest_document(corpus_path):
-            self._root_manifest = await self.fetch_object_async(corpus_path)
+            new_manifest = await self.fetch_object_async(corpus_path)
+            if not isinstance(new_manifest, CdmManifestDefinition):
+                logger.error(self.ctx, self._TAG, self.create_root_manifest_async.__name__, corpus_path,
+                             CdmLogCode.ERR_INVALID_CAST, corpus_path, 'CdmManifestDefinition')
+                return None
+            self._root_manifest = new_manifest
             return self._root_manifest
         return None
 
@@ -1396,8 +1419,13 @@ class CdmCorpusDefinition:
             self.set_event_callback(callback, CdmStatusLevel.ERROR)
 
             try:
+                default_artifact_path = 'cdm:/primitives.cdm.json/defaultArtifacts'
                 ent_art = await self.fetch_object_async(
-                    'cdm:/primitives.cdm.json/defaultArtifacts')  # type: CdmEntityDefinition
+                    default_artifact_path)  # type: CdmEntityDefinition
+                if not isinstance(ent_art, CdmEntityDefinition):
+                    logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, None,
+                                 CdmLogCode.ERR_INVALID_CAST, default_artifact_path, 'CdmEntityDefinition')
+                    ent_art = None
             finally:
                 self.set_event_callback(old_status, old_level)
 

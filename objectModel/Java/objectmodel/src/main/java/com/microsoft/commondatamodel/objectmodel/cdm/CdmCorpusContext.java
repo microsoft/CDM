@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
 
 import java.util.HashSet;
+import java.util.Map;
 
 public interface CdmCorpusContext {
 
@@ -43,4 +44,17 @@ public interface CdmCorpusContext {
    * @param correlationId the correlation ID
    */
   void setCorrelationId(String correlationId);
+
+  /**
+   * Set feature flags in context.
+   * @param featureFlags map of feature flag name and value.
+   */
+  void setFeatureFlags(Map<String, Object> featureFlags);
+
+  /**
+   * Returns feature flags set in the context.
+   * @return Map of feature flag name and value.
+   */
+  Map<String, Object> getFeatureFlags();
+
 }

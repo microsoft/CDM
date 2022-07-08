@@ -363,8 +363,9 @@ export class ManifestPersistence {
             }
         }
 
+        result['cdm:imports'] = [];
+
         if (instance.imports && instance.imports.allItems.length > 0) {
-            result['cdm:imports'] = [];
             instance.imports.allItems.forEach((element: CdmImport) => {
                 const importObj: Import =
                     CdmFolder.ImportPersistence.toData(element, resOpt, options);
@@ -372,6 +373,15 @@ export class ManifestPersistence {
                     result['cdm:imports'].push(importObj);
                 }
             });
+
+        } 
+        
+        //  Importing foundations.cdm.json to resolve trait properly on manifest
+        if (instance.imports === undefined || instance.imports.item(constants.FOUNDATIONS_CORPUS_PATH, undefined, false) === undefined) {
+            const foundationsImport : Import = {
+                corpusPath: constants.FOUNDATIONS_CORPUS_PATH
+            };
+            result['cdm:imports'].push(foundationsImport);
         }
 
         return result;

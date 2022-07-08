@@ -19,6 +19,8 @@ export class resolveContext implements CdmCorpusContext {
     public events: EventList;
     public suppressedLogCodes: Set<cdmLogCode>;
     public correlationId: string;
+    public featureFlags: Map<String, Object>;
+
     /**
      * @internal
      */
@@ -41,5 +43,6 @@ export class resolveContext implements CdmCorpusContext {
         this.attributeCache = new Map<string, ResolvedAttributeSetBuilder>();
         this.traitCache = new Map<string, ResolvedTraitSet>();
         this.corpus = corpus;
+        this.featureFlags = new Map<String, Object>();
     }
 }

@@ -17,6 +17,7 @@ import {
     cdmStatusLevel,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
+    constants,
     copyOptions,
     resolveOptions,
 } from '../../../internal';
@@ -226,6 +227,13 @@ describe('Persistence.ModelJson.ModelJson', () => {
         stopwatch.start();
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
+
+        expect(cdmManifest.imports.item(constants.FOUNDATIONS_CORPUS_PATH, undefined, false))
+            .toBeUndefined()
+        expect(obtainedModelJson['cdm:imports'].length)
+            .toBe(1)
+        expect(obtainedModelJson['cdm:imports'][0]['corpusPath'])
+            .toBe(constants.FOUNDATIONS_CORPUS_PATH)
 
         HandleOutput('TestLoadingCdmFolderResultAndModelJsonToData', modelJsonExtension, obtainedModelJson);
 

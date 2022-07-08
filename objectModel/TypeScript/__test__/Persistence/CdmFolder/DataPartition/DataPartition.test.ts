@@ -265,12 +265,10 @@ describe('Persistence.CdmFolder.DataPartition', () => {
 
        const upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, 'UpsertPartition', false);
        upsertIncrementalPartition.location = '/IncrementalData';
-       upsertIncrementalPartition.specializedSchema = 'csv';
        upsertIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]]]);
 
        const deletePartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, 'DeletePartition', false);
        deletePartition.location = '/IncrementalData';
-       deletePartition.specializedSchema = 'csv';
        localizedEntityDeclaration.incrementalPartitions.push(upsertIncrementalPartition);
        localizedEntityDeclaration.incrementalPartitions.push(deletePartition);
 
@@ -320,12 +318,10 @@ describe('Persistence.CdmFolder.DataPartition', () => {
     
         const upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, 'UpsertPartition', false);
         upsertIncrementalPartition.location = '/IncrementalData';
-        upsertIncrementalPartition.specializedSchema = 'csv';
         upsertIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]]]);
     
         const deletePartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, 'TestingPartition', false);
         deletePartition.location = '/testingData';
-        deletePartition.specializedSchema = 'csv';
         localizedEntityDeclaration.dataPartitions.push(upsertIncrementalPartition);
         localizedEntityDeclaration.dataPartitions.push(deletePartition);
     

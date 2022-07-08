@@ -4,7 +4,7 @@
 import os
 import unittest
 
-from cdm.enums import CdmStatusLevel, ImportsLoadStrategy
+from cdm.enums import CdmLogCode, CdmStatusLevel, ImportsLoadStrategy
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 from cdm.objectmodel import CdmEntityDefinition, CdmCorpusDefinition, CdmDocumentDefinition
 
@@ -129,4 +129,13 @@ class CorpusTests(unittest.TestCase):
         wrt_entity = await corpus.fetch_object_async('local:/wrtConstEntity.cdm.json/wrtConstEntity') # type: CdmEntityDefinition
         res_opt = ResolveOptions(wrt_entity, AttributeResolutionDirectiveSet())
         await wrt_entity.create_resolved_entity_async('NewEntity', res_opt)
+    @async_test
+    async def test_incorrect_cast_on_fetch(self):
+        """Tests that errors when trying to cast objects after fetching is handled correctly."""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_incorrect_cast_on_fetch', expected_codes=[CdmLogCode.ERR_INVALID_CAST])
+
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')
+        # this function will fetch the entity inside it
+        await corpus.calculate_entity_graph_async(manifest)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_INVALID_CAST, True, self)
 

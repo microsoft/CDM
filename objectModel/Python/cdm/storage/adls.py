@@ -21,8 +21,10 @@ import dateutil.parser
 
 from cdm.utilities import StorageUtils
 from cdm.utilities.network.cdm_http_client import CdmHttpClient
+from cdm.utilities.network.cdm_http_response import CdmHttpResponse
 from cdm.utilities.string_utils import StringUtils
 from cdm.storage.network import NetworkAdapter
+from cdm.storage.storage_adapter_exception import StorageAdapterException
 from cdm.enums.azure_cloud_endpoint import AzureCloudEndpoint
 
 from .base import StorageAdapterBase
@@ -302,19 +304,28 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
     async def write_async(self, corpus_path: str, data: str) -> None:
         url = self._create_formatted_adapter_path(corpus_path)
+        response = await self.create_file_at_path(corpus_path, url)
 
-        request = self._build_request(url + '?resource=file', 'PUT')
+        try:
+            request = self._build_request(url + '?action=append&position=0', 'PATCH', data,
+                                    'application/json; charset=utf-8')
+            response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
-        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
-
-        request = self._build_request(url + '?action=append&position=0', 'PATCH', data,
-                                      'application/json; charset=utf-8')
-
-        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
-
-        request = self._build_request(url + '?action=flush&position=' + str(len(data)), 'PATCH')
-
-        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
+            if response.status_code == 202: # The uploaded data was accepted.
+                request = self._build_request(url + '?action=flush&position=' + str(len(data)), 'PATCH')
+                response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
+                
+                if response.status_code != 200: # Data was not flushed correctly. Delete empty file.
+                    await self.delete_content_at_path(corpus_path, url, None)
+                    raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: ' + corpus_path)
+            else:
+                await self.delete_content_at_path(corpus_path, url, None)
+                raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: ' + corpus_path)
+        except StorageAdapterException as e:
+            raise
+        except Exception as exc:
+            await self.delete_content_at_path(corpus_path, url, exc)
+            raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: ' + corpus_path, exc)
 
     def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None,
                           content_type: Optional[str] = None):
@@ -510,3 +521,23 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             raise ValueError('Please provide a valid hostname.')
 
         raise ValueError('ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.')
+
+    async def create_file_at_path(self, corpus_path: str, url: str):
+        try:
+            request = self._build_request(url + '?resource=file', 'PUT')
+            response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
+        except Exception as exc:
+            raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: ' + corpus_path, exc)
+
+        if response.status_code != 201: # Empty file was not created successfully.
+            raise StorageAdapterException('Could not write ADLS content at path, response code: {0}. Reason: {1}.'.format(response.status_code, response.reason))
+        return response
+    
+    async def delete_content_at_path(self, corpus_path: str, url: str, innerException: Exception): 
+        if self.ctx or not self.ctx.feature_flags or 'ADLSAdapter_deleteEmptyFile' not in self.ctx.feature_flags or self.ctx.feature_flags['ADLSAdapter_deleteEmptyFile']:
+            try:
+                await self._http_client._send_async(self._build_request(url, 'DELETE'), self.wait_time_callback, self.ctx)
+                return #Return on delete success. Throw exception even if delete succeeds since file write operation failed.
+            except Exception:
+                pass
+        raise StorageAdapterException('Empty file was created but could not write ADLS content at path: ' + corpus_path, innerException)

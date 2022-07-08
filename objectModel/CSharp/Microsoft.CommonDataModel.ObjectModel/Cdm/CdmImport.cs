@@ -30,6 +30,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string Moniker { get; set; }
 
         /// <summary>
+        /// Used when creating a copy of an import to figure out the new corpus path.
+        /// </summary>
+        internal CdmObject PreviousOwner { get; set; }
+
+        /// <summary>
         /// Constructs a CdmImport.
         /// </summary>
         /// <param name="ctx">The context.</param>
@@ -77,6 +82,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             copy.Document = this.Document?.Copy(resOpt) as CdmDocumentDefinition;
+            copy.PreviousOwner = this.Owner;
+
             return copy;
         }
 

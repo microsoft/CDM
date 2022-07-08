@@ -75,10 +75,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         public static bool JsonObjectShouldBeEqualAsExpected(string expected, string actual)
         {
             JToken expectedObj = JToken.Parse(expected);
-            JToken actuaObj = IgnoreProperties(JToken.Parse(actual));
-            actuaObj = IgnoreProperties(actuaObj);
+            JToken actualObj = IgnoreProperties(JToken.Parse(actual));
 
-            return JToken.DeepEquals(actuaObj, expectedObj);
+            return TestHelper.CompareObjectsContent(expectedObj, actualObj, ignoreNullValues: true);
         }
 
         private static JToken IgnoreProperties(JToken obj)

@@ -197,6 +197,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             copy.entity_name = self.entity_name
             copy.data_partition_patterns.clear()
             copy.data_partitions.clear()
+            copy.incremental_partition_patterns.clear()
+            copy.incremental_partitions.clear()
 
         copy.entity_path = self.entity_path
         copy.last_file_status_check_time = self.last_file_status_check_time
@@ -208,6 +210,12 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
         for pattern in self.data_partition_patterns:
             copy.data_partition_patterns.append(pattern.copy(res_opt))
+
+        for partition in self.incremental_partitions:
+            copy.incremental_partitions.append(partition.copy(res_opt))
+
+        for pattern in self.incremental_partition_patterns:
+            copy.incremental_partition_patterns.append(pattern.copy(res_opt))
 
         self._copy_def(res_opt, copy)
 

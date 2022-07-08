@@ -708,7 +708,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     oRef = MakeObject<CdmObjectReference>(ofType, (string)refObj, simpleNameRef);
                 }
             }
-            return (T)oRef;
+            return CastCdmObject<T>(oRef);
         }
 
         /// <summary>
@@ -856,7 +856,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     newObj = new CdmOperationAddArtifactAttribute(this.Ctx);
                     break;
             }
-            return (T)newObj;
+            return CastCdmObject<T>(newObj);
         }
 
         internal static CdmObjectType MapReferenceType(CdmObjectType ofType)
@@ -1090,7 +1090,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 $"{nameof(FetchObjectAsync)}<{nameof(CdmManifestDefinition)}>", newObj.AtCorpusPath);
                         }
 
-                        return (T)newObj;
+                        return CastCdmObject<T>(newObj);
                     }
 
                     if (documentNameIndex == -1)
@@ -1124,7 +1124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                     }
 
-                    return (T)result;
+                    return CastCdmObject<T>(result);
                 }
 
                 return default;
@@ -1248,6 +1248,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             await this.LoadImportsAsync(doc, docsLoading, resOpt);
             // now that everything is loaded, attach import docs to this doc's import list
             this.SetImportDocuments(doc);
+        }
+
+        /// <summary>
+        /// Casts a CdmObject to the desired type and handles errors on incorrect casts.
+        /// </summary>
+        /// <typeparam name="T">Type of object to cast the input object.</typeparam>
+        /// <param name="obj">The object that should be casted.</param>
+        /// <param name="objectPath">The path that was used to get the object that was passed in.</param>
+        /// <returns></returns>
+        private T CastCdmObject<T>(CdmObject obj)
+            where T : CdmObject
+        {
+            if (obj is T)
+            {
+                return (T)obj;
+            }
+            else
+            {
+                Logger.Error(this.Ctx, Tag, nameof(CastCdmObject), obj.AtCorpusPath, CdmLogCode.ErrInvalidCast, obj.AtCorpusPath, typeof(T).Name);
+                return default(T);
+            }
         }
 
         private void RemoveObjectDefinitions(CdmDocumentDefinition doc)
@@ -1792,7 +1813,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             FromEntityAttribute = fromAtt,
                             ToEntityAttribute = attributeTuple.Item2
                         };
-                        
+
                         this.AddTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);
 
                         if (isResolvedEntity)
@@ -2257,34 +2278,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
             });
             entityNesting = nesting;
-        }
-
-        /// <summary>
-        /// Generates the warnings for a single document.
-        /// </summary>
-        /// <param name="fd">The folder/document tuple.</param>
-        /// <param name="resOpt">The resolve options parameter.</param>
-        private async Task GenerateWarningsForSingleDoc(Tuple<CdmFolderDefinition, CdmDocumentDefinition> fd, ResolveOptions resOpt)
-        {
-            var doc = fd.Item2;
-
-            if (doc.Definitions == null)
-            {
-                return;
-            }
-
-            resOpt.WrtDoc = doc;
-
-            await Task.WhenAll(doc.Definitions.AllItems.Select(async element =>
-            {
-                if (element is CdmEntityDefinition entity && entity.Attributes.Count > 0)
-                {
-                    var resolvedEntity = await entity.CreateResolvedEntityAsync(entity.GetName() + "_", resOpt);
-
-                    // TODO: Add additional checks here.
-                    this.CheckPrimaryKeyAttributes(resolvedEntity, resOpt);
-                }
-            }));
         }
 
         /// <summary>

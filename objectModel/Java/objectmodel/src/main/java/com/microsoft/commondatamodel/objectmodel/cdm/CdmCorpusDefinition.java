@@ -1290,71 +1290,6 @@ public class CdmCorpusDefinition {
     ctx.setCorrelationId(correlationId);
   }
 
-  private CompletableFuture<Void> visitManifestTreeAsync(
-      final CdmManifestDefinition manifest,
-      final List<CdmEntityDefinition> entitiesInManifestTree) {
-    return CompletableFuture.runAsync(() -> {
-      final CdmEntityCollection entities = manifest.getEntities();
-      if (entities != null) {
-        for (final CdmEntityDeclarationDefinition entity : entities) {
-          CdmObject currentFile = manifest;
-          CdmEntityDeclarationDefinition currentEnt = entity;
-          while ((currentEnt instanceof CdmReferencedEntityDeclarationDefinition)) {
-            currentEnt = this.<CdmReferencedEntityDeclarationDefinition>fetchObjectAsync(
-                currentEnt.getEntityPath(), currentFile).join();
-            currentFile = currentEnt;
-          }
-
-          final CdmEntityDefinition entityDef = this.<CdmEntityDefinition>fetchObjectAsync(
-              currentEnt.getEntityPath(), currentFile).join();
-          entitiesInManifestTree.add(entityDef);
-        }
-      }
-
-      final CdmCollection<CdmManifestDeclarationDefinition> subManifests = manifest.getSubManifests();
-      if (subManifests == null) {
-        return;
-      }
-
-      subManifests.forEach(subFolder -> {
-        final CdmManifestDefinition childManifest =
-            this.<CdmManifestDefinition>fetchObjectAsync(subFolder.getDefinition(), manifest).join();
-        this.visitManifestTreeAsync(childManifest, entitiesInManifestTree).join();
-      });
-    });
-  }
-
-  private CompletableFuture<Void> generateWarningsForSingleDoc(
-      final Pair<CdmFolderDefinition, CdmDocumentDefinition> fd,
-      final ResolveOptions resOpt) {
-    final CdmDocumentDefinition doc = fd.getRight();
-
-    if (doc.getDefinitions() == null) {
-      return CompletableFuture.completedFuture(null);
-    }
-
-    resOpt.setWrtDoc(doc);
-
-    return CompletableFuture.runAsync(() ->
-        doc.getDefinitions().getAllItems()
-            .parallelStream()
-            .map(element -> {
-              if (element instanceof CdmEntityDefinition) {
-                final CdmEntityDefinition entity = ((CdmEntityDefinition) element);
-                if (entity.getAttributes().getCount() > 0) {
-                  final CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync(
-                      entity.getName() + "_", resOpt)
-                      .join();
-
-                  // TODO: Add additional checks here.
-                  this.checkPrimaryKeyAttributes(resolvedEntity, resOpt);
-                }
-                return entity;
-              }
-              return null;
-            }));
-  }
-
   /**
    * Returns a list of relationships where the input entity is the incoming entity.
    *
@@ -1399,8 +1334,12 @@ public class CdmCorpusDefinition {
                       currManifest.createEntityPathFromDeclarationAsync(entityDec, currManifest).join();
               // The path returned by GetEntityPathFromDeclaration is an absolute path.
               // No need to pass the manifest to fetchObjectAsync.
-              final CdmEntityDefinition entity =
-                      this.<CdmEntityDefinition>fetchObjectAsync(entityPath).join();
+              CdmEntityDefinition entity = null;
+              try { 
+                entity = this.<CdmEntityDefinition>fetchObjectAsync(entityPath).join();
+              } catch (ClassCastException e) {
+                Logger.error(this.getCtx(), TAG, "calculateEntityGraphAsync", currManifest.getAtCorpusPath(), CdmLogCode.ErrInvalidCast, entityPath, "CdmEntityDefinition");
+              }
 
               if (entity == null) {
                 continue;
@@ -1435,7 +1374,12 @@ public class CdmCorpusDefinition {
 
                   // remove any relationships that no longer exist
                   if (!hasRel) {
-                    final CdmEntityDefinition targetEnt = this.<CdmEntityDefinition>fetchObjectAsync(rel.getToEntity(), currManifest).join();
+                    CdmEntityDefinition targetEnt = null;
+                    try {
+                      targetEnt = this.<CdmEntityDefinition>fetchObjectAsync(rel.getToEntity(), currManifest).join();
+                    } catch (ClassCastException e) {
+                      Logger.error(this.getCtx(), TAG, "calculateEntityGraphAsync", currManifest.getAtCorpusPath(), CdmLogCode.ErrInvalidCast, rel.getToEntity(), "CdmEntityDefinition");
+                    }
                     if (targetEnt != null) {
                       final ArrayList<CdmE2ERelationship> currIncoming = this.incomingRelationships.get(targetEnt.getAtCorpusPath());
                       if (currIncoming != null) {
@@ -1454,11 +1398,15 @@ public class CdmCorpusDefinition {
               // flip outgoing entity relationships list to get incoming relationships map
               if (newOutgoingRelationships != null) {
                 for (final CdmE2ERelationship outgoingRelationship : newOutgoingRelationships) {
-                  final CdmEntityDefinition targetEnt =
-                          this.<CdmEntityDefinition>fetchObjectAsync(
-                                  outgoingRelationship.getToEntity(),
-                                  currManifest
-                          ).join();
+                  CdmEntityDefinition targetEnt = null;
+                  try {
+                    targetEnt = this.<CdmEntityDefinition>fetchObjectAsync(
+                      outgoingRelationship.getToEntity(),
+                      currManifest
+                      ).join();
+                  } catch (ClassCastException e) {
+                   Logger.error(this.getCtx(), TAG, "calculateEntityGraphAsync", currManifest.getAtCorpusPath(), CdmLogCode.ErrInvalidCast, outgoingRelationship.getToEntity(), "CdmEntityDefinition");
+                  }
                   if (targetEnt != null) {
                     if (!this.incomingRelationships.containsKey(targetEnt.getAtCorpusPath())) {
                       this.incomingRelationships.put(
@@ -1485,11 +1433,15 @@ public class CdmCorpusDefinition {
 
         if (currManifest.getSubManifests() != null) {
           for (final CdmManifestDeclarationDefinition subManifestDef : currManifest.getSubManifests()) {
-            final CdmManifestDefinition subManifest =
-                    this.<CdmManifestDefinition>fetchObjectAsync(
-                            subManifestDef.getDefinition(),
-                            currManifest)
-                            .join();
+            CdmManifestDefinition subManifest = null;
+            try {
+              subManifest = this.<CdmManifestDefinition>fetchObjectAsync(
+                subManifestDef.getDefinition(),
+                currManifest)
+                .join();
+            } catch (ClassCastException e) {
+              Logger.error(this.getCtx(), TAG, "calculateEntityGraphAsync", currManifest.getAtCorpusPath(), CdmLogCode.ErrInvalidCast, subManifestDef.getDefinition(), "CdmManifestDefinition");
+            }
             if (subManifest != null) {
               this.calculateEntityGraphAsync(subManifest).join();
             }
@@ -2452,12 +2404,17 @@ public class CdmCorpusDefinition {
   CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(
       final String corpusPath,
       final CdmObject obj) {
-    return fetchObjectAsync(corpusPath, obj, true).thenCompose(currObject -> {
-      if (currObject != null) {
-        return this.getLastModifiedTimeFromObjectAsync(currObject);
-      }
-      return CompletableFuture.completedFuture(null);
-    });
+    CdmObject currObject = null;
+    try {
+      currObject = fetchObjectAsync(corpusPath, obj, true).join();
+    } catch (ClassCastException e) {
+      Logger.error(this.getCtx(), TAG, "computeLastModifiedTimeAsync", corpusPath, CdmLogCode.ErrInvalidCast, corpusPath, "CdmObject");
+    }
+
+    if (currObject != null) {
+      return this.getLastModifiedTimeFromObjectAsync(currObject);
+    }
+    return CompletableFuture.completedFuture(null);
   }
 
   @FunctionalInterface
@@ -2576,9 +2533,12 @@ public class CdmCorpusDefinition {
         CdmStatusLevel oldLevel = this.getCtx().getReportAtLevel();
         this.setEventCallback((CdmStatusLevel level, String message) -> { }, CdmStatusLevel.Error);
 
+        final String defaultArtifactsPath = "cdm:/primitives.cdm.json/defaultArtifacts";
         CdmEntityDefinition entArt = null;
         try {
-          entArt = (CdmEntityDefinition)this.fetchObjectAsync("cdm:/primitives.cdm.json/defaultArtifacts").join();
+          entArt = (CdmEntityDefinition)this.fetchObjectAsync(defaultArtifactsPath).join();
+        } catch (ClassCastException e) {
+          Logger.error(this.getCtx(), TAG, "prepareArtifactAttributesAsync", defaultArtifactsPath, CdmLogCode.ErrInvalidCast, defaultArtifactsPath, "CdmEntityDefinition");
         } finally {
           this.setEventCallback(oldStatus, oldLevel);
         }

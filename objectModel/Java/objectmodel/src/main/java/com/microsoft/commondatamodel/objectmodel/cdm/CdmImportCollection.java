@@ -82,6 +82,17 @@ public class CdmImportCollection extends CdmCollection<CdmImport> {
     return cdmImport;
   }
 
+  public CdmImport add(final CdmImport currObject) {
+    if (currObject.previousOwner != null) {
+      String absolutePath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(currObject.getCorpusPath(), currObject.previousOwner);
+
+      // Need to make the import path relative to the resolved manifest instead of the original manifest.
+      currObject.setCorpusPath(this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(absolutePath, this.getOwner()));
+    }
+
+    return super.add(currObject);
+  }
+
   public void addAll(final List<CdmImport> importList) {
     importList.forEach(this::add);
   }

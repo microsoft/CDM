@@ -19,4 +19,6 @@ export interface CdmCorpusContext {
     suppressedLogCodes: Set<cdmLogCode>;
     /** Optional correlation ID to be stamped on all recorded status events. */
     correlationId: string;
+    /** Set feature flags in context */
+    featureFlags: Map<String, Object>;
 }

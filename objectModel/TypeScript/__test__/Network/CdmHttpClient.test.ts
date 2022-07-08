@@ -4,6 +4,7 @@
 import { CdmHttpClient } from '../../Utilities/Network/CdmHttpClient';
 import { CdmHttpRequest } from '../../Utilities/Network/CdmHttpRequest';
 import { CdmHttpResponse } from '../../Utilities/Network/CdmHttpResponse';
+import { CdmNumberOfRetriesExceededException } from '../../Utilities/Network/CdmNumberOfRetriesExceededException';
 
 describe('Network/CdmHttpClientTest', () => {
     /**
@@ -48,12 +49,9 @@ describe('Network/CdmHttpClientTest', () => {
         dict.set('User-Agent', 'CDM');
         request.headers = dict;
 
-        try {
-            await client.SendAsync(request, callback);
-        } catch (err) {
-            expect(err)
-                .toBe('The number of retries has exceeded the maximum number allowed by the client.');
-        }
+        await expect(client.SendAsync(request, callback))
+            .rejects
+            .toThrowError(new CdmNumberOfRetriesExceededException('The number of retries has exceeded the maximum number allowed by the client.'));
     });
 });
 

@@ -7,6 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -201,5 +202,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             await wrtEntity.CreateResolvedEntityAsync("NewEntity", resOpt);
         }
 
+        /// <summary>
+        /// Tests that errors when trying to cast objects after fetching is handled correctly.
+        /// </summary>
+        [TestMethod]
+        public async Task TestIncorrectCastOnFetch()
+        {
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrInvalidCast };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestIncorrectCastOnFetch", expectedCodes: expectedLogCodes);
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+            // this function will fetch the entity inside it
+            await corpus.CalculateEntityGraphAsync(manifest);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrInvalidCast, true);
+        }
     }
 }

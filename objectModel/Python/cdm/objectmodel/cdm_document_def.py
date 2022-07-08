@@ -673,7 +673,11 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                     return False
                 try:
                     obj_at = await self.ctx.corpus.fetch_object_async(doc_path)
-                    if not obj_at:
+                    if not isinstance(obj_at, CdmDocumentDefinition):
+                        logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path,
+                                     CdmLogCode.ERR_INVALID_CAST, doc_path, 'CdmDocumentDefinition')
+                        return False
+                    elif not obj_at:
                         logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path,
                                      CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, imp.corpus_path)
                         return False

@@ -17,6 +17,7 @@ from .types import Model, ReferenceModel
 from .local_entity_declaration_persistence import LocalEntityDeclarationPersistence
 from .referenced_entity_declaration_persistence import ReferencedEntityDeclarationPersistence
 from .relationship_persistence import RelationshipPersistence
+from ..cdmfolder.types import Import
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmFolderDefinition, CdmManifestDefinition, CdmImport, CdmTraitDefinition
@@ -252,12 +253,19 @@ class ManifestPersistence:
                 if relationship is not None:
                     result.relationships.append(relationship)
 
+        result.imports = []
+
         if instance.imports:
-            result.imports = []
             for element in instance.imports:
                 import_obj = ImportPersistence.to_data(element, res_opt, options)
                 if import_obj:
                     result.imports.append(import_obj)
+
+        # Importing foundations.cdm.json to resolve trait properly on manifest
+        if instance.imports is None or instance.imports.item(Constants._FOUNDATIONS_CORPUS_PATH, check_moniker=False) is None:
+            foundations_import = Import()
+            foundations_import.corpusPath = Constants._FOUNDATIONS_CORPUS_PATH
+            result.imports.append(foundations_import)
 
         return result
 

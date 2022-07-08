@@ -5,6 +5,7 @@ from typing import List, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.objectmodel import CdmDocumentDefinition
+from cdm.objectmodel.cdm_entity_def import CdmEntityDefinition
 from cdm.persistence.cdmfolder.import_persistence import ImportPersistence as CdmImportPersistence
 from cdm.utilities import logger, Constants
 from cdm.utilities.string_utils import StringUtils
@@ -54,6 +55,10 @@ class DocumentPersistence:
             # Fetch the document from entity schema.
             cdm_entity = await ctx.corpus.fetch_object_async(document_object_or_path, manifest)
 
+            if not isinstance(cdm_entity, CdmEntityDefinition):
+                logger.error(ctx, DocumentPersistence.__name__, DocumentPersistence.to_data.__name__, manifest.at_corpus_path,
+                             CdmLogCode.ERR_INVALID_CAST, document_object_or_path, 'CdmEntityDefinition')
+                return None
             if not cdm_entity:
                 logger.error(ctx, DocumentPersistence.__name__, DocumentPersistence.to_data.__name__, manifest.at_corpus_path, CdmLogCode.ERR_PERSIST_CDM_ENTITY_FETCH_ERROR)
                 return None

@@ -4,7 +4,7 @@
 import { Stopwatch } from 'ts-stopwatch';
 
 import { azureCloudEndpoint } from '../../Enums/azureCloudEndpoint';
-import { CdmCorpusDefinition, CdmDocumentDefinition, CdmManifestDefinition, cdmStatusLevel, StorageAdapterCacheContext } from '../../internal';
+import { CdmCorpusDefinition, CdmDocumentDefinition, CdmManifestDefinition, cdmStatusLevel, resolveContext, StorageAdapterCacheContext } from '../../internal';
 import { ADLSAdapter } from '../../Storage';
 import { TokenProvider } from '../../Utilities/Network';
 import { adlsTestHelper } from '../adlsTestHelper';
@@ -485,4 +485,47 @@ describe('Cdm.Storage.AdlsAdapter', () => {
                 .toBe(message);
         }
     });
+
+    /**
+     * Tests writing null content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+     */
+    adlsIt('ADLSWriteClientIdNullContentsNoEmptyFileLeft', async () => {
+        const adapter: ADLSAdapter = adlsTestHelper.createAdapterWithClientId();
+        adapter.ctx = new resolveContext(null);
+        adapter.ctx.featureFlags.set("ADLSAdapter_deleteEmptyFile", true);
+        const filename: string = 'nullcheck_TypeScript.txt';
+        let writeContents: string;
+        try {
+            await adapter.writeAsync(filename, writeContents);
+        } catch (e) {}
+        
+        try {
+            await adapter.readAsync(filename);
+        } catch (e) {
+            const message: string = "The specified path does not exist";
+            expect(e.message)
+                .toContain(message);
+        } 
+    });
+
+    /**
+     * Tests writing empty content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+     */
+    adlsIt('ADLSWriteClientIdEmptyContentsNoEmptyFileLeft', async () => {
+        const adapter: ADLSAdapter = adlsTestHelper.createAdapterWithClientId();
+        const filename: string = 'emptycheck_TypeScript.txt';
+        let writeContents: string = '';
+        try {
+            await adapter.writeAsync(filename, writeContents);
+        } catch (e) {}
+        
+        try {
+            await adapter.readAsync(filename);
+        } catch (e) {
+            const message: string = "The specified path does not exist";
+            expect(e.message)
+                .toContain(message);
+        } 
+    });
+
 });

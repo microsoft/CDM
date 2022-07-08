@@ -19,6 +19,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Entity;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Model;
@@ -424,10 +425,18 @@ public class ManifestPersistence {
           });
         }
 
+        result.setImports(new ArrayList<>());
+
         if (instance.getImports() != null && instance.getImports().getCount() > 0) {
-          result.setImports(new ArrayList<>());
           instance.getImports().forEach(element ->
                   result.getImports().add(ImportPersistence.toData(element, resOpt, options)));
+        }
+
+        //  Importing foundations.cdm.json to resolve trait properly on manifest
+        if (instance.getImports() == null || instance.getImports().item(Constants.FoundationsCorpusPath, null, false) == null) {
+          final Import foundationsImport = new Import();
+          foundationsImport.setCorpusPath(Constants.FoundationsCorpusPath);
+          result.getImports().add(foundationsImport);
         }
 
         return result;

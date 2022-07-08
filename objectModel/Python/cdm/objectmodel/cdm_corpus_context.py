@@ -21,6 +21,7 @@ class CdmCorpusContext:
         self.status_event = status_event  # type: EventCallback
         self.events = EventList() # type: EventList
         self.suppressed_log_codes = set() # type: set
+        self.feature_flags = {} # type: Dict[str, object]
 
         self.correlation_id = correlation_id or None # type: Optional[str]
 

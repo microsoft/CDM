@@ -16,22 +16,33 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequest;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
+import com.nimbusds.oauth2.sdk.util.MapUtils;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.utils.DateUtils;
 import org.apache.http.entity.StringEntity;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AdlsAdapter extends NetworkAdapter {
@@ -169,20 +180,32 @@ public class AdlsAdapter extends NetworkAdapter {
     if (!ensurePath(root + corpusPath)) {
       throw new IllegalArgumentException("Could not create folder for document '" + corpusPath + "'");
     }
+
     return CompletableFuture.runAsync(() -> {
       String url = this.createFormattedAdapterPath(corpusPath);
+      CdmHttpResponse response = this.createFileAtPath(corpusPath, url);
 
       try {
-        CdmHttpRequest request = this.buildRequest(url + "?resource=file", "PUT");
-        this.executeRequest(request).get();
+        CdmHttpRequest request = this.buildRequest(url + "?action=append&position=0", "PATCH", data, "application/json; charset=utf-8");
+        response = this.executeRequest(request).get();
 
-        request = this.buildRequest(url + "?action=append&position=0", "PATCH", data, "application/json; charset=utf-8");
-        this.executeRequest(request).get();
-
-        request = this.buildRequest(url + "?action=flush&position=" +
-            (new StringEntity(data, StandardCharsets.UTF_8).getContentLength()), "PATCH");
-        this.executeRequest(request).get();
-      } catch (final InterruptedException | ExecutionException e) {
+        if (response.getStatusCode() == 202) { // The uploaded data was accepted.
+          request = this.buildRequest(url + "?action=flush&position=" +
+          (new StringEntity(data, StandardCharsets.UTF_8).getContentLength()), "PATCH");
+          response = this.executeRequest(request).get();
+          
+          if (response.getStatusCode() != 200) { // Data was not flushed correctly. Delete empty file.
+            this.deleteContentAtPath(corpusPath, url, null);
+            throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath);
+          }
+        } else {
+          this.deleteContentAtPath(corpusPath, url, null);
+          throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath);
+        }
+      } catch (final StorageAdapterException ex) {
+        throw ex;
+      } catch (final Exception e) {
+        this.deleteContentAtPath(corpusPath, url, e);
         throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath, e);
       }
     });
@@ -597,6 +620,7 @@ public class AdlsAdapter extends NetworkAdapter {
         throw new StorageAdapterException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
       }
     }
+
   }
 
   private String getEscapedRoot() {
@@ -720,4 +744,41 @@ public class AdlsAdapter extends NetworkAdapter {
   public void setEndpoint(final com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint endpoint) {
     this.adlsAdapterAuthenticator.setEndpoint(endpoint);
   }
+
+  /**
+   * Deletes ADLS file at the given path.
+   * @param corpusPath filename to be deleted.
+   * @param url full path of object to be deleted.
+   * @param Exception inner exception.
+   */
+  private void deleteContentAtPath(final String corpusPath, final String url, final Exception innerException) {
+    if (this.getCtx() == null || MapUtils.isEmpty(this.getCtx().getFeatureFlags()) 
+      || this.getCtx().getFeatureFlags().getOrDefault("ADLSAdapter_deleteEmptyFile", true).equals(true)) {
+      try {
+        this.executeRequest(this.buildRequest(url, "DELETE")).get();
+        return; // Return on delete success. Throw exception even if delete succeeds since file write operation failed.
+      } catch (final InterruptedException | ExecutionException ex) {}
+    }
+    
+    throw new StorageAdapterException("Empty file was created but could not write ADLS content at path: " + corpusPath, innerException);
+  }
+
+  /**
+   * Creates ADLS file at the given path.
+   * @param corpusPath filename to be created.
+   * @param url full path of object to be created.
+   */
+  private CdmHttpResponse createFileAtPath(final String corpusPath, final String url) {
+    try {
+      CdmHttpRequest request = this.buildRequest(url + "?resource=file", "PUT");
+      CdmHttpResponse response = this.executeRequest(request).get();
+      if (response.getStatusCode() != 201) { // Empty file was not created successfully.
+        throw new StorageAdapterException(String.format("Could not write ADLS content at path, response code: %s. Reason: %s.", response.getStatusCode(), response.getReason()));
+      }
+      return response;
+    } catch (final InterruptedException | ExecutionException e) {
+      throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath, e);
+    }
+  }
+
 }

@@ -113,6 +113,9 @@ public class ModelJsonTest extends ModelJsonTestBase {
     // remove empty description from entities as they interfere with test.
     obtainedModelJson.getEntities().forEach(entity -> removeDescriptionFromEntityIfEmpty(JMapper.MAP.valueToTree(entity)));
     obtainedModelJson.setDescription(null);
+    Assert.assertNull(cdmManifest.getImports().item(Constants.FoundationsCorpusPath, null, false));
+    Assert.assertEquals(obtainedModelJson.getImports().size(), 1);
+    Assert.assertEquals(obtainedModelJson.getImports().get(0).getCorpusPath(), Constants.FoundationsCorpusPath);
 
     this.handleOutput("testLoadingCdmFolderResultAndModelJsonToData", CdmConstants.MODEL_JSON_EXTENSION, obtainedModelJson);
   }

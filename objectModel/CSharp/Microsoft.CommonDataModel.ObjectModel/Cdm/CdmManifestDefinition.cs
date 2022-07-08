@@ -221,20 +221,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     newManifestName = newManifestName.Substring(0, newManifestName.Length - ".manifest.cdm.json".Length);
                 var resolvedManifest = new CdmManifestDefinition(this.Ctx, newManifestName);
 
-                // bring over any imports in this document or other bobbles
-                resolvedManifest.Schema = this.Schema;
-                resolvedManifest.Explanation = this.Explanation;
-                resolvedManifest.DocumentVersion = this.DocumentVersion;
-                foreach (CdmImport imp in this.Imports)
-                {
-                    resolvedManifest.Imports.Add((CdmImport)imp.Copy());
-                }
-
                 // add the new document to the folder
                 if (resolvedManifestFolder.Documents.Add(resolvedManifest) == null)
                 {
                     // when would this happen? 
                     return null;
+                }
+
+                // bring over any imports in this document or other bobbles
+                resolvedManifest.Schema = this.Schema;
+                resolvedManifest.Explanation = this.Explanation;
+                resolvedManifest.DocumentVersion = this.DocumentVersion;
+
+                foreach (CdmImport imp in this.Imports)
+                {
+                    resolvedManifest.Imports.Add((CdmImport)imp.Copy());
                 }
 
                 foreach (var entity in this.Entities)
@@ -244,7 +245,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     CdmEntityDefinition entDef = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entityPath);
 
                     if (entDef == null)
+                    {
                         Logger.Error(this.Ctx, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveEntityFailure, entityPath);
+                        return null;
+                    }
 
                     if (entDef.InDocument.Owner == null)
                     {
@@ -326,7 +330,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 this.Relationships.Clear();
                 HashSet<string> relCache = new HashSet<string>();
 
-                if (this.Entities != null)
+                if (this.Entities != null && this.Entities.Count > 0)
                 {
                     // Indexes on this manifest before calling `AddElevatedTraitsAndRelationships`
                     // and calls `RefreshAsync` after adding all imports and traits to relationships
@@ -565,11 +569,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (childTime != null)
                 this.LastChildFileModifiedTime = TimeUtils.MaxTime(childTime, this.LastChildFileModifiedTime);
-#if NET45
-            return Task.FromResult(0);
-#else
             return Task.CompletedTask;
-#endif
         }
 
         /// <summary>
@@ -711,10 +711,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 }
                             }
                         }
+
+                        if (defImp.IncrementalPartitions != null)
+                        {
+                            foreach (CdmDataPartitionDefinition part in defImp.IncrementalPartitions)
+                            {
+                                if (part.SpecializedSchema != null)
+                                {
+                                    links.Add(part.SpecializedSchema);
+                                }
+                            }
+                        }
+
                         // so can patterns
                         if (defImp.DataPartitionPatterns != null)
                         {
                             foreach (CdmDataPartitionPatternDefinition part in defImp.DataPartitionPatterns)
+                            {
+                                if (part.SpecializedSchema != null)
+                                {
+                                    links.Add(part.SpecializedSchema);
+                                }
+                            }
+                        }
+
+                        if (defImp.IncrementalPartitionPatterns != null)
+                        {
+                            foreach (CdmDataPartitionPatternDefinition part in defImp.IncrementalPartitionPatterns)
                             {
                                 if (part.SpecializedSchema != null)
                                 {

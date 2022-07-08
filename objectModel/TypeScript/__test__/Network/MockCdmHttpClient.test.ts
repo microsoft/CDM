@@ -5,6 +5,8 @@ import * as http from 'http';
 import { CdmHttpClient } from '../../Utilities/Network/CdmHttpClient';
 import { CdmHttpRequest } from '../../Utilities/Network/CdmHttpRequest';
 import { CdmHttpResponse } from '../../Utilities/Network/CdmHttpResponse';
+import { CdmNumberOfRetriesExceededException } from '../../Utilities/Network/CdmNumberOfRetriesExceededException';
+import { CdmTimedOutException } from '../../Utilities/Network/CdmTimedOutException';
 
 let requestsExecutionCounter: number = 0;
 
@@ -70,7 +72,7 @@ describe('Network/MockCdmHttpClientTest', () => {
             fail('This test case should\'ve failed and throw an exception due too many retries.');
         } catch (err) {
             expect(err)
-                .toBe('The number of retries has exceeded the maximum number allowed by the client.');
+            .toBeInstanceOf(CdmNumberOfRetriesExceededException);
         }
     });
 
@@ -91,7 +93,7 @@ describe('Network/MockCdmHttpClientTest', () => {
             fail('This test case should\'ve failed and throw an exception due timeout.');
         } catch (err) {
             expect(err)
-                .toBe('Request timeout.');
+            .toBeInstanceOf(CdmTimedOutException);
         }
     });
 

@@ -24,6 +24,12 @@ export class CdmImport extends cdmObjectSimple {
      */
     public document: CdmDocumentDefinition;
 
+    /**
+     * Used when creating a copy of an import to figure out the new corpus path.
+     * @internal
+     */
+    public previousOwner: CdmObject;
+
     public static get objectType(): cdmObjectType {
         return cdmObjectType.import;
     }
@@ -64,6 +70,7 @@ export class CdmImport extends cdmObjectSimple {
                 copy.moniker = this.moniker;
             }
             copy.document = this.document ? this.document.copy(resOpt) as CdmDocumentDefinition : undefined;
+            copy.previousOwner = this.owner;
 
             return copy;
         }

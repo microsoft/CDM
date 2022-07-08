@@ -415,11 +415,11 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     }
 
     for (final CdmDataPartitionDefinition incrementalPartition : this.getIncrementalPartitions()) {
-      copy.getDataPartitions().add((CdmDataPartitionDefinition) incrementalPartition.copy(resOpt));
+      copy.getIncrementalPartitions().add((CdmDataPartitionDefinition) incrementalPartition.copy(resOpt));
     }
 
     for (final CdmDataPartitionPatternDefinition incrementalPartitionPattern : this.getIncrementalPartitionPatterns()) {
-      copy.getDataPartitionPatterns().add((CdmDataPartitionPatternDefinition) incrementalPartitionPattern.copy(resOpt));
+      copy.getIncrementalPartitionPatterns().add((CdmDataPartitionPatternDefinition) incrementalPartitionPattern.copy(resOpt));
     }
 
     this.copyDef(resOpt, copy);

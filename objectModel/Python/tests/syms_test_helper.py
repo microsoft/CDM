@@ -1,7 +1,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-import os, json
+import os
+import json
 
 from cdm.storage import ADLSAdapter, SymsAdapter
 from cdm.enums import AzureCloudEndpoint
@@ -14,7 +15,6 @@ class SymsTestHelper:
         hostname = os.environ.get('SYMS_TEST_ADLS{}_HOSTNAME'.format(adapter_num))
         root_path = os.environ.get('SYMS_TEST_ADLS{}_ROOTPATH'.format(adapter_num))
         shared_key = os.environ.get('SYMS_TEST_ADLS{}_SHAREDKEY'.format(adapter_num))
-
 
         return ADLSAdapter(hostname=hostname, root=root_path, shared_key=shared_key)
 
@@ -34,8 +34,8 @@ class SymsTestHelper:
     @staticmethod
     def json_object_should_be_equal_as_expected(expected: str, actual: str):
 
-        actual = SymsTestHelper.ignore_properties(actual)
-        obj1 = SymsTestHelper.ordered(expected)
+        actual = SymsTestHelper.ignore_properties(SymsTestHelper.ignore_null(actual))
+        obj1 = SymsTestHelper.ordered(SymsTestHelper.ignore_null(expected))
         obj2 = SymsTestHelper.ordered(actual)
         return obj1 == obj2
 
@@ -58,6 +58,33 @@ class SymsTestHelper:
                 del data['properties']['Properties'][rem]
 
         return data
+
+    # @staticmethod
+    # def ignore_null(data):
+    #     new_obj = {}
+    #     if isinstance(data, dict):
+    #     if isinstance(data, list):
+    #     for key in data:
+    #         if isinstance(data, dict):
+    #     return new_obj
+
+    @staticmethod
+    def ignore_null(data):
+        if isinstance(data, dict):
+            new_obj = {}
+            for key in data:
+                new_val = SymsTestHelper.ignore_null(data[key])
+                if new_val is not None:
+                    new_obj[key] = new_val
+            return new_obj
+        if isinstance(data, list):
+            return [SymsTestHelper.ignore_null(x) for x in data if data is not None]
+            # new_list = []
+            # for val in data:
+            #     new_list.append(SymsTestHelper.ignore_null(val))
+            # return new_list
+        if data is not None:
+            return data
 
     @staticmethod
     async def clean_database(adapter: 'SymsAdapter', db_name: str):

@@ -419,13 +419,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 }
             }
 
+            result.Imports = new List<Import>();
+
             if (instance.Imports != null && instance.Imports.Count > 0)
             {
-                result.Imports = new List<Import>();
                 foreach (var element in instance.Imports)
                 {
                     result.Imports.Add(CdmFolder.ImportPersistence.ToData(element, resOpt, options));
                 }
+            }
+
+            //  Importing foundations.cdm.json to resolve trait properly on manifest
+            if (instance.Imports == null || instance.Imports.Item(Constants.FoundationsCorpusPath, checkMoniker: false) == null)
+            {
+                result.Imports.Add(new Import { CorpusPath = Constants.FoundationsCorpusPath });
             }
 
             return result;

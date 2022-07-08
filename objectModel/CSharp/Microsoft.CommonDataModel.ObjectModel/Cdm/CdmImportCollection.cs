@@ -56,6 +56,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return import;
         }
 
+        /// <inheritdocs/>
+        public new CdmImport Add(CdmImport currObject)
+        {
+            if (currObject.PreviousOwner != null)
+            {
+                var absolutePath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(currObject.CorpusPath, currObject.PreviousOwner);
+
+                // Need to make the import path relative to the resolved manifest instead of the original manifest.
+                currObject.CorpusPath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(absolutePath, this.Owner);
+            }
+
+            return base.Add(currObject);
+        }
+
         /// <inheritdoc />
         public new void AddRange(IEnumerable<CdmImport> importList)
         {
