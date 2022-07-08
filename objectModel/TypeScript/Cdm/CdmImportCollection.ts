@@ -28,6 +28,13 @@ constructor(ctx: CdmCorpusContext, owner: CdmDocumentDefinition) {
      * @inheritdoc
      */
     public push(parameter: string | CdmImport, moniker?: string | boolean): CdmImport {
+        if (parameter instanceof CdmImport && !!parameter.previousOwner) {
+            const absolutePath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(parameter.corpusPath, parameter.previousOwner);
+
+            // Need to make the import path relative to the resolved manifest instead of the original manifest.
+            parameter.corpusPath = this.ctx.corpus.storage.createRelativeCorpusPath(absolutePath, this.owner);
+        }
+
         const obj: CdmImport = super.push(parameter);
         if (moniker !== undefined && isString(moniker)) {
             obj.moniker = moniker;

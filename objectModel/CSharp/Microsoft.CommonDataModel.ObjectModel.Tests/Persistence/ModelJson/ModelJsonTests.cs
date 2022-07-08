@@ -146,6 +146,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             obtainedModelJson.Entities.ForEach(RemoveDescriptionFromEntityIfEmpty);
             obtainedModelJson.Description = null;
 
+            Assert.IsNull(cdmManifest.Imports.Item(Constants.FoundationsCorpusPath, checkMoniker: false));
+            Assert.AreEqual(1, obtainedModelJson.Imports.Count);
+            Assert.AreEqual(Constants.FoundationsCorpusPath, obtainedModelJson.Imports[0].CorpusPath);
+
             this.HandleOutput(nameof(TestLoadingCdmFolderResultAndModelJsonToData), PersistenceLayer.ModelJsonExtension, obtainedModelJson);
         }
 

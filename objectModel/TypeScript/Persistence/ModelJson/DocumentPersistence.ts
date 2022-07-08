@@ -15,7 +15,7 @@ import {
     resolveOptions,
     StringUtils
 } from '../../internal';
-import { isDocumentDefinition } from '../../Utilities/cdmObjectTypeGuards';
+import { isDocumentDefinition, isEntityDefinition } from '../../Utilities/cdmObjectTypeGuards';
 import { Logger } from '../../Utilities/Logging/Logger';
 import { Import } from '../CdmFolder/types';
 import { LocalEntity } from './types';
@@ -73,7 +73,10 @@ export class DocumentPersistence {
         if (typeof documentObjectOrPath === 'string') {
             // Fetch the document from entity schema.
             const cdmEntity: CdmEntityDefinition = await ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(documentObjectOrPath, manifest);
-            if (!cdmEntity) {
+            if (!isEntityDefinition(cdmEntity)) {
+                Logger.error(ctx, this.TAG, this.toData.name, manifest.atCorpusPath, cdmLogCode.ErrInvalidCast, documentObjectOrPath, "CdmEntityDefinition");
+                return undefined;
+            } else if (!cdmEntity) {
                 Logger.error(ctx, this.TAG, this.toData.name, manifest.atCorpusPath, cdmLogCode.ErrPersistCdmEntityFetchError);
                 return undefined;
             }

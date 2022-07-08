@@ -181,14 +181,12 @@ public class DataPartitionPatternTest {
 
     final CdmDataPartitionPatternDefinition upsertIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionPatternDef, "UpsertPattern", false);
     upsertIncrementalPartition.setRootLocation("/IncrementalData");
-    upsertIncrementalPartition.setSpecializedSchema("csv");
     upsertIncrementalPartition.setRegularExpression("/(.*)/(.*)/(.*)/Upserts/upsert(\\d+)\\.csv$");
     upsertIncrementalPartition.setParameters(Arrays.asList("year", "month", "day", "detelePartitionNumber"));
     upsertIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Upsert.toString())));
 
     final CdmDataPartitionPatternDefinition deletePartitionPattern = corpus.makeObject(CdmObjectType.DataPartitionPatternDef, "DeletePartitionPattern", false);
     deletePartitionPattern.setRootLocation("/IncrementalData");
-    deletePartitionPattern.setSpecializedSchema("csv");
     deletePartitionPattern.setRegularExpression("/(.*)/(.*)/(.*)/Upserts/upsert(\\d+)\\.csv$");
     deletePartitionPattern.setParameters(Arrays.asList("year", "month", "day", "detelePartitionNumber"));
     localizedEntityDeclaration.getIncrementalPartitionPatterns().add(upsertIncrementalPartition);
@@ -234,12 +232,10 @@ public class DataPartitionPatternTest {
 
     final CdmDataPartitionPatternDefinition upsertIncrementalPartitionPattern = corpus.makeObject(CdmObjectType.DataPartitionPatternDef, "UpsertPartitionPattern", false);
     upsertIncrementalPartitionPattern.setRootLocation("/IncrementalData");
-    upsertIncrementalPartitionPattern.setSpecializedSchema("csv");
     upsertIncrementalPartitionPattern.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Upsert.toString())));
 
     final CdmDataPartitionPatternDefinition testingPartition = corpus.makeObject(CdmObjectType.DataPartitionPatternDef, "TestingPartitionPattern", false);
     testingPartition.setRootLocation("/testingData");
-    testingPartition.setSpecializedSchema("csv");
     localizedEntityDeclaration.getDataPartitionPatterns().add(upsertIncrementalPartitionPattern);
     localizedEntityDeclaration.getDataPartitionPatterns().add(testingPartition);
 

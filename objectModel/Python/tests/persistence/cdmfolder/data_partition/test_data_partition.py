@@ -181,12 +181,10 @@ class DataPartitionTest(unittest.TestCase):
 
         upsert_incremental_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'UpsertPartition', False)
         upsert_incremental_partition.location = '/IncrementalData'
-        upsert_incremental_partition.specialized_schema = 'csv'
         upsert_incremental_partition.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME, [['type', CdmIncrementalPartitionType.UPSERT.value]])
 
         delete_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'DeletePartition', False)
         delete_partition.location = '/IncrementalData'
-        delete_partition.specialized_schema = 'csv'
         localized_entity_declaration.incremental_partitions.append(upsert_incremental_partition)
         localized_entity_declaration.incremental_partitions.append(delete_partition)
 
@@ -230,13 +228,11 @@ class DataPartitionTest(unittest.TestCase):
         upsert_incremental_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'UpsertPartition',
                                                           False)
         upsert_incremental_partition.location = '/IncrementalData'
-        upsert_incremental_partition.specialized_schema = 'csv'
         upsert_incremental_partition.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME,
                                                             [['type', CdmIncrementalPartitionType.UPSERT.value]])
 
         delete_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'TestingPartition', False)
         delete_partition.location = '/testingData'
-        delete_partition.specialized_schema = 'csv'
         localized_entity_declaration.data_partitions.append(upsert_incremental_partition)
         localized_entity_declaration.data_partitions.append(delete_partition)
 

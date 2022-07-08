@@ -13,6 +13,7 @@ from cdm.persistence import PersistenceLayer
 from cdm.persistence.modeljson import ManifestPersistence
 from cdm.persistence.cdmfolder import ManifestPersistence as CdmManifestPersistence
 from cdm.storage import LocalAdapter
+from cdm.utilities import Constants
 from cdm.utilities.copy_options import CopyOptions
 from cdm.utilities.resolve_options import ResolveOptions
 
@@ -63,9 +64,13 @@ class ModelJsonTest(unittest.TestCase):
         test_name = 'test_loading_cdm_folder_result_and_model_json_to_data'
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
 
-        manifest = await cdm_corpus.fetch_object_async('result.model.manifest{}'.format(PersistenceLayer.CDM_EXTENSION), cdm_corpus.storage.fetch_root_folder('local'))
-
+        manifest = await cdm_corpus.fetch_object_async('result.model.manifest{}'.format(PersistenceLayer.CDM_EXTENSION), cdm_corpus.storage.fetch_root_folder('local'))  # CdmManifestDefinition
         actual_data = json.loads((await ManifestPersistence.to_data(manifest, None, None)).encode())
+
+        self.assertIsNone(manifest._imports.item(Constants._FOUNDATIONS_CORPUS_PATH, check_moniker=False))
+        self.assertEqual(1, len(actual_data.get('cdm:imports')))
+        self.assertEqual(Constants._FOUNDATIONS_CORPUS_PATH, actual_data.get('cdm:imports')[0].get('corpusPath'))
+
         self._validate_output(test_name, PersistenceLayer.MODEL_JSON_EXTENSION, actual_data)
 
     @async_test

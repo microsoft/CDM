@@ -30,5 +30,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Optional correlation ID to be stamped on all recorded status events.
         /// </summary>
         string CorrelationId { set; get; }
+
+        /// <summary>
+        /// Set feature flags in context.
+        /// </summary>
+        IDictionary<string, dynamic> FeatureFlags { set; get; }
     }
 }

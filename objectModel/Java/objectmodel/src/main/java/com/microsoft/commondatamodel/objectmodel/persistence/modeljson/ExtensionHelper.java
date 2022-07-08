@@ -409,22 +409,23 @@ final class ExtensionHelper {
 
     final String path = String.format("/extensions/%1$s", fileName);
 
-    return ctx.getCorpus().fetchObjectAsync(
+    CdmDocumentDefinition extensionDoc = null;
+    try {
+      extensionDoc = ctx.getCorpus().<CdmDocumentDefinition>fetchObjectAsync(
         path,
         ctx.getCorpus()
             .getStorage()
             .fetchRootFolder("cdm"))
-        .thenApply(
-            (document) -> {
-              if (document != null) {
-                final CdmDocumentDefinition extensionDoc =
-                    document instanceof CdmDocumentDefinition ? (CdmDocumentDefinition) document : null;
-
-                cachedDefDocs.put(key, extensionDoc);
-                return extensionDoc;
-              }
-              return null;
-            });
+            .join();
+    } catch (ClassCastException e) {
+      Logger.error(ctx, TAG, "fetchDefDoc", path, CdmLogCode.ErrInvalidCast, path, "CdmDocumentDefinition");
+    }
+    
+    if (extensionDoc != null) {
+      cachedDefDocs.put(key, extensionDoc);
+      return CompletableFuture.completedFuture(extensionDoc);
+    }
+    return null;
   }
 
   /**

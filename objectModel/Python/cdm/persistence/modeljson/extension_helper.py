@@ -4,12 +4,13 @@
 from collections import OrderedDict
 from typing import List, Dict, Optional, Tuple, TYPE_CHECKING
 
+from cdm.objectmodel import CdmDocumentDefinition
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import JObject, logger
 from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmTraitCollection, CdmTraitDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmImport, CdmTraitCollection, CdmTraitDefinition
 
 cached_def_docs = {}  # type: Dict[Tuple[CdmCorpusContext, str], CdmDocumentDefinition]
 
@@ -49,6 +50,10 @@ async def fetch_def_doc(ctx: 'CdmCorpusContext', file_name: str) -> None:
     path = '/extensions/{}'.format(file_name)
     document = await ctx.corpus.fetch_object_async(path, ctx.corpus.storage.fetch_root_folder('cdm'))
 
+    if not isinstance(document, CdmDocumentDefinition):
+        logger.error(ctx, _TAG, fetch_def_doc.__name__, path,
+                     CdmLogCode.ERR_INVALID_CAST, path, 'CdmDocumentDefinition')
+        return None
     if document is not None:
         cached_def_docs[key] = document
 

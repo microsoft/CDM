@@ -346,7 +346,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
         }
 
-        public static bool CompareObjectsContent(object expected, object actual, bool logError = false)
+        public static bool CompareObjectsContent(object expected, object actual, bool logError = false, bool ignoreNullValues = false)
         {
             if (expected == actual)
             {
@@ -398,7 +398,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
             if (expected is JValue expectedValue && actual is JValue actualValue)
             {
-                return CompareObjectsContent(expectedValue.Value, actualValue.Value, logError);
+                return CompareObjectsContent(expectedValue.Value, actualValue.Value, logError, ignoreNullValues);
             }
             if (expected is JArray expectedArray && actual is JArray actualArray)
             {
@@ -411,7 +411,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                     bool found = false;
                     for (int indexInActual = actualList.Count() - 1; indexInActual >= 0; indexInActual--)
                     {
-                        if (CompareObjectsContent(expectedList[indexInExpected], actualList[indexInActual]))
+                        if (CompareObjectsContent(expectedList[indexInExpected], actualList[indexInActual], logError, ignoreNullValues))
                         {
                             expectedList.RemoveRange(indexInExpected, 1);
                             actualList.RemoveRange(indexInActual, 1);
@@ -457,7 +457,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 bool foundProperty;
                 foreach (JProperty property in expectedObject.Properties())
                 {
-                    foundProperty = CompareObjectsContent(expectedObject[property.Name], actualObject[property.Name], logError);
+                    foundProperty = CompareObjectsContent(expectedObject[property.Name], actualObject[property.Name], logError, ignoreNullValues);
                     if (!foundProperty)
                     {
                         if (logError)
@@ -472,7 +472,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 foreach (JProperty property in actualObject.Properties())
                 {
                     // if expectedOutput[proprety.Name] is not null, equality with actualObject[...] was checked in previous for.
-                    if (actualObject[property.Name] != null && expectedObject[property.Name] == null)
+                    if (ignoreNullValues && actualObject[property.Name] is JValue && ((JValue)actualObject[property.Name]).Value == null)
+                    {
+                        continue;
+                    }
+                    else if (actualObject[property.Name] != null && expectedObject[property.Name] == null)
                     {
                         if (logError)
                         {

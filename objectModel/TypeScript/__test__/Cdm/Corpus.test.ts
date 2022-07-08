@@ -6,6 +6,8 @@ import {
     CdmCorpusDefinition,
     CdmDocumentDefinition,
     CdmEntityDefinition,
+    cdmLogCode,
+    CdmManifestDefinition,
     cdmStatusLevel,
     importsLoadStrategy,
     resolveOptions
@@ -165,4 +167,16 @@ describe('Cdm/CdmCorpusDefinition', () => {
         done();
     });
 
+    /**
+     * Tests that errors when trying to cast objects after fetching is handled correctly.
+     */
+    it('TestIncorrectCastOnFetch', async (done) => {
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrInvalidCast]);
+        const corpus = testHelper.getLocalCorpus(testsSubpath, 'TestIncorrectCastOnFetch', undefined, false, expectedLogCodes);
+        const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+        // this function will fetch the entity inside it
+        await corpus.calculateEntityGraphAsync(manifest);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrInvalidCast, true);
+        done();
+    });
 });

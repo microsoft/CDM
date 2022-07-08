@@ -208,14 +208,12 @@ describe('Persistence.CdmFolder.DataPartitionPattern', () => {
 
        const upsertIncrementalPartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(cdmObjectType.dataPartitionPatternDef, 'UpsertPattern', false);
        upsertIncrementalPartitionPattern.rootLocation = '/IncrementalData';
-       upsertIncrementalPartitionPattern.specializedSchema = 'csv';
        upsertIncrementalPartitionPattern.regularExpression = '/(.*)/(.*)/(.*)/Upserts/upsert(\\d+)\\.csv$';
        upsertIncrementalPartitionPattern.parameters = ['year', 'month', 'day', 'upsertPartitionNumber' ];
        upsertIncrementalPartitionPattern.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]]]);
 
        const deletePartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(cdmObjectType.dataPartitionPatternDef, 'DeletePartitionPattern', false);
        deletePartitionPattern.rootLocation = '/IncrementalData';
-       deletePartitionPattern.specializedSchema = 'csv';
        deletePartitionPattern.regularExpression = '/(.*)/(.*)/(.*)/Delete/delete(\\d+)\\.csv$';
        deletePartitionPattern.parameters = ['year', 'month', 'day', 'detelePartitionNumber' ];
        localizedEntityDeclaration.incrementalPartitionPatterns.push(upsertIncrementalPartitionPattern);
@@ -267,12 +265,10 @@ describe('Persistence.CdmFolder.DataPartitionPattern', () => {
     
         const upsertIncrementalPartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(cdmObjectType.dataPartitionPatternDef, 'UpsertPartitionPattern', false);
         upsertIncrementalPartitionPattern.rootLocation = '/IncrementalData';
-        upsertIncrementalPartitionPattern.specializedSchema = 'csv';
         upsertIncrementalPartitionPattern.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]]]);
     
         const deletePartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(cdmObjectType.dataPartitionPatternDef, 'TestingPartitionPattern', false);
         deletePartitionPattern.rootLocation = '/IncrementalData';
-        deletePartitionPattern.specializedSchema = 'csv';
         localizedEntityDeclaration.dataPartitionPatterns.push(upsertIncrementalPartitionPattern);
         localizedEntityDeclaration.dataPartitionPatterns.push(deletePartitionPattern);
     

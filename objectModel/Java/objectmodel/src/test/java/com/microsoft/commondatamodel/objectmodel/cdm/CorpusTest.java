@@ -4,10 +4,13 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
@@ -155,4 +158,16 @@ public class CorpusTest {
         wrtEntity.createResolvedEntityAsync("NewEntity", resOpt);
     }
 
+    /**
+     * Tests that errors when trying to cast objects after fetching is handled correctly.
+     */
+    @Test
+    public void testIncorrectCastOnFetch() throws InterruptedException {
+        final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.ErrInvalidCast));
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestIncorrectCastOnFetch", null, false, expectedLogCodes);
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
+        // this function will fetch the entity inside it
+        corpus.calculateEntityGraphAsync(manifest).join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrInvalidCast, true);
+    }
 }

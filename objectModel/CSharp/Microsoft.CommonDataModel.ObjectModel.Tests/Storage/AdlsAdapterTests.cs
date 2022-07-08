@@ -488,5 +488,99 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
                 Assert.Fail("AdlsAdapter initialized without secret shouldn't throw exception when updating config.");
             }
         }
+
+        /// <summary>
+        /// Tests writing null content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+        /// </summary>
+        [TestMethod]
+        public async Task ADLSWriteClientIdNullContentsNoEmptyFileLeft()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+            string filename = "nullcheck_CSharp.txt";
+            string writeContents = null;
+
+            ADLSAdapter adapter = AdlsTestHelper.CreateAdapterWithClientId();
+            adapter.Ctx = new ResolveContext(null, null);
+            adapter.Ctx.FeatureFlags.Add("ADLSAdapter_deleteEmptyFile", true);
+
+            try
+            {
+                await adapter.WriteAsync(filename, writeContents);
+            }
+            catch (Exception e)
+            { }
+
+            try
+            {
+                await adapter.ReadAsync(filename);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e.Message.Contains("The specified path does not exist"));
+            }
+
+        }
+
+        /// <summary>
+        /// Tests writing empty content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+        /// </summary>
+        [TestMethod]
+        public async Task ADLSWriteClientIdEmptyContentsNoEmptyFileLeft()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+            string filename = "emptycheck_CSharp.txt";
+            string writeContents = "";
+
+            ADLSAdapter adapter = AdlsTestHelper.CreateAdapterWithClientId();
+
+            try
+            {
+                await adapter.WriteAsync(filename, writeContents);
+            }
+            catch (Exception e)
+            {}
+
+            try
+            {
+                await adapter.ReadAsync(filename);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e.Message.Contains("The specified path does not exist"));
+            }
+
+        }
+
+        /// <summary>
+        /// Tests writing large file content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+        /// </summary>
+        [TestMethod]
+        public async Task ADLSWriteClientIdLargeFileContentsNoEmptyFileLeft()
+        {
+            
+            AdlsTestHelper.CheckADLSEnvironment();
+            string filename = "largefilecheck_CSharp.txt";
+            string writeContents = new string('A', 100000000);
+            ADLSAdapter adapter = AdlsTestHelper.CreateAdapterWithClientId();
+            adapter.Ctx = new ResolveContext(null, null);
+            adapter.Ctx.FeatureFlags.Add("ADLSAdapter_deleteEmptyFile", true);
+
+            try
+            {
+                await adapter.WriteAsync(filename, writeContents);
+            }
+            catch (Exception e)
+            { }
+
+            try
+            {
+                await adapter.ReadAsync(filename);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e.Message.Contains("The specified path does not exist"));
+            }
+        }
+
     }
 }

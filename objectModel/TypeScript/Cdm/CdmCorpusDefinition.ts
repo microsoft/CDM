@@ -87,6 +87,7 @@ import {
     isConstantEntityDefinition,
     isDataTypeDefinition,
     isEntityDefinition,
+    isManifestDefinition,
     isOperationAddArtifactAttribute,
     isOperationAddAttributeGroup,
     isOperationAddCountAttribute,
@@ -297,7 +298,13 @@ export class CdmCorpusDefinition {
      */
     public async createRootManifest(corpusPath: string): Promise<CdmManifestDefinition> {
         if (this.isPathManifestDocument(corpusPath)) {
-            this.rootManifest = await this.fetchObjectAsync(corpusPath, undefined, false);
+            const newManifest: CdmManifestDefinition = await this.fetchObjectAsync(corpusPath, undefined, false);
+            if (!isManifestDefinition(newManifest)) {
+                Logger.error(this.ctx, this.TAG, this.createRootManifest.name, corpusPath, cdmLogCode.ErrInvalidCast, corpusPath, "CdmManifestDefinition");
+                return undefined;
+            }
+
+            this.rootManifest = newManifest;
 
             return this.rootManifest;
         }
@@ -1231,6 +1238,11 @@ export class CdmCorpusDefinition {
                 // no need to pass the manifest to FetchObjectAsync.
                 const entity: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(entityPath);
 
+                if (!isEntityDefinition(entity)) {
+                    Logger.error(this.ctx, this.TAG, this.calculateEntityGraphAsync.name, currManifest.atCorpusPath, cdmLogCode.ErrInvalidCast, entityPath, "CdmEntityDefinition");
+                    continue;
+                }
+
                 if (!entity) {
                     continue;
                 }
@@ -1263,7 +1275,12 @@ export class CdmCorpusDefinition {
 
                         // remove any relationships that no longer exist
                         if (!hasRel) {
-                            const targetEnt: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(rel.toEntity, currManifest);
+                            let targetEnt: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(rel.toEntity, currManifest);
+                            if (!isEntityDefinition(targetEnt)) {
+                                Logger.error(this.ctx, this.TAG, this.calculateEntityGraphAsync.name, currManifest.atCorpusPath, cdmLogCode.ErrInvalidCast, rel.toEntity, "CdmEntityDefinition");
+                                targetEnt = undefined;
+                            }
+
                             if (targetEnt) {
                                 const currIncoming: CdmE2ERelationship[] = this.incomingRelationships.get(targetEnt.atCorpusPath);
                                 if (currIncoming) {
@@ -1281,7 +1298,12 @@ export class CdmCorpusDefinition {
 
                 // flip outgoing entity relationships list to get incoming relationships map
                 for (const rel of newOutgoingRelationships) {
-                    const targetEnt: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(rel.toEntity, currManifest);
+                    let targetEnt: CdmEntityDefinition = await this.fetchObjectAsync<CdmEntityDefinition>(rel.toEntity, currManifest);
+                    if (!isEntityDefinition(targetEnt)) {
+                        Logger.error(this.ctx, this.TAG, this.calculateEntityGraphAsync.name, currManifest.atCorpusPath, cdmLogCode.ErrInvalidCast, rel.toEntity, "CdmEntityDefinition");
+                        targetEnt = undefined;
+                    }
+
                     if (targetEnt) {
                         if (!this.incomingRelationships.has(targetEnt.atCorpusPath)) {
                             this.incomingRelationships.set(targetEnt.atCorpusPath, []);
@@ -1300,6 +1322,11 @@ export class CdmCorpusDefinition {
             for (const subManifestDef of currManifest.subManifests) {
                 const corpusPath: string = this.storage.createAbsoluteCorpusPath(subManifestDef.definition, currManifest);
                 const subManifest: CdmManifestDefinition = await this.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                if (!isManifestDefinition(subManifest)) {
+                    Logger.error(this.ctx, this.TAG, this.calculateEntityGraphAsync.name, currManifest.atCorpusPath, cdmLogCode.ErrInvalidCast, corpusPath, "CdmManifestDefinition");
+                    continue;
+                }
+
                 if (subManifest) {
                     await this.calculateEntityGraphAsync(subManifest);
                 }
@@ -1719,7 +1746,12 @@ export class CdmCorpusDefinition {
 
             let entArt: CdmEntityDefinition;
             try {
-                entArt = await this.fetchObjectAsync<CdmEntityDefinition>('cdm:/primitives.cdm.json/defaultArtifacts');
+                const defaultArtifactsPath = 'cdm:/primitives.cdm.json/defaultArtifacts';
+                entArt = await this.fetchObjectAsync<CdmEntityDefinition>(defaultArtifactsPath);
+                if (!isEntityDefinition(entArt)) {
+                    Logger.error(this.ctx, this.TAG, this.prepareArtifactAttributesAsync.name, undefined, cdmLogCode.ErrInvalidCast, defaultArtifactsPath, "CdmEntityDefinition");
+                    entArt = undefined;
+                }
             }
             finally {
                 this.setEventCallback(oldStatus, oldLevel);
@@ -2042,32 +2074,6 @@ export class CdmCorpusDefinition {
         }
 
         return nextStage;
-    }
-
-    // Generates the warnings for a single document.
-    private async generateWarningsForSingleDoc(doc: CdmDocumentDefinition, resOpt: resolveOptions): Promise<void> {
-        if (doc.getDefinitions() === undefined) {
-            return;
-        }
-
-        const ctx: resolveContext = this.ctx as resolveContext;
-
-        resOpt.wrtDoc = doc;
-
-        // check if primary key is missing and report if so
-        await Promise.all(doc.definitions.allItems
-            .map(async (element: CdmObjectDefinition) => {
-                if (element instanceof CdmEntityDefinition && (element).attributes !== undefined) {
-                    const resolvedEntity: CdmEntityDefinition = await element.createResolvedEntityAsync(`${element.entityName}_`, resOpt);
-
-                    // tslint:disable-next-line:no-suspicious-comment
-                    // TODO: Add additional checks here.
-                    this.checkPrimaryKeyAttributes(resolvedEntity, resOpt, ctx);
-                }
-            })
-        );
-
-        resOpt.wrtDoc = undefined;
     }
 
     /**

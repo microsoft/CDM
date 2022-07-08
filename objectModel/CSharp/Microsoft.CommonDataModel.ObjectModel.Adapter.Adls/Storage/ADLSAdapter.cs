@@ -9,17 +9,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
 
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
-    using Microsoft.Identity.Client;
-
-    using Newtonsoft.Json;
-    using System.Security.Cryptography;
-    using Newtonsoft.Json.Linq;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Storage;
+
+    using Microsoft.Identity.Client;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public class ADLSAdapter : NetworkAdapter
     {
@@ -290,18 +291,42 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
 
             string url = this.CreateFormattedAdapterPath(corpusPath);
+            CdmHttpResponse response = await this.CreateFileAtPath(corpusPath, url);
 
-            var request = await this.BuildRequest($"{url}?resource=file", HttpMethod.Put);
-            await this.ExecuteRequest(request);
+            try
+            {
+                CdmHttpRequest request = await this.BuildRequest($"{url}?action=append&position=0", new HttpMethod("PATCH"), data, "application/json");
+                response = await this.ExecuteRequest(request);
 
-            request = await this.BuildRequest($"{url}?action=append&position=0", new HttpMethod("PATCH"), data, "application/json");
-            await this.ExecuteRequest(request);
+                if (response.StatusCode.Equals(HttpStatusCode.Accepted)) // The uploaded data was accepted.
+                {
+                    var stringContent = new StringContent(request.Content, Encoding.UTF8, request.ContentType);
 
-            var stringContent = new StringContent(request.Content, Encoding.UTF8, request.ContentType);
+                    // Building a request and setting a URL with a position argument to be the length of the byte array of the string content (or length of UTF-8 string content).
+                    request = await this.BuildRequest($"{url}?action=flush&position={(await stringContent.ReadAsByteArrayAsync()).Length}", new HttpMethod("PATCH"));
+                    response = await this.ExecuteRequest(request);
 
-            // Building a request and setting a URL with a position argument to be the length of the byte array of the string content (or length of UTF-8 string content).
-            request = await this.BuildRequest($"{url}?action=flush&position={(await stringContent.ReadAsByteArrayAsync()).Length}", new HttpMethod("PATCH"));
-            await this.ExecuteRequest(request);
+                    if (!response.StatusCode.Equals(HttpStatusCode.OK)) // Data was not flushed correctly. Delete empty file.
+                    {
+                        await this.DeleteContentAtPath(corpusPath, url, null);
+                        throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'");
+                    }
+                }
+                else
+                {
+                    await this.DeleteContentAtPath(corpusPath, url, null);
+                    throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'");
+                }
+            }
+            catch (StorageAdapterException exc)
+            {
+                throw exc;
+            }
+            catch (Exception e)
+            {
+                await this.DeleteContentAtPath(corpusPath, url, e);
+                throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'", e);
+            }
         }
 
         /// <inheritdoc />
@@ -568,6 +593,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     throw new ArgumentException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
                 }
             }
+
         }
 
         /// <summary>
@@ -717,6 +743,58 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             string adapterPath = this.CreateAdapterPath(corpusPath);
 
             return adapterPath != null ? adapterPath.Replace(this.Hostname, this.formattedHostname) : null;
+        }
+
+        /// <summary>
+        /// Create empty file using PUT request.
+        /// </summary>
+        /// <param name="corpusPath">The corpusPath</param>
+        /// <param name="url">The url for file location</param>
+        /// <returns>File creation response. <see cref="CdmHttpResponse"/></returns>
+        private async Task<CdmHttpResponse> CreateFileAtPath(string corpusPath, string url)
+        {
+            CdmHttpRequest request;
+            CdmHttpResponse response;
+
+            try
+            {
+                request = await this.BuildRequest($"{url}?resource=file", HttpMethod.Put);
+                response = await this.ExecuteRequest(request);
+            }
+            catch (Exception e)
+            {
+                throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'", e);
+            }
+
+            if (!response.StatusCode.Equals(HttpStatusCode.Created)) // Empty file was not created successfully.
+            {
+                throw new StorageAdapterException($"Could not write ADLS content at path, response code: {response.StatusCode}. Reason: {response.Reason}.");
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Deletes ADLS file at the given path.
+        /// </summary>
+        /// <param name="corpusPath">The corpusPath</param>
+        /// <param name="url">The url for file location</param>
+        /// <param name="innerException">inner exception.</param>
+        private async Task DeleteContentAtPath(string corpusPath, string url, Exception innerException)
+        {
+            dynamic value = true;
+            bool isFeatureFlagSet = this.Ctx != null && this.Ctx.FeatureFlags != null && this.Ctx.FeatureFlags.TryGetValue("ADLSAdapter_deleteEmptyFile", out value);
+            if (!isFeatureFlagSet || value)
+            {
+                try
+                {
+                    await this.ExecuteRequest(await this.BuildRequest(url, HttpMethod.Delete));
+                    return; // Return on delete success. Throw exception even if delete succeeds since file write operation failed.
+                }
+                catch (Exception)
+                {}
+            }
+            throw new StorageAdapterException($"Empty file was created but could not write ADLS content at path: '{corpusPath}'", innerException);
         }
 
         /// <summary>

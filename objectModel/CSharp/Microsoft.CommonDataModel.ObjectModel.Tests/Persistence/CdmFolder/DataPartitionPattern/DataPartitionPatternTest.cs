@@ -192,14 +192,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 
             var upsertIncrementalPartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, "UpsertPattern", false);
             upsertIncrementalPartitionPattern.RootLocation = "/IncrementalData";
-            upsertIncrementalPartitionPattern.SpecializedSchema = "csv";
             upsertIncrementalPartitionPattern.RegularExpression = "/(.*)/(.*)/(.*)/Upserts/upsert(\\d+)\\.csv$";
             upsertIncrementalPartitionPattern.Parameters = new List<string> { "year", "month", "day", "upsertPartitionNumber" };
             upsertIncrementalPartitionPattern.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Upsert.ToString()) });
 
             var deletePartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, "DeletePartitionPattern", false);
             deletePartitionPattern.RootLocation = "/IncrementalData";
-            deletePartitionPattern.SpecializedSchema = "csv";
             deletePartitionPattern.RegularExpression = "/(.*)/(.*)/(.*)/Delete/detele(\\d+)\\.csv$";
             deletePartitionPattern.Parameters = new List<string> { "year", "month", "day", "detelePartitionNumber" };
             localizedEntityDeclaration.IncrementalPartitionPatterns.Add(upsertIncrementalPartitionPattern);
@@ -255,12 +253,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 
             var upsertIncrementalPartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, "UpsertPartitionPattern", false);
             upsertIncrementalPartitionPattern.RootLocation = "/IncrementalData";
-            upsertIncrementalPartitionPattern.SpecializedSchema = "csv";
             upsertIncrementalPartitionPattern.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Upsert.ToString()) });
 
             var testingPartitionPattern = corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, "TestingPartitionPattern", false);
             testingPartitionPattern.RootLocation = "/testingData";
-            testingPartitionPattern.SpecializedSchema = "csv";
             localizedEntityDeclaration.DataPartitionPatterns.Add(upsertIncrementalPartitionPattern);
             localizedEntityDeclaration.DataPartitionPatterns.Add(testingPartitionPattern);
 

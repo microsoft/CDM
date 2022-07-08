@@ -15,6 +15,7 @@ from cdm.storage.adls import ADLSAdapter
 from cdm.enums import AzureCloudEndpoint
 from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
+from cdm.objectmodel.cdm_corpus_context import CdmCorpusContext
 
 
 def IfRunTestsFlagNotSet():
@@ -164,6 +165,69 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
             self.fail(str(e))
         except:
             pass
+
+    '''
+    Tests writing null content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+    '''
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    async def test_adls_write_client_id_null_contents_no_empty_file_left(self):
+        adls_adapter = AdlsTestHelper.create_adapter_with_client_id()
+        adls_adapter.ctx = CdmCorpusContext(None, None)
+        adls_adapter.ctx.feature_flags = {'ADLSAdapter_deleteEmptyFile': True}
+        filename = 'nullcheck_Python.txt'
+        write_contents = None
+        try:
+            await adls_adapter.write_async(filename, write_contents)
+        except Exception as e:
+            pass
+
+        try:
+            await adls_adapter.read_async(filename)
+        except Exception as e:
+            self.assertTrue('HTTP Error 404: Failed to read' in str(e))
+
+    '''
+    Tests writing empty content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+    '''
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    async def test_adls_write_client_id_empty_contents_no_empty_file_left(self):
+        adls_adapter = AdlsTestHelper.create_adapter_with_client_id()
+        filename = 'emptycheck_Python.txt'
+        write_contents = ""
+        try:
+            await adls_adapter.write_async(filename, write_contents)
+        except Exception as e:
+            pass
+
+        try:
+            await adls_adapter.read_async(filename)
+        except Exception as e:
+            self.assertTrue('HTTP Error 404: Failed to read' in str(e))
+
+    '''
+    Tests writing large file content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+    '''
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    async def test_adls_write_client_id_large_file_contents_no_empty_file_left(self):
+        adls_adapter = AdlsTestHelper.create_adapter_with_client_id()
+        adls_adapter.ctx = CdmCorpusContext(None, None)
+        adls_adapter.ctx.feature_flags = {'ADLSAdapter_deleteEmptyFile': True}
+
+        filename = 'largefilecheck_Python.txt'
+        write_contents = "x" * 100000000
+        
+        try:
+            await adls_adapter.write_async(filename, write_contents)
+        except Exception as e:
+            pass
+
+        try:
+            await adls_adapter.read_async(filename)
+        except Exception as e:
+            self.assertTrue('HTTP Error 404: Failed to read' in str(e))
 
     def test_endpoint_missing_on_config(self):
         """Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.

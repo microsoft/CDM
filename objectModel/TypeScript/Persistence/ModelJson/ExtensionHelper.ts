@@ -24,7 +24,7 @@ import {
     Logger,
     StringUtils
 } from '../../internal';
-import { isCdmTraitDefinition } from '../../Utilities/cdmObjectTypeGuards';
+import { isCdmTraitDefinition, isDocumentDefinition } from '../../Utilities/cdmObjectTypeGuards';
 
 /**
  * Dictionary used to cache documents with trait definitions by file name.
@@ -42,6 +42,8 @@ const supportedExtensions: Set<string> = new Set(['pbi']);
 const extensionTraitNamePrefix: string = 'is.extension.';
 
 export const extensionDocName: string = 'custom.extension.cdm.json';
+
+const TAG = 'ExtensionHelper';
 
 /**
  * Adds the list of documents with extensions schema definitions to the manifest.
@@ -79,7 +81,7 @@ export async function standardImportDetection(
     for (let traitIndex: number = localExtensionTraitDefList.length - 1; traitIndex >= 0; traitIndex--) {
         const extensionTraitDef: CdmTraitDefinition = localExtensionTraitDefList[traitIndex];
         if (!traitDefIsExtension(extensionTraitDef)) {
-            Logger.error(this.ctx, this.TAG, this.standardImportDetection.name, null, cdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
+            Logger.error(ctx, TAG, standardImportDetection.name, null, cdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
             return undefined;
         }
 
@@ -291,13 +293,14 @@ async function fetchDefDoc(ctx: CdmCorpusContext, fileName: string): Promise<Cdm
     // We retrieve the document and cache in the dictionary for future reference.
     const path: string = `/extensions/${fileName}`;
     const absPath: string = ctx.corpus.storage.createAbsoluteCorpusPath(path, ctx.corpus.storage.fetchRootFolder('cdm'));
-    const document: CdmObject = await ctx.corpus.fetchObjectAsync(absPath);
-    if (document) {
-        const extensionDoc: CdmDocumentDefinition = document as CdmDocumentDefinition;
-        cachedDefDocs.set(key, extensionDoc);
-
-        return extensionDoc;
+    const extensionDoc: CdmDocumentDefinition = await ctx.corpus.fetchObjectAsync(absPath);
+    if (!isDocumentDefinition(extensionDoc)) {
+        Logger.error(ctx, TAG, fetchDefDoc.name, absPath, cdmLogCode.ErrInvalidCast, absPath, "CdmDocumentDefinition");
+        return undefined;
     }
+    cachedDefDocs.set(key, extensionDoc);
+
+    return extensionDoc;
 }
 
 /**

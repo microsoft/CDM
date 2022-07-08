@@ -7,7 +7,7 @@
       "entityPath": "resolved/Account.cdm.json/Account",
       "dataPartitions": [
         {
-          "location": "dataFiles/2015/May/cohort001.csv",
+          "location": "FullData/2015/May/cohort001.csv",
           "arguments": [
             {
               "name": "year",
@@ -26,7 +26,7 @@
           "lastFileModifiedTime": "2020-08-02T00:00:00.000Z"
         },
         {
-          "location": "dataFiles/2016/May/cohort002.csv",
+          "location": "FullData/2016/May/cohort002.csv",
           "arguments": [
             {
               "name": "year",
@@ -45,7 +45,7 @@
           "lastFileModifiedTime": "2020-08-02T00:00:00.000Z"
         },
         {
-          "location": "dataFiles/2017/April/cohort011.csv",
+          "location": "FullData/2017/April/cohort011.csv",
           "arguments": [
             {
               "name": "year",
@@ -64,7 +64,7 @@
           "lastFileModifiedTime": "2020-08-02T00:00:00.000Z"
         },
         {
-          "location": "dataFiles/2019/July/cohort101.csv",
+          "location": "FullData/2019/July/cohort101.csv",
           "arguments": [
             {
               "name": "year",
@@ -87,12 +87,189 @@
         {
           "name": "sampleDataPartitionPattern",
           "explanation": "/ capture 4 digits / capture a word / capture one or more digits after the word cohort but before .csv",
-          "rootLocation": "dataFiles",
+          "rootLocation": "FullData",
           "regularExpression": "/(\\d{4})/(\\w+)/cohort(\\d+)\\.csv$",
           "parameters": [
             "year",
             "month",
             "cohortNumber"
+          ],
+          
+          "lastFileStatusCheckTime": "2020-08-01T00:00:00.000Z"
+        }
+      ],
+      "incrementalPartitions": [
+        {
+          "location": "/IncrementalData/2018/8/15/Upserts/1.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.incremental",
+              "arguments": [
+                {
+                  "name": "type",
+                  "value": "Upsert"
+                },
+                {
+                  "name": "incrementPartitionPatternName",
+                  "value": "UpsertPattern"
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "year",
+              "value": "2018"
+            },
+            {
+              "name": "month",
+              "value": "8"
+            },
+            {
+              "name": "day",
+              "value": "15"
+            },
+            {
+              "name": "upsertPartitionNumber",
+              "value": "1"
+            }
+          ],
+          "lastFileStatusCheckTime": "2020-08-01T00:00:00.000Z",
+          "lastFileModifiedTime": "2020-08-02T00:00:00.000Z"
+        },
+        {
+          "location": "/IncrementalData/2018/8/15/Deletes/1.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.incremental",
+              "arguments": [
+                {
+                  "name": "type",
+                  "value": "Delete"
+                },
+                {
+                  "name": "fullDataPartitionPatternName",
+                  "value": "FullDataPattern"
+                },
+                {
+                  "name": "incrementPartitionPatternName",
+                  "value": "DeletePattern"
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "year",
+              "value": "2018"
+            },
+            {
+              "name": "month",
+              "value": "8"
+            },
+            {
+              "name": "day",
+              "value": "15"
+            },
+            {
+              "name": "deletePartitionNumber",
+              "value": "1"
+            }
+          ],
+          "lastFileStatusCheckTime": "2020-08-01T00:00:00.000Z",
+          "lastFileModifiedTime": "2020-08-02T00:00:00.000Z"
+        },
+        {
+          "location": "/IncrementalData/2018/8/15/Deletes/2.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.incremental",
+              "arguments": [
+                {
+                  "name": "type",
+                  "value": "Delete"
+                },
+                {
+                  "name": "fullDataPartitionPatternName",
+                  "value": "FullDataPattern"
+                },
+                {
+                  "name": "incrementPartitionPatternName",
+                  "value": "DeletePattern"
+                }
+              ]
+            }
+          ],
+          "arguments": [
+            {
+              "name": "year",
+              "value": "2018"
+            },
+            {
+              "name": "month",
+              "value": "8"
+            },
+            {
+              "name": "day",
+              "value": "15"
+            },
+            {
+              "name": "deletePartitionNumber",
+              "value": "2"
+            }
+          ],
+          "lastFileStatusCheckTime": "2020-08-01T00:00:00.000Z",
+          "lastFileModifiedTime": "2020-08-02T00:00:00.000Z"
+        }
+      ],
+      "incrementalPartitionPatterns": [
+        {
+          "name": "UpsertPattern",
+          "rootLocation": "/IncrementalData",
+          "regularExpression": "/(.*)/(.*)/(.*)/Upserts/(\\d+)\\.csv$",
+          "parameters": [
+            "year",
+            "month",
+            "day",
+            "upsertPartitionNumber"
+          ],
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.incremental",
+              "arguments": [
+                {
+                  "name": "type",
+                  "value": "Upsert"
+                }
+              ]
+            }
+          ],
+          "lastFileStatusCheckTime": "2020-08-01T00:00:00.000Z"
+        },
+        {
+          "name": "DeletePattern",
+          "rootLocation": "/IncrementalData",
+          "regularExpression": "/(.*)/(.*)/(.*)/Deletes/(\\d+)\\.csv$",
+          "parameters": [
+            "year",
+            "month",
+            "day",
+            "deletePartitionNumber"
+          ],
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.incremental",
+              "arguments": [
+                {
+                  "name": "type",
+                  "value": "Delete"
+                },
+                {
+                  "name": "fullDataPartitionPatternName",
+                  "value": "FullDataPattern"
+                }
+              ]
+            }
           ],
           "lastFileStatusCheckTime": "2020-08-01T00:00:00.000Z"
         }
@@ -116,5 +293,10 @@
       "toEntityAttribute": "accountId"
     }
   ],
-  "jsonSchemaSemanticVersion": "1.4.0"
+  "jsonSchemaSemanticVersion": "1.4.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    }
+  ]
 }

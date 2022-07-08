@@ -12,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class ResolveContext implements CdmCorpusContext {
   private EventList events;
   private HashSet<CdmLogCode> suppressedLogCodes;
   private String correlationId;
+  private Map<String, Object> featureFlags;
 
   public ResolveContext(final CdmCorpusDefinition corpus) {
     this(corpus, null);
@@ -46,6 +48,7 @@ public class ResolveContext implements CdmCorpusContext {
     this.corpus = corpus;
     this.events = new EventList();
     this.suppressedLogCodes = new HashSet<CdmLogCode>();
+    this.featureFlags = new HashMap<>();
   }
 
   @Override
@@ -94,6 +97,16 @@ public class ResolveContext implements CdmCorpusContext {
   @Override
   public void setCorrelationId(String correlationId) {
     this.correlationId = correlationId;
+  }
+
+  @Override
+  public Map<String, Object> getFeatureFlags() {
+    return featureFlags;
+  }
+
+  @Override
+  public void setFeatureFlags(Map<String, Object> featureFlags) {
+    this.featureFlags = featureFlags;
   }
 
   /**

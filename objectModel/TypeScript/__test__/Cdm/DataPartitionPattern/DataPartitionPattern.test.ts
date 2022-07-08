@@ -324,13 +324,11 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         const upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, '2019UpsertPartition1', false);
         upsertIncrementalPartition.lastFileStatusCheckTime = new Date();
         upsertIncrementalPartition.location = '/IncrementalData/Upserts/upsert1.csv';
-        upsertIncrementalPartition.specializedSchema = 'csv';
         upsertIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]]]);
 
         var deleteIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, "2019DeletePartition1", false);
         deleteIncrementalPartition.lastFileStatusCheckTime = new Date();
         deleteIncrementalPartition.location = '/IncrementalData/Deletes/delete1.csv';
-        deleteIncrementalPartition.specializedSchema = 'csv';
         deleteIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]]]);
 
         partitionEntity.incrementalPartitions.push(upsertIncrementalPartition);
@@ -617,17 +615,19 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe(1);
         expect(partitionEntity.incrementalPartitionPatterns.length)
             .toBe(1);
+
+        await new Promise(f => setTimeout(f, 1000));
         const timeBeforeLoad: Date = new Date();
-        expect(partitionEntity.lastFileStatusCheckTime <= timeBeforeLoad)
+        expect(partitionEntity.lastFileStatusCheckTime < timeBeforeLoad)
             .toBe(true);
-        
+
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.None);
 
         expect(partitionEntity.dataPartitions.length)
             .toBe(0);
         expect(partitionEntity.incrementalPartitions.length)
             .toBe(0);
-        expect(partitionEntity.lastFileStatusCheckTime > timeBeforeLoad)
+        expect(partitionEntity.lastFileStatusCheckTime >= timeBeforeLoad)
             .toBe(true);
         
         done();

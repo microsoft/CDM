@@ -20,6 +20,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         ///<inheritdoc/>
         public string CorrelationId { get; set; }
         public HashSet<CdmLogCode> SuppressedLogCodes { get; }
+        ///<inheritdoc/>
+        public IDictionary<string, dynamic> FeatureFlags { get; set; }
 
         internal string RelativePath;
         internal IDictionary<string, ResolvedAttributeSetBuilder> AttributeCache;
@@ -34,6 +36,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             this.Corpus = corpus;
             this.Events = new EventList();
             this.SuppressedLogCodes = new HashSet<CdmLogCode>();
+            this.FeatureFlags = new ConcurrentDictionary<string, dynamic>();
         }
     }
 }

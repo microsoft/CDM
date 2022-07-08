@@ -5,15 +5,14 @@ from typing import Optional, TYPE_CHECKING
 import warnings
 
 from cdm.utilities import logger, ResolveOptions
-from cdm.enums import CdmObjectType
-from cdm.enums import CdmLogCode
-from cdm.utilities.string_utils import StringUtils
+from cdm.enums import CdmObjectType, CdmLogCode
 
+from .cdm_object import CdmObject
 from .cdm_object_simple import CdmObjectSimple
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.utilities import VisitCallback
 
 
 class CdmImport(CdmObjectSimple):
@@ -26,6 +25,7 @@ class CdmImport(CdmObjectSimple):
 
         # --- internal ---
         self._document = None  # type: Optional[CdmDocumentDefinition]
+        self._previous_owner = None  # type: Optional[CdmObject]
 
     @property
     def doc(self) -> Optional['CdmDocumentDefinition']:
@@ -49,6 +49,7 @@ class CdmImport(CdmObjectSimple):
             copy.moniker = self.moniker
 
         copy._document = self._document.copy(res_opt) if self._document else None
+        copy._previous_owner = self.owner
 
         return copy
 

@@ -1107,8 +1107,13 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         for (final CdmImport anImport : this.getImports()) {
           final CdmImport imp = anImport;
           // get the document object from the import
-          final CdmDocumentDefinition docImp = ((CdmDocumentDefinition) this.getCtx().getCorpus()
-              .fetchObjectAsync(imp.getCorpusPath(), this).join());
+          CdmDocumentDefinition docImp = null;
+          try { 
+            docImp = this.getCtx().getCorpus()
+              .<CdmDocumentDefinition>fetchObjectAsync(imp.getCorpusPath(), this).join();
+          } catch (ClassCastException e) {
+            Logger.error(this.getCtx(), TAG, "saveLinkedDocumentsAsync", this.getAtCorpusPath(), CdmLogCode.ErrInvalidCast, imp.getCorpusPath(), "CdmDocumentDefinition");
+          }
           if (docImp != null && docImp.isDirty) {
             // save it with the same name
             if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {

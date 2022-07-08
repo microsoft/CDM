@@ -64,9 +64,9 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
         // Create the entity definition instance
         final CdmEntityDefinition personEntity = cdmCorpus.makeObject(CdmObjectType.EntityDef, CUSTOM_PERSON_ENTITY_NAME);
         // Add type attributes to the entity instance
-        final CdmTypeAttributeDefinition personAttributeId = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME + "Id", "identifiedBy", "entityId");
+        final CdmTypeAttributeDefinition personAttributeId = createTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME + "Id", "identifiedBy", "entityId");
         personEntity.getAttributes().add(personAttributeId);
-        final CdmTypeAttributeDefinition personAttributeName = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME + "Name", "hasA", "name");
+        final CdmTypeAttributeDefinition personAttributeName = createTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME + "Name", "hasA", "name");
         personEntity.getAttributes().add(personAttributeName);
         // Add properties to the entity instance
         personEntity.setDisplayName(CUSTOM_PERSON_ENTITY_NAME);
@@ -87,12 +87,12 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
         final CdmEntityDefinition accountEntity = cdmCorpus.makeObject(CdmObjectType.EntityDef, CUSTOM_ACCOUNT_ENTITY_NAME, false);
         // Add type attributes to the entity instance
         // Both purpose "identifiedBy" and data type "entityId" are defined in public standards on the document /samples/example-public-standards/primitives.cdm.json
-        final CdmTypeAttributeDefinition accountAttributeId = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME + "Id", "identifiedBy", "entityId");
+        final CdmTypeAttributeDefinition accountAttributeId = createTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME + "Id", "identifiedBy", "entityId");
         accountEntity.getAttributes().add(accountAttributeId);
         // Both purpose "hasA" and data type "name" are defined in public standards
         // The purpose "hasA" is from /samples/example-public-standards/primitives.cdm.json
         // The data type "name" is from /samples/example-public-standards/meanings.identity.cdm.json
-        final CdmTypeAttributeDefinition accountAttributeName = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME + "Name", "hasA", "name");
+        final CdmTypeAttributeDefinition accountAttributeName = createTypeAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME + "Name", "hasA", "name");
         accountEntity.getAttributes().add(accountAttributeName);
         // Add properties to the entity instance
         accountEntity.setDisplayName(CUSTOM_ACCOUNT_ENTITY_NAME);
@@ -103,7 +103,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
         final String attributeExplanation = "The owner of the account, which is a person.";
         // You can call CreateSimpleEntityAttributeForRelationshipBetweenTwoEntities() instead, but CreateEntityAttributeForRelationshipBetweenTwoEntities() can show
         // more details of how to use resolution guidance to customize your data
-        final CdmEntityAttributeDefinition accountOwnerAttribute = CreateEntityAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME, "accountOwner", attributeExplanation);
+        final CdmEntityAttributeDefinition accountOwnerAttribute = createEntityAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME, "accountOwner", attributeExplanation);
         accountEntity.getAttributes().add(accountOwnerAttribute);
         // Create the document which contains the entity
         final CdmDocumentDefinition accountEntityDoc = cdmCorpus.makeObject(CdmObjectType.DocumentDef, CUSTOM_ACCOUNT_ENTITY_NAME + ".cdm.json", false);
@@ -125,7 +125,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
         final String attrExplanation = "This is a simple custom account for this sample.";
         // Add a relationship from it to the CustomAccount entity, and name the foreign key to SimpleCustomAccount
         // You can also call CreateEntityAttributeForRelationshipBetweenTwoEntities() instead like above
-        final CdmEntityAttributeDefinition simpleCustomAccountAttribute = CreateSimpleEntityAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME, "SimpleCustomAccount", attrExplanation);
+        final CdmEntityAttributeDefinition simpleCustomAccountAttribute = createSimpleEntityAttributeForRelationshipBetweenTwoEntities(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME, "SimpleCustomAccount", attrExplanation);
         extendedStandardAccountEntity.getAttributes().add(simpleCustomAccountAttribute);
         final CdmDocumentDefinition extendedStandardAccountEntityDoc = cdmCorpus.makeObject(CdmObjectType.DocumentDef, EXTENDED_STANDARD_ACCOUNT + ".cdm.json", false);
         // Add an import to the foundations doc so the traits about partitons will resolve nicely
@@ -161,7 +161,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
      * @param dataType      The data type name that is defind in public standards
      * @return The instance of type attribute definition.
      */
-    private static CdmTypeAttributeDefinition CreateTypeAttributeWithPurposeAndDataType(final CdmCorpusDefinition cdmCorpus, final String attributeName, final String purpose, String dataType) {
+    private static CdmTypeAttributeDefinition createTypeAttributeWithPurposeAndDataType(final CdmCorpusDefinition cdmCorpus, final String attributeName, final String purpose, String dataType) {
         final CdmTypeAttributeDefinition entityAttribute = cdmCorpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName, false);
         entityAttribute.setPurpose(cdmCorpus.makeRef(CdmObjectType.PurposeRef, purpose, true));
         entityAttribute.setDataType(cdmCorpus.makeRef(CdmObjectType.DataTypeRef, dataType, true));
@@ -175,7 +175,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
      * @param custom_message      The some custom message.
      * @return The instance of purpose reference.
      */
-    private static CdmPurposeReference CreateRelationshipMeanings(CdmCorpusDefinition cdmCorpus, final String custom_message) {
+    private static CdmPurposeReference createRelationshipMeanings(CdmCorpusDefinition cdmCorpus, final String custom_message) {
         // The purpose "meaningOfRelationshipVerbPhrases" is from /samples/example-public-standards/foundations.cdm.json
         // With the use of this purpose, two additional traits ("means.relationship.verbPhrase" and "means.relationship.inverseVerbPhrase") will be added by default
         // as they are attached to the purpose definition.
@@ -212,7 +212,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
      * @param attributeExplanation The explanation of the attribute.
      * @return The instatnce of entity attribute definition.
      */
-    private static CdmEntityAttributeDefinition CreateSimpleEntityAttributeForRelationshipBetweenTwoEntities(
+    private static CdmEntityAttributeDefinition createSimpleEntityAttributeForRelationshipBetweenTwoEntities(
             final CdmCorpusDefinition cdmCorpus,
             final String associatedEntityName,
             final String foreignKeyName,
@@ -223,7 +223,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
 
         // Creating an entity reference for the associated entity - simple name reference
         entityAttributeDef.setEntity(cdmCorpus.makeRef(CdmObjectType.EntityRef, associatedEntityName, true));
-        entityAttributeDef.setPurpose(CreateRelationshipMeanings(cdmCorpus, "Simple resolution guidance sample"));
+        entityAttributeDef.setPurpose(createRelationshipMeanings(cdmCorpus, "Simple resolution guidance sample"));
 
         // Add resolution guidance - enable reference
         final CdmAttributeResolutionGuidance attributeResolution = cdmCorpus.makeObject(CdmObjectType.AttributeResolutionGuidanceDef);
@@ -243,7 +243,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
      * @param attributeExplanation The explanation of the attribute.
      * @return The instatnce of entity attribute definition.
      */
-    private static CdmEntityAttributeDefinition CreateEntityAttributeForRelationshipBetweenTwoEntities(
+    private static CdmEntityAttributeDefinition createEntityAttributeForRelationshipBetweenTwoEntities(
             final CdmCorpusDefinition cdmCorpus,
             final String associatedEntityName,
             final String foreignKeyName,
@@ -262,14 +262,14 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
         // Add the trait to the attribute's entity reference
         associatedEntityRef.getAppliedTraits().add(traitReference);
         entityAttributeDef.setEntity(associatedEntityRef);
-        entityAttributeDef.setPurpose(CreateRelationshipMeanings(cdmCorpus, "Non-simple resolution guidance sample"));
+        entityAttributeDef.setPurpose(createRelationshipMeanings(cdmCorpus, "Non-simple resolution guidance sample"));
 
         // Add resolution guidance
         CdmAttributeResolutionGuidance attributeResolution = cdmCorpus.makeObject(CdmObjectType.AttributeResolutionGuidanceDef);
         attributeResolution.setEntityByReference(attributeResolution.makeEntityByReference());
         attributeResolution.getEntityByReference().setAllowReference(true);
         attributeResolution.setRenameFormat("{m}");
-        CdmTypeAttributeDefinition entityAttribute = CreateTypeAttributeWithPurposeAndDataType(cdmCorpus, foreignKeyName + "Id", "identifiedBy", "entityId");
+        CdmTypeAttributeDefinition entityAttribute = createTypeAttributeWithPurposeAndDataType(cdmCorpus, foreignKeyName + "Id", "identifiedBy", "entityId");
         attributeResolution.getEntityByReference().setForeignKeyAttribute(entityAttribute);
         entityAttributeDef.setResolutionGuidance(attributeResolution);
         return entityAttributeDef;

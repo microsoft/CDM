@@ -14,9 +14,6 @@
       "corpusPath": "IndustrialProcessType.cdm.json"
     },
     {
-      "corpusPath": "PurchasedGoodAndService.cdm.json"
-    },
-    {
       "corpusPath": "SpendType.cdm.json"
     },
     {
@@ -33,9 +30,6 @@
     },
     {
       "corpusPath": "VehicleType.cdm.json"
-    },
-    {
-      "corpusPath": "GlobalOptionsets.cdm.json"
     }
   ],
   "definitions": [
@@ -83,7 +77,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -838,7 +832,30 @@
                       "traitReference": "does.haveDefault",
                       "arguments": [
                         {
-                          "entityReference": "DataQualityTypeValues"
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Actual",
+                                "700610000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Estimated",
+                                "700610001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Metered",
+                                "700610002",
+                                "3"
+                              ]
+                            ]
+                          }
                         }
                       ]
                     }
@@ -1470,85 +1487,9 @@
                 }
               },
               {
-                "name": "goodandservicetypeid",
-                "sourceName": "msdyn_goodandservicetypeid",
-                "sourceOrdering": 45,
-                "description": "Unique identifier for the good and service type associated with transportation and distribution.",
-                "displayName": "Good and service type",
-                "isNullable": true,
-                "purpose": "hasA",
-                "dataType": "entityId",
-                "entity": {
-                  "source": "PurchasedGoodAndService",
-                  "operations": [
-                    {
-                      "$type": "replaceAsForeignKey",
-                      "condition": "referenceOnly",
-                      "reference": "purchasedgoodandserviceId",
-                      "replaceWith": {
-                        "name": "goodandservicetypeid",
-                        "dataType": "entityId",
-                        "appliedTraits": [
-                          {
-                            "traitReference": "is.requiredAtLevel",
-                            "arguments": [
-                              {
-                                "name": "level",
-                                "value": "none"
-                              }
-                            ]
-                          },
-                          {
-                            "traitReference": "is.localized.describedAs",
-                            "arguments": [
-                              {
-                                "entityReference": {
-                                  "entityShape": "localizedTable",
-                                  "constantValues": [
-                                    [
-                                      "en",
-                                      "Unique identifier for the good and service type associated with transportation and distribution."
-                                    ]
-                                  ]
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "traitReference": "is.localized.displayedAs",
-                            "arguments": [
-                              {
-                                "entityReference": {
-                                  "entityShape": "localizedTable",
-                                  "constantValues": [
-                                    [
-                                      "en",
-                                      "Good and service type"
-                                    ]
-                                  ]
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "traitReference": "is.CDS.lookup",
-                            "arguments": [
-                              {
-                                "name": "style",
-                                "value": "single"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              },
-              {
                 "name": "goodsquantity",
                 "sourceName": "msdyn_goodsquantity",
-                "sourceOrdering": 46,
+                "sourceOrdering": 45,
                 "description": "The quantity of goods being transported and distributed, which is used for calculation.",
                 "displayName": "Goods quantity (mass)",
                 "isNullable": true,
@@ -1616,7 +1557,7 @@
               {
                 "name": "goodsunit",
                 "sourceName": "msdyn_goodsunit",
-                "sourceOrdering": 47,
+                "sourceOrdering": 46,
                 "description": "Unique identifier for the unit relating to transportation and distribution of goods.",
                 "displayName": "Goods quantity (mass) unit",
                 "isNullable": true,
@@ -1692,7 +1633,7 @@
               {
                 "name": "industrialprocesstypeid",
                 "sourceName": "msdyn_industrialprocesstypeid",
-                "sourceOrdering": 48,
+                "sourceOrdering": 47,
                 "description": "Unique identifier for the industrial process type associated with activity.",
                 "displayName": "Industrial process type",
                 "isNullable": true,
@@ -1768,7 +1709,7 @@
               {
                 "name": "organizationalunitid",
                 "sourceName": "msdyn_organizationalunitid",
-                "sourceOrdering": 49,
+                "sourceOrdering": 48,
                 "description": "Unique identifier for the organizational unit associated with transportation and distribution.",
                 "displayName": "Organizational unit",
                 "isNullable": true,
@@ -1844,7 +1785,7 @@
               {
                 "name": "quantity",
                 "sourceName": "msdyn_quantity",
-                "sourceOrdering": 50,
+                "sourceOrdering": 49,
                 "description": "Generic quanity field associated with activity entities.",
                 "displayName": "Quantity",
                 "isNullable": true,
@@ -1912,7 +1853,7 @@
               {
                 "name": "quantityunit",
                 "sourceName": "msdyn_quantityunit",
-                "sourceOrdering": 51,
+                "sourceOrdering": 50,
                 "description": "Unit associated with the quantity field.",
                 "displayName": "Quantity unit",
                 "isNullable": true,
@@ -1988,7 +1929,7 @@
               {
                 "name": "origincorrelationid",
                 "sourceName": "msdyn_origincorrelationid",
-                "sourceOrdering": 52,
+                "sourceOrdering": 51,
                 "description": "An optional identifier to correlate record with data origin.",
                 "displayName": "Origin correlation ID",
                 "isNullable": true,
@@ -2051,7 +1992,7 @@
               {
                 "name": "transactiondate",
                 "sourceName": "msdyn_transactiondate",
-                "sourceOrdering": 53,
+                "sourceOrdering": 52,
                 "description": "Date associated with the actual date when the transaction occurred.",
                 "displayName": "Transaction date",
                 "isNullable": true,
@@ -2104,7 +2045,7 @@
               {
                 "name": "transportationanddistributiontype",
                 "sourceName": "msdyn_transportationanddistributiontype",
-                "sourceOrdering": 54,
+                "sourceOrdering": 53,
                 "description": "Marks what type of transportation and distribution this record represents.",
                 "displayName": "Transportation and distribution type",
                 "isNullable": true,
@@ -2116,7 +2057,24 @@
                       "traitReference": "does.haveDefault",
                       "arguments": [
                         {
-                          "entityReference": "TransportationAndDistributionTypeValues"
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Downstream",
+                                "700610001",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Upstream",
+                                "700610000",
+                                "2"
+                              ]
+                            ]
+                          }
                         }
                       ]
                     }
@@ -2184,7 +2142,7 @@
               {
                 "name": "transportmode",
                 "sourceName": "msdyn_transportmode",
-                "sourceOrdering": 56,
+                "sourceOrdering": 55,
                 "description": "The transport mode that corresponds to this transportation and distribution activity.",
                 "displayName": "Transport mode",
                 "isNullable": true,
@@ -2260,7 +2218,7 @@
               {
                 "name": "vehicletype",
                 "sourceName": "msdyn_vehicletype",
-                "sourceOrdering": 57,
+                "sourceOrdering": 56,
                 "description": "Unique identifier for the vehicle type associated with combustion or supply chain transportation activities.",
                 "displayName": "Vehicle type",
                 "isNullable": true,
@@ -2336,7 +2294,7 @@
               {
                 "name": "spendtypeid",
                 "sourceName": "msdyn_spendtypeid",
-                "sourceOrdering": 58,
+                "sourceOrdering": 57,
                 "description": "Unique identifier for the spend type associated with transportation and distribution.",
                 "displayName": "Spend type",
                 "isNullable": true,
@@ -2412,7 +2370,7 @@
               {
                 "name": "valuechainpartnerid",
                 "sourceName": "msdyn_valuechainpartnerid",
-                "sourceOrdering": 59,
+                "sourceOrdering": 58,
                 "description": "Reference to the value chain partner or supplier associated with the transaction.",
                 "displayName": "Value chain partner",
                 "isNullable": true,
@@ -2508,5 +2466,5 @@
       ]
     }
   ],
-  "documentVersion": "1.0"
+  "documentVersion": "2.0"
 }

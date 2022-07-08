@@ -13,15 +13,18 @@ from cdm.enums import CdmLogCode
 from .cdm_collection import CdmCollection
 from .cdm_entity_collection import CdmEntityCollection
 from .cdm_document_def import CdmDocumentDefinition
+from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
+from .cdm_entity_def import CdmEntityDefinition
 from .cdm_file_status import CdmFileStatus
+from .cdm_folder_def import CdmFolderDefinition
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_referenced_entity_declaration_def import CdmReferencedEntityDeclarationDefinition
 from .cdm_trait_collection import CdmTraitCollection
 from .cdm_import import CdmImport
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, CdmEntityDefinition, \
-    CdmEntityDeclarationDefinition, CdmFolderDefinition, CdmManifestDeclarationDefinition, CdmObject
+    from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, \
+    CdmManifestDeclarationDefinition, CdmObject
     from cdm.utilities import CopyOptions, VisitCallback
 
 
@@ -139,6 +142,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 resolved_manifest_path = new_manifest_name[0:resolved_manifest_path_split]
                 new_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(resolved_manifest_path, self)
                 resolved_manifest_folder = await self.ctx.corpus.fetch_object_async(new_folder_path)  # type: CdmFolderDefinition
+                if not isinstance(resolved_manifest_folder, CdmFolderDefinition):
+                    logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, self.at_corpus_path,
+                                 CdmLogCode.ERR_INVALID_CAST, new_folder_path, 'CdmFolderDefinition')
+                    return None
                 if resolved_manifest_folder is None:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_FOLDER_NOT_FOUND, new_folder_path)
                     return None
@@ -160,6 +167,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 new_manifest_name = new_manifest_name[0: (len(new_manifest_name) - len('.manifest.cdm.json'))]
             resolved_manifest = CdmManifestDefinition(self.ctx, new_manifest_name)
 
+            # add the new document to the folder
+            if resolved_manifest_folder.documents.append(resolved_manifest) is None:
+                # when would this happen?
+                return None
+
             # bring over any imports in this document or other bobbles
             resolved_manifest.schema = self.schema
             resolved_manifest.explanation = self.explanation
@@ -167,17 +179,17 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             for imp in self.imports:
                 resolved_manifest.imports.append(imp.copy())
 
-            # add the new document to the folder
-            if resolved_manifest_folder.documents.append(resolved_manifest) is None:
-                # when would this happen?
-                return None
-
             for entity in self.entities:
                 entity_path = await self._get_entity_path_from_declaration(entity, cast('CdmObject', self))
                 ent_def = await self.ctx.corpus.fetch_object_async(entity_path)  # type: CdmEntityDefinition
 
-                if ent_def is None:
+                if not isinstance(ent_def, CdmEntityDefinition):
+                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
+                                 CdmLogCode.ERR_INVALID_CAST, entity_path, 'CdmEntityDefinition')
+                    return None
+                elif ent_def is None:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, None, CdmLogCode.ERR_RESOLVE_ENTITY_FAILURE, entity_path)
+                    return None
 
                 if not ent_def.in_document.owner:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IS_NOT_FOLDERformat, ent_def.entity_name)
@@ -198,6 +210,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
                 # make sure the new folder exists
                 folder = await self.ctx.corpus.fetch_object_async(new_document_path)  # type: CdmFolderDefinition
+                if not isinstance(folder, CdmFolderDefinition):
+                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
+                                 CdmLogCode.ERR_INVALID_CAST, new_document_path, 'CdmFolderDefinition')
+                    return None
+
                 if not folder:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_FOLDER_NOT_FOUND, new_document_path)
                     return None
@@ -270,7 +287,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
     async def _get_entity_path_from_declaration(self, entity_dec: 'CdmEntityDeclarationDefinition', obj: Optional['CdmObject'] = None):
         while isinstance(entity_dec, CdmReferencedEntityDeclarationDefinition):
             entity_dec = await self.ctx.corpus.fetch_object_async(entity_dec.entity_path, obj)
-            if not entity_dec:
+            if not isinstance(entity_dec, CdmEntityDeclarationDefinition):
+                logger.error(self.ctx, self._TAG, self._get_entity_path_from_declaration.__name__, self.at_corpus_path,
+                             CdmLogCode.ERR_INVALID_CAST, entity_dec.entity_path, 'CdmEntityDefinition')
+                return None
+            elif not entity_dec:
                 return None
             obj = entity_dec.in_document
 
@@ -311,6 +332,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 self.imports.insert(0, CdmImport(self.ctx, relative_path, None))
                 # Fetches the actual file of the import and indexes it
                 import_document = await self.ctx.corpus.fetch_object_async(abs_path)  # type: 'CdmDocumentDefinition'
+                if not isinstance(import_document, CdmDocumentDefinition):
+                    logger.error(self.ctx, self._TAG, self._add_elevated_traits_and_relationships.__name__, self.at_corpus_path,
+                                 CdmLogCode.ERR_INVALID_CAST, abspath, 'CdmDocumentDefinition')
+                    continue
                 await import_document._index_if_needed(res_opt)
                 # Resolves the imports in the manifests
                 await self.ctx.corpus._resolve_imports_async(self, set(self.at_corpus_path), res_opt)
@@ -349,6 +374,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                     ent_path = await self._get_entity_path_from_declaration(ent_dec, self)
                     curr_entity = await self.ctx.corpus.fetch_object_async(ent_path)  # type: Optional[CdmEntityDefinition]
 
+                    if not isinstance(curr_entity, CdmEntityDefinition):
+                        logger.error(self.ctx, self._TAG, self.populate_manifest_relationships_async.__name__, self.at_corpus_path,
+                                     CdmLogCode.ERR_INVALID_CAST, ent_path, 'CdmEntityDefinition')
+                        continue
                     if curr_entity is None:
                         continue
 
@@ -368,6 +397,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                             # get entity object for current toEntity
                             current_in_base = await self.ctx.corpus.fetch_object_async(in_rel.to_entity, self)  # type: Optional[CdmEntityDefinition]
 
+                            if not isinstance(current_in_base, CdmEntityDefinition):
+                                logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, self.at_corpus_path,
+                                             CdmLogCode.ERR_INVALID_CAST, in_rel.to_entity, 'CdmEntityDefinition')
+                                continue
                             if not current_in_base:
                                 continue
 
@@ -411,6 +444,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 for sub_manifest_def in self.sub_manifests:
                     corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(sub_manifest_def.definition, self)
                     sub_manifest = await self.ctx.corpus.fetch_object_async(corpus_path)  # type: Optional[CdmManifestDefinition]
+                    if not isinstance(sub_manifest, CdmManifestDefinition):
+                        logger.error(self.ctx, self._TAG, self.populate_manifest_relationships_async.__name__, self.at_corpus_path,
+                                     CdmLogCode.ERR_INVALID_CAST, corpus_path, 'CdmManifestDefinition')
+                        continue
                     await sub_manifest.populate_manifest_relationships_async(option)
 
     async def report_most_recent_time_async(self, child_time: datetime) -> None:
@@ -499,12 +536,19 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                     for partition in entity_def.data_partitions:
                         if partition.specialized_schema:
                             links.add(partition.specialized_schema)
+                if entity_def.incremental_partitions:
+                    for partition in entity_def.incremental_partitions:
+                        if partition.specialized_schema:
+                            links.add(partition.specialized_schema)
                 # so can patterns
                 if entity_def.data_partition_patterns:
                     for pattern in entity_def.data_partition_patterns:
                         if pattern.specialized_schema:
                             links.add(pattern.specialized_schema)
-
+                if entity_def.incremental_partition_patterns:
+                    for pattern in entity_def.incremental_partition_patterns:
+                        if pattern.specialized_schema:
+                            links.add(pattern.specialized_schema)
         # Get all Cdm documents sequentially
         docs = list()  # type: List[CdmDocumentDefinition]
         for link in links:

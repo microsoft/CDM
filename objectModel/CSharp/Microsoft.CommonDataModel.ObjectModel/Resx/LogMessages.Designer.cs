@@ -187,6 +187,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to cast the object found at path &apos;{0}&apos; to an object of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrInvalidCast {
+            get {
+                return ResourceManager.GetString("ErrInvalidCast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid path &apos;{0}&apos;.
         /// </summary>
         internal static string ErrInvalidPath {

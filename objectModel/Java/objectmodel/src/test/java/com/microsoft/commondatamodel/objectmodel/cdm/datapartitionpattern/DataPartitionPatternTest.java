@@ -281,13 +281,11 @@ public class DataPartitionPatternTest {
     final CdmDataPartitionDefinition upsertIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "2019UpsertPartition1", false);
     upsertIncrementalPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
     upsertIncrementalPartition.setLocation("/IncrementalData/Upserts/upsert1.csv");
-    upsertIncrementalPartition.setSpecializedSchema("csv");
     upsertIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Upsert.toString())));
 
     final CdmDataPartitionDefinition deleteIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "2019DeletePartition1", false);
     deleteIncrementalPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
     deleteIncrementalPartition.setLocation("/IncrementalData/Deletes/delete1.csv");
-    deleteIncrementalPartition.setSpecializedSchema("csv");
     deleteIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Delete.toString())));
 
     partitionEntity.getIncrementalPartitions().add(upsertIncrementalPartition);
@@ -536,15 +534,16 @@ public class DataPartitionPatternTest {
     Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
     Assert.assertEquals(partitionEntity.getDataPartitionPatterns().size(), 1);
     Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 1);
-    OffsetDateTime timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC);
+
     Thread.sleep(100);
+    OffsetDateTime timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC);
     Assert.assertTrue(manifest.getLastFileStatusCheckTime().compareTo(timeBeforeLoad) < 0);
 
     manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.None).join();
 
     Assert.assertEquals(partitionEntity.getDataPartitions().size(), 0);
     Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
-    Assert.assertTrue(manifest.getLastFileStatusCheckTime().compareTo(timeBeforeLoad) > 0);
+    Assert.assertTrue(manifest.getLastFileStatusCheckTime().compareTo(timeBeforeLoad) >= 0);
   }
 
   /**

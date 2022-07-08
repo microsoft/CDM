@@ -15,6 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase.CacheContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
@@ -23,10 +24,16 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CompletionException;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 public class AdlsAdapterTest {
 
@@ -483,4 +490,76 @@ public class AdlsAdapterTest {
       Assert.fail(e.getMessage());
     }
   }
+
+  /**
+   * Tests writing null content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+   */
+  @Test
+  public void adlsWriteClientIdNullContentsNoEmptyFileLeft() {
+    AdlsTestHelper.checkADLSEnvironment();
+    AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithClientId();
+    adlsAdapter.setCtx(new ResolveContext(null));
+    adlsAdapter.getCtx().setFeatureFlags(Collections.singletonMap("ADLSAdapter_deleteEmptyFile", true));
+    
+    String filename = "nullcheck_Java.txt";
+    String writeContents = null;
+    try {
+      adlsAdapter.writeAsync(filename, writeContents).join();
+    } catch (Exception e) {
+      assertNotNull(e.getMessage());
+    }
+
+    try {
+      adlsAdapter.readAsync(filename).join();
+    } catch (CompletionException e) {
+      assertTrue(e.getMessage().contains("HTTP 404 - The specified path does not exist"));
+    }
+  }
+
+  /**
+   * Tests writing empty content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+   */
+  @Test
+  public void adlsWriteClientIdEmptyContentsNoEmptyFileLeft() {
+    AdlsTestHelper.checkADLSEnvironment();
+    AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithClientId();
+    
+    String filename = "emptycheck_Java.txt";
+    String writeContents = "";
+    try {
+      adlsAdapter.writeAsync(filename, writeContents).join();
+    } catch (Exception e) {}
+
+    try {
+      adlsAdapter.readAsync(filename).join();
+    } catch (CompletionException e) {
+      assertTrue(e.getMessage().contains("HTTP 404 - The specified path does not exist"));
+    }
+  }
+
+  /**
+   * Tests writing large file content to ADLS. Expected behavior is not to leave any 0 byte file behind.
+   */
+  @Test
+  public void adlsWriteClientIdLargeFileContentsNoEmptyFileLeft() {
+    AdlsTestHelper.checkADLSEnvironment();
+    AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithClientId();
+    adlsAdapter.setCtx(new ResolveContext(null));
+    adlsAdapter.getCtx().setFeatureFlags(Collections.singletonMap("ADLSAdapter_deleteEmptyFile", true));
+    
+    String filename = "largefilecheck_Java.txt";
+    char[] chars = new char[100000000];
+    String writeContents = new String(chars);
+
+    try {
+      adlsAdapter.writeAsync(filename, writeContents).join();
+    } catch (Exception e) {}
+
+    try {
+      adlsAdapter.readAsync(filename).join();
+    } catch (CompletionException e) {
+      assertTrue(e.getMessage().contains("HTTP 404 - The specified path does not exist"));
+    }
+  }
+
 }

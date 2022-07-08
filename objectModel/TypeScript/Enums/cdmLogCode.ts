@@ -17,6 +17,7 @@ export enum cdmLogCode {
     ErrEntityCreationFailed,
     ErrEnumConversionFailure,
     ErrIndexFailed,
+    ErrInvalidCast,
     ErrInvalidPath,
     ErrManifestFileModTimeFailure,
     ErrMissingIncrementalPartitionTrait,

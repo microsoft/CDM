@@ -10,6 +10,7 @@ import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType } from '../internal';
 import { azureCloudEndpoint, AzureCloudEndpointConvertor } from '../Enums/azureCloudEndpoint';
 import { StringUtils } from '../Utilities/StringUtils';
+import { StorageAdapterException } from './StorageAdapterException';
 
 export class ADLSAdapter extends NetworkAdapter {
     /**
@@ -146,18 +147,35 @@ export class ADLSAdapter extends NetworkAdapter {
         }
 
         const url: string = this.createFormattedAdapterPath(corpusPath);
+        let response: CdmHttpResponse = await this.createFileAtPath(corpusPath, url);
 
-        let request: CdmHttpRequest = await this.buildRequest(`${url}?resource=file`, 'PUT');
-        await super.executeRequest(request);
+        try {
+            let request: CdmHttpRequest = await this.buildRequest(`${url}?action=append&position=0`, 'PATCH', data, "application/json; charset=utf-8");
+            response = await super.executeRequest(request);
 
-        request = await this.buildRequest(`${url}?action=append&position=0`, 'PATCH', data, "application/json; charset=utf-8");
+            if (response.statusCode === 202) { // The uploaded data was accepted.
+                // Building a request and setting a URL with a position argument to be the length of the byte array
+                // of the string content (or length of UTF-8 string content).
+                request = await this.buildRequest(`${url}?action=flush&position=${Buffer.from(request.content).length}`, 'PATCH');
+                response = await super.executeRequest(request);
 
-        await super.executeRequest(request);
-
-        // Building a request and setting a URL with a position argument to be the length of the byte array
-        // of the string content (or length of UTF-8 string content).
-        request = await this.buildRequest(`${url}?action=flush&position=${Buffer.from(request.content).length}`, 'PATCH');
-        await super.executeRequest(request);
+                if (response.statusCode !== 200) { // Data was not flushed correctly. Delete empty file.
+                    await this.deleteContentAtPath(corpusPath, url, undefined);
+                    throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath);
+                }
+            } else {
+                await this.deleteContentAtPath(corpusPath, url, undefined);
+                throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath);
+            }
+        } catch (e) {
+            if (e instanceof StorageAdapterException) {
+                throw e;
+            } else {
+                await this.deleteContentAtPath(corpusPath, url, e);
+                throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath + e);
+            }
+        }
+        
     }
 
     public canWrite(): boolean {
@@ -374,6 +392,7 @@ export class ADLSAdapter extends NetworkAdapter {
                 throw new TypeError('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.');
             }
         }
+
     }
 
     private applySharedKey(sharedKey: string, url: string, method: string, content?: string, contentType?: string): Map<string, string> {
@@ -483,6 +502,34 @@ export class ADLSAdapter extends NetworkAdapter {
         const adapterPath: string = this.createAdapterPath(corpusPath);
 
         return adapterPath ? adapterPath.replace(this.hostname, this.formattedHostname) : undefined;
+    }
+
+    private async createFileAtPath(corpusPath: string, url: string): Promise<CdmHttpResponse> {
+        let request: CdmHttpRequest;
+        let response: CdmHttpResponse;
+
+        try {
+            request = await this.buildRequest(`${url}?resource=file`, 'PUT');
+            response = await super.executeRequest(request);
+        } catch (e) {
+            throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath + e);
+        }
+
+        if (response.statusCode !== 201) { // Empty file was not created successfully.
+            throw new StorageAdapterException(`Could not write ADLS content at path, response code: ${response.statusCode}. Reason: ${response.reason}.`);
+        }
+        return response;
+    }
+
+    private async deleteContentAtPath(corpusPath: string, url: string, innerException: Error): Promise<void> {
+        if (this.ctx == null || this.ctx.featureFlags == null || !this.ctx.featureFlags.has("ADLSAdapter_deleteEmptyFile") || this.ctx.featureFlags.get("ADLSAdapter_deleteEmptyFile") === true) {
+            try {
+                await super.executeRequest(await this.buildRequest(url, 'DELETE'));
+                return; // Return on delete success. Throw exception even if delete succeeds since file write operation failed.
+            } catch (e) {}
+        }
+
+        throw new StorageAdapterException("Empty file was created but could not write ADLS content at path: " + corpusPath + innerException);
     }
 
     private ensurePath(pathFor: string): boolean {

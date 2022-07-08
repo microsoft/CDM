@@ -270,13 +270,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             var upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "2019UpsertPartition1", false);
             upsertIncrementalPartition.LastFileStatusCheckTime = DateTime.Now;
             upsertIncrementalPartition.Location = "/IncrementalData/Upserts/upsert1.csv";
-            upsertIncrementalPartition.SpecializedSchema = "csv";
             upsertIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Upsert.ToString()) });
 
             var deleteIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "2019DeletePartition1", false);
             deleteIncrementalPartition.LastFileStatusCheckTime = DateTime.Now;
             deleteIncrementalPartition.Location = "/IncrementalData/Deletes/delete1.csv";
-            deleteIncrementalPartition.SpecializedSchema = "csv";
             deleteIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Delete.ToString()) });
 
             partitionEntity.IncrementalPartitions.Add(upsertIncrementalPartition);
@@ -522,6 +520,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
             Assert.AreEqual(1, partitionEntity.DataPartitionPatterns.Count);
             Assert.AreEqual(1, partitionEntity.IncrementalPartitionPatterns.Count);
+
+            System.Threading.Thread.Sleep(100);
             var timeBeforeLoad = DateTime.Now;
             Assert.IsTrue(manifest.LastFileStatusCheckTime < timeBeforeLoad);
 
@@ -529,7 +529,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
 
             Assert.AreEqual(0, partitionEntity.DataPartitions.Count);
             Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
-            Assert.IsTrue(manifest.LastFileStatusCheckTime > timeBeforeLoad);
+            Assert.IsTrue(manifest.LastFileStatusCheckTime >= timeBeforeLoad);
         }
 
         /// <summary>

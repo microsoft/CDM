@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The CDM corpus context, gives information for the logger.
         /// </summary>
-        internal CdmCorpusContext Ctx { get; set; }
+        public CdmCorpusContext Ctx { get; set; }
 
         /// <summary>
         /// The location hint, gives a hint to the reader app about the location where the adapter implementation (Nuget, NPM...) can be obtained.

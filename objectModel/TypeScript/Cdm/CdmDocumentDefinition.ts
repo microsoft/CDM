@@ -33,6 +33,7 @@ import {
     ImportInfo,
     ImportPriorities,
     importsLoadStrategy,
+    isDocumentDefinition,
     isEntityDefinition,
     Logger,
     ParameterCollection,
@@ -860,7 +861,12 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             for (const imp of this.imports) {
                 // get the document object from the import
                 const docPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(imp.corpusPath, this);
-                const docImp: CdmDocumentDefinition = await this.ctx.corpus.fetchObjectAsync<CdmDocumentDefinition>(docPath);
+                let docImp: CdmDocumentDefinition = await this.ctx.corpus.fetchObjectAsync<CdmDocumentDefinition>(docPath);
+                if (!isDocumentDefinition(docImp)) {
+                    Logger.error(this.ctx, this.TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, docPath, "CdmDocumentDefinition");
+                    docImp = undefined;
+                }
+
                 if (docImp !== undefined && docImp.isDirty) {
                     // save it with the same name
                     if (await docImp.saveAsAsync(docImp.name, true, options) === false) {

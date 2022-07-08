@@ -245,12 +245,10 @@ public class DataPartitionTest {
 
     final CdmDataPartitionDefinition upsertIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "UpsertPartition", false);
     upsertIncrementalPartition.setLocation("/IncrementalData");
-    upsertIncrementalPartition.setSpecializedSchema("csv");
     upsertIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Upsert.toString())));
 
     final CdmDataPartitionDefinition deletePartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "DeletePartition", false);
     deletePartition.setLocation("/IncrementalData");
-    deletePartition.setSpecializedSchema("csv");
     localizedEntityDeclaration.getIncrementalPartitions().add(upsertIncrementalPartition);
     localizedEntityDeclaration.getIncrementalPartitions().add(deletePartition);
 
@@ -294,12 +292,10 @@ public class DataPartitionTest {
 
     final CdmDataPartitionDefinition upsertIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "UpsertPartition", false);
     upsertIncrementalPartition.setLocation("/IncrementalData");
-    upsertIncrementalPartition.setSpecializedSchema("csv");
     upsertIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Upsert.toString())));
 
     final CdmDataPartitionDefinition testingPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "TestingPartition", false);
     testingPartition.setLocation("/testingData");
-    testingPartition.setSpecializedSchema("csv");
     localizedEntityDeclaration.getDataPartitions().add(upsertIncrementalPartition);
     localizedEntityDeclaration.getDataPartitions().add(testingPartition);
 

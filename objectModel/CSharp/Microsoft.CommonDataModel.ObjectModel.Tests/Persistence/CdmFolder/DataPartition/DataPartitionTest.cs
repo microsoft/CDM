@@ -248,12 +248,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 
             var upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "UpsertPartition", false);
             upsertIncrementalPartition.Location = "/IncrementalData";
-            upsertIncrementalPartition.SpecializedSchema = "csv";
             upsertIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Upsert.ToString()) });
 
             var deletePartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "DeletePartition", false);
             deletePartition.Location = "/IncrementalData";
-            deletePartition.SpecializedSchema = "csv";
             localizedEntityDeclaration.IncrementalPartitions.Add(upsertIncrementalPartition);
             localizedEntityDeclaration.IncrementalPartitions.Add(deletePartition);
 
@@ -309,12 +307,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 
             var upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "UpsertPartition", false);
             upsertIncrementalPartition.Location = "/IncrementalData";
-            upsertIncrementalPartition.SpecializedSchema = "csv";
             upsertIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Upsert.ToString()) });
 
             var testingPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "TestingPartition", false);
             testingPartition.Location = "/testingData";
-            testingPartition.SpecializedSchema = "csv";
             localizedEntityDeclaration.DataPartitions.Add(upsertIncrementalPartition);
             localizedEntityDeclaration.DataPartitions.Add(testingPartition);
 

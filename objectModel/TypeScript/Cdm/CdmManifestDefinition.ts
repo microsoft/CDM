@@ -35,7 +35,7 @@ import {
     StorageAdapterCacheContext,
     VisitCallback
 } from '../internal';
-import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
+import { isDocumentDefinition, isEntityDefinition, isFolderDefinition, isLocalEntityDeclarationDefinition, isManifestDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
 
 import { enterScope } from '../Utilities/Logging/Logger';
 import { using } from "using-statement";
@@ -195,7 +195,11 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 const resolvedManifestPath: string = newManifestName.substring(0, resolvedManifestPathSplit);
                 const newFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(resolvedManifestPath, this);
                 resolvedManifestFolder = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newFolderPath);
-                if (!resolvedManifestFolder) {
+
+                if (!isFolderDefinition(resolvedManifestFolder)) {
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, newFolderPath, "CdmFolderDefinition");
+                    return undefined;
+                } else if (!resolvedManifestFolder) {
                     Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveFolderNotFound, newFolderPath);
                     return undefined;
                 }
@@ -219,6 +223,13 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             }
             const resolvedManifest: CdmManifestDefinition = new CdmManifestDefinition(this.ctx, newManifestName);
 
+            // add the new document to the folder
+            if (resolvedManifestFolder.documents.push(resolvedManifest) === undefined) {
+                // when would this happen?
+
+                return undefined;
+            }
+
             // bring over any imports in this document or other bobbles
             resolvedManifest.schema = this.schema;
             resolvedManifest.explanation = this.explanation;
@@ -227,18 +238,14 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 resolvedManifest.imports.push(imp.copy());
             }
 
-            // add the new document to the folder
-            if (resolvedManifestFolder.documents.push(resolvedManifest) === undefined) {
-                // when would this happen?
-
-                return undefined;
-            }
-
             for (const entity of this.entities) {
                 const entityPath: string = await this.getEntityPathFromDeclaration(entity, this);
                 const entDef: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entityPath);
 
-                if (entDef === undefined) {
+                if (!isEntityDefinition(entDef)) {
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, entityPath, "CdmEntityDefinition");
+                    return undefined;
+                } else if (entDef === undefined) {
                     Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveEntityFailure, entityPath);
                     return undefined;
                 }
@@ -264,7 +271,10 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
                 // make sure the new folder exists
                 const folder: CdmFolderDefinition = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newDocumentPath);
-                if (folder === undefined) {
+                if(!isFolderDefinition(folder)) {
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, newDocumentPath, "CdmFolderDefinition");
+                    return undefined;
+                } else if (folder === undefined) {
                     Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveFolderNotFound, newDocumentPath);
                     return undefined;
                 }
@@ -321,8 +331,10 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 for (const entDec of this.entities) {
                     const entPath: string = await this.getEntityPathFromDeclaration(entDec, this);
                     const currEntity: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entPath);
-
-                    if (!currEntity) {
+                    if (!isEntityDefinition(currEntity)) {
+                        Logger.error(this.ctx, this._TAG, this.populateManifestRelationshipsAsync.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, entPath, "CdmEntityDefinition");
+                        continue;
+                    } else if (!currEntity) {
                         continue;
                     }
 
@@ -347,7 +359,10 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                             let currentInBase: CdmEntityDefinition =
                                 await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(inRel.toEntity, this);
 
-                            if (!currentInBase) {
+                            if (!isEntityDefinition(currentInBase)) {
+                                Logger.error(this.ctx, this._TAG, this.populateManifestRelationshipsAsync.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, inRel.toEntity, "CdmEntityDefinition");
+                                continue;
+                            } else if (!currentInBase) {
                                 continue;
                             }
 
@@ -404,6 +419,10 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 for (const subManifestDef of this.subManifests) {
                     const corpusPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(subManifestDef.definition, this);
                     const subManifest: CdmManifestDefinition = await this.ctx.corpus.fetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                    if (!isManifestDefinition(subManifest)) {
+                        Logger.error(this.ctx, this._TAG, this.populateManifestRelationshipsAsync.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, corpusPath, "CdmManifestDefinition");
+                        continue;
+                    }
                     await (subManifest as unknown as CdmManifestDefinition).populateManifestRelationshipsAsync(option);
                 }
             }
@@ -564,9 +583,23 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                             }
                         }
                     }
+                    if (defImp.incrementalPartitions !== undefined) {
+                        for (const part of defImp.incrementalPartitions) {
+                            if (part.specializedSchema !== undefined) {
+                                links.add(part.specializedSchema);
+                            }
+                        }
+                    }
                     // so can patterns
                     if (defImp.dataPartitionPatterns !== undefined) {
                         for (const part of defImp.dataPartitionPatterns) {
+                            if (part.specializedSchema !== undefined) {
+                                links.add(part.specializedSchema);
+                            }
+                        }
+                    }
+                    if (defImp.incrementalPartitionPatterns !== undefined) {
+                        for (const part of defImp.incrementalPartitionPatterns) {
                             if (part.specializedSchema !== undefined) {
                                 links.add(part.specializedSchema);
                             }
@@ -615,7 +648,10 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             const currCorpusPath: string =
                 this.ctx.corpus.storage.createAbsoluteCorpusPath(entityDec.entityPath, obj);
             entityDec = await this.ctx.corpus.fetchObjectAsync<CdmEntityDeclarationDefinition>(currCorpusPath);
-            if (!entityDec) {
+            if (!isLocalEntityDeclarationDefinition(entityDec) && !isReferencedEntityDeclarationDefinition(entityDec)) {
+                Logger.error(this.ctx, this._TAG, this.getEntityPathFromDeclaration.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, entityDec, "CdmEntityDeclarationDefinition");
+                return undefined;
+            } else if (!entityDec) {
                 return undefined;
             }
             obj = entityDec.inDocument;
@@ -686,6 +722,10 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 this.imports.insert(0, new CdmImport(this.ctx, relativePath, undefined));
                 // Fetches the actual file of the import and indexes it
                 var importDocument = await this.ctx.corpus.fetchObjectAsync<CdmDocumentDefinition>(absPath);
+                if(!isDocumentDefinition(importDocument)) {
+                    Logger.error(this.ctx, this._TAG, this.addElevatedTraitsAndRelationships.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, absPath, "CdmDocumentDefinition");
+                    continue;
+                }
                 await importDocument.indexIfNeeded(resOpt);
                 // Resolves the imports in the manifests
                 await this.ctx.corpus.resolveImportsAsync(this, new Set(this.atCorpusPath), resOpt);

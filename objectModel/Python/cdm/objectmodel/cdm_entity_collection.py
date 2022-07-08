@@ -2,7 +2,6 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional, Union, List, TYPE_CHECKING
-from cdm.objectmodel import CdmEntityDeclarationDefinition
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import logger
@@ -10,8 +9,8 @@ from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 from .cdm_collection import CdmCollection
+from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
 if TYPE_CHECKING:
-    from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
     from .cdm_entity_def import CdmEntityDefinition
 
 

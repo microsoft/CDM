@@ -23,6 +23,7 @@ public enum CdmLogCode
     ErrEntityCreationFailed,
     ErrEnumConversionFailure,
     ErrIndexFailed,
+    ErrInvalidCast,
     ErrInvalidPath,
     ErrManifestFileModTimeFailure,
     ErrMissingIncrementalPartitionTrait,

@@ -21,6 +21,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrEnumConversionFailure,
         ErrIndexFailed,
         ErrInvalidPath,
+        ErrInvalidCast,
         ErrManifestFileModTimeFailure,
         ErrMissingIncrementalPartitionTrait,
         ErrObjectWithoutOwnerFound,
