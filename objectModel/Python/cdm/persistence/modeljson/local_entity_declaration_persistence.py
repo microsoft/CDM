@@ -10,7 +10,7 @@ from cdm.utilities import logger, TraitToPropertyMap
 from . import extension_helper, utils
 from .data_partition_persistence import DataPartitionPersistence
 from .document_persistence import DocumentPersistence
-
+from cdm.persistence import PersistenceLayer
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmFolderDefinition, CdmLocalEntityDeclarationDefinition, CdmTraitDefinition
@@ -25,6 +25,7 @@ class LocalEntityDeclarationPersistence:
     async def from_data(ctx: 'CdmCorpusContext', document_folder: 'CdmFolderDefinition', data: 'LocalEntity',
                         extension_trait_def_list: List['CdmTraitDefinition'], manifest: 'CdmManifestDefinition') -> 'CdmLocalEntityDeclarationDefinition':
         local_entity_dec = ctx.corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF, data.name)
+        local_entity_dec._virtual_location = document_folder.folder_path + PersistenceLayer.MODEL_JSON_EXTENSION
 
         local_extension_trait_def_list = []  # type: List[CdmTraitDefinition]
         entity_doc = await DocumentPersistence.from_data(ctx, data, extension_trait_def_list, local_extension_trait_def_list)

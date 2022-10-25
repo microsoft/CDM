@@ -27,7 +27,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.ReferencedEntityDeclar
         {
             var slashCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRefEntityWithSlashPath");
             var slashLocalPath = ((LocalAdapter)slashCorpus.Storage.NamespaceAdapters["local"]).Root;
-            var slashAdapter = new LocalAdapterWithSlashPath(slashLocalPath, "/");
+            var slashAdapter = new ModelJsonUnitTestLocalAdapter(slashLocalPath);
             slashCorpus.Storage.Mount("slash", slashAdapter);
             slashCorpus.Storage.DefaultNamespace = "slash";
 
@@ -46,7 +46,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.ReferencedEntityDeclar
 
             var backSlashCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRefEntityWithSlashPath");
             var backSlashLocalPath = ((LocalAdapter)backSlashCorpus.Storage.NamespaceAdapters["local"]).Root;
-            var backSlashAdapter = new LocalAdapterWithSlashPath(backSlashLocalPath, "\\");
+            var backSlashAdapter = new ModelJsonUnitTestLocalAdapter(backSlashLocalPath);
             backSlashCorpus.Storage.Mount("backslash", backSlashAdapter);
             backSlashCorpus.Storage.DefaultNamespace = "backslash";
 
@@ -62,27 +62,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.ReferencedEntityDeclar
 
             Assert.IsNotNull(backSlashModel);
             Assert.AreEqual(1, backSlashModel.Entities.Count);
-        }
-
-        public class LocalAdapterWithSlashPath : LocalAdapter
-        {
-            private string separator;
-
-            public LocalAdapterWithSlashPath(string root, string separator) : base(root)
-            {
-                this.separator = separator;
-            }
-
-            public override string CreateAdapterPath(string corpusPath)
-            {
-                string basePath = base.CreateAdapterPath(corpusPath);
-                return this.separator == "/" ? basePath.Replace("\\", "/") : basePath.Replace("/", "\\");
-            }
-
-            public override string CreateCorpusPath(string adapterPath)
-            {
-                return adapterPath;
-            }
         }
     }
 }

@@ -4,7 +4,10 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence;
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -74,6 +77,54 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreEqual(subManifestName, subManifest.ManifestName);
             Assert.AreEqual(relationshipName, relationship.Name);
             Assert.AreEqual(traitName, trait.NamedReference);
+        }
+
+        /// <summary>
+        /// Tests if FileStatusCheckAsync() works properly for manifest loaded from model.json
+        /// </summary>
+        [TestMethod]
+        public async Task TestModelJsonManifestFileStatusCheckAsync()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestModelJsonManifestFileStatusCheckAsync));
+            var modeljsonAdapter = new ModelJsonUnitTestLocalAdapter(((LocalAdapter)corpus.Storage.NamespaceAdapters["local"]).Root);
+            corpus.Storage.Mount("modeljson", modeljsonAdapter);
+            corpus.Storage.DefaultNamespace = "modeljson";
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"modeljson:/{PersistenceLayer.ModelJsonExtension}");
+
+            Assert.IsTrue(manifest.IsVirtual);
+            Assert.IsTrue(manifest.Entities[0] is CdmReferencedEntityDeclarationDefinition);
+            Assert.IsTrue((manifest.Entities[0] as CdmReferencedEntityDeclarationDefinition).IsVirtual);
+            Assert.IsTrue(manifest.Entities[1] is CdmLocalEntityDeclarationDefinition);
+            Assert.IsTrue((manifest.Entities[1] as CdmLocalEntityDeclarationDefinition).IsVirtual);
+
+            var timeBeforeLoad = DateTime.Now;
+
+            var oldManifestLastFileModifiedTime = manifest._fileSystemModifiedTime;
+            Assert.IsNull(manifest.LastFileStatusCheckTime);
+            Assert.IsNull(manifest.Entities[0].LastFileStatusCheckTime);
+            Assert.IsNull(manifest.Entities[1].LastFileStatusCheckTime);
+            Assert.IsNull(manifest.LastFileModifiedTime);
+            Assert.IsNull(manifest.Entities[0].LastFileModifiedTime);
+            Assert.IsNull(manifest.Entities[1].LastFileModifiedTime);
+
+            Assert.IsTrue(oldManifestLastFileModifiedTime < timeBeforeLoad);
+
+            System.Threading.Thread.Sleep(100);
+
+            await manifest.FileStatusCheckAsync();
+
+            var newManifestLastFileStatusCheckTime = manifest.LastFileStatusCheckTime;
+            var newRefEntityLastFileStatusCheckTime = manifest.Entities[0].LastFileStatusCheckTime;
+            var newLocalEntityLastFileStatusCheckTime = manifest.Entities[1].LastFileStatusCheckTime;
+
+            Assert.IsNotNull(manifest.LastFileModifiedTime);
+            Assert.IsNotNull(manifest.Entities[0].LastFileModifiedTime);
+            Assert.IsNotNull(manifest.Entities[1].LastFileModifiedTime);
+
+            Assert.IsTrue(newManifestLastFileStatusCheckTime > timeBeforeLoad);
+            Assert.IsTrue(newLocalEntityLastFileStatusCheckTime > timeBeforeLoad);
+            Assert.IsTrue(newRefEntityLastFileStatusCheckTime > timeBeforeLoad);
         }
     }
 }

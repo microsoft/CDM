@@ -41,6 +41,7 @@ export class ReferencedEntityDeclarationPersistence {
             return undefined;
         }
 
+        referencedEntity.virtualLocation = corpusPath;
         referencedEntity.entityPath = `${corpusPath}/${dataObj.source}`;
         referencedEntity.explanation = dataObj.description;
 

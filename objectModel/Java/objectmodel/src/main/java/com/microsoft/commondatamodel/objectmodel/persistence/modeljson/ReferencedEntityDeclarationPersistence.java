@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinit
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.ReferenceEntity;
@@ -28,7 +29,7 @@ public class ReferencedEntityDeclarationPersistence {
       final CdmCorpusContext ctx,
       final ReferenceEntity obj,
       final String location) {
-    final CdmEntityDeclarationDefinition referencedEntity = ctx.getCorpus()
+    final CdmReferencedEntityDeclarationDefinition referencedEntity = ctx.getCorpus()
         .makeObject(CdmObjectType.ReferencedEntityDeclarationDef, obj.getName());
     referencedEntity.setEntityName(obj.getName());
     final String corpusPath = ctx.getCorpus().getStorage().adapterPathToCorpusPath(location);
@@ -38,6 +39,7 @@ public class ReferencedEntityDeclarationPersistence {
       return CompletableFuture.completedFuture(null);
     }
 
+    referencedEntity.setVirtualLocation(corpusPath);
     referencedEntity.setEntityPath(corpusPath + "/" + obj.getSource());
     referencedEntity.setExplanation(obj.getDescription());
     referencedEntity.setLastFileModifiedTime(obj.getLastFileModifiedTime());

@@ -1,13 +1,17 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship
-from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
-from cdm.utilities.string_utils import StringUtils
 from typing import List
-from . import utils
+
+from cdm.enums import CdmLogCode, CdmObjectType
+from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship
+from cdm.utilities import copy_data_utils, CopyOptions, logger, ResolveOptions
+from cdm.utilities.string_utils import StringUtils
 from cdm.persistence.syms.models import ColumnRelationshipInformation, Namespace, PublishStatus, RelationshipEntity, RelationshipProperties, RelationshipType, SASEntityType
+
+from . import utils
+
+_TAG = 'E2ERelationshipPersistence'
 
 
 class E2ERelationshipPersistence:
@@ -30,7 +34,8 @@ class E2ERelationshipPersistence:
                 relationship.to_entity = "{}.cdm.json/{}".format(relationship_properties.to_table_name, relationship_properties.to_table_name)
                 relationship.from_entity_attribute = columnRelationshipInformation.to_column_name
                 relationship.to_entity_attribute = columnRelationshipInformation.from_column_name
-            elif relationship_properties.relationship_type == RelationshipType.manytomany:
+            elif relationship_properties.relationship_type == RelationshipType.manytomany or relationship_properties.relationship_type is None:
+                logger.error(ctx, _TAG, 'from_data', None, CdmLogCode.ERR_PERSIST_SYMS_RELATIONSHIP_TYPE_NOT_SUPPORTED, relationship_properties.relationship_type)
                 return None
 
             if relationship_properties.properties is not None:

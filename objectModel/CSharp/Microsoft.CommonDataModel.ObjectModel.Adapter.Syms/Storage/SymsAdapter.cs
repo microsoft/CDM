@@ -180,76 +180,78 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public override string CreateAdapterPath(string corpusPath)
         {
             var formattedCorpusPath = this.FormatCorpusPath(corpusPath);
-            if (formattedCorpusPath != null)
+            if (formattedCorpusPath == null)
             {
-                if (formattedCorpusPath.Equals("/"))
-                {
-                    return $"{this.Baseuri}?{ApiVersion}";
-                }
-                if (formattedCorpusPath.Equals($"/{DatabasesManifest}")
-                   || formattedCorpusPath.Equals(DatabasesManifest))
-                {
-                    return $"{this.Baseuri}?{ApiVersion}";
-                }
+                return null;
+            }
 
-                formattedCorpusPath = formattedCorpusPath.TrimStart('/');
-                string[] paths = formattedCorpusPath.Split('/');
-                if (paths.Length == 2) // 2 level is supported currently
+            if (formattedCorpusPath.Equals("/"))
+            {
+                return $"{this.Baseuri}?{ApiVersion}";
+            }
+
+            if (formattedCorpusPath.Equals($"/{DatabasesManifest}")
+                || formattedCorpusPath.Equals(DatabasesManifest))
+            {
+                return $"{this.Baseuri}?{ApiVersion}";
+            }
+
+            formattedCorpusPath = formattedCorpusPath.TrimStart('/');
+            string[] paths = formattedCorpusPath.Split('/');
+            if (paths.Length == 2) // 2 level is supported currently
+            {
+                //paths[0] : database name
+                //paths[1] : filename
+                if (paths[1].EndsWith(".manifest.cdm.json"))
                 {
-                    //paths[0] : database name
-                    //paths[1] : filename
-                    if (paths[1].EndsWith(".manifest.cdm.json"))
-                    {
-                        return $"{this.Baseuri}/{paths[0]}?{ApiVersion}";
-                    }
-                    else if (paths[1].EndsWith(".cdm.json"))
-                    {
-                        return $"{this.Baseuri}/{paths[0]}/tables/{paths[1].Replace(".cdm.json", "")}?{ApiVersion}";
-                    }
-                    else
-                    {
-                        throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path. Invalid corpus path : {corpusPath}. Supported file format are manifest.cdm.json and .cdm.json");
-                    }
+                    return $"{this.Baseuri}/{paths[0]}?{ApiVersion}";
                 }
-                else if (paths.Length == 3) // 3 level is supported for relationship and entitydefinitions
+                else if (paths[1].EndsWith(".cdm.json"))
                 {
-                    //paths[0] : database name
-                    //paths[1] : filename
-                    if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
-                    {
-                        return $"{this.Baseuri}/{paths[0]}/relationships?{ApiVersion}";
-                    }
-                    else if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("entitydefinition"))
-                    {
-                        return $"{this.Baseuri}/{paths[0]}/tables?{ApiVersion}";
-                    }
-                    else
-                    {
-                        throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}. " +
-                            $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition.");
-                    }
+                    return $"{this.Baseuri}/{paths[0]}/tables/{paths[1].Replace(".cdm.json", "")}?{ApiVersion}";
                 }
-                else if (paths.Length == 4) // 4 level is supported for relationship
-                { 
-                    //paths[0] : database name
-                    //paths[1] : filename
-                    if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
-                    {
-                        return $"{this.Baseuri}/{paths[0]}/relationships/{paths[3]}?{ApiVersion}";
-                    }
-                    else
-                    {
-                        throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}." +
-                            $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>.");
-                    }
+                else
+                {
+                    throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path. Invalid corpus path : {corpusPath}. Supported file format are manifest.cdm.json and .cdm.json");
+                }
+            }
+            else if (paths.Length == 3) // 3 level is supported for relationship and entitydefinitions
+            {
+                //paths[0] : database name
+                //paths[1] : filename
+                if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
+                {
+                    return $"{this.Baseuri}/{paths[0]}/relationships?{ApiVersion}";
+                }
+                else if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("entitydefinition"))
+                {
+                    return $"{this.Baseuri}/{paths[0]}/tables?{ApiVersion}";
                 }
                 else
                 {
                     throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}. " +
-                        $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>, /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition>.");
+                        $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition.");
                 }
             }
-            return null;
+            else if (paths.Length == 4) // 4 level is supported for relationship
+            { 
+                //paths[0] : database name
+                //paths[1] : filename
+                if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
+                {
+                    return $"{this.Baseuri}/{paths[0]}/relationships/{paths[3]}?{ApiVersion}";
+                }
+                else
+                {
+                    throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}." +
+                        $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>.");
+                }
+            }
+            else
+            {
+                throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}. " +
+                    $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>, /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition>.");
+            }
         }
 
         /// <inheritdoc />
@@ -316,7 +318,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             if (!formattedCorpusPath.EndsWith("/"))
             {
-                formattedCorpusPath = formattedCorpusPath + "/";
+                formattedCorpusPath += "/";
             }
 
             formattedCorpusPath = formattedCorpusPath.TrimStart('/');

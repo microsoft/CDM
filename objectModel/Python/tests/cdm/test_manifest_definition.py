@@ -1,12 +1,18 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-import unittest, os
+import os
+import unittest
+from datetime import datetime, timezone
+import time
+from typing import cast
 
-from cdm.objectmodel import CdmDocumentDefinition, CdmManifestDefinition
-from tests.common import TestHelper
-
+from cdm.objectmodel import CdmDocumentDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition, \
+    CdmLocalEntityDeclarationDefinition
+from cdm.persistence import PersistenceLayer
 from tests.common import async_test, TestHelper
+from tests.model_json_unit_test_local_adapter import ModelJsonUnitTestLocalAdapter
+
 
 class ManifestDefinitionTests(unittest.TestCase):
     tests_subpath = os.path.join('Cdm', 'ManifestDefinition')
@@ -63,3 +69,48 @@ class ManifestDefinitionTests(unittest.TestCase):
         self.assertEqual(sub_manifest_name, sub_manifest.manifest_name)
         self.assertEqual(relationship_name, relationship.name)
         self.assertEqual(trait_name, trait.named_reference)
+
+    @async_test
+    async def test_model_json_manifest_file_status_check_async(self):
+        """Tests if FileStatusCheckAsync() works properly for manifest loaded from model.json"""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_model_json_manifest_file_status_check_async')
+        modeljson_adapter = ModelJsonUnitTestLocalAdapter(corpus.storage.namespace_adapters['local'].root)
+        corpus.storage.mount('modeljson', modeljson_adapter)
+        corpus.storage.default_namespace = 'modeljson'
+
+        manifest = await corpus.fetch_object_async(f'modeljson:/{PersistenceLayer.MODEL_JSON_EXTENSION}')   # type: CdmManifestDefinition
+
+        self.assertTrue(manifest._is_virtual)
+        self.assertTrue(isinstance(manifest.entities[0], CdmReferencedEntityDeclarationDefinition))
+        self.assertTrue(cast(CdmReferencedEntityDeclarationDefinition, manifest.entities[0])._is_virtual)
+        self.assertTrue(isinstance(manifest.entities[1], CdmLocalEntityDeclarationDefinition))
+        self.assertTrue(cast(CdmReferencedEntityDeclarationDefinition, manifest.entities[1])._is_virtual)
+
+        time_before_load = datetime.now(timezone.utc)
+        old_manifest_last_file_modified_time = manifest._file_system_modified_time
+        self.assertIsNone(manifest.last_file_status_check_time)
+        self.assertIsNone(manifest.entities[0].last_file_status_check_time)
+        self.assertIsNone(manifest.entities[1].last_file_status_check_time)
+        self.assertIsNone(manifest.last_file_modified_time)
+        self.assertIsNone(manifest.entities[0].last_file_modified_time)
+        self.assertIsNone(manifest.entities[1].last_file_modified_time)
+
+        self.assertTrue(old_manifest_last_file_modified_time < time_before_load)
+
+        time.sleep(1)
+
+        await manifest.file_status_check_async()
+        new_manifest_last_file_status_check_time = manifest.last_file_status_check_time
+        new_ref_entity_last_file_status_check_time = manifest.entities[0].last_file_status_check_time
+        new_local_entity_last_file_status_check_time = manifest.entities[1].last_file_status_check_time
+
+        self.assertIsNotNone(manifest.last_file_modified_time)
+        self.assertIsNotNone(manifest.entities[0].last_file_modified_time)
+        self.assertIsNotNone(manifest.entities[1].last_file_modified_time)
+
+        self.assertTrue(new_manifest_last_file_status_check_time > time_before_load)
+        self.assertTrue(new_ref_entity_last_file_status_check_time > time_before_load)
+        self.assertTrue(new_local_entity_last_file_status_check_time > time_before_load)
+
+
+

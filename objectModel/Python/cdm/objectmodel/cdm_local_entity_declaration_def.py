@@ -15,7 +15,7 @@ from ..utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCollection, CdmCorpusContext, CdmDataPartitionDefinition, \
-    CdmDataPartitionPatternDefinition, CdmObjectDefinition
+        CdmDataPartitionPatternDefinition, CdmObjectDefinition
     from cdm.utilities import VisitCallback
 
     from .cdm_trait_collection import CdmTraitCollection
@@ -40,6 +40,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         self._data_partition_patterns = CdmCollection(self.ctx, self, CdmObjectType.DATA_PARTITION_PATTERN_DEF)
         self._incremental_partitions = CdmCollection(self.ctx, self, CdmObjectType.DATA_PARTITION_DEF)
         self._incremental_partition_patterns = CdmCollection(self.ctx, self, CdmObjectType.DATA_PARTITION_PATTERN_DEF)
+        self._virtual_location = None
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -60,6 +61,11 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     @property
     def incremental_partition_patterns(self) -> 'CdmCollection[CdmDataPartitionPatternDefinition]':
         return self._incremental_partition_patterns
+
+    @property
+    def _is_virtual(self) -> bool:
+        """Gets whether this entity is virtual, which means it's coming from model.json file"""
+        return not StringUtils.is_null_or_white_space(self._virtual_location)
 
     def _create_partition_from_pattern(self, file_path: str, exhibits_traits: 'CdmTraitCollection',
                                        args: Dict[str, List[str]], schema: str, modified_time: datetime,
@@ -85,16 +91,21 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             self.data_partitions.append(new_partition)
         else:
             if not StringUtils.is_null_or_white_space(increment_partition_pattern_name):
-                cast('CdmTraitReference', new_partition.exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)).arguments.append(Constants._INCREMENTAL_PATTERN_PARAMETER_NAME, increment_partition_pattern_name)
+                cast('CdmTraitReference',
+                     new_partition.exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)).arguments.append(
+                    Constants._INCREMENTAL_PATTERN_PARAMETER_NAME, increment_partition_pattern_name)
             self.incremental_partitions.append(new_partition)
 
-    async def file_status_check_async(self, partition_file_status_check_type: Optional['PartitionFileStatusCheckType'] = PartitionFileStatusCheckType.FULL, incremental_type: Optional['CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE) -> None:
+    async def file_status_check_async(self, partition_file_status_check_type: Optional[
+        'PartitionFileStatusCheckType'] = PartitionFileStatusCheckType.FULL, incremental_type: Optional[
+        'CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE) -> None:
         """Check the modified time for this object and any children."""
 
         context = self.ctx.corpus.storage.fetch_adapter(self.in_document._namespace).create_file_query_cache_context()
         try:
             full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
-            modified_time = await self.ctx.corpus._compute_last_modified_time_async(full_path, self)
+            modified_time = await self.ctx.corpus._get_last_modified_time_from_object_async(self) if self._is_virtual \
+                else await self.ctx.corpus._compute_last_modified_time_async(full_path, self)
 
             # check patterns first as this is a more performant way of querying file modification times
             # from ADLS and we can cache the times for reuse in the individual partition checks below
@@ -106,7 +117,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                         logger.error(pattern.ctx, self._TAG, self.file_status_check_async.__name__,
                                      pattern.at_corpus_path, CdmLogCode.ERR_UNEXPECTED_INCREMENTAL_PARTITION_TRAIT,
                                      CdmDataPartitionPatternDefinition.__name__, pattern.fetch_object_definition_name(),
-                                     Constants._INCREMENTAL_TRAIT_NAME, CdmLocalEntityDeclarationDefinition.data_partition_patterns.fget.__name__)
+                                     Constants._INCREMENTAL_TRAIT_NAME,
+                                     CdmLocalEntityDeclarationDefinition.data_partition_patterns.fget.__name__)
                     else:
                         await pattern.file_status_check_async()
 
@@ -115,7 +127,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                         logger.error(partition.ctx, self._TAG, self.file_status_check_async.__name__,
                                      partition.at_corpus_path, CdmLogCode.ERR_UNEXPECTED_INCREMENTAL_PARTITION_TRAIT,
                                      CdmDataPartitionDefinition.__name__, partition.fetch_object_definition_name(),
-                                     Constants._INCREMENTAL_TRAIT_NAME, CdmLocalEntityDeclarationDefinition.data_partitions.fget.__name__)
+                                     Constants._INCREMENTAL_TRAIT_NAME,
+                                     CdmLocalEntityDeclarationDefinition.data_partitions.fget.__name__)
                     else:
                         await partition.file_status_check_async()
 
@@ -136,7 +149,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         finally:
             context.dispose()
 
-    def _should_call_file_status_check(self, incremental_type: 'CdmIncrementalPartitionType', is_pattern: bool, pattern_or_partition_obj: 'CdmObjectDefinition') -> bool:
+    def _should_call_file_status_check(self, incremental_type: 'CdmIncrementalPartitionType', is_pattern: bool,
+                                       pattern_or_partition_obj: 'CdmObjectDefinition') -> bool:
         """
         Determine if calling FileStatusCheckAsync on the given pattern or the given partition is needed.
         :type incremental_type: CdmIncrementalPartitionType  The incremental type.
@@ -145,11 +159,14 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         """
         update = True
 
-        trait_ref = cast('CdmTraitReference', pattern_or_partition_obj.exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME))
+        trait_ref = cast('CdmTraitReference',
+                         pattern_or_partition_obj.exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME))
         if trait_ref == None:
             from cdm.objectmodel import CdmDataPartitionDefinition, CdmDataPartitionPatternDefinition
-            logger.error(pattern_or_partition_obj.ctx, self._TAG, self._should_call_file_status_check.__name__, pattern_or_partition_obj.at_corpus_path,
-                         CdmLogCode.ERR_MISSING_INCREMENTAL_PARTITION_TRAIT, CdmDataPartitionPatternDefinition.__name__ if is_pattern else CdmDataPartitionDefinition.__name__,
+            logger.error(pattern_or_partition_obj.ctx, self._TAG, self._should_call_file_status_check.__name__,
+                         pattern_or_partition_obj.at_corpus_path,
+                         CdmLogCode.ERR_MISSING_INCREMENTAL_PARTITION_TRAIT,
+                         CdmDataPartitionPatternDefinition.__name__ if is_pattern else CdmDataPartitionDefinition.__name__,
                          pattern_or_partition_obj.fetch_object_definition_name(), Constants._INCREMENTAL_TRAIT_NAME,
                          CdmLocalEntityDeclarationDefinition.incremental_partition_patterns.fget.__name__ if is_pattern else CdmLocalEntityDeclarationDefinition.incremental_partitions.fget.__name__)
         else:
@@ -161,14 +178,17 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                 update = False
                 logger.error(pattern_or_partition_obj.ctx, self._TAG, self._should_call_file_status_check.__name__,
                              pattern_or_partition_obj.at_corpus_path, CdmLogCode.ERR_TRAIT_ARGUMENT_MISSING,
-                             'type', Constants._INCREMENTAL_TRAIT_NAME, pattern_or_partition_obj.fetch_object_definition_name())
+                             'type', Constants._INCREMENTAL_TRAIT_NAME,
+                             pattern_or_partition_obj.fetch_object_definition_name())
             elif not isinstance(trait_ref_incremental_type_value, str):
                 update = False
                 logger.error(pattern_or_partition_obj.ctx, self._TAG, self._should_call_file_status_check.__name__,
                              pattern_or_partition_obj.at_corpus_path, CdmLogCode.ERR_TRAIT_INVALID_ARGUMENT_VALUE_TYPE,
-                             'type', Constants._INCREMENTAL_TRAIT_NAME, pattern_or_partition_obj.fetch_object_definition_name())
+                             'type', Constants._INCREMENTAL_TRAIT_NAME,
+                             pattern_or_partition_obj.fetch_object_definition_name())
             else:
-                trait_ref_incremental_type_str = StringUtils.snake_case_to_pascal_case(trait_ref_incremental_type_value).upper()
+                trait_ref_incremental_type_str = StringUtils.snake_case_to_pascal_case(
+                    trait_ref_incremental_type_value).upper()
                 if trait_ref_incremental_type_str and trait_ref_incremental_type_str in CdmIncrementalPartitionType.__members__.keys():
                     update = CdmIncrementalPartitionType[trait_ref_incremental_type_str] == incremental_type
                 else:
@@ -176,7 +196,9 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                     logger.error(pattern_or_partition_obj.ctx, self._TAG, self._should_call_file_status_check.__name__,
                                  pattern_or_partition_obj.at_corpus_path, CdmLogCode.ERR_ENUM_CONVERSION_FAILURE,
                                  trait_ref_incremental_type_value, CdmIncrementalPartitionType.__name__,
-                                 'parameter \'type\' of trait \'{}\' from \'{}\''.format(Constants._INCREMENTAL_TRAIT_NAME, pattern_or_partition_obj.fetch_object_definition_name()))
+                                 'parameter \'type\' of trait \'{}\' from \'{}\''.format(
+                                     Constants._INCREMENTAL_TRAIT_NAME,
+                                     pattern_or_partition_obj.fetch_object_definition_name()))
 
         return update
 
@@ -204,6 +226,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
         copy.last_child_file_modified_time = self.last_child_file_modified_time
+        copy._virtual_location = self._virtual_location
 
         for partition in self.data_partitions:
             copy.data_partitions.append(partition.copy(res_opt))
@@ -252,8 +275,9 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                 '{}/dataPartitionPatterns/'.format(path), pre_children, post_children):
             return True
 
-        if self.incremental_partitions and self.incremental_partitions._visit_array('{}/incrementalPartitions/'.format(path), pre_children,
-                                                                      post_children):
+        if self.incremental_partitions and self.incremental_partitions._visit_array(
+                '{}/incrementalPartitions/'.format(path), pre_children,
+                post_children):
             return True
 
         if self.incremental_partition_patterns and self.incremental_partition_patterns._visit_array(

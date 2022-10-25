@@ -65,6 +65,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public DateTimeOffset? LastChildFileModifiedTime { get; set; }
 
         /// <summary>
+        /// Gets whether this entity is virtual, which means it's coming from model.json file
+        /// </summary>
+        internal bool IsVirtual { get => !string.IsNullOrWhiteSpace(this.VirtualLocation); }
+
+        /// <summary>
+        /// Gets and sets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+        /// </summary>
+        internal string VirtualLocation { get; set; }
+
+        /// <summary>
         /// Gets the data partitions.
         /// </summary>
         public CdmCollection<CdmDataPartitionDefinition> DataPartitions { get; }
@@ -130,6 +140,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
             copy.LastFileModifiedTime = this.LastFileModifiedTime;
             copy.LastChildFileModifiedTime = this.LastChildFileModifiedTime;
+            copy.VirtualLocation = this.VirtualLocation;
 
             foreach (var partition in this.DataPartitions)
                 copy.DataPartitions.Add(partition.Copy(resOpt) as CdmDataPartitionDefinition);
@@ -200,13 +211,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
         }
 
-        /// <inheritdoc />
         public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None)
         {
             using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
             {
                 string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
-                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
+                DateTimeOffset? modifiedTime = this.IsVirtual ? await this.Ctx.Corpus.GetLastModifiedTimeFromObjectAsync(this) 
+                                                              : await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
 
                 // check patterns first as this is a more performant way of querying file modification times 
                 // from ADLS and we can cache the times for reuse in the individual partition checks below

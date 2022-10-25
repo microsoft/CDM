@@ -19,7 +19,6 @@ __all__ = [
     'LocalAdapter',
     'RemoteAdapter',
     'ResourceAdapter',
-    'StorageAdapterBase',
     'StorageManager',
     'SymsAdapter'
 ]

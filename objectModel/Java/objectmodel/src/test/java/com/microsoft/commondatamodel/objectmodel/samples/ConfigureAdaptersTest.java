@@ -338,7 +338,7 @@ public class ConfigureAdaptersTest extends SampleTestBase {
             final String secret = getParameterValueFromUser(
                     "secret",
                     "ADLSAdapter",
-                    "xSDfdzI92d:sd832j8jd@ac823sSglJ");
+                    "dummySecret");
 
             // Default values for the optional parameters used by the ADLS adapter.
             String timeout = "2000";

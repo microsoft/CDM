@@ -68,6 +68,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public DateTimeOffset? LastChildFileModifiedTime { get; set; }
 
+        /// <summary>
+        /// Gets whether this entity is virtual, which means it's coming from model.json file
+        /// </summary>
+        internal bool IsVirtual { get => !string.IsNullOrWhiteSpace(this.VirtualLocation); }
+
+        /// <summary>
+        /// Gets and sets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+        /// </summary>
+        internal string VirtualLocation { get; set; }
+
         /// <inheritdoc />
         [Obsolete]
         public override CdmObjectType GetObjectType()
@@ -103,6 +113,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.EntityPath = this.EntityPath;
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
             copy.LastFileModifiedTime = this.LastFileModifiedTime;
+            copy.VirtualLocation = this.VirtualLocation;
 
             this.CopyDef(resOpt, copy);
 
@@ -170,7 +181,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public async Task FileStatusCheckAsync()
         {
             string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).ComputeLastModifiedTimeAsync(fullPath, this);
+
+            DateTimeOffset? modifiedTime = this.IsVirtual ? await this.Ctx.Corpus.GetLastModifiedTimeFromObjectAsync(this)
+                                                          : await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
 
             // update modified times
             this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;

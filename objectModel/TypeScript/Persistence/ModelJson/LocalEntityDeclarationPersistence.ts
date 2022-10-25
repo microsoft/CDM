@@ -16,7 +16,8 @@ import {
     CdmTraitReference,
     copyOptions,
     resolveOptions,
-    traitToPropertyMap
+    traitToPropertyMap,
+    CdmConstants
 } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
@@ -35,6 +36,7 @@ export class LocalEntityDeclarationPersistence {
     ): Promise<CdmLocalEntityDeclarationDefinition> {
         const localEntityDec: CdmLocalEntityDeclarationDefinition =
             ctx.corpus.MakeObject(cdmObjectType.localEntityDeclarationDef, dataObj.name);
+        localEntityDec.virtualLocation = documentFolder.folderPath + CdmConstants.modelJsonExtension;
 
         const localExtensionTraitDefList: CdmTraitDefinition[] = [];
         const entityDoc: CdmDocumentDefinition = await ModelJson.DocumentPersistence.fromData(

@@ -57,6 +57,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmCollection<CdmE2ERelationship> Relationships { get; }
 
+        /// <summary>
+        /// Gets whether this manifest is virtual, which means it's coming from model.json file
+        /// </summary>
+        internal bool IsVirtual { get => !string.IsNullOrWhiteSpace(this.VirtualLocation); }
+
+        /// <summary>
+        /// Gets and sets this manifest's virtual location, it's model.json file's location if manifest is from a model.json file
+        /// </summary>
+        internal string VirtualLocation { get; set; }
+
         /// <inheritdoc />
         public string GetName()
         {
@@ -133,6 +143,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
             copy.LastFileModifiedTime = this.LastFileModifiedTime;
             copy.LastChildFileModifiedTime = this.LastChildFileModifiedTime;
+            copy.VirtualLocation = this.VirtualLocation;
 
             copy.Entities.Clear();
             foreach (var ent in this.Entities)
@@ -523,7 +534,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
         }
 
-        /// <inheritdoc />
         public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None)
         {
             using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(FileStatusCheckAsync)))

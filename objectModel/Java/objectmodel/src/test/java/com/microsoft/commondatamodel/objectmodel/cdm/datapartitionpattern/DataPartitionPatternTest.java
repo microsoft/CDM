@@ -61,6 +61,8 @@ public class DataPartitionPatternTest {
     Assert.assertEquals(partitionEntity.getDataPartitions().size(), 1);
 
     final OffsetDateTime timeBeforeLoad = OffsetDateTime.now();
+    // adding sleep here to avoid failure(comparison between timeBeforeLoad and getLastFileStatusCheckTime) caused by machine running too fast
+    Thread.sleep(100);
 
     cdmManifest.fileStatusCheckAsync().join();
 
@@ -258,7 +260,7 @@ public class DataPartitionPatternTest {
     CdmTraitReference trait1 = (CdmTraitReference)partitionEntity.getIncrementalPartitionPatterns().get(1).getExhibitsTraits().get(0);
     Assert.assertEquals(trait1.getArguments().item("type").getValue().toString(), CdmIncrementalPartitionType.Delete.toString());
 
-    OffsetDateTime timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC);
+    OffsetDateTime timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC).minusSeconds(1);
     manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
 
     int totalExpectedPartitionsFound = 0;
@@ -278,13 +280,14 @@ public class DataPartitionPatternTest {
     partitionEntity.getIncrementalPartitions().clear();
     Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 0);
 
+    timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC).minusSeconds(1);
     final CdmDataPartitionDefinition upsertIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "2019UpsertPartition1", false);
-    upsertIncrementalPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+    upsertIncrementalPartition.setLastFileStatusCheckTime(timeBeforeLoad);
     upsertIncrementalPartition.setLocation("/IncrementalData/Upserts/upsert1.csv");
     upsertIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Upsert.toString())));
 
     final CdmDataPartitionDefinition deleteIncrementalPartition = corpus.makeObject(CdmObjectType.DataPartitionDef, "2019DeletePartition1", false);
-    deleteIncrementalPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+    deleteIncrementalPartition.setLastFileStatusCheckTime(timeBeforeLoad);
     deleteIncrementalPartition.setLocation("/IncrementalData/Deletes/delete1.csv");
     deleteIncrementalPartition.getExhibitsTraits().add(Constants.IncrementalTraitName, Collections.singletonList(new ImmutablePair<String, Object>("type", CdmIncrementalPartitionType.Delete.toString())));
 
@@ -292,11 +295,7 @@ public class DataPartitionPatternTest {
     partitionEntity.getIncrementalPartitions().add(deleteIncrementalPartition);
     Assert.assertEquals(partitionEntity.getIncrementalPartitions().size(), 2);
     Assert.assertEquals(partitionEntity.getIncrementalPartitionPatterns().size(), 2);
-
     totalExpectedPartitionsFound = 0;
-    timeBeforeLoad = OffsetDateTime.now(ZoneOffset.UTC);
-    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).getLastFileStatusCheckTime().compareTo(timeBeforeLoad) <= 0);
-    Assert.assertTrue(partitionEntity.getIncrementalPartitions().get(0).getLastFileStatusCheckTime().compareTo(timeBeforeLoad) <= 0);
 
     manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete).join();
 

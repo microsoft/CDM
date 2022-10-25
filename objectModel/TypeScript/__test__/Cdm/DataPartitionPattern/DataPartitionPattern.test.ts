@@ -299,6 +299,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]);
 
         let timeBeforeLoad: Date = new Date();
+        timeBeforeLoad.setDate(timeBeforeLoad.getDate() - 1);
 
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
         let totalExpectedPartitionsFound: number = 0;
@@ -321,13 +322,15 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         expect(partitionEntity.incrementalPartitions.length)
             .toBe(0);
 
+        timeBeforeLoad = new Date();
+        timeBeforeLoad.setDate(timeBeforeLoad.getDate() - 1);
         const upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, '2019UpsertPartition1', false);
-        upsertIncrementalPartition.lastFileStatusCheckTime = new Date();
+        upsertIncrementalPartition.lastFileStatusCheckTime = timeBeforeLoad;
         upsertIncrementalPartition.location = '/IncrementalData/Upserts/upsert1.csv';
         upsertIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Upsert]]]);
 
         var deleteIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, "2019DeletePartition1", false);
-        deleteIncrementalPartition.lastFileStatusCheckTime = new Date();
+        deleteIncrementalPartition.lastFileStatusCheckTime = timeBeforeLoad;
         deleteIncrementalPartition.location = '/IncrementalData/Deletes/delete1.csv';
         deleteIncrementalPartition.exhibitsTraits.push(constants.INCREMENTAL_TRAIT_NAME, [['type', cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]]]);
 
@@ -339,13 +342,6 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe(2);
 
         totalExpectedPartitionsFound = 0;
-
-        timeBeforeLoad = new Date();
-
-        expect(partitionEntity.incrementalPartitions.allItems[0].lastFileStatusCheckTime <= timeBeforeLoad)
-            .toBeTruthy();
-        expect(partitionEntity.incrementalPartitions.allItems[1].lastFileStatusCheckTime <= timeBeforeLoad)
-            .toBeTruthy();
 
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
 

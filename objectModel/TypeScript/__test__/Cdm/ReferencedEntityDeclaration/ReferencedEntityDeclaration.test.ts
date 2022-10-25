@@ -12,6 +12,7 @@ import {
     resolveOptions
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
+import { ModelJsonUnitTestLocalAdapter } from '../../modelJsonUnitTestLocalAdapter';
 
 /**
  * 
@@ -29,7 +30,7 @@ describe('Cdm/ReferencedEntityDeclarationTest', () => {
 
         const slashCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRefEntityWithSlashPath');
         const slashLocalPath: string = (slashCorpus.storage.namespaceAdapters.get('local') as LocalAdapter).root;
-        var slashAdapter = new LocalAdapterWithSlashPath(slashLocalPath, "/");
+        var slashAdapter = new ModelJsonUnitTestLocalAdapter(slashLocalPath);
         slashCorpus.storage.mount("slash", slashAdapter);
         slashCorpus.storage.defaultNamespace = "slash";
 
@@ -50,7 +51,7 @@ describe('Cdm/ReferencedEntityDeclarationTest', () => {
 
         const backSlashCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRefEntityWithSlashPath');
         var backSlashLocalPath = (backSlashCorpus.storage.namespaceAdapters.get('local') as LocalAdapter).root;
-        var backSlashAdapter = new LocalAdapterWithSlashPath(backSlashLocalPath, '\\');
+        var backSlashAdapter = new ModelJsonUnitTestLocalAdapter(backSlashLocalPath);
         backSlashCorpus.storage.mount('backslash', backSlashAdapter);
         backSlashCorpus.storage.defaultNamespace = 'backslash';
 
@@ -69,22 +70,4 @@ describe('Cdm/ReferencedEntityDeclarationTest', () => {
         expect(backSlashModel.entities.length)
             .toBe(1);
     });
-
-    class LocalAdapterWithSlashPath extends LocalAdapter {
-        private separator: string;
-
-        constructor(root: string, separator: string) {
-            super(root);
-            this.separator = separator;
-        }
-
-        public createAdapterPath(corpusPath: string): string {
-            const basePath: string = super.createAdapterPath(corpusPath);
-            return this.separator == "/" ? basePath.replace(/\\/, '/') : basePath.replace(/\//, '\\');
-        }
-
-        public createCorpusPath(adapterPath: string): string {
-            return adapterPath;
-        }
-    }
 });

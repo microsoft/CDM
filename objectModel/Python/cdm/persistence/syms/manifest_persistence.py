@@ -104,7 +104,10 @@ class ManifestPersistence:
         if data_obj.relationships is not None:
             for item in data_obj.relationships.items:
                 relationship_entity = RelationshipEntity(None, None).deserialize(item)
-                manifest.relationships.extend(E2ERelationshipPersistence.from_data(ctx, relationship_entity))
+                relationships = E2ERelationshipPersistence.from_data(ctx, relationship_entity)
+
+                if relationships is not None:
+                    manifest.relationships.extend(relationships)
 
         # TODO: Submanifest
         return manifest

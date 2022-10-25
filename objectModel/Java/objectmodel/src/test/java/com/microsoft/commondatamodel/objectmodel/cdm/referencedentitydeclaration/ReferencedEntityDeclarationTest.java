@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.referencedentitydeclaratio
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.microsoft.commondatamodel.objectmodel.ModelJsonUnitTestLocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
@@ -28,7 +29,7 @@ public class ReferencedEntityDeclarationTest {
     public void testRefEntityWithSlashPath() throws InterruptedException {
         CdmCorpusDefinition slashCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestRefEntityWithSlashPath");
         String slashLocalPath = ((LocalAdapter)slashCorpus.getStorage().getNamespaceAdapters().get("local")).getRoot();
-        LocalAdapterWithSlashPath slashAdapter = new LocalAdapterWithSlashPath(slashLocalPath, "/");
+        ModelJsonUnitTestLocalAdapter slashAdapter = new ModelJsonUnitTestLocalAdapter(slashLocalPath);
         slashCorpus.getStorage().mount("slash", slashAdapter);
         slashCorpus.getStorage().setDefaultNamespace("slash");
 
@@ -51,7 +52,7 @@ public class ReferencedEntityDeclarationTest {
 
         CdmCorpusDefinition backSlashCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestRefEntityWithSlashPath");
         String backSlashLocalPath = ((LocalAdapter)backSlashCorpus.getStorage().getNamespaceAdapters().get("local")).getRoot();
-        LocalAdapterWithSlashPath backSlashAdapter = new LocalAdapterWithSlashPath(backSlashLocalPath, "\\");
+        ModelJsonUnitTestLocalAdapter backSlashAdapter = new ModelJsonUnitTestLocalAdapter(backSlashLocalPath);
         backSlashCorpus.getStorage().mount("backslash", backSlashAdapter);
         backSlashCorpus.getStorage().setDefaultNamespace("backslash");
 
@@ -70,25 +71,5 @@ public class ReferencedEntityDeclarationTest {
 
         Assert.assertNotNull(backSlashModel);
         Assert.assertEquals(1, backSlashModel.getEntities().size());
-    }
-}
-
-class LocalAdapterWithSlashPath extends LocalAdapter {
-    private String separator;
-
-    public LocalAdapterWithSlashPath(String root, String separator) {
-        super(root);
-        this.separator = separator;
-    }
-
-    @Override
-    public String createAdapterPath(String corpusPath) {
-        String basePath = super.createAdapterPath(corpusPath);
-        return this.separator.equals("/") ? basePath.replace("\\", "/") : basePath.replace("/", "\\");
-    }
-
-    @Override
-    public String createCorpusPath(String adapterPath) {
-        return adapterPath;
     }
 }

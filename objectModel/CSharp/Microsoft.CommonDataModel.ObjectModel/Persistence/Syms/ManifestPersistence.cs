@@ -143,7 +143,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             {
                 foreach (var relationshipEntity in dataObj.Relationships)
                 {
-                    manifest.Relationships.AddRange(E2ERelationshipPersistence.FromData(ctx, relationshipEntity));
+                    var relationships = E2ERelationshipPersistence.FromData(ctx, relationshipEntity);
+
+                    if (relationships != null)
+                    {
+                        manifest.Relationships.AddRange(relationships);
+                    }
                 }
             }
 

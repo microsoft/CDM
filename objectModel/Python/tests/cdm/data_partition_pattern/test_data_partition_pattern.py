@@ -2,7 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from cdm.storage.local import LocalAdapter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import os
 import time
 import unittest
@@ -198,7 +198,8 @@ class DataPartitionPatternTest(unittest.TestCase):
         self.assertEqual(CdmIncrementalPartitionType.UPSERT.value, trait_ref0.arguments.item('type').value)
         trait_ref1 = partition_entity.incremental_partition_patterns[1].exhibits_traits.item(Constants._INCREMENTAL_TRAIT_NAME)
         self.assertEqual(CdmIncrementalPartitionType.DELETE.value, trait_ref1.arguments.item('type').value)
-        time_before_load = datetime.now(timezone.utc)
+
+        time_before_load = datetime.now(timezone.utc) - timedelta(seconds=1)
         await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
         total_expected_partitions_found = 0
         for partition in partition_entity.incremental_partitions:
@@ -215,13 +216,14 @@ class DataPartitionPatternTest(unittest.TestCase):
         partition_entity.incremental_partitions.clear()
         self.assertEqual(0, len(partition_entity.incremental_partitions))
 
+        time_before_load = datetime.now(timezone.utc) - timedelta(seconds=1)
         upsert_incremental_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, '2019UpsertPartition1', False)
-        upsert_incremental_partition.last_file_status_check_time = datetime.now(timezone.utc)
+        upsert_incremental_partition.last_file_status_check_time = time_before_load
         upsert_incremental_partition.location = '/IncrementalData/Upserts/upsert1.csv'
         upsert_incremental_partition.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME, [['type', CdmIncrementalPartitionType.UPSERT.value]])
 
         delete_incremental_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, '2019UpsertPartition1', False)
-        delete_incremental_partition.last_file_status_check_time = datetime.now(timezone.utc)
+        delete_incremental_partition.last_file_status_check_time = time_before_load
         delete_incremental_partition.location = '/IncrementalData/Deletes/delete1.csv'
         delete_incremental_partition.exhibits_traits.append(Constants._INCREMENTAL_TRAIT_NAME, [['type', CdmIncrementalPartitionType.DELETE.value]])
 
@@ -230,10 +232,6 @@ class DataPartitionPatternTest(unittest.TestCase):
         self.assertEqual(2, len(partition_entity.incremental_partitions))
         self.assertEqual(2, len(partition_entity.incremental_partition_patterns))
         total_expected_partitions_found = 0
-
-        time_before_load = datetime.now(timezone.utc)
-        self.assertTrue(partition_entity.incremental_partitions[0].last_file_status_check_time <= time_before_load)
-        self.assertTrue(partition_entity.incremental_partitions[1].last_file_status_check_time <= time_before_load)
 
         await manifest.file_status_check_async(PartitionFileStatusCheckType.INCREMENTAL, CdmIncrementalPartitionType.DELETE)
 

@@ -147,6 +147,9 @@ class JObject(OrderedDict):
             self.__setstate__(json_str)
         return self
 
+    def to_dict(self):
+        return self.__getstate__()
+
     def __delattr__(self, key):
         self.__delitem__(key)
 

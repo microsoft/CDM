@@ -29,6 +29,9 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
 
+        # --- internal ---
+        self._virtual_location = None
+
     @property
     def data_partitions(self) -> Optional['CdmCollection[CdmDataPartitionDefinition]']:
         return None
@@ -49,6 +52,11 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF
 
+    @property
+    def _is_virtual(self) -> bool:
+        """Gets and sets this entity's virtual location, it's model.json file's location if entity is from a model.json file"""
+        return not StringUtils.is_null_or_white_space(self._virtual_location)
+
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext']) -> 'ResolvedAttributeSetBuilder':
         return None
 
@@ -68,6 +76,7 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         copy.entity_path = self.entity_path
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
+        copy._virtual_location = self._virtual_location
         self._copy_def(res_opt, copy)
         return copy
 
@@ -103,7 +112,8 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         """Check the modified time for this object and any children."""
         full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
 
-        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
+        modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._get_last_modified_time_from_object_async(self) if self._is_virtual \
+            else await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
 
         self.last_file_status_check_time = datetime.now(timezone.utc)
         self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)

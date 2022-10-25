@@ -6,7 +6,9 @@ using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Storage;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -510,6 +512,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             CopyFilesFromInputToActualOutputHelper(
                 TestHelper.GetInputFolderPath(testSubPath, testName),
                 TestHelper.GetActualOutputFolderPath(testSubPath, testName));
+        }
+
+        /// <summary>
+        /// Serializes a JToken to string.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public static string JTokenToString(dynamic content)
+        {
+            return JsonConvert.SerializeObject(content, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
         }
 
         /// <summary>

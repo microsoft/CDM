@@ -4,9 +4,14 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.io.File;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
+import com.microsoft.commondatamodel.objectmodel.ModelJsonUnitTestLocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 
+import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
+import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -72,5 +77,52 @@ public class ManifestDefinitionTest {
     Assert.assertEquals(subManifest.getManifestName(), subManifestName);
     Assert.assertEquals(relationship.getName(), relationshipName);
     Assert.assertEquals(trait.getNamedReference(), traitName);
+  }
+
+  /**
+   * Tests if FileStatusCheckAsync() works properly for manifest loaded from model.json
+   */
+  @Test
+  public void testModelJsonManifestFileStatusCheckAsync() throws InterruptedException {
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonManifestFileStatusCheckAsync");
+    ModelJsonUnitTestLocalAdapter modeljsonAdapter = new ModelJsonUnitTestLocalAdapter(((LocalAdapter)corpus.getStorage().getNamespaceAdapters().get("local")).getRoot());
+    corpus.getStorage().mount("modeljson", modeljsonAdapter);
+    corpus.getStorage().setDefaultNamespace("modeljson");
+
+    final CdmManifestDefinition manifest = (CdmManifestDefinition)corpus.fetchObjectAsync("modeljson:/"+ PersistenceLayer.modelJsonExtension).join();
+
+    Assert.assertTrue(manifest.isVirtual());
+    Assert.assertTrue(manifest.getEntities().get(0) instanceof CdmReferencedEntityDeclarationDefinition);
+    Assert.assertTrue(((CdmReferencedEntityDeclarationDefinition) manifest.getEntities().get(0)).isVirtual());
+    Assert.assertTrue(manifest.getEntities().get(1) instanceof CdmLocalEntityDeclarationDefinition);
+    Assert.assertTrue(((CdmLocalEntityDeclarationDefinition) manifest.getEntities().get(1)).isVirtual());
+
+    final OffsetDateTime timeBeforeLoad = OffsetDateTime.now();
+
+    OffsetDateTime oldManifestLastFileModifiedTime = manifest.getFileSystemModifiedTime();
+    Assert.assertNull(manifest.getLastFileStatusCheckTime());
+    Assert.assertNull(manifest.getEntities().get(0).getLastFileStatusCheckTime());
+    Assert.assertNull(manifest.getEntities().get(1).getLastFileStatusCheckTime());
+    Assert.assertNull(manifest.getLastFileModifiedTime());
+    Assert.assertNull(manifest.getEntities().get(0).getLastFileModifiedTime());
+    Assert.assertNull(manifest.getEntities().get(1).getLastFileModifiedTime());
+
+    Assert.assertTrue(oldManifestLastFileModifiedTime.compareTo(timeBeforeLoad) < 0);
+
+    Thread.sleep(100);
+
+    manifest.fileStatusCheckAsync().join();
+
+    OffsetDateTime newManifestLastFileStatusCheckTime = manifest.getLastFileStatusCheckTime();
+    OffsetDateTime newRefEntityLastFileStatusCheckTime = manifest.getEntities().get(0).getLastFileStatusCheckTime();
+    OffsetDateTime newLocalEntityLastFileStatusCheckTime = manifest.getEntities().get(1).getLastFileStatusCheckTime();
+
+    Assert.assertNotNull(manifest.getLastFileModifiedTime());
+    Assert.assertNotNull(manifest.getEntities().get(0).getLastFileModifiedTime());
+    Assert.assertNotNull(manifest.getEntities().get(1).getLastFileModifiedTime());
+
+    Assert.assertTrue(newManifestLastFileStatusCheckTime.compareTo(timeBeforeLoad) > 0);
+    Assert.assertTrue(newLocalEntityLastFileStatusCheckTime.compareTo(timeBeforeLoad) > 0);
+    Assert.assertTrue(newRefEntityLastFileStatusCheckTime.compareTo(timeBeforeLoad) > 0);
   }
 }

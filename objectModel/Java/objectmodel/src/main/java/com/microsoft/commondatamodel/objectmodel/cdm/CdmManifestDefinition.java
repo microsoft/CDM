@@ -11,11 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryS
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmIncrementalPartitionType;
 import com.microsoft.commondatamodel.objectmodel.enums.PartitionFileStatusCheckType;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
@@ -43,6 +39,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   private OffsetDateTime lastFileStatusCheckTime;
   private OffsetDateTime lastFileModifiedTime;
   private OffsetDateTime lastChildFileModifiedTime;
+  private String virtualLocation;
 
   public CdmManifestDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx, name + CdmConstants.MANIFEST_EXTENSION);
@@ -108,6 +105,38 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
   public CdmEntityCollection getEntities() {
     return this.entities;
+  }
+
+  /**
+   * Gets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return String
+   */
+  @Deprecated
+  public String getVirtualLocation() { return this.virtualLocation; }
+
+  /**
+   * Sets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setVirtualLocation(final String virtualLocation) {
+    this.virtualLocation = virtualLocation;
+  }
+
+  /**
+   * Gets whether this entity is virtual, which means it's coming from model.json file.
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return boolean
+   */
+  public boolean isVirtual() {
+    return !StringUtils.isNullOrTrimEmpty(this.virtualLocation);
   }
 
   @Override
@@ -553,6 +582,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(this.getLastFileModifiedTime());
     copy.setLastChildFileModifiedTime(this.getLastChildFileModifiedTime());
+    copy.setVirtualLocation(this.getVirtualLocation());
 
     copy.getEntities().clear();
     this.getEntities().forEach(entityDec -> copy.getEntities().add((CdmEntityDeclarationDefinition) entityDec.copy(resOpt)));

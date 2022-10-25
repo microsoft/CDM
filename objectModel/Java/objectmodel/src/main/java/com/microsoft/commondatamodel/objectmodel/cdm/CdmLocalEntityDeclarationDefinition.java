@@ -3,10 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.microsoft.commondatamodel.objectmodel.enums.CdmIncrementalPartitionType;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.enums.PartitionFileStatusCheckType;
+import com.microsoft.commondatamodel.objectmodel.enums.*;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -40,6 +37,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   private CdmCollection<CdmDataPartitionPatternDefinition> dataPartitionPatterns;
   private CdmCollection<CdmDataPartitionDefinition> incrementalPartitions;
   private CdmCollection<CdmDataPartitionPatternDefinition> incrementalPartitionPatterns;
+  private String virtualLocation;
 
   public CdmLocalEntityDeclarationDefinition(final CdmCorpusContext ctx, final String entityName) {
     super(ctx);
@@ -220,6 +218,38 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     this.lastFileModifiedOldTime = value;
   }
 
+  /**
+   * Gets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return String
+   */
+  @Deprecated
+  public String getVirtualLocation() { return this.virtualLocation; }
+
+  /**
+   * Sets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setVirtualLocation(final String virtualLocation) {
+    this.virtualLocation = virtualLocation;
+  }
+
+  /**
+   * Gets whether this entity is virtual, which means it's coming from model.json file.
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return boolean
+   */
+  public boolean isVirtual() {
+    return !StringUtils.isNullOrTrimEmpty(this.virtualLocation);
+  }
+
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return fileStatusCheckAsync(PartitionFileStatusCheckType.Full);
@@ -235,17 +265,14 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
       StorageAdapterBase.CacheContext cacheContext = null;
       if(adapter != null) {
         cacheContext = adapter.createFileQueryCacheContext();
-      }      
+      }
       try {
-        final String fullPath =
-            this.getCtx()
+        final String fullPath = this.getCtx()
                 .getCorpus()
                 .getStorage()
                 .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
-        final OffsetDateTime modifiedTime = getCtx()
-            .getCorpus()
-            .computeLastModifiedTimeAsync(fullPath, this)
-            .join();
+        OffsetDateTime modifiedTime = this.isVirtual() ? this.getCtx().getCorpus().getLastModifiedTimeFromObjectAsync(this).join()
+                                                       : this.getCtx().getCorpus().computeLastModifiedTimeAsync(fullPath, this).join();
 
         // check patterns first as this is a more performant way of querying file modification times
         // from ADLS and we can cache the times for reuse in the individual partition checks below
@@ -405,6 +432,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(this.getLastFileModifiedTime());
     copy.setLastChildFileModifiedTime(this.getLastChildFileModifiedTime());
+    copy.setVirtualLocation(this.getVirtualLocation());
 
     for (final CdmDataPartitionDefinition dataPartition : this.getDataPartitions()) {
       copy.getDataPartitions().add((CdmDataPartitionDefinition) dataPartition.copy(resOpt));
