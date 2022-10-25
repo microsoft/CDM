@@ -7,6 +7,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmLocalEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmImport;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
@@ -14,6 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
+import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Partition;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -34,7 +36,7 @@ public class LocalEntityDeclarationPersistence {
       final LocalEntity obj,
       final List<CdmTraitDefinition> extensionTraitDefList,
       final CdmManifestDefinition manifest) {
-    final CdmEntityDeclarationDefinition localEntity = ctx.getCorpus()
+    final CdmLocalEntityDeclarationDefinition localEntity = ctx.getCorpus()
         .makeObject(CdmObjectType.LocalEntityDeclarationDef, obj.getName());
 
     final List<CdmTraitDefinition> localExtensionTraitDefList = new ArrayList<>();
@@ -50,6 +52,7 @@ public class LocalEntityDeclarationPersistence {
                   .createRelativeCorpusPath(
                       entityDoc.getAtCorpusPath() + "/" + obj.getName(),
                       manifest));
+          localEntity.setVirtualLocation(documentFolder.getFolderPath() + PersistenceLayer.modelJsonExtension);
           localEntity.setExplanation(obj.getDescription());
           localEntity.setLastChildFileModifiedTime(obj.getLastChildFileModifiedTime());
           localEntity.setLastFileModifiedTime(obj.getLastFileModifiedTime());

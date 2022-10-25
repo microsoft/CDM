@@ -41,6 +41,10 @@ class SymsTestHelper:
 
     @staticmethod
     def ignore_properties(data):
+        # remove id
+        if 'id' in data:
+            del data['id']
+            
         ignore_paths = ['properties.ObjectId', 'properties.StorageDescriptor.ColumnSetEntityName']
 
         if 'properties' in data:

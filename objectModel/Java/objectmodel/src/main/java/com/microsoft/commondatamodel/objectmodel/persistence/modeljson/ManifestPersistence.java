@@ -18,6 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Entity;
@@ -60,6 +61,7 @@ public class ManifestPersistence {
     final List<CdmTraitDefinition> extensionTraitDefList = new ArrayList<>();
 
     final CdmManifestDefinition manifest = ctx.getCorpus().makeObject(CdmObjectType.ManifestDef, obj.getName());
+    manifest.setVirtualLocation(folder.getFolderPath() + PersistenceLayer.modelJsonExtension);
 
     // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
     folder.getDocuments().add(manifest);

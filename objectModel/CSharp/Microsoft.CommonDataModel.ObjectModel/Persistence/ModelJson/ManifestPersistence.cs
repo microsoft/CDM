@@ -44,6 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             #region Set manifest fields
             CdmManifestDefinition manifest = ctx.Corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, obj.Name);
+            manifest.VirtualLocation = folder.FolderPath + PersistenceLayer.ModelJsonExtension;
 
             // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
             folder.Documents.Add(manifest);

@@ -32,6 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 return null;
             }
 
+            referencedEntity.VirtualLocation = corpusPath;
             referencedEntity.EntityPath = $"{corpusPath}/{obj.Source}";
             referencedEntity.Explanation = obj.Description;
             referencedEntity.LastFileModifiedTime = obj.LastFileModifiedTime;

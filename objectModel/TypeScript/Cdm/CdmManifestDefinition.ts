@@ -33,6 +33,7 @@ import {
     resolveOptions,
     StorageAdapterBase,
     StorageAdapterCacheContext,
+    StringUtils,
     VisitCallback
 } from '../internal';
 import { isDocumentDefinition, isEntityDefinition, isFolderDefinition, isLocalEntityDeclarationDefinition, isManifestDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
@@ -55,6 +56,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     public lastFileStatusCheckTime: Date;
     public lastFileModifiedTime: Date;
     public lastChildFileModifiedTime: Date;
+
+    /**
+     * @inheritdoc
+     * Gets and sets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+     */
+    public virtualLocation: string;
 
     constructor(ctx: CdmCorpusContext, name: string) {
         super(ctx, `${name}.manifest.cdm.json`);
@@ -86,6 +93,14 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
      */
     public getObjectPath(): string {
         return this.atCorpusPath;
+    }
+
+    /**
+     * @inheritdoc
+     * Gets whether this entity is virtual, which means it's coming from model.json file
+     */
+    public isVirtual(): boolean {
+        return !StringUtils.isNullOrWhiteSpace(this.virtualLocation);
     }
 
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
@@ -135,6 +150,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         copy.lastFileStatusCheckTime = this.lastFileStatusCheckTime;
         copy.lastFileModifiedTime = this.lastFileModifiedTime;
         copy.lastChildFileModifiedTime = this.lastChildFileModifiedTime;
+        copy.virtualLocation = this.virtualLocation;
 
         copy.entities.clear();
         for (const ent of this.entities) {

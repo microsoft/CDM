@@ -77,43 +77,43 @@ class SymsAdapter(NetworkAdapter, StorageAdapterBase):
 
     def create_adapter_path(self, corpus_path: str) -> str:
         formatted_corpus_path = self._format_corpus_path(corpus_path)
-        if formatted_corpus_path is not None:
-            if formatted_corpus_path == '/':
-                return '{}?{}'.format(self._base_uri, self.API_VERSION)
-            if formatted_corpus_path == '/' + self.DATABASE_MANIFEST or formatted_corpus_path == self.DATABASE_MANIFEST:
-                return '{}?{}'.format(self._base_uri, self.API_VERSION)
+        if formatted_corpus_path is None:
+            return None
+        if formatted_corpus_path == '/':
+            return '{}?{}'.format(self._base_uri, self.API_VERSION)
+        if formatted_corpus_path == '/' + self.DATABASE_MANIFEST or formatted_corpus_path == self.DATABASE_MANIFEST:
+            return '{}?{}'.format(self._base_uri, self.API_VERSION)
 
-            formatted_corpus_path = StringUtils.trim_start(formatted_corpus_path, '/')
-            paths = formatted_corpus_path.split('/')
-            if len(paths) == 2: # 2 level is supported currently
-                # paths[0]: databasename
-                # paths[1]: filename
-                if paths[1].endswith('.manifest.cdm.json'):
-                     return '{}/{}/?{}'.format(self._base_uri, paths[0], self.API_VERSION)
-                if paths[1].endswith('.cdm.json'):
-                    return '{}/{}/tables/{}?{}'.format(self._base_uri, paths[0], paths[1].replace('.cdm.json', ''), self.API_VERSION)
-                else:
-                    raise Exception('Syms adapter: Failed to convert to adapter path from corpus path. Invalid corpus path :' + corpus_path + '. Supported file format are manifest.cdm.json and .cdm.json')
-            elif len(paths) == 3: # 3 level is supported for relationship and entitydefinitions
-                # paths[0]: database name
-                # paths[1]: filename
-                if paths[1].endswith('.manifest.cdm.json') and paths[2] == 'relationships':
-                    return '{}/{}/relationships?{}'.format(self._base_uri, paths[0], self.API_VERSION)
-                elif paths[1].endswith('.manifest.cdm.json') and paths[2] == 'entitydefinition':
-                    return '{}/{}/tables?{}'.format(self._base_uri, paths[0], self.API_VERSION)
-                else:
-                    raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition.')
-            elif len(paths) == 4: # 4 level is supported for relationship
-                # paths[0]: databasename
-                # paths[1]: filename
-                if paths[1].endswith('.manifest.cdm.json') and paths[2] == 'relationships':
-                    return '{}/{}/relationships/{}?{}'.format(self._base_uri, paths[0], paths[3], self.API_VERSION)
-                else:
-                    raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. + Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>.')
-
+        formatted_corpus_path = StringUtils.trim_start(formatted_corpus_path, '/')
+        paths = formatted_corpus_path.split('/')
+        if len(paths) == 2: # 2 level is supported currently
+            # paths[0]: databasename
+            # paths[1]: filename
+            if paths[1].endswith('.manifest.cdm.json'):
+                    return '{}/{}/?{}'.format(self._base_uri, paths[0], self.API_VERSION)
+            if paths[1].endswith('.cdm.json'):
+                return '{}/{}/tables/{}?{}'.format(self._base_uri, paths[0], paths[1].replace('.cdm.json', ''), self.API_VERSION)
             else:
-                raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>, /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition>.')
-        return None
+                raise Exception('Syms adapter: Failed to convert to adapter path from corpus path. Invalid corpus path :' + corpus_path + '. Supported file format are manifest.cdm.json and .cdm.json')
+        elif len(paths) == 3: # 3 level is supported for relationship and entitydefinitions
+            # paths[0]: database name
+            # paths[1]: filename
+            if paths[1].endswith('.manifest.cdm.json') and paths[2] == 'relationships':
+                return '{}/{}/relationships?{}'.format(self._base_uri, paths[0], self.API_VERSION)
+            elif paths[1].endswith('.manifest.cdm.json') and paths[2] == 'entitydefinition':
+                return '{}/{}/tables?{}'.format(self._base_uri, paths[0], self.API_VERSION)
+            else:
+                raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition.')
+        elif len(paths) == 4: # 4 level is supported for relationship
+            # paths[0]: databasename
+            # paths[1]: filename
+            if paths[1].endswith('.manifest.cdm.json') and paths[2] == 'relationships':
+                return '{}/{}/relationships/{}?{}'.format(self._base_uri, paths[0], paths[3], self.API_VERSION)
+            else:
+                raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. + Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>.')
+
+        else:
+            raise Exception('Syms adapter: Failed to convert to adapter path from corpus path' + corpus_path + '. Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>, /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition>.')
 
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:

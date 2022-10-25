@@ -4,7 +4,7 @@
 import importlib
 import json
 from collections import OrderedDict
-from typing import Optional, TYPE_CHECKING
+from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import AttributeResolutionDirectiveSet, CdmError, logger, ResolveOptions, StorageUtils
@@ -12,7 +12,8 @@ from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmObject
+    from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmObject
+    from cdm.storage import StorageAdapterBase
     from cdm.utilities import CopyOptions, JObject
 
 
@@ -31,8 +32,8 @@ class PersistenceLayer:
 
         self._corpus = corpus
 
-        self._registered_persistence_formats = OrderedDict()  # type: Dictionary[str, object]
-        self._is_registered_persistence_async = OrderedDict()  # type: Dictionary[object, bool]
+        self._registered_persistence_formats = OrderedDict()  # type: Dict[str, object]
+        self._is_registered_persistence_async = OrderedDict()  # type: Dict[object, bool]
 
     @property
     def _ctx(self) -> 'CdmCorpusContext':
@@ -71,7 +72,7 @@ class PersistenceLayer:
         json_data = None
         fs_modified_time = None
         doc_path = folder._folder_path + doc_name
-        adapter = self._ctx.corpus.storage.fetch_adapter(folder._namespace)  # type: StorageAdapter
+        adapter = self._ctx.corpus.storage.fetch_adapter(folder._namespace)  # type: StorageAdapterBase
 
         try:
             if adapter.can_read():
@@ -126,7 +127,6 @@ class PersistenceLayer:
             from cdm.persistence.syms import utils
             if utils.check_if_syms_adapter(adapter):
                 from cdm.persistence.syms import ManifestDatabasesPersistence
-                from cdm.persistence.syms.types import SymsDatabasesResponse
                 if doc_name_lower == self.SYMS_DATABASES:
                     from cdm.persistence.syms.models.query_artifacts_response import QueryArtifactsResponse
                     databases = QueryArtifactsResponse()

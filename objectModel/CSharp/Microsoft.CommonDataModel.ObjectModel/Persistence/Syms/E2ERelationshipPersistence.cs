@@ -10,9 +10,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
     using System.Collections.Generic;
     using Newtonsoft.Json.Linq;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     class E2ERelationshipPersistence
     {
+        private static readonly string TAG = nameof(E2ERelationshipPersistence);
+
         public static List<CdmE2ERelationship> FromData(CdmCorpusContext ctx, RelationshipEntity relationshipEntity)
         {
             List<CdmE2ERelationship> relationships = new List<CdmE2ERelationship>();
@@ -41,9 +44,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     relationship.FromEntityAttribute = columnRelationshipInformation.ToColumnName;
                     relationship.ToEntityAttribute = columnRelationshipInformation.FromColumnName;
                 }
-                else if (relationshipProperties.RelationshipType == RelationshipType.MANYTOMANY)
+                else if (relationshipProperties.RelationshipType == RelationshipType.MANYTOMANY || relationshipProperties.RelationshipType == null)
                 {
-                    // error
+                    Logger.Error((ResolveContext)ctx, TAG, nameof(FromData), null, CdmLogCode.ErrPersistSymsRelationshipTypeNotSupported, relationshipProperties.RelationshipType?.ToString());
                     return null;
                 }
 

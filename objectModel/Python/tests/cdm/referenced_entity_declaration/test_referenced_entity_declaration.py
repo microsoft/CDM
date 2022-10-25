@@ -4,11 +4,11 @@
 import unittest
 import os
 
-from cdm.storage import LocalAdapter
 from cdm.utilities import ResolveOptions, CopyOptions
 from cdm.persistence.modeljson.manifest_persistence import ManifestPersistence
 
 from tests.common import async_test, TestHelper
+from tests.model_json_unit_test_local_adapter import ModelJsonUnitTestLocalAdapter
 
 
 class ReferencedEntityTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class ReferencedEntityTest(unittest.TestCase):
 
         slash_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         slash_local_path = slash_corpus.storage.namespace_adapters.get('local').root
-        slash_adapter = LocalAdapterWithSlashPath(slash_local_path, '/')
+        slash_adapter = ModelJsonUnitTestLocalAdapter(slash_local_path)
         slash_corpus.storage.mount('slash', slash_adapter)
         slash_corpus.storage.defaultNamespace = 'slash'
 
@@ -40,7 +40,7 @@ class ReferencedEntityTest(unittest.TestCase):
 
         back_slash_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         back_slash_local_path = back_slash_corpus.storage.namespace_adapters.get('local').root
-        back_slash_adapter = LocalAdapterWithSlashPath(back_slash_local_path, '\\')
+        back_slash_adapter = ModelJsonUnitTestLocalAdapter(back_slash_local_path)
         back_slash_corpus.storage.mount('backslash', back_slash_adapter)
         back_slash_corpus.storage.default_namespace = 'backslash'
 
@@ -57,15 +57,3 @@ class ReferencedEntityTest(unittest.TestCase):
         self.assertIsNotNone(back_slash_model)
         self.assertEqual(1, len(back_slash_model.entities))
 
-
-class LocalAdapterWithSlashPath(LocalAdapter):
-    def __init__(self, root, separator):
-        super().__init__(root)
-        self.separator = separator
-
-    def create_adapter_path(self, corpus_path):
-        base_path = super().create_adapter_path(corpus_path)
-        return base_path.replace('\\', '/') if self.separator == '/' else base_path.replace('/', '\\')
-
-    def create_corpus_path(self, adapter_path):
-        return adapter_path

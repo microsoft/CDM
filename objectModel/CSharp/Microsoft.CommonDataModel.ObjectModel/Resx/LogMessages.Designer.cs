@@ -187,7 +187,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to cast the object found at path &apos;{0}&apos; to an object of type &apos;{1}&apos;..
+        ///   Looks up a localized string similar to The object found at path &apos;{0}&apos; cannot be cast to an object of type &apos;{1}&apos;. Please check that the object or the path is specified correctly..
         /// </summary>
         internal static string ErrInvalidCast {
             get {
@@ -813,6 +813,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrPersistSymsPartitionNotSupported {
             get {
                 return ResourceManager.GetString("ErrPersistSymsPartitionNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Relationship type &apos;{0}&apos; not supported by SyMS persistence..
+        /// </summary>
+        internal static string ErrPersistSymsRelationshipTypeNotSupported {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsRelationshipTypeNotSupported", resourceCulture);
             }
         }
         

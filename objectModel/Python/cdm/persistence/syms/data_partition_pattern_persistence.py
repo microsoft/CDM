@@ -17,9 +17,9 @@ class DataPartitionPatternPersistence:
     def from_data(ctx: CdmCorpusContext, data, name: str, syms_root_path: str, format_type: str, matches = None) -> CdmDataPartitionPatternDefinition:
         data_partition_pattern = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, name)
         if isinstance(data, StorageDescriptor):
-            sd = data
-            properties = sd.properties
-            syms_path = utils.create_syms_absolute_path(syms_root_path, sd.source.location)
+            storage_descriptor = data
+            properties = storage_descriptor.properties
+            syms_path = utils.create_syms_absolute_path(syms_root_path, storage_descriptor.source.location)
             corpus_path = utils.syms_path_to_corpus_path(syms_path, ctx.corpus.storage)
 
             if matches is not None and len(matches) > 0:
@@ -36,7 +36,7 @@ class DataPartitionPatternPersistence:
                     logger.error(ctx, _TAG, DataPartitionPatternPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_SYMS_UNSUPPORTED_TABLE_FORMAT)
                     return None
 
-            trait = utils.create_partition_trait(sd.format.properties, ctx, format_type)
+            trait = utils.create_partition_trait(storage_descriptor.format.properties, ctx, format_type)
             if trait is not None:
                 data_partition_pattern.exhibits_traits.append(trait)
             else:

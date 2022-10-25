@@ -3,9 +3,12 @@
 import datetime
 import os
 import unittest
+from typing import Dict
 
 from cdm.enums import CdmStatusLevel, CdmObjectType, CdmLogCode
-from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition
+from cdm.objectmodel import CdmCorpusDefinition, CdmEntityDeclarationDefinition, CdmEntityDefinition, CdmFolderDefinition, \
+    CdmManifestDefinition, CdmTypeAttributeDefinition
+from cdm.persistence.persistence_layer import PersistenceLayer
 from cdm.storage import LocalAdapter
 from cdm.utilities import CopyOptions
 
@@ -147,6 +150,77 @@ class PersistenceLayerTest(unittest.TestCase):
 
         self.assertFalse(succeded)
 
+    @async_test
+    @unittest.skipIf(SymsTestHelper.if_syms_run_tests_flag_not_set(), 'SYMS environment variables not set up')
+    async def test_syms_saving_and_fetching_document(self):
+        syms_adapter = SymsTestHelper.create_adapter_with_clientid()
+        await SymsTestHelper.clean_database(syms_adapter, SymsTestHelper.DATABASE_NAME)
+
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_syms_saving_and_fetching_document')
+        corpus.storage.unmount('remote')
+
+        adls_adapter1 = SymsTestHelper.create_adapter_clientid_with_shared_key(1)
+        adls_adapter2 = SymsTestHelper.create_adapter_clientid_with_shared_key(2)
+    
+        corpus.storage.mount('adls1', adls_adapter1)
+        corpus.storage.mount('adls2', adls_adapter2)
+        corpus.storage.mount('syms', syms_adapter)
+
+        expected_manifest = await corpus.fetch_object_async('default.manifest.cdm.json')
+        expected_manifest.manifest_name = SymsTestHelper.DATABASE_NAME
+        await self.run_syms_save_manifest(expected_manifest)
+        await self.run_syms_fetch_manifest(corpus, expected_manifest, 'default.manifest.cdm.json')
+        await self.run_syms_fetch_document(corpus, expected_manifest)
+
+        expected_modified_manifest = await corpus.fetch_object_async('defaultmodified.manifest.cdm.json')
+        expected_modified_manifest.manifest_name = SymsTestHelper.DATABASE_NAME
+        expected_modified_manifest.entities[0].set_last_file_modified_time(datetime.datetime.now(datetime.timezone.utc))
+        await self.run_syms_save_manifest(expected_modified_manifest)
+        await self.run_syms_fetch_manifest(corpus, expected_modified_manifest, 'defaultmodified.manifest.cdm.json')
+        await self.run_syms_fetch_document(corpus, expected_modified_manifest)
+
+        await self.run_syms_smart_adls_adapter_mount_logic()
+        await SymsTestHelper.clean_database(syms_adapter, SymsTestHelper.DATABASE_NAME)
+
+    @async_test
+    @unittest.skipIf(SymsTestHelper.if_syms_run_tests_flag_not_set(), 'SYMS environment variables not set up')
+    @unittest.skip
+    async def test_syms_load_spark_partition(self):
+        '''Test loading a manifest that contains Spark Partitions.'''
+
+        # TODO: uncomment when bug 852342 is fixed.
+        # corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_syms_load_spark_partition')
+        corpus = CdmCorpusDefinition()
+        corpus.storage.unmount('remote')
+        
+        syms_adapter = SymsTestHelper.create_adapter_with_clientid()
+        corpus.storage.mount('syms', syms_adapter)
+
+        adls_adapter = SymsTestHelper.create_adapter_clientid_with_shared_key(1)
+        corpus.storage.mount('adls', adls_adapter)
+
+        table_name = 'SparkPartitionTest'
+        manifest = await corpus.fetch_object_async(f'syms:/default/{table_name}.manifest.cdm.json')  # type: CdmManifestDefinition
+        
+        self.assertIsNotNone(manifest)
+        self.assertEqual(1, len(manifest.entities[0].data_partition_patterns))
+        self.assertEqual(0, len(manifest.entities[0].data_partitions))
+
+        await manifest.file_status_check_async()
+
+        self.assertEqual(4, len(manifest.entities[0].data_partitions))
+
+    @async_test
+    async def test_loading_empty_json_data(self):
+        expected_log_codes = {CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE}
+
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_loading_empty_json_data', None, False, expected_log_codes, False)
+
+        # We are trying to load an empty file, so fetch_object_async should just return None.
+        manifest = await corpus.fetch_object_async('empty.Manifest.cdm.json')
+        self.assertIsNone(manifest)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, True, self)
+
     async def run_syms_save_manifest(self, manifest: CdmManifestDefinition):
         self.assertTrue(await manifest.save_as_async('syms:/{}/{}.manifest.cdm.json'.format(manifest.manifest_name, manifest.manifest_name)))
 
@@ -161,13 +235,11 @@ class PersistenceLayerTest(unittest.TestCase):
 
         manifest_actual = await corpus.fetch_object_async('syms:/{}/{}.manifest.cdm.json'.format(manifest_expected.manifest_name, manifest_expected.manifest_name),
                                                      manifest_read_databases, None, True)
-        await manifest_actual.save_as_async('localActOutput:/{}{}'.format(filename, threadnumber))
-        await manifest_expected.save_as_async('localExpOutput:/{}{}'.format(filename, threadnumber))
+        await manifest_actual.save_as_async('output:/{}{}'.format(filename, threadnumber))
     
-        actual_content = TestHelper.get_actual_output_data(self.test_subpath, 'TestSymsSavingAndFetchingDocument',
+        actual_content = TestHelper.get_actual_output_data(self.test_subpath, 'test_syms_saving_and_fetching_document',
                                                               filename)
-        expected_content = TestHelper.get_expected_output_data(self.test_subpath, 'TestSymsSavingAndFetchingDocument',
-                                                                  filename)
+        expected_content = PersistenceLayer.to_data(manifest_expected, None, None, 'CdmFolder').to_dict()
         ret = TestHelper.compare_same_object(actual_content, expected_content)
         if ret is not '':
             self.fail(ret)
@@ -178,15 +250,12 @@ class PersistenceLayerTest(unittest.TestCase):
             self.assertIsNotNone(doc)
             self.assertTrue(doc.name == '{}.cdm.json'.format(ent.entity_name))
 
-            await doc.save_as_async('localActOutput:/{}'.format(doc.name))
+            await doc.save_as_async('output:/{}'.format(doc.name))
 
             doc_local = await corpus.fetch_object_async(doc.name)
-            await doc_local.save_as_async('localExpOutput:/{}'.format(doc.name))
             actual_content = TestHelper.get_actual_output_data(self.test_subpath, 'TestSymsSavingAndFetchingDocument',
                                                                doc.name)
-            expected_content = TestHelper.get_expected_output_data(self.test_subpath,
-                                                                   'TestSymsSavingAndFetchingDocument',
-                                                                   doc.name)
+            expected_content = PersistenceLayer.to_data(doc_local, None, None, 'CdmFolder').to_dict()
             ret = TestHelper.compare_same_object(actual_content, expected_content)
             if ret is not '':
                 self.fail(ret)
@@ -209,59 +278,3 @@ class PersistenceLayerTest(unittest.TestCase):
         self.assertEqual(count_adapter_count_before + 2, count_adapter_count_after)
         self.assertIsNotNone(corpus.storage.adapter_path_to_corpus_path('https://{}{}'.format(adls_adapter1.hostname, adls_adapter1.root)))
         self.assertIsNotNone(corpus.storage.adapter_path_to_corpus_path('https://{}{}'.format(adls_adapter2.hostname, adls_adapter2.root)))
-
-    @async_test
-    @unittest.skipIf(SymsTestHelper.if_syms_run_tests_flag_not_set(), 'SYMS environment variables not set up')
-    async def test_syms_saving_and_fetching_document(self):
-        syms_adapter = SymsTestHelper.create_adapter_with_clientid()
-        await SymsTestHelper.clean_database(syms_adapter, SymsTestHelper.DATABASE_NAME)
-
-        test_input_path = TestHelper.get_input_folder_path(self.test_subpath,'TestSymsSavingAndFetchingDocument')
-        test_act_output_path = TestHelper.get_actual_output_folder_path(self.test_subpath, 'TestSymsSavingAndFetchingDocument')
-        test_exp_output_path = TestHelper.get_expected_output_folder_path(self.test_subpath, 'TestSymsSavingAndFetchingDocument')
-
-        corpus = CdmCorpusDefinition()
-
-        adls_adapter1 = SymsTestHelper.create_adapter_clientid_with_shared_key(1)
-        adls_adapter2 = SymsTestHelper.create_adapter_clientid_with_shared_key(2)
-    
-        local_input_adapter = LocalAdapter(test_input_path)
-        local_act_output_adapter = LocalAdapter(test_act_output_path)
-        local_exp_output_adapter = LocalAdapter(test_exp_output_path)
-    
-        corpus.storage.mount('adls1', adls_adapter1)
-        corpus.storage.mount('adls2', adls_adapter2)
-        corpus.storage.mount('syms', syms_adapter)
-        corpus.storage.mount('localInput', local_input_adapter)
-        corpus.storage.mount('localActOutput', local_act_output_adapter)
-        corpus.storage.mount('localExpOutput', local_exp_output_adapter)
-    
-        corpus.storage.unmount('cdm')
-        corpus.storage.default_namespace = 'localInput'
-
-        manifest = await corpus.fetch_object_async('default.manifest.cdm.json')
-        manifest.manifest_name = SymsTestHelper.DATABASE_NAME
-        await self.run_syms_save_manifest(manifest)
-        await self.run_syms_fetch_manifest(corpus, manifest, 'default.manifest.cdm.json')
-        await self.run_syms_fetch_document(corpus, manifest)
-
-        manifest_modified = await corpus.fetch_object_async('defaultmodified.manifest.cdm.json')
-        manifest_modified.manifest_name = SymsTestHelper.DATABASE_NAME
-        manifest_modified.entities[0].set_last_file_modified_time(datetime.datetime.now(datetime.timezone.utc))
-        await self.run_syms_save_manifest(manifest_modified)
-        await self.run_syms_fetch_manifest(corpus, manifest_modified, 'defaultmodified.manifest.cdm.json')
-        await self.run_syms_fetch_document(corpus, manifest_modified)
-
-        await self.run_syms_smart_adls_adapter_mount_logic()
-        await SymsTestHelper.clean_database(syms_adapter, SymsTestHelper.DATABASE_NAME)
-
-    @async_test
-    async def test_loading_empty_json_data(self):
-        expected_log_codes = {CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE}
-
-        corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_loading_empty_json_data', None, False, expected_log_codes, False)
-
-        # We are trying to load an empty file, so fetch_object_async should just return None.
-        manifest = await corpus.fetch_object_async('empty.Manifest.cdm.json')
-        self.assertIsNone(manifest)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, True, self)

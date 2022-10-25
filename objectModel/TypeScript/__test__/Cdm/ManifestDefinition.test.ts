@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    CdmConstants,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
     CdmEntityDeclarationDefinition,
@@ -9,9 +10,13 @@ import {
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     CdmTraitReferenceBase,
-    CdmFolderDefinition
+    CdmFolderDefinition,
+    CdmLocalEntityDeclarationDefinition,
+    CdmReferencedEntityDeclarationDefinition
 } from '../../internal';
 import { testHelper } from '../testHelper';
+import { ModelJsonUnitTestLocalAdapter } from '../modelJsonUnitTestLocalAdapter';
+import { LocalAdapter } from '../../Storage/LocalAdapter';
 
 describe('Cdm/ManifestDefinitionTests', () => {
     const testsSubpath: string = 'Cdm/ManifestDefinition';
@@ -76,5 +81,72 @@ describe('Cdm/ManifestDefinitionTests', () => {
             .toBe(relationshipName);
         expect(trait.namedReference)
             .toBe(traitName);
+    });
+
+
+    /**
+    * Tests if FileStatusCheckAsync() works properly for manifest loaded from model.json.
+    */
+     it('testModelJsonManifestFileStatusCheckAsync', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testModelJsonManifestFileStatusCheckAsync');
+        const modeljsonAdapter: ModelJsonUnitTestLocalAdapter = new ModelJsonUnitTestLocalAdapter((corpus.storage.namespaceAdapters.get('local') as LocalAdapter).root);
+        corpus.storage.mount('modeljson', modeljsonAdapter);
+        corpus.storage.defaultNamespace = 'modeljson';
+
+        const manifest : CdmManifestDefinition = await corpus.fetchObjectAsync('modeljson:/' + CdmConstants.modelJsonExtension);
+        expect(manifest.isVirtual())
+            .toBeTruthy();
+        expect(manifest.entities.allItems[0] instanceof CdmReferencedEntityDeclarationDefinition)
+            .toBeTruthy();
+        expect((manifest.entities.allItems[0] as CdmReferencedEntityDeclarationDefinition).isVirtual())
+            .toBeTruthy();
+        expect(manifest.entities.allItems[1] instanceof CdmLocalEntityDeclarationDefinition)
+            .toBeTruthy();
+        expect((manifest.entities.allItems[1] as CdmLocalEntityDeclarationDefinition).isVirtual())
+            .toBeTruthy();
+
+        const timeBeforeLoad: Date = new Date();
+
+        const oldManifestLastFileModifiedTime: Date = manifest._fileSystemModifiedTime;
+        expect(manifest.lastFileStatusCheckTime)
+            .toBeUndefined();
+        expect(manifest.entities.allItems[0].lastFileStatusCheckTime)
+            .toBeUndefined();
+        expect(manifest.entities.allItems[1].lastFileStatusCheckTime)
+            .toBeUndefined();
+        expect(manifest.lastFileModifiedTime)
+            .toBeUndefined();
+        expect(manifest.entities.allItems[0].lastFileModifiedTime)
+            .toBeUndefined();        
+        expect(manifest.entities.allItems[1].lastFileModifiedTime)
+            .toBeUndefined();      
+        
+        expect(oldManifestLastFileModifiedTime < timeBeforeLoad)
+            .toBeTruthy();
+        
+        await new Promise(f => setTimeout(f, 1000));
+
+        await manifest.fileStatusCheckAsync();
+
+        const newManifestLastFileStatusCheckTime = manifest.lastFileStatusCheckTime;
+        const newRefEntityLastFileStatusCheckTime = manifest.entities.allItems[0].lastFileStatusCheckTime;
+        const newLocalEntityLastFileStatusCheckTime = manifest.entities.allItems[1].lastFileStatusCheckTime;
+
+        expect(manifest.lastFileModifiedTime)
+            .not
+            .toBeUndefined();
+        expect(manifest.entities.allItems[0].lastFileModifiedTime)
+            .not
+            .toBeUndefined();        
+        expect(manifest.entities.allItems[1].lastFileModifiedTime)
+            .not
+            .toBeUndefined();
+
+        expect(newManifestLastFileStatusCheckTime > timeBeforeLoad)
+            .toBeTruthy();
+        expect(newLocalEntityLastFileStatusCheckTime > timeBeforeLoad)
+            .toBeTruthy();
+        expect(newRefEntityLastFileStatusCheckTime > timeBeforeLoad)
+            .toBeTruthy();
     });
 });

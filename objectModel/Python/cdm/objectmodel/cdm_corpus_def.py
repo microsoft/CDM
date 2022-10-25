@@ -29,7 +29,7 @@ from ..utilities.string_utils import StringUtils
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmTraitReference, CdmAttributeContext, CdmDocumentDefinition, \
         CdmManifestDefinition, CdmObject, CdmObjectDefinition, \
-        CdmObjectReference, CdmTypeAttributeDefinition
+        CdmObjectReference, CdmTypeAttributeDefinition, CdmReferencedEntityDeclarationDefinition
     from cdm.resolvedmodel import ResolvedTraitSet
     from cdm.utilities import EventCallback, TelemetryClient
 
@@ -1189,23 +1189,37 @@ class CdmCorpusDefinition:
 
     async def _get_last_modified_time_from_object_async(self, curr_object: 'CdmObject') -> datetime:
         """Return last modified time of the file where the input object can be found."""
-        if isinstance(curr_object, CdmContainerDefinition):
-            adapter = self.storage.fetch_adapter(cast('CdmContainerDefinition', curr_object)._namespace)
-            if not adapter:
-                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
-                             CdmLogCode.ERR_ADAPTER_NOT_FOUND, cast('CdmContainerDefinition', curr_object).namespace)
-                return None
+        from cdm.objectmodel import CdmReferencedEntityDeclarationDefinition, CdmLocalEntityDeclarationDefinition
+        referenced_entity = cast(CdmReferencedEntityDeclarationDefinition, curr_object) if isinstance(curr_object, CdmReferencedEntityDeclarationDefinition) else None
+
+        if isinstance(curr_object, CdmContainerDefinition) or (referenced_entity and referenced_entity._is_virtual):
+            namespace_path = referenced_entity._virtual_location if referenced_entity != None else curr_object.at_corpus_path
             # Remove namespace from path
-            path_tuple = StorageUtils.split_namespace_path(curr_object.at_corpus_path)
+            path_tuple = StorageUtils.split_namespace_path(namespace_path)
             if not path_tuple:
                 logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
                              CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH)
                 return None
+
+            cur_namespace = path_tuple[0]
+            path = path_tuple[1]
+
+            if isinstance(curr_object, CdmManifestDefinition) and cast(CdmManifestDefinition, curr_object)._is_virtual:
+                path = cast(CdmManifestDefinition, curr_object)._virtual_location
+            elif isinstance(curr_object, CdmLocalEntityDeclarationDefinition) and cast(CdmLocalEntityDeclarationDefinition, curr_object)._is_virtual:
+                path = cast(CdmLocalEntityDeclarationDefinition, curr_object)._virtual_location
+
+            adapter = self.storage.fetch_adapter(cur_namespace)
+            if not adapter:
+                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
+                             CdmLogCode.ERR_ADAPTER_NOT_FOUND, cur_namespace)
+                return None
+
             try:
-                return await adapter.compute_last_modified_time_async(path_tuple[1])
+                return await adapter.compute_last_modified_time_async(path)
             except Exception as e:
                 logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
-                             CdmLogCode.ERR_MANIFEST_FILE_MOD_TIME_FAILURE, path_tuple[1], e)
+                             CdmLogCode.ERR_MANIFEST_FILE_MOD_TIME_FAILURE, path, e)
                 return None
         else:
             return await self._get_last_modified_time_from_object_async(curr_object.in_document)

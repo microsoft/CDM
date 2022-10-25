@@ -63,78 +63,67 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 }
             }
 
-            if (tableProperties.Partitioning != null && tableProperties.Partitioning.Keys != null)
+            string formatType = tableProperties.StorageDescriptor?.Format?.FormatType;
+            if (formatType == null || !formatType.EqualsWithIgnoreCase(Utils.Csv) && !formatType.EqualsWithIgnoreCase(Utils.Parquet))
             {
-                // TODO :This is spark data partitioning.
-                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsPartitionNotSupported, tableName);
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableFormatTypeNotSupported, tableName);
                 return null;
+            }
+
+            if (tableProperties.StorageDescriptor.Source.Location == string.Empty)
+            {
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableMissingDataLocation, tableName);
+                return null;
+            }
+
+            // check and get list of wildcards matches in path if any.
+            var symsTablePath = Utils.CreateSymsAbsolutePath(symsRootPath, tableProperties.StorageDescriptor.Source.Location);
+            var corpusPath = Utils.SymsPathToCorpusPath(symsTablePath, ctx.Corpus.Storage);
+            var matches = Utils.GetWildcardsMatches(corpusPath);
+
+            if (System.IO.Path.GetExtension(tableProperties.StorageDescriptor.Source.Location) == string.Empty // check if its a folder
+                || matches != null)
+            {
+                var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, tableProperties.StorageDescriptor, $"{table.Name}PartitionPattern", symsRootPath, formatType, matches);
+                localDec.DataPartitionPatterns.Add(dataPartitionPattern);
+            }
+            else if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".csv"))
+            {
+                if (formatType.EqualsWithIgnoreCase(Utils.Parquet))
+                {
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "csv", formatType.ToString());
+                    return null;
+                }
+                // Location points to file. create data partition.
+                var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath, formatType);
+                localDec.DataPartitions.Add(dataPartition);
+            }
+            else if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".parquet"))
+            {
+                if (formatType.EqualsWithIgnoreCase(Utils.Csv))
+                {
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "parquet", formatType.ToString());
+                    return null;
+                }
+                // Location points to file. create data partition.
+                var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath, formatType);
+                localDec.DataPartitions.Add(dataPartition);
             }
             else
             {
-                if (tableProperties.StorageDescriptor != null && tableProperties.StorageDescriptor.Format != null)
+                // restore data partition pattern if exist
+                if (properties != null && properties.ContainsKey("cdm:dataPartitionPatterns"))
                 {
-                    if (tableProperties.StorageDescriptor.Source.Location == "")
-                    {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableMissingDataLocation, tableName);
-                        return null;
-                    }
-
-                    string formatType = tableProperties.StorageDescriptor.Format.FormatType;
-                    if (!formatType.EqualsWithIgnoreCase(Utils.Csv) && !formatType.EqualsWithIgnoreCase(Utils.Parquet))
-                    {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableFormatTypeNotSupported, tableName);
-                        return null;
-                    }
-
-                    // check and get list of wildcards matches in path if any.
-                    var symsPath = Utils.CreateSymsAbsolutePath(symsRootPath, tableProperties.StorageDescriptor.Source.Location);
-                    var corpusPath = Utils.SymsPathToCorpusPath(symsPath, ctx.Corpus.Storage);
-                    var matches = Utils.GetWildcardsMatches(corpusPath);
-
-                    if (System.IO.Path.GetExtension(tableProperties.StorageDescriptor.Source.Location) == String.Empty // check if its a folder
-                        || matches != null)
-                    {
-                        var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, tableProperties.StorageDescriptor, $"{table.Name}PartitionPattern", symsRootPath, formatType, matches);
-                        localDec.DataPartitionPatterns.Add(dataPartitionPattern);
-                    }
-                    else if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".csv"))
-                    {
-                        if (formatType.EqualsWithIgnoreCase(Utils.Parquet))
-                        {
-                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "csv", formatType.ToString());
-                            return null;
-                        }
-                        // Location points to file. create data partition.
-                        var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath, formatType);
-                        localDec.DataPartitions.Add(dataPartition);
-                    }
-                    else if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".parquet"))
-                    {
-                        if (formatType.EqualsWithIgnoreCase(Utils.Csv))
-                        {
-                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "parquet", formatType.ToString());
-                            return null;
-                        }
-                        // Location points to file. create data partition.
-                        var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath, formatType);
-                        localDec.DataPartitions.Add(dataPartition);
-                    }
-                    else
-                    {
-                        // restore data partition pattern if exist
-                        if (properties != null && properties.ContainsKey("cdm:dataPartitionPatterns"))
-                        {
-                            var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, properties["cdm:dataPartitionPatterns"], $"{table.Name}PartitionPattern", symsRootPath, formatType);
-                            localDec.DataPartitionPatterns.Add(dataPartitionPattern);
-                        }
-                        else
-                        {
-                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableInvalidDataLocation, tableName);
-                            return null;
-                        }
-                    }
+                    var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, properties["cdm:dataPartitionPatterns"], $"{table.Name}PartitionPattern", symsRootPath, formatType);
+                    localDec.DataPartitionPatterns.Add(dataPartitionPattern);
+                }
+                else
+                {
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableInvalidDataLocation, tableName);
+                    return null;
                 }
             }
+
             return localDec;
         }
 

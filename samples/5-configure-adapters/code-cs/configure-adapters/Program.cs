@@ -251,7 +251,7 @@ namespace configure_adapters
                 string tenant = GetParameterValueFromUser("tenant", "ADLSAdapter", "00x000xx-00x0-00xx-00xx-0x0xx000xx00");
                 string clientId = GetParameterValueFromUser("client ID", "ADLSAdapter", "xxx00x0x-0x00-0000-x0x0-00xxx000xxx0");
                 // DEV-NOTE: This is just a mock secret used to demonstrate what a secret should look like. It is not a real secret. 
-                string secret = GetParameterValueFromUser("secret", "ADLSAdapter", "xSDfdzI92d:sd832j8jd@ac823sSglJ");
+                string secret = GetParameterValueFromUser("secret", "ADLSAdapter", "dummySecret");
 
                 // Default values for the optional parameters used by the ADLS adapter.
                 string timeout = "2000";

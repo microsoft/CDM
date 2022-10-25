@@ -2319,26 +2319,38 @@ public class CdmCorpusDefinition {
   /**
    * Gets the last modified time of the object where it was readAsync from.
    */
-  CompletableFuture<OffsetDateTime> getLastModifiedTimeFromObjectAsync(
-      final CdmObject currObject) {
-    if (currObject instanceof CdmContainerDefinition) {
-      final StorageAdapterBase adapter =
-          this.storage.fetchAdapter(((CdmContainerDefinition) currObject).getNamespace());
+  CompletableFuture<OffsetDateTime> getLastModifiedTimeFromObjectAsync(final CdmObject currObject) {
+    final CdmReferencedEntityDeclarationDefinition referencedEntity = currObject instanceof CdmReferencedEntityDeclarationDefinition ? (CdmReferencedEntityDeclarationDefinition) currObject : null;
+    if (currObject instanceof CdmContainerDefinition || referencedEntity != null && referencedEntity.isVirtual()) {
 
-      if (adapter == null) {
-        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrAdapterNotFound, ((CdmContainerDefinition) currObject).getNamespace());
+      final String namespacePath = referencedEntity != null ? referencedEntity.getVirtualLocation() : currObject.getAtCorpusPath();
+
+      // Remove namespace from path
+      final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(namespacePath);
+      if (pathTuple == null) {
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", namespacePath, CdmLogCode.ErrStorageNullCorpusPath);
         return CompletableFuture.completedFuture(null);
       }
-      // Remove namespace from path
-      final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(currObject.getAtCorpusPath());
-      if (pathTuple == null) {
-        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrStorageNullCorpusPath);
+
+      final String curNamespace = pathTuple.getLeft();
+      String path = pathTuple.getRight();
+
+      if (currObject instanceof CdmManifestDefinition && ((CdmManifestDefinition) currObject).isVirtual()) {
+        path = ((CdmManifestDefinition) currObject).getVirtualLocation();
+      } else if (currObject instanceof CdmLocalEntityDeclarationDefinition && ((CdmLocalEntityDeclarationDefinition) currObject).isVirtual()) {
+        path = ((CdmLocalEntityDeclarationDefinition) currObject).getVirtualLocation();
+      }
+
+      final StorageAdapterBase adapter = this.storage.fetchAdapter(curNamespace);
+
+      if (adapter == null) {
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrAdapterNotFound, curNamespace);
         return CompletableFuture.completedFuture(null);
       }
       try {
-        return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
+        return adapter.computeLastModifiedTimeAsync(path);
       } catch (Exception e) {
-        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrManifestFileModTimeFailure, pathTuple.getRight(), e.getMessage());
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrManifestFileModTimeFailure, path, e.getMessage());
         return null;
       }
     } else {

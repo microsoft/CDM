@@ -4,6 +4,7 @@
 import asyncio
 import json
 import urllib
+import urllib.request
 import urllib.parse
 from datetime import datetime
 from typing import Optional, TYPE_CHECKING

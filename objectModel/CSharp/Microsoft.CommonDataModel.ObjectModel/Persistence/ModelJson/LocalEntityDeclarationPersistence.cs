@@ -21,6 +21,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         public static async Task<CdmLocalEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, CdmFolderDefinition documentFolder, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, CdmManifestDefinition manifest)
         {
             var localEntity = ctx.Corpus.MakeObject<CdmLocalEntityDeclarationDefinition>(CdmObjectType.LocalEntityDeclarationDef, obj.Name);
+            localEntity.VirtualLocation = documentFolder.FolderPath + PersistenceLayer.ModelJsonExtension;
 
             var localExtensionTraitDefList = new List<CdmTraitDefinition>();
 

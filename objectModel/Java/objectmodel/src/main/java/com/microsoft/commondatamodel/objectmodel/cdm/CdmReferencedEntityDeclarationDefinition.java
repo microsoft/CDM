@@ -30,6 +30,7 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
   private OffsetDateTime lastFileStatusCheckTime;
   private OffsetDateTime lastFileModifiedTime;
   private OffsetDateTime lastChildFileModifiedTime;
+  private String virtualLocation;
 
   public CdmReferencedEntityDeclarationDefinition(final CdmCorpusContext ctx, final String entityName) {
     super(ctx);
@@ -87,6 +88,38 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
     this.lastChildFileModifiedTime = lastChildFileModifiedTime;
   }
 
+  /**
+   * Gets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return String
+   */
+  @Deprecated
+  public String getVirtualLocation() { return this.virtualLocation; }
+
+  /**
+   * Sets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setVirtualLocation(final String virtualLocation) {
+    this.virtualLocation = virtualLocation;
+  }
+
+  /**
+   * Gets whether this entity is virtual, which means it's coming from model.json file.
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return boolean
+   */
+  public boolean isVirtual() {
+    return !StringUtils.isNullOrTrimEmpty(this.virtualLocation);
+  }
+
   @Override
   public String getName() {
     return this.getEntityName();
@@ -120,8 +153,9 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
               .getStorage()
               .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
 
-      final OffsetDateTime modifiedTime =
-          this.getCtx().getCorpus().computeLastModifiedTimeAsync(fullPath, this).join();
+      final OffsetDateTime modifiedTime = this.isVirtual()
+              ? this.getCtx().getCorpus().getLastModifiedTimeFromObjectAsync(this).join()
+              : this.getCtx().getCorpus().computeLastModifiedTimeAsync(fullPath, this).join();
 
       // update modified times
       setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
@@ -189,6 +223,7 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
     copy.setEntityPath(this.getEntityPath());
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(this.getLastFileModifiedTime());
+    copy.setVirtualLocation(this.getVirtualLocation());
 
     return copy;
   }

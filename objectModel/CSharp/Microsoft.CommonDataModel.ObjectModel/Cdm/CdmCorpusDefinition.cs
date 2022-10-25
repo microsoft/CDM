@@ -1885,31 +1885,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         internal async Task<DateTimeOffset?> GetLastModifiedTimeFromObjectAsync(CdmObject currObject)
         {
-            if (currObject is CdmContainerDefinition)
+            var referencedEntity = currObject as CdmReferencedEntityDeclarationDefinition;
+            if (currObject is CdmContainerDefinition || referencedEntity != null && referencedEntity.IsVirtual)
             {
-                StorageAdapterBase adapter = this.Storage.FetchAdapter((currObject as CdmContainerDefinition).Namespace);
-
-                if (adapter == null)
-                {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).Namespace);
-                    return null;
-                }
-
+                var namespacePath = referencedEntity != null ? referencedEntity.VirtualLocation : currObject.AtCorpusPath;
                 // Remove namespace from path
-                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(currObject.AtCorpusPath);
+                Tuple <string, string> pathTuple = StorageUtils.SplitNamespacePath(namespacePath);
                 if (pathTuple == null)
                 {
                     Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);
                     return null;
                 }
+                var curNamespace = pathTuple.Item1;
+                var path = pathTuple.Item2;
+
+                if (currObject is CdmManifestDefinition manifestDef && manifestDef.IsVirtual)
+                {
+                    path = manifestDef.VirtualLocation;
+                }
+                else if (currObject is CdmLocalEntityDeclarationDefinition localEntDecDef && localEntDecDef.IsVirtual)
+                {
+                    path = localEntDecDef.VirtualLocation;
+                }
+
+                StorageAdapterBase adapter = this.Storage.FetchAdapter(curNamespace);
+
+                if (adapter == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrAdapterNotFound, curNamespace);
+                    return null;
+                }
 
                 try
                 {
-                    return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                    return await adapter.ComputeLastModifiedTimeAsync(path);
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrManifestFileModTimeFailure, pathTuple.Item2, e.Message);
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrManifestFileModTimeFailure, path, e.Message);
                     return null;
                 }
             }

@@ -41,6 +41,8 @@ class ManifestPersistence:
         extension_trait_def_list = []
 
         manifest = ctx.corpus.make_object(CdmObjectType.MANIFEST_DEF, obj.name)
+        manifest._virtual_location = folder.folder_path + PersistenceLayer.MODEL_JSON_EXTENSION
+
         # we need to set up folder path and namespace of a folio to be able to retrieve that object.
         folder.documents.append(manifest, manifest.name)
 

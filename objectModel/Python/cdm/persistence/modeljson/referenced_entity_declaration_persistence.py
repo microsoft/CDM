@@ -31,6 +31,7 @@ class ReferencedEntityDeclarationPersistence:
             logger.error(ctx, _TAG, "from_data", None, CdmLogCode.ERR_PERSIST_MODEL_JSON_REF_ENTITY_INVALID_LOCATION, location, referenced_entity.entity_name)
             return None
 
+        referenced_entity._virtual_location = corpus_path
         referenced_entity.entity_path = '{}/{}'.format(corpus_path, data_obj.source)
         referenced_entity.explanation = data_obj.get('description')
 

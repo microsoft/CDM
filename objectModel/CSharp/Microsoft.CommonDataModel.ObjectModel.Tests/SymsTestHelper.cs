@@ -33,10 +33,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             string clientId = Environment.GetEnvironmentVariable("SYMS_CLIENTID");
             string clientSecret = Environment.GetEnvironmentVariable("SYMS_CLIENTSECRET");
 
-            Assert.IsFalse(String.IsNullOrEmpty(endpoint), "SYMS_ENDPOINT not set");
-            Assert.IsFalse(String.IsNullOrEmpty(tenant), "SYMS_TENANT not set");
-            Assert.IsFalse(String.IsNullOrEmpty(clientId), "SYMS_CLIENTID not set");
-            Assert.IsFalse(String.IsNullOrEmpty(clientSecret), "SYMS_CLIENTSECRET not set");
+            Assert.IsFalse(string.IsNullOrEmpty(endpoint), "SYMS_ENDPOINT not set");
+            Assert.IsFalse(string.IsNullOrEmpty(tenant), "SYMS_TENANT not set");
+            Assert.IsFalse(string.IsNullOrEmpty(clientId), "SYMS_CLIENTID not set");
+            Assert.IsFalse(string.IsNullOrEmpty(clientSecret), "SYMS_CLIENTSECRET not set");
 
             SymsAdapter adapter = new SymsAdapter(endpoint, tenant, clientId, clientSecret);
 
@@ -49,9 +49,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             string rootPath = Environment.GetEnvironmentVariable($"SYMS_TEST_ADLS{adapterNum}_ROOTPATH");
             string sharedkey = Environment.GetEnvironmentVariable($"SYMS_TEST_ADLS{adapterNum}_SHAREDKEY");
 
-            Assert.IsFalse(String.IsNullOrEmpty(hostname), $"SYMS_TEST_ADLS{adapterNum}_ENDPOINT not set");
-            Assert.IsFalse(String.IsNullOrEmpty(rootPath), $"SYMS_TEST_ADLS{adapterNum}_ROOTPATH not set");
-            Assert.IsFalse(String.IsNullOrEmpty(sharedkey), $"SYMS_TEST_ADLS{adapterNum}_SHAREDKEY not set");
+            Assert.IsFalse(string.IsNullOrEmpty(hostname), $"SYMS_TEST_ADLS{adapterNum}_ENDPOINT not set");
+            Assert.IsFalse(string.IsNullOrEmpty(rootPath), $"SYMS_TEST_ADLS{adapterNum}_ROOTPATH not set");
+            Assert.IsFalse(string.IsNullOrEmpty(sharedkey), $"SYMS_TEST_ADLS{adapterNum}_SHAREDKEY not set");
 
             ADLSAdapter adapter = new ADLSAdapter(hostname, rootPath, sharedkey);
 
@@ -82,7 +82,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
         private static JToken IgnoreProperties(JToken obj)
         {
-            List<string> ignorePaths = new List<string>(new string[] {"properties.ObjectId", "properties.StorageDescriptor.ColumnSetEntityName"});
+            List<string> ignorePaths = new List<string>(new string[] { "properties.ObjectId", "properties.StorageDescriptor.ColumnSetEntityName" });
+
+            // remove id
+            ((JObject)obj).Property("id")?.Remove();
 
             foreach (var path in ignorePaths)
             {

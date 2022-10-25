@@ -26,7 +26,6 @@ import {
 } from '../internal';
 import * as timeUtils from '../Utilities/timeUtils';
 import { StringUtils } from '../Utilities/StringUtils';
-import { Argument } from '../Persistence/CdmFolder/types/Argument';
 
 /**
  * The object model implementation for local entity declaration.
@@ -60,6 +59,12 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public lastChildFileModifiedTime: Date;
 
+    /**
+     * @inheritdoc
+     * Gets and sets this entity's virtual location, it's model.json file's location if entity is from a model.json file
+     */
+    public virtualLocation: string;
+
     private lastFileModifiedOldTime: Date;
 
     public static get objectType(): cdmObjectType {
@@ -87,8 +92,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         this.dataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.ctx, this, cdmObjectType.dataPartitionDef);
         this.incrementalPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.ctx, this, cdmObjectType.dataPartitionDef);
         this.incrementalPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.ctx, this, cdmObjectType.dataPartitionDef);
-        this.lastFileModifiedTime = null;
-        this.lastFileModifiedOldTime = null;
+        this.lastFileModifiedTime = undefined;
+        this.lastFileModifiedOldTime = undefined;
     }
 
     /**
@@ -134,6 +139,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         copy.lastFileStatusCheckTime = this.lastFileStatusCheckTime;
         copy.lastFileModifiedTime = this.lastFileModifiedTime;
         copy.lastChildFileModifiedTime = this.lastChildFileModifiedTime;
+        copy.virtualLocation = this.virtualLocation;
 
         for (const partition of this.dataPartitions) {
             copy.dataPartitions.push(partition.copy(resOpt) as CdmDataPartitionDefinition);
@@ -217,13 +223,21 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     /**
      * @inheritdoc
      */
+    public isVirtual(): boolean {
+        return !StringUtils.isNullOrWhiteSpace(this.virtualLocation);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public async fileStatusCheckAsync(partitionCheckType: partitionFileStatusCheckType = partitionFileStatusCheckType.Full, incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None): Promise<void> {
 
         let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
         let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
         try {
             const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
-            const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
+            const modifiedTime: Date = this.isVirtual() ? await this.ctx.corpus.getLastModifiedTimeFromObjectAsync(this) 
+                                                        : await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
             
             // check patterns first as this is a more performant way of querying file modification times 
             // from ADLS and we can cache the times for reuse in the individual partition checks below

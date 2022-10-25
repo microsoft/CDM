@@ -1141,26 +1141,39 @@ export class CdmCorpusDefinition {
      * @param currObject A CDM object
      */
     public async getLastModifiedTimeFromObjectAsync(currObject: CdmObject): Promise<Date> {
-        if ("namespace" in currObject) {
-            const adapter: StorageAdapterBase = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
-
-            if (adapter === undefined) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).namespace);
+        const referencedEntity: CdmReferencedEntityDeclarationDefinition = currObject instanceof CdmReferencedEntityDeclarationDefinition ? currObject  as CdmReferencedEntityDeclarationDefinition : undefined;
+        if ("namespace" in currObject || (referencedEntity !== undefined && referencedEntity.isVirtual())) {
+            
+            const namespacePath = referencedEntity !== undefined ? referencedEntity.virtualLocation : currObject.atCorpusPath;
+            
+            // Remove namespace from path
+            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(namespacePath);
+            if (!pathTuple) {
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, namespacePath, cdmLogCode.ErrStorageNullCorpusPath);
 
                 return undefined;
             }
-            // Remove namespace from path
-            const pathTuple: [string, string] = StorageUtils.splitNamespacePath((currObject as CdmContainerDefinition).atCorpusPath);
-            if (!pathTuple) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
 
+            const curNamespace: string = pathTuple[0];
+            var path: string = pathTuple[1];
+
+            if (currObject instanceof CdmManifestDefinition && (currObject as CdmManifestDefinition).isVirtual()) {
+                path = (currObject as CdmManifestDefinition).virtualLocation;
+            } else if (currObject instanceof CdmLocalEntityDeclarationDefinition && (currObject as CdmLocalEntityDeclarationDefinition).isVirtual()) {
+                path = (currObject as CdmLocalEntityDeclarationDefinition).virtualLocation;
+            }
+
+            const adapter: StorageAdapterBase = this.storage.fetchAdapter(curNamespace);
+
+            if (adapter === undefined) {
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, currObject.atCorpusPath, cdmLogCode.ErrAdapterNotFound, curNamespace);
                 return undefined;
             }
 
             try {
-                return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+                return adapter.computeLastModifiedTimeAsync(path);
             } catch (e) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrManifestFileModTimeFailure, pathTuple[1], (e as Error).toString());
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, currObject.atCorpusPath, cdmLogCode.ErrManifestFileModTimeFailure, path, (e as Error).toString());
                 return undefined;
             }
         } else {

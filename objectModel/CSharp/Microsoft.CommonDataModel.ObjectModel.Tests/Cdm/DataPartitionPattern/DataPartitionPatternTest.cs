@@ -245,7 +245,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             var traitRef1 = partitionEntity.IncrementalPartitionPatterns[1].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
             Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), traitRef1.Arguments.Item("type").Value.ToString());
             
-            var timeBeforeLoad = DateTime.Now;
+            var timeBeforeLoad = DateTime.Now.AddSeconds(-1);
             await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
 
             int totalExpectedPartitionsFound = 0;
@@ -267,13 +267,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             partitionEntity.IncrementalPartitions.Clear();
             Assert.AreEqual(0, partitionEntity.IncrementalPartitions.Count);
 
+            timeBeforeLoad = DateTime.Now.AddSeconds(-1);
             var upsertIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "2019UpsertPartition1", false);
-            upsertIncrementalPartition.LastFileStatusCheckTime = DateTime.Now;
+            upsertIncrementalPartition.LastFileStatusCheckTime = timeBeforeLoad;
             upsertIncrementalPartition.Location = "/IncrementalData/Upserts/upsert1.csv";
             upsertIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Upsert.ToString()) });
 
             var deleteIncrementalPartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "2019DeletePartition1", false);
-            deleteIncrementalPartition.LastFileStatusCheckTime = DateTime.Now;
+            deleteIncrementalPartition.LastFileStatusCheckTime = timeBeforeLoad;
             deleteIncrementalPartition.Location = "/IncrementalData/Deletes/delete1.csv";
             deleteIncrementalPartition.ExhibitsTraits.Add(Constants.IncrementalTraitName, new List<Tuple<string, dynamic>>() { new Tuple<string, dynamic>("type", CdmIncrementalPartitionType.Delete.ToString()) });
 
@@ -283,10 +284,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             Assert.AreEqual(2, partitionEntity.IncrementalPartitions.Count);
 
             totalExpectedPartitionsFound = 0;
-
-            timeBeforeLoad = DateTime.Now;
-            Assert.IsTrue(partitionEntity.IncrementalPartitions[0].LastFileStatusCheckTime <= timeBeforeLoad);
-            Assert.IsTrue(partitionEntity.IncrementalPartitions[1].LastFileStatusCheckTime <= timeBeforeLoad);
 
             await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
 

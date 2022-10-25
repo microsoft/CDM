@@ -19,12 +19,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         public static CdmDataPartitionPatternDefinition FromData(CdmCorpusContext ctx, dynamic obj, string name, string symsRootPath, string formatType, MatchCollection matches = null)
         {
             var dataPartitionPattern = ctx.Corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, name);
-            if ( obj is StorageDescriptor ) 
+            if (obj is StorageDescriptor) 
             {
-                var sd = (StorageDescriptor)obj;
-                var properties = sd.Properties;
+                var storageDescriptor = (StorageDescriptor)obj;
+                var properties = storageDescriptor.Properties;
 
-                var symsPath = Utils.CreateSymsAbsolutePath(symsRootPath, sd.Source.Location);
+                var symsPath = Utils.CreateSymsAbsolutePath(symsRootPath, storageDescriptor.Source.Location);
                 var corpusPath = Utils.SymsPathToCorpusPath(symsPath, ctx.Corpus.Storage);
 
                 if (matches != null && matches.Count > 0)
@@ -51,7 +51,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     }
                 }
 
-                var trait = Utils.CreatePartitionTrait(sd.Format.Properties, ctx, formatType);
+                var trait = Utils.CreatePartitionTrait(storageDescriptor.Format.Properties, ctx, formatType);
                 if (trait != null)
                 {
                     dataPartitionPattern.ExhibitsTraits.Add(trait);
@@ -124,7 +124,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
 
                 Utils.AddListToCdmCollection(dataPartitionPattern.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
             }
-
 
             return dataPartitionPattern;
         }

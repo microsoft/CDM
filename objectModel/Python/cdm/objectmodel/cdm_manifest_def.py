@@ -21,6 +21,7 @@ from .cdm_object_def import CdmObjectDefinition
 from .cdm_referenced_entity_declaration_def import CdmReferencedEntityDeclarationDefinition
 from .cdm_trait_collection import CdmTraitCollection
 from .cdm_import import CdmImport
+from ..utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship, \
@@ -46,6 +47,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         # --- internal ---
         self._file_system_modified_time = None  # type: Optional[datetime]
+        self._virtual_location = None
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -75,6 +77,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             self._sub_manifests = CdmCollection(self.ctx, self, CdmObjectType.MANIFEST_DECLARATION_DEF)  # type: CdmCollection[CdmManifestDeclarationDefinition]
         return self._sub_manifests
 
+    @property
+    def _is_virtual(self) -> bool:
+        """Gets whether this entity is virtual, which means it's coming from model.json file"""
+        return not StringUtils.is_null_or_white_space(self._virtual_location)
+
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmManifestDefinition'] = None) -> 'CdmManifestDefinition':
         # since we need to call the base copy which will only return a document when there is no host, make a fake host here
         if not host:
@@ -86,6 +93,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
         copy.last_child_file_modified_time = self.last_child_file_modified_time
+        copy._virtual_location = self._virtual_location
 
         copy.entities.clear()
         for ent in self.entities:
