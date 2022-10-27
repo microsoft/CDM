@@ -4,16 +4,16 @@
 from abc import abstractmethod
 from typing import Optional, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.utilities import ResolveOptions
 
 from .cdm_object import CdmObject
 from .cdm_object_ref import CdmObjectReference
 from .cdm_trait_collection import CdmTraitCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext
     from cdm.resolvedmodel import ResolvedTraitSetBuilder
-    from cdm.utilities import ResolveOptions, VisitCallback
+    from cdm.utilities import VisitCallback
 
 
 class CdmObjectDefinition(CdmObject):
