@@ -4,9 +4,9 @@
 from datetime import datetime, timezone
 import json
 import os
-from typing import List, Optional
+from typing import Dict, List, Optional
 
-from cdm.utilities import StorageUtils
+from cdm.utilities import CdmFileMetadata, StorageUtils
 from .base import StorageAdapterBase
 
 
@@ -15,7 +15,7 @@ class LocalAdapter(StorageAdapterBase):
 
     def __init__(self, root: Optional[str] = '') -> None:
         super().__init__()
-        self.root = root  # type: str        
+        self.root = root  # type: str
 
         # --- internal ---
         self._full_root = os.path.abspath(self.root)
@@ -75,6 +75,17 @@ class LocalAdapter(StorageAdapterBase):
         adapter_folder = self.create_adapter_path(folder_corpus_path)
         adapter_files = [os.path.join(dp, fn) for dp, dn, fns in os.walk(adapter_folder, onerror=_walk_error) for fn in fns]
         return [self.create_corpus_path(file) for file in adapter_files]
+
+    async def fetch_all_files_metadata_async(self, folder_corpus_path: str) -> Dict[str, CdmFileMetadata]:
+        file_metadatas = {}
+        file_names = await self.fetch_all_files_async(folder_corpus_path)
+
+        for file_name in file_names:
+            path = self.create_adapter_path(file_name)
+            if os.path.exists(path):
+                file_metadatas[file_name] = {'file_size_bytes': os.path.getsize(path) if os.path.isfile else None}
+
+        return file_metadatas
 
     def fetch_config(self) -> str:
         result_config = {'type': self._type}

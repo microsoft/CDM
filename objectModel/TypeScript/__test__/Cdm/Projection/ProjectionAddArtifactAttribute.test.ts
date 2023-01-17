@@ -46,43 +46,43 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     /**
      * Test AddArtifactAttribute to add an entity attribute on an entity attribute.
      */
-     it('TestAddEntAttrOnEntAttrProj', async () => {
+    it('TestAddEntAttrOnEntAttrProj', async () => {
         const testName: string = 'TestAddEntAttrOnEntAttrProj';
         const entityName: string = 'NewPerson';
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CdmOperationAddArtifactAttribute | Operation AddArtifactAttribute is not supported on an entity attribute yet.') === -1) {
-                fail(`Some unexpected failure - ${message}!`);
+                throw new Error(`Some unexpected failure - ${message}!`);
             }
         }, cdmStatusLevel.warning);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
     });
 
     /**
      * Test AddArtifactAttribute to add an attribute group on an entity attribute.
      */
-        it('TestAddAttrGrpOnEntAttrProj', async () => {
+    it('TestAddAttrGrpOnEntAttrProj', async () => {
         const testName: string = 'TestAddAttrGrpOnEntAttrProj';
         const entityName: string = 'NewPerson';
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CdmOperationAddArtifactAttribute | Operation AddArtifactAttribute is not supported on an attribute group yet.') === -1) {
-                fail(`Some unexpected failure - ${message}!`);
+                throw new Error(`Some unexpected failure - ${message}!`);
             }
         }, cdmStatusLevel.warning);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
     });
 
     /**
      * Test AddArtifactAttribute to add a type attribute on a type attribute.
      */
-     it('TestAddTypeAttrOnTypeAttrProj', async () => {
+    it('TestAddTypeAttrOnTypeAttrProj', async () => {
         const testName: string = 'TestAddTypeAttrOnTypeAttrProj';
         const entityName: string = 'Person';
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
@@ -92,7 +92,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         expect(resolvedEntity.attributes.length)
             .toEqual(2);
@@ -115,7 +115,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: [ { "name", "age", "address", "phoneNumber", "email" }, "FavoriteTerm" ]
         // Entity Attribuite:
@@ -133,11 +133,11 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('address');
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
-            .toEqual('email');  
+            .toEqual('email');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('renamingAgain-renaming-newName')
         expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
-            .toEqual('newName_1'); 
+            .toEqual('newName_1');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('newTerm');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
@@ -159,7 +159,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ 'referenceOnly' ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Condition not met, keep attributes in flat list
@@ -176,7 +176,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('email');
 
-        const resolvedEntity2: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ 'structured' ]);
+        const resolvedEntity2: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['structured']);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Condition met, keep attributes in flat list and add the new attribute "newName" all attributes at the end
@@ -193,7 +193,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         expect((resolvedEntity2.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('email');
         expect((resolvedEntity2.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
-            .toEqual('newName');            
+            .toEqual('newName');
     });
 
     /**
@@ -212,10 +212,10 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         projection.condition = 'structured==true';
 
         // Create an AddArtifactAttribute operation
-        const addArtifactAttributeOp:CdmOperationAddArtifactAttribute = corpus.MakeObject<CdmOperationAddArtifactAttribute>(cdmObjectType.operationAddArtifactAttributeDef);
+        const addArtifactAttributeOp: CdmOperationAddArtifactAttribute = corpus.MakeObject<CdmOperationAddArtifactAttribute>(cdmObjectType.operationAddArtifactAttributeDef);
         addArtifactAttributeOp.newAttribute = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'newName');
         (addArtifactAttributeOp.newAttribute as CdmTypeAttributeDefinition).dataType = corpus.MakeRef<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'string', true);
-        projection.operations.push(addArtifactAttributeOp);    
+        projection.operations.push(addArtifactAttributeOp);
 
         // Create an entity reference to hold this projection.
         const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
@@ -228,7 +228,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
 
         // Create resolution options with the 'referenceOnly' directive.
         const resOpt = new resolveOptions(entity.inDocument)
-        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'referenceOnly' ]));
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['referenceOnly']));
 
         // Resolve the entity with 'referenceOnly'
         const resolvedEntityWithReferenceOnly: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, resOpt, localRoot);
@@ -247,7 +247,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
             .toEqual('date');
 
         // Now resolve the entity with the 'structured' directive
-        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'structured' ]));
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['structured']));
         const resolvedEntityWithStructured: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, resOpt, localRoot);
 
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
@@ -279,7 +279,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         expect(resolvedEntity.attributes.length)
@@ -295,7 +295,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('email');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
-            .toEqual('newName');   
+            .toEqual('newName');
     });
 
     /**
@@ -311,7 +311,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Add attribute: ["newName", "newName_1", "newName"]
@@ -347,14 +347,14 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Add attribute: ["newName" (InsertAtTop:false), "newName_1" (InsertAtTop:true)]
         expect(resolvedEntity.attributes.length)
             .toEqual(7);
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
-            .toEqual('newName_1');              
+            .toEqual('newName_1');
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
             .toEqual('name')
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
@@ -382,10 +382,10 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [  ]);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Create resolution options with the 'referenceOnly' directive.
-        const resolvedEntityWithReferenceOnly: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ 'referenceOnly' ]);
+        const resolvedEntityWithReferenceOnly: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         expect(resolvedEntity.attributes.length)

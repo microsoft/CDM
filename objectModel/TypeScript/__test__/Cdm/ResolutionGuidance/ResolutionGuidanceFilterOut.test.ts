@@ -10,7 +10,7 @@ describe('Cdm.ResolutionGuidanceFilterOut', () => {
     /**
      * Resolution Guidance Test - FilterOut - Some
      */
-    it('TestFilterOutSome', async (done) => {
+    it('TestFilterOutSome', async () => {
         const testName: string = 'TestFilterOutSome';
         {
             const entityName: string = 'Employee';
@@ -100,13 +100,12 @@ describe('Cdm.ResolutionGuidanceFilterOut', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - FilterOut - Some With AttributeGroupRef
      */
-    it('TestFilterOutSomeWithAttributeGroupRef', async (done) => {
+    it('TestFilterOutSomeWithAttributeGroupRef', async () => {
         const testName: string = 'TestFilterOutSomeWithAttributeGroupRef';
         {
             const entityName: string = 'Employee';
@@ -196,13 +195,12 @@ describe('Cdm.ResolutionGuidanceFilterOut', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - FilterOut - All
      */
-    it('TestFilterOutAll', async (done) => {
+    it('TestFilterOutAll', async () => {
         const testName: string = 'TestFilterOutAll';
         {
             const entityName: string = 'Employee';
@@ -292,13 +290,12 @@ describe('Cdm.ResolutionGuidanceFilterOut', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - FilterOut - All With AttributeGroupRef
      */
-    it('TestFilterOutAllWithAttributeGroupRef', async (done) => {
+    it('TestFilterOutAllWithAttributeGroupRef', async () => {
         const testName: string = 'TestFilterOutAllWithAttributeGroupRef';
         {
             const entityName: string = 'Employee';
@@ -388,6 +385,5 @@ describe('Cdm.ResolutionGuidanceFilterOut', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 });

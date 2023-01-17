@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { AttributeReference } from 'Persistence/ModelJson/types';
 import {
     CdmAttributeGroupDefinition,
     CdmAttributeGroupReference,
@@ -74,7 +73,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
     /**
      * Testing that 'isPrimaryKey' property value is correct when reading from an unresolved and resolved entity schema.
      */
-    it('TestReadingIsPrimaryKey', async (done) => {
+    it('TestReadingIsPrimaryKey', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestReadingIsPrimaryKey');
 
         const resOpt: resolveOptions = new resolveOptions();
@@ -109,14 +108,12 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         const argumentValue: CdmAttributeReference = (isIdentifiedBy2 as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference;
         expect(argumentValue.namedReference)
             .toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
-
-        done();
     });
 
     /**
      * Testing that 'isPrimaryKey' property is set to true when 'purpose' = 'identifiedBy'.
      */
-    it('TestReadingIsPrimaryKeyConstructedFromPurpose', async (done) => {
+    it('TestReadingIsPrimaryKeyConstructedFromPurpose', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestReadingIsPrimaryKeyConstructedFromPurpose');
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership.cdm.json/TeamMembership');
@@ -128,14 +125,12 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toEqual('identifiedBy');
         expect(typeAttribute.isPrimaryKey)
             .toBeTruthy();
-
-        done();
     });
 
     /**
      * Testing fromData and toData correctly handles all properties
      */
-    it('TestPropertyPersistence', async (done) => {
+    it('TestPropertyPersistence', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPropertyPersistence');
         corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
         let functionWasCalled: boolean = false;
@@ -328,14 +323,13 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         const emptyDefaultValueAttributeData: TypeAttribute = entityData.hasAttributes[4] as TypeAttribute;
         expect(emptyDefaultValueAttributeData.defaultValue)
             .toBeUndefined();
-        done();
     });
 
     /**
      * Testing that 'is.localized.describedAs' trait with a table of three entries (en, rs and cn)
      *  is fully preserved when running CdmFolder TypeAttributePersistence ToData.
      */
-    it('TestCdmFolderToDataTypeAttribute', async (done) => {
+    it('TestCdmFolderToDataTypeAttribute', async () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         corpus.setEventCallback(() => { }, cdmStatusLevel.warning);
         corpus.storage.mount('local', new LocalAdapter('C:\\Root\\Path'));
@@ -383,13 +377,12 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBe('cn');
         expect(constantValues[2][1])
             .toBe('一些中文描述');
-        done();
     });
 
     /**
      * Testing fromData and toData correctly handles all properties
      */
-    it('TestDataFormatToTraitMappings', async (done) => {
+    it('TestDataFormatToTraitMappings', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestDataFormatToTraitMappings');
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity');
 
@@ -520,14 +513,12 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBeTruthy();
         expect(qTraitNamedReferences.has('means.content.text.JSON'))
             .toBeTruthy();
-
-        done();
     });
 
     /**
      * Testing that cardinality settings are loaded and saved correctly
      */
-    it('TestCardinalityPersistence', async (done) => {
+    it('TestCardinalityPersistence', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCardinalityPersistence');
 
         // test fromData
@@ -550,8 +541,6 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBe('0');
         expect(attributeData.cardinality.maximum)
             .toBe('1');
-
-        done();
     });
 
     function fetchTraitNamedReferences(traits: CdmTraitCollection): Set<string> {

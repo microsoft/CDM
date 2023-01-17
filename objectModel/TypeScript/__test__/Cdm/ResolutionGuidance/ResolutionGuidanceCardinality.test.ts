@@ -11,7 +11,7 @@ describe('Cdm.ResolutionGuidanceCardinality', () => {
     /**
      * Resolution Guidance Test - One:One Cardinality
      */
-    it('TestForeignKeyOneToOneCardinality', async (done) => {
+    it('TestForeignKeyOneToOneCardinality', async () => {
         const testName: string = 'TestForeignKeyOneToOneCardinality';
         {
             const entityName: string = 'Person';
@@ -101,13 +101,12 @@ describe('Cdm.ResolutionGuidanceCardinality', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - Many:Many Cardinality
      */
-    it('TestForeignKeyManyToManyCardinality', async (done) => {
+    it('TestForeignKeyManyToManyCardinality', async () => {
         const testName: string = 'TestForeignKeyManyToManyCardinality';
         {
             const entityName: string = 'Customer';
@@ -240,14 +239,13 @@ describe('Cdm.ResolutionGuidanceCardinality', () => {
                 expected_referenceOnly_structured,
                 expected_referenceOnly_normalized_structured
             );
-            done();
         }
     });
 
     /**
      * Resolution Guidance Test - One:Many Cardinality
      */
-    it('TestForeignKeyOneToManyCardinality', async (done) => {
+    it('TestForeignKeyOneToManyCardinality', async () => {
         const testName: string = 'TestForeignKeyOneToManyCardinality';
         {
             const entityName: string = 'Team';
@@ -1484,6 +1482,5 @@ describe('Cdm.ResolutionGuidanceCardinality', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 });

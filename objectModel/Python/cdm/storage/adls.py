@@ -9,7 +9,7 @@ import hmac
 from http import HTTPStatus
 from time import mktime
 import typing
-from typing import List, Optional
+from typing import Dict, List, Optional
 from wsgiref.handlers import format_date_time
 
 import json
@@ -20,6 +20,7 @@ import msal
 import dateutil.parser
 
 from cdm.utilities import StorageUtils
+from cdm.utilities.cdm_file_metadata import CdmFileMetadata
 from cdm.utilities.network.cdm_http_client import CdmHttpClient
 from cdm.utilities.network.cdm_http_response import CdmHttpResponse
 from cdm.utilities.string_utils import StringUtils
@@ -184,6 +185,10 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         return None
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
+        file_metadatas = await self.fetch_all_files_metadata_async(folder_corpus_path)
+        return list(file_metadatas.keys())
+
+    async def fetch_all_files_metadata_async(self, folder_corpus_path: str) -> Dict[str, CdmFileMetadata]:
         if folder_corpus_path is None:
             return None
 
@@ -194,7 +199,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             directory = directory[1:]
 
         continuation_token = None
-        results = []
+        results = {}
 
         while True:
             if continuation_token is None:
@@ -225,7 +230,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
                             self._unescaped_root_sub_path) else name
 
                         filepath = self._format_corpus_path(name_without_root_sub_path)
-                        results.append(filepath)
+
+                        content_length = int(path['contentLength'])
+                        results[filepath] = { 'file_size_bytes': content_length }
 
                         lastTimeString = path.get('lastModified')
                         if lastTimeString is not None and self._is_cache_enabled:

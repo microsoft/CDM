@@ -37,7 +37,7 @@ describe('Cdm.Storage.ResourceAdapter', () => {
     /**
      * Tests if the files from the resource adapter can be read correctly.
      */
-    it('TestReadAsync', async (done) => {
+    it('TestReadAsync', async () => {
         const adapter = new ResourceAdapter();
 
         expect(await adapter.readAsync('/extensions/pbi.extension.cdm.json'))
@@ -46,7 +46,5 @@ describe('Cdm.Storage.ResourceAdapter', () => {
         expect(await adapter.readAsync('/primitives.cdm.json'))
             .not
             .toBeNull();
-
-        done();
     });
 });

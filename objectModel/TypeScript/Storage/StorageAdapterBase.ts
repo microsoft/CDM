@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmCorpusContext } from '../Cdm/CdmCorpusContext';
+import { CdmCorpusContext, CdmFileMetadata } from '../internal';
 
 /**
   * The CDM base class for an adapter object that can read and write documents from a data source.
@@ -70,11 +70,29 @@ export abstract class StorageAdapterBase {
     }
 
     /**
+     * @deprecated
+     * Deprecated in favor of fetchAllFilesMetadataAsync
      * Returns a list corpus paths to all files and folders at or under the
      * provided corpus path to a folder
      */
     public async fetchAllFilesAsync(folderCorpusPath: string): Promise<string[]> {
         return undefined;
+    }
+
+    /**
+     * Returns a list of dictionaries containing metadata about data partitions
+     */
+    public async fetchAllFilesMetadataAsync(folderCorpusPath: string): Promise<Map<string, CdmFileMetadata>> {
+        const allFiles: string[] = await this.fetchAllFilesAsync(folderCorpusPath);
+
+        const filesMetadata: Map<string, CdmFileMetadata> = new Map<string, CdmFileMetadata>();
+        if (allFiles) {
+            for (const file of allFiles) {
+                filesMetadata.set(file, undefined);
+            }
+        }
+
+        return filesMetadata;
     }
 
     /**
@@ -174,4 +192,4 @@ export interface configObjectType {
     numberOfRetries?: number;
     sasToken?: string;
     endpoint?: string;
-  }
+}

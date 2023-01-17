@@ -33,10 +33,9 @@ describe('Storage.CdmStandardsAdapter', () => {
     /**
      * Tests if the adapter is able to read correctly.
      */
-    it('ReadAsync', async (done) => {
+    it('ReadAsync', async () => {
         const adapter: CdmStandardsAdapter = new CdmStandardsAdapter();
         const foundations: string = await adapter.readAsync(TEST_FILE_PATH);
         expect(foundations).not.toBeNull();
-        done();
     });
 })

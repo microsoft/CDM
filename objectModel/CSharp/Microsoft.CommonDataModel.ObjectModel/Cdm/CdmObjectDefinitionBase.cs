@@ -3,8 +3,10 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     public abstract class CdmObjectDefinitionBase : CdmObjectBase, CdmObjectDefinition
     {
@@ -84,11 +86,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal bool IsDerivedFromDef(ResolveOptions resOpt, CdmObjectReference baseCdmObjectRef, string name, string seek)
         {
             if (seek == name)
+            {
                 return true;
+            }
 
             CdmObjectDefinition def = baseCdmObjectRef?.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
+
+            // detects a direct definition cycle, doesn't work for cases like A->B->A.
+            if (def == this)
+            {
+                Logger.Error(this.Ctx, nameof(CdmObjectDefinitionBase), nameof(this.IsDerivedFromDef), this.AtCorpusPath, CdmLogCode.ErrCycleInObjectDefinition);
+                return true;
+            }
+            
             if (def != null)
+            {
                 return def.IsDerivedFrom(seek, resOpt);
+            }
+
             return false;
         }
 

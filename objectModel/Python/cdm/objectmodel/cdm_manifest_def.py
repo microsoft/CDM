@@ -7,7 +7,7 @@ from typing import cast, Iterable, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle, ImportsLoadStrategy, PartitionFileStatusCheckType, \
     CdmIncrementalPartitionType
-from cdm.utilities import AttributeResolutionDirectiveSet, logger, ResolveOptions, time_utils
+from cdm.utilities import AttributeResolutionDirectiveSet, FileStatusCheckOptions, logger, ResolveOptions, time_utils
 from cdm.enums import CdmLogCode
 
 from .cdm_collection import CdmCollection
@@ -258,7 +258,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             resolved_manifest._is_dirty = True
             return resolved_manifest
 
-    async def file_status_check_async(self, partition_file_status_check_type: Optional['PartitionFileStatusCheckType'] = PartitionFileStatusCheckType.FULL, incremental_type: Optional['CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE) -> None:
+    async def file_status_check_async(self, partition_file_status_check_type: Optional['PartitionFileStatusCheckType'] = PartitionFileStatusCheckType.FULL, incremental_type: Optional['CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE, file_status_check_options: Optional[FileStatusCheckOptions] = None) -> None:
         """
         Check the modified time for this object and any children.
         """
@@ -284,7 +284,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                         if isinstance(entity, CdmReferencedEntityDeclarationDefinition):
                             await entity.file_status_check_async()
                         elif isinstance(entity, CdmLocalEntityDeclarationDefinition):
-                            await cast(CdmLocalEntityDeclarationDefinition, entity).file_status_check_async(partition_file_status_check_type, incremental_type)
+                            await cast(CdmLocalEntityDeclarationDefinition, entity).file_status_check_async(partition_file_status_check_type, incremental_type, file_status_check_options)
 
                     for sub_manifest in self.sub_manifests:
                         await sub_manifest.file_status_check_async()
@@ -342,7 +342,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 import_document = await self.ctx.corpus.fetch_object_async(abs_path)  # type: 'CdmDocumentDefinition'
                 if not isinstance(import_document, CdmDocumentDefinition):
                     logger.error(self.ctx, self._TAG, self._add_elevated_traits_and_relationships.__name__, self.at_corpus_path,
-                                 CdmLogCode.ERR_INVALID_CAST, abspath, 'CdmDocumentDefinition')
+                                 CdmLogCode.ERR_INVALID_CAST, abs_path, 'CdmDocumentDefinition')
                     continue
                 await import_document._index_if_needed(res_opt)
                 # Resolves the imports in the manifests

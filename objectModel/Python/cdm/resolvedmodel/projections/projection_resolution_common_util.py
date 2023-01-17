@@ -64,7 +64,7 @@ class ProjectionResolutionCommonUtil:
                 # the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
                 # we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
                 # create this dummy attribute context so the resolution code works properly and discard it after.
-                attr_ctx_param = AttributeContextParameters  # type: AttributeContextParameters
+                attr_ctx_param = AttributeContextParameters()  # type: AttributeContextParameters
                 attr_ctx_param._regarding = attr
                 attr_ctx_param._type = CdmAttributeContextType.PASS_THROUGH
                 attr_ctx_param._under = CdmAttributeContext(ctx, 'discard')

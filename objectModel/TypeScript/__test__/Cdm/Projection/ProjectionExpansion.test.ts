@@ -548,7 +548,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
         // A warning should be logged when startOrdinal > endOrdinal
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('startOrdinal 2 should not be greater than endOrdinal 0') === -1) {
-                fail(`Some unexpected failure - ${message}!`);
+                throw new Error(`Some unexpected failure - ${message}!`);
             }
         }, cdmStatusLevel.warning);
 

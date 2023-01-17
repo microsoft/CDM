@@ -22,7 +22,7 @@ describe('Cdm/Projection/CardinalitySettingUnitTest', () => {
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CardinalitySettings | Invalid minimum cardinality -1.') === -1) {
-                fail(`Some unexpected failure - ${message}!`);
+                throw new Error(`Some unexpected failure - ${message}!`);
             }
         }, cdmStatusLevel.warning);
 
@@ -42,7 +42,7 @@ describe('Cdm/Projection/CardinalitySettingUnitTest', () => {
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CardinalitySettings | Invalid maximum cardinality Abc.') === -1) {
-                fail(`Some unexpected failure - ${message}!`);
+                throw new Error(`Some unexpected failure - ${message}!`);
             }
         }, cdmStatusLevel.warning);
 

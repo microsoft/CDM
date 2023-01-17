@@ -3,16 +3,19 @@
 
 import {
     CdmCorpusContext,
+    CdmFileMetadata,
     CdmFileStatus,
+    CdmLocalEntityDeclarationDefinition,
+    cdmLogCode,
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    cdmLogCode,
+    CdmTraitCollection,
+    fileStatusCheckOptions,
     resolveOptions,
     StorageAdapterBase,
-    VisitCallback,
     traitToPropertyMap,
-    CdmLocalEntityDeclarationDefinition
+    VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
 import { Logger, enterScope } from '../Utilities/Logging/Logger';
@@ -185,7 +188,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     /**
      * @internal
      */
-     public fetchDeclaredPath(pathFrom: string): string {
+    public fetchDeclaredPath(pathFrom: string): string {
         return pathFrom + (this.getName() || 'UNNAMED');
     }
 
@@ -199,7 +202,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     /**
      * @inheritdoc
      */
-    public async fileStatusCheckAsync(): Promise<void> {
+    public async fileStatusCheckAsync(fileStatusCheckOptions?: fileStatusCheckOptions): Promise<void> {
         return await using(enterScope(CdmDataPartitionPatternDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
             let namespace: string = undefined;
             let adapter: StorageAdapterBase = undefined;
@@ -211,7 +214,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             }
             const rootCorpus: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(rootCleaned, this.inDocument);
 
-            let fileInfoList: string[];
+            let fileInfoList: Map<string, CdmFileMetadata>;
             try {
                 // Remove namespace from path
                 const pathTuple: [string, string] = StorageUtils.splitNamespacePath(rootCorpus);
@@ -229,16 +232,27 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                 }
 
                 // get a list of all corpusPaths under the root
-                fileInfoList = await adapter.fetchAllFilesAsync(pathTuple[1]);
+                fileInfoList = await adapter.fetchAllFilesMetadataAsync(pathTuple[1]);
             } catch (e) {
                 Logger.warning(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
             }
 
-            if (fileInfoList !== undefined && namespace !== undefined) {
+            // update modified times
+            this.lastFileStatusCheckTime = new Date();
+
+            if (fileInfoList === undefined) {
+                Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrFetchingFileMetadataNull, namespace);
+                return;
+            }
+
+            if (namespace !== undefined) {
                 // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-                for (let i: number = 0; i < fileInfoList.length; i++) {
-                    fileInfoList[i] = `${namespace}:${fileInfoList[i]}`;
-                    fileInfoList[i] = fileInfoList[i].slice(rootCorpus.length);
+                const cleanedFileList: Map<string, CdmFileMetadata> = new Map<string, CdmFileMetadata>();
+
+                for (const entry of fileInfoList) {
+                    let newFileName: string = `${namespace}:${entry[0]}`;
+                    newFileName = newFileName.slice(rootCorpus.length);
+                    cleanedFileList.set(newFileName, entry[1]);
                 }
 
                 if (isLocalEntityDeclarationDefinition(this.owner)) {
@@ -272,11 +286,14 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                                 const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(incrementalPartition.location, this.inDocument);
                                 incrementalPartitionPathHashSet.add(fullPath);
                             }
-                        }                        
+                        }
 
-                        for (const fi of fileInfoList) {
-                            const m: RegExpExecArray = regexPattern.exec(fi);
-                            if (m && m.length > 0 && m[0] === fi) {
+                        for (const fi of cleanedFileList) {
+                            const fileName: string = fi[0];
+                            const partitionMetadata: CdmFileMetadata = fi[1];
+
+                            const m: RegExpExecArray = regexPattern.exec(fileName);
+                            if (m && m.length > 0 && m[0] === fileName) {
                                 // create a map of arguments out of capture groups
                                 const args: Map<string, string[]> = new Map();
                                 // captures start after the string match at m[0]
@@ -293,23 +310,34 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                                 }
 
                                 // put the origial but cleaned up root back onto the matched doc as the location stored in the partition
-                                const locationCorpusPath: string = `${rootCleaned}${fi}`;
-                                const fullPath: string = `${rootCorpus}${fi}`;
+                                const locationCorpusPath: string = `${rootCleaned}${fileName}`;
+                                const fullPath: string = `${rootCorpus}${fileName}`;
                                 // Remove namespace from path
                                 const pathTuple: [string, string] = StorageUtils.splitNamespacePath(fullPath);
                                 if (!pathTuple) {
                                     Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
                                     return;
                                 }
+
+                                let exhibitsTraits: CdmTraitCollection = this.exhibitsTraits;
+                                if (fileStatusCheckOptions?.includeDataPartitionSize && partitionMetadata?.fileSizeBytes != undefined) {
+                                    exhibitsTraits = new CdmTraitCollection(this.ctx, this);
+                                    for (const trait of this.exhibitsTraits) {
+                                        exhibitsTraits.push(trait);
+                                    }
+
+                                    exhibitsTraits.push('is.partition.size', [['value', partitionMetadata.fileSizeBytes]]);
+                                }
+
                                 const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(pathTuple[1]);
 
-                                if (this.isIncremental && ! incrementalPartitionPathHashSet.has(fullPath)) {
+                                if (this.isIncremental && !incrementalPartitionPathHashSet.has(fullPath)) {
                                     localEntDecDefOwner.createDataPartitionFromPattern(
-                                        locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime, true, this.name);
+                                        locationCorpusPath, exhibitsTraits, args, this.specializedSchema, lastModifiedTime, true, this.name);
                                     dataPartitionPathSet.add(fullPath);
                                 } else if (!this.isIncremental && !dataPartitionPathSet.has(fullPath)) {
                                     localEntDecDefOwner.createDataPartitionFromPattern(
-                                        locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
+                                        locationCorpusPath, exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
                                     dataPartitionPathSet.add(fullPath);
                                 }
                             }
@@ -317,8 +345,6 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                     }
                 }
             }
-            // update modified times
-            this.lastFileStatusCheckTime = new Date();
         });
     }
 

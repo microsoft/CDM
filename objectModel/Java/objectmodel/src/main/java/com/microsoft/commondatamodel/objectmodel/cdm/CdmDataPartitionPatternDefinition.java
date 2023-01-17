@@ -8,21 +8,26 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.CdmFileMetadata;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.FileStatusCheckOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -279,10 +284,10 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Updates the object and any children with changes made in the document file where it came from.
+   * @param fileStatusCheckOptions The set of options used to determine what information should be set in found partitions
    * @return CompletableFuture
    */
-  @Override
-  public CompletableFuture<Void> fileStatusCheckAsync() {
+  public CompletableFuture<Void> fileStatusCheckAsync(FileStatusCheckOptions fileStatusCheckOptions) {
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmDataPartitionPatternDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
         String nameSpace = null;
@@ -297,7 +302,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
         final String rootCorpus = getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(rootCleaned, getInDocument());
 
-        List<String> fileInfoList = null;
+        HashMap<String, CdmFileMetadata> fileInfoList = null;
         try {
           // Remove namespace from path
           final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(rootCorpus);
@@ -315,16 +320,24 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
           }
 
           // get a list of all corpusPaths under the root
-          fileInfoList = adapter.fetchAllFilesAsync(pathTuple.getRight()).join();
+          fileInfoList = adapter.fetchAllFilesMetadataAsync(pathTuple.getRight()).join();
         } catch (Exception e) {
           Logger.warning(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.getMessage());
         }
 
-        if (fileInfoList != null && nameSpace != null) {
+        // update modified times
+        setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+
+        if (fileInfoList == null) {
+          Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrFetchingFileMetadataNull, nameSpace);
+          return;
+        }
+
+        if (nameSpace != null) {
+          HashMap<String, CdmFileMetadata> cleanedFileList = new HashMap<String, CdmFileMetadata>();
           // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-          for (int i = 0; i < fileInfoList.size(); i++) {
-            fileInfoList.set(i, nameSpace + ":" + fileInfoList.get(i));
-            fileInfoList.set(i, StringUtils.slice(fileInfoList.get(i), rootCorpus.length()));
+          for (final Map.Entry<String, CdmFileMetadata> entry : fileInfoList.entrySet()) {
+            cleanedFileList.put(StringUtils.slice(nameSpace + ":" + entry.getKey(), rootCorpus.length()), entry.getValue());
           }
 
           if (this.getOwner() instanceof CdmLocalEntityDeclarationDefinition) {
@@ -366,10 +379,13 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                 }
               }
 
-              for (final String fi : fileInfoList) {
-                final Matcher m = regexPattern.matcher(fi);
+              for (final Map.Entry<String, CdmFileMetadata> fi : cleanedFileList.entrySet()) {
+                final String fileName = fi.getKey();
+                final CdmFileMetadata partitionMetadata = fi.getValue();
 
-                if (m.matches() && m.group().equals(fi)) {
+                final Matcher m = regexPattern.matcher(fileName);
+
+                if (m.matches() && m.group().equals(fileName)) {
                   // create a map of arguments out of capture groups
                   final Map<String, List<String>> args = new LinkedHashMap<>();
 
@@ -387,23 +403,33 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                   }
 
                   // put the original but cleaned up root back onto the matched doc as the location stored in the partition
-                  final String locationCorpusPath = rootCleaned + fi;
-                  final String fullPath = rootCorpus + fi;
+                  final String locationCorpusPath = rootCleaned + fileName;
+                  final String fullPath = rootCorpus + fileName;
                   // Remove namespace from path
                   final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(fullPath);
                   if (pathTuple == null) {
                     Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
                     return;
                   }
+
+                  CdmTraitCollection exhibitsTraits = this.getExhibitsTraits();
+                  if (fileStatusCheckOptions != null && fileStatusCheckOptions.getIncludeDataPartitionSize() && partitionMetadata != null) {
+                    exhibitsTraits = new CdmTraitCollection(this.getCtx(), this);
+                    for (final CdmTraitReferenceBase trait : this.getExhibitsTraits()) {
+                      exhibitsTraits.add(trait);
+                    }
+                    exhibitsTraits.add("is.partition.size", new ArrayList<>(Collections.singletonList(new ImmutablePair<>("value", partitionMetadata.getSize()))));
+                  }
+
                   final OffsetDateTime lastModifiedTime =
                           adapter.computeLastModifiedTimeAsync(pathTuple.getRight()).join();
 
                   if (this.isIncremental() && !incrementalPartitionPathHashSet.contains(fullPath)) {
-                    localEntDecDefOwner.createDataPartitionFromPattern(locationCorpusPath, this.getExhibitsTraits(), args, this.getSpecializedSchema(), lastModifiedTime, true, this.getName());
+                    localEntDecDefOwner.createDataPartitionFromPattern(locationCorpusPath, exhibitsTraits, args, this.getSpecializedSchema(), lastModifiedTime, true, this.getName());
                     incrementalPartitionPathHashSet.add(fullPath);
                   } else if (!this.isIncremental() && !dataPartitionPathHashSet.contains(fullPath)) {
                     localEntDecDefOwner.createDataPartitionFromPattern(
-                      locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
+                      locationCorpusPath, exhibitsTraits, args, getSpecializedSchema(), lastModifiedTime);
                     dataPartitionPathHashSet.add(fullPath);
                   }
                 }
@@ -411,11 +437,13 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             }
           }
         }
-
-        // update modified times
-        setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
       }
     });
+  }
+
+  @Override
+  public CompletableFuture<Void> fileStatusCheckAsync() {
+    return this.fileStatusCheckAsync(null);
   }
 
   /**

@@ -12,9 +12,13 @@ import static org.testng.Assert.assertFalse;
 
 public class AdlsTestHelper {
 
+    public static boolean isADLSEnvironmentEnabled() {
+        return "1".equals(System.getenv("ADLS_RUNTESTS"));
+    }
+
     public static void checkADLSEnvironment()
     {
-        if (!"1".equals(System.getenv("ADLS_RUNTESTS")))
+        if (!isADLSEnvironmentEnabled())
         {
             // this will cause tests to appear as "Skipped" in the final result
             throw new SkipException("ADLS environment not set up");

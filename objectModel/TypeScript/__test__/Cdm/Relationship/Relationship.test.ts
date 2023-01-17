@@ -24,7 +24,7 @@ describe('Cdm/Relationship/Relationship', () => {
     /**
      * Testing calculation of relationships and that those relationships are properly added to manifest objects
      */
-    it('TestCalculateRelationshipsAndPopulateManifests', async (done) => {
+    it('TestCalculateRelationshipsAndPopulateManifests', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
 
         const rootManifest: CdmManifestDefinition = await corpus.createRootManifest('local:/default.manifest.cdm.json');
@@ -50,14 +50,13 @@ describe('Cdm/Relationship/Relationship', () => {
         // check that each relationship has been created correctly
         verifyRelationships(rootManifest, expectedAllManifestRels);
         verifyRelationships(subManifest, expectedAllSubManifestRels);
-        done();
     });
 
     /**
      * Testing calculation of relationships and that those relationships are
      * properly added to manifest objects setting the populate flag to Exclusive
      */
-    it('TestCalculateRelationshipsAndPopulateManifestsWithExclusiveFlag', async (done) => {
+    it('TestCalculateRelationshipsAndPopulateManifestsWithExclusiveFlag', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
 
         const rootManifest: CdmManifestDefinition = await corpus.createRootManifest('local:/default.manifest.cdm.json');
@@ -84,14 +83,13 @@ describe('Cdm/Relationship/Relationship', () => {
         // check that each relationship has been created correctly
         verifyRelationships(rootManifest, expectedExclusiveManifestRels);
         verifyRelationships(subManifest, expectedExclusiveSubManifestRels);
-        done();
     });
 
     /**
      * Testing calculation of relationships and that those relationships are
      * properly added to manifest objects setting the populate flag to None
      */
-    it('TestCalculateRelationshipsAndPopulateManifestsWithNoneFlag', async (done) => {
+    it('TestCalculateRelationshipsAndPopulateManifestsWithNoneFlag', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
 
         const rootManifest: CdmManifestDefinition = await corpus.createRootManifest('local:/default.manifest.cdm.json');
@@ -108,15 +106,13 @@ describe('Cdm/Relationship/Relationship', () => {
             .toBe(expectedZeroRelationships);
         expect(subManifest.relationships.length)
             .toBe(expectedZeroRelationships);
-
-        done();
     });
 
     /**
      * Testing calculation of relationships and that those relationships are
      * properly added to manifest objects
      */
-    it('TestCalculateRelationshipsOnResolvedEntities', async (done) => {
+    it('TestCalculateRelationshipsOnResolvedEntities', async () => {
         const expectedResolvedExcManifestRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
             testsSubpath,
             'TestCalculateRelationshipsOnResolvedEntities',
@@ -240,13 +236,12 @@ describe('Cdm/Relationship/Relationship', () => {
             .toBe('local:/sub/F-resolved.cdm.json/F');
         expect(fOutRels[0].toEntity)
             .toBe('local:/E-resolved.cdm.json/E');
-        done();
     });
 
     /**
      * Testing calculating relationships for the special kind of attribute that uses the "select one" directive
      */
-    it('TestCalculateRelationshipsForSelectsOneAttribute', async (done) => {
+    it('TestCalculateRelationshipsForSelectsOneAttribute', async () => {
         const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
             testsSubpath,
             'TestCalculateRelationshipsForSelectsOneAttribute',
@@ -261,13 +256,12 @@ describe('Cdm/Relationship/Relationship', () => {
 
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
-        done();
     });
 
     /**
      * Test the relationship calculation when using a replace as foreign key operation while extending an entity.
      */
-    it('testExtendsEntityAndReplaceAsForeignKey', async (done) => {
+    it('testExtendsEntityAndReplaceAsForeignKey', async () => {
         const testName = 'TestExtendsEntityAndReplaceAsForeignKey';
         var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnProjFKWithoutSourceEntity]);
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName, undefined, false, expectedLogCodes);
@@ -280,13 +274,12 @@ describe('Cdm/Relationship/Relationship', () => {
 
         expect(manifest.relationships.length)
             .toEqual(0);
-        done();
     });
 
     /**
      * Test relationships are generated correctly when the document name and entity name do not match
      */
-    it('TestRelationshipsEntityAndDocumentNameDifferent', async (done) => {
+    it('TestRelationshipsEntityAndDocumentNameDifferent', async () => {
         const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
             testsSubpath,
             'TestRelationshipsEntityAndDocumentNameDifferent',
@@ -300,13 +293,12 @@ describe('Cdm/Relationship/Relationship', () => {
 
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
-        done();
     });
 
     /**
      * Test that multiple relationships are generated when there are references to multiple entities
      */
-    it('TestRelationshipToMultipleEntities', async (done) => {
+    it('TestRelationshipToMultipleEntities', async () => {
         const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
             testsSubpath,
             'TestRelationshipToMultipleEntities',
@@ -320,13 +312,12 @@ describe('Cdm/Relationship/Relationship', () => {
 
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
-        done();
     });
 
     /**
      * Test that relationships between entities in different namespaces are created correctly
      */
-    it('TestRelationshipToDifferentNamespace', async (done) => {
+    it('TestRelationshipToDifferentNamespace', async () => {
         const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
             testsSubpath,
             'TestRelationshipToDifferentNamespace',
@@ -343,13 +334,12 @@ describe('Cdm/Relationship/Relationship', () => {
 
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
-        done();
     });
 
     /**
      * Test that ensures relationships are updated correctly after entities are changed
      */
-    it('TestUpdateRelationships', async (done) => {
+    it('TestUpdateRelationships', async () => {
         const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
             testsSubpath,
             'TestUpdateRelationships',
@@ -421,7 +411,6 @@ describe('Cdm/Relationship/Relationship', () => {
                 fs.unlinkSync(fromPath);
             } catch (err) { }
         }
-        done();
     });
 });
 

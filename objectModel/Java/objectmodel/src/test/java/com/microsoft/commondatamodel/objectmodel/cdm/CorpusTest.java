@@ -54,6 +54,23 @@ public class CorpusTest {
     }
 
     /**
+     * Tests if the OM is able to load a data type with a cycle and log an error when that occurs.
+     */
+    @Test
+    public void testCycleInDataType() throws InterruptedException {
+        final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Arrays.asList(CdmLogCode.ErrCycleInObjectDefinition, CdmLogCode.ErrResolutionFailure));
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCycleInDataType", false, expectedLogCodes);
+
+        // Force the symbols to be resolved.
+        final ResolveOptions resOpt = new ResolveOptions();
+        resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
+
+        corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/doc.cdm.json", null, resOpt).join();
+
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrCycleInObjectDefinition, true);
+    }
+
+    /**
      * Tests the FetchObjectAsync function with the lazy imports load.
      */
     @Test

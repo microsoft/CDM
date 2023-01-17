@@ -7,16 +7,15 @@ import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.microsoft.commondatamodel.objectmodel.AdlsTestHelper;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionPatternDefinition;
@@ -37,7 +36,11 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestP
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.FetchAllMetadataNullAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.NoOverrideAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.OverrideFetchAllFilesAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.Constants;
+import com.microsoft.commondatamodel.objectmodel.utilities.FileStatusCheckOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -868,5 +871,70 @@ public class DataPartitionPatternTest {
 
     // This should not throw exception
     manifest.fileStatusCheckAsync().join();
+  }
+
+  /**
+   * Test FetchAllFilesMetadata includes partition size and is added as a trait in FileStatusCheckAsync
+   *
+   * @throws InterruptedException
+   */
+  @Test
+  public void testFetchAllFilesMetadata() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.ErrFetchingFileMetadataNull));
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFetchAllFilesMetadata", null, false, expectedLogCodes);
+    final FileStatusCheckOptions fileStatusCheckOptions = new FileStatusCheckOptions(true);
+
+    // test local adapter
+    final CdmManifestDefinition localManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("manifest.manifest.cdm.json").join();
+    localManifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+
+    final CdmCollection<CdmDataPartitionDefinition> localDataPartitionList = localManifest.getEntities().get(0).getDataPartitions();
+    Assert.assertEquals(localDataPartitionList.size(), 1);
+    final int local_trait_index = localDataPartitionList.get(0).getExhibitsTraits().indexOf("is.partition.size");
+    Assert.assertNotEquals(local_trait_index, -1);
+    final CdmTraitReference localTrait = (CdmTraitReference) localDataPartitionList.get(0).getExhibitsTraits().get(local_trait_index);
+    Assert.assertEquals(localTrait.getNamedReference(), "is.partition.size");
+    Assert.assertEquals(localTrait.getArguments().get(0).getValue(), (long)2);
+
+    if (AdlsTestHelper.isADLSEnvironmentEnabled()) {
+      // test ADLS adapter
+      corpus.getStorage().mount("adls", AdlsTestHelper.createAdapterWithSharedKey());
+      final CdmManifestDefinition adlsManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("adlsManifest.manifest.cdm.json").join();
+      adlsManifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+
+      final CdmCollection<CdmDataPartitionDefinition> adlsDataPartitionList = adlsManifest.getEntities().get(0).getDataPartitions();
+      Assert.assertEquals(adlsDataPartitionList.size(), 1);
+      final int adls_trait_index = localDataPartitionList.get(0).getExhibitsTraits().indexOf("is.partition.size");
+      Assert.assertNotEquals(adls_trait_index, -1);
+      final CdmTraitReference adlsTrait = (CdmTraitReference) adlsDataPartitionList.get(0).getExhibitsTraits().get(adls_trait_index);
+      Assert.assertEquals(adlsTrait.getNamedReference(), "is.partition.size");
+      Assert.assertEquals(adlsTrait.getArguments().get(0).getValue(), (long) 1);
+    }
+
+    final LocalAdapter testLocalAdapter = (LocalAdapter)corpus.getStorage().getNamespaceAdapters().get(corpus.getStorage().getDefaultNamespace());
+
+    // check that there are no errors when FetchAllFilesAsync is not overridden, uses method from StorageAdapterBase
+    corpus.getStorage().mount("noOverride", new NoOverrideAdapter(testLocalAdapter));
+    final CdmManifestDefinition noOverrideManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("noOverride:/manifest.manifest.cdm.json").join();
+    noOverrideManifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+
+    final CdmCollection<CdmDataPartitionDefinition> noOverridePartitionList = noOverrideManifest.getEntities().get(0).getDataPartitions();
+    Assert.assertEquals(noOverridePartitionList.size(), 0);
+
+    // check that there are no errors when FetchAllFilesMetadataAsync is not overridden
+    corpus.getStorage().mount("overrideFetchAll", new OverrideFetchAllFilesAdapter(testLocalAdapter));
+    final CdmManifestDefinition overrideFetchAllManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("overrideFetchAll:/manifest.manifest.cdm.json").join();
+    overrideFetchAllManifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+
+    final CdmCollection<CdmDataPartitionDefinition> overrideFetchDataPartitionList = overrideFetchAllManifest.getEntities().get(0).getDataPartitions();
+    Assert.assertEquals(overrideFetchDataPartitionList.size(), 1);
+    final int overrideFetchTraitIndex = overrideFetchDataPartitionList.get(0).getExhibitsTraits().indexOf("is.partition.size");
+    Assert.assertEquals(overrideFetchTraitIndex , -1);
+    Assert.assertEquals(overrideFetchDataPartitionList.get(0).getExhibitsTraits().size(), 1);
+
+    // check that error is correctly logged when FetchAllFilesMetadata is misconfigured and returns null
+    corpus.getStorage().mount("fetchNull", new FetchAllMetadataNullAdapter(testLocalAdapter));
+    final CdmManifestDefinition fetchNullManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("fetchNull:/manifest.manifest.cdm.json").join();
+    fetchNullManifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
   }
 }

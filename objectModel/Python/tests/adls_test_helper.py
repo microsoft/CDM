@@ -44,3 +44,7 @@ class AdlsTestHelper:
         if second.startswith('/'):
             second = second[1:]
         return first + '/' + second
+
+    @staticmethod
+    def is_adls_env_enabled() -> bool:
+        return os.environ.get('ADLS_RUNTESTS') is '1'

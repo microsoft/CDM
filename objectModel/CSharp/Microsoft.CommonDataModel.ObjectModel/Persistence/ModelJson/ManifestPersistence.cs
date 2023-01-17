@@ -205,7 +205,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
         public static async Task<CdmManifestDefinition> FromData(CdmCorpusContext ctx, string docName, string jsonData, CdmFolderDefinition folder)
         {
-            var obj = JsonConvert.DeserializeObject<Model>(jsonData);
+            var obj = JsonConvert.DeserializeObject<Model>(jsonData, PersistenceLayer.SerializerSettings);
             return await FromObject(ctx, obj, folder);
         }
 

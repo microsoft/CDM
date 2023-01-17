@@ -203,12 +203,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 var traitRef = att?.AppliedTraits?.Where(x => x.NamedReference == "is.linkedEntity.identifier" && (x as CdmTraitReference).Arguments?.Count > 0).FirstOrDefault();
                 var entRef = (traitRef as CdmTraitReference)?.Arguments[0].Value;
 
-                if (entRef != null) {
+                if (entRef != null)
+                {
                     var entityShape = (entRef.FetchObjectDefinition<CdmConstantEntityDefinition>() as CdmConstantEntityDefinition).EntityShape.NamedReference;
                     if (isEntitySet)
                     {
                         Assert.AreEqual("entitySet", entityShape);
-                    } else
+                    }
+                    else
                     {
                         Assert.AreEqual("entityGroupSet", entityShape);
                     }

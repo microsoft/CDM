@@ -1,9 +1,8 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from datetime import datetime, timezone
 import os
-from typing import List, Optional
+from typing import Optional
 
 from .base import StorageAdapterBase
 

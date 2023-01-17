@@ -4,7 +4,8 @@
 from abc import abstractmethod
 from typing import Optional, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmLogCode
+from cdm.utilities import logger
 
 from .cdm_object import CdmObject
 from .cdm_object_ref import CdmObjectReference
@@ -26,6 +27,7 @@ class CdmObjectDefinition(CdmObject):
         # --- internal ---
 
         self._exhibits_traits = CdmTraitCollection(ctx, self)  # type: CdmTraitCollection
+        self._TAG = 'CdmObjectDefinition'
 
     @property
     def exhibits_traits(self) -> 'CdmTraitCollection':
@@ -96,7 +98,13 @@ class CdmObjectDefinition(CdmObject):
             return True
 
         definition = base.fetch_object_definition(res_opt) if base else None
-        if base and definition:
+
+        # detects a direct definition cycle, doesn't work for cases like A->B->A.
+        if definition is self:
+            logger.error(self.ctx, self._TAG, '_is_derived_from_def', self.at_corpus_path, CdmLogCode.ERR_CYCLE_IN_OBJECT_DEFINITION)
+            return True
+
+        if definition:
             return definition.is_derived_from(seek, res_opt)
 
         return False

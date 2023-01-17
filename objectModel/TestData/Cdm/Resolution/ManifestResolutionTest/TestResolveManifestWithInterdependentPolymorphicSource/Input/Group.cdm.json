@@ -1,0 +1,101 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "cdm:/core/cdsConcepts.cdm.json"
+    },
+    {
+      "corpusPath": "Groupmember.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Group",
+      "displayName": "Group",
+      "description": "An association of several customers allowing e.g. the representation of households",
+      "sourceName": "msfsi_group",
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "groupId",
+                "sourceName": "msfsi_groupid",
+                "sourceOrdering": 1,
+                "description": "Unique identifier for entity instances.",
+                "displayName": "Group",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId"
+              },
+              {
+                "name": "PrimaryMember",
+                "sourceName": "msfsi_primarymember",
+                "sourceOrdering": 35,
+                "description": "Primary member of the group.",
+                "displayName": "Primary member",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "isPolymorphicSource": true,
+                "entity": {
+                  "source": {
+                    "entityReference": {
+                      "entityName": "GroupPrimarymemberOptions",
+                      "hasAttributes": [
+                        {
+                          "name": "groupMemberOption",
+                          "entity": {
+                            "source": "GroupMember"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "runSequentially": true,
+                  "operations": [
+                    {
+                      "$type": "combineAttributes",
+                      "select": [
+                        "groupMemberId"
+                      ],
+                      "mergeInto": {
+                        "name": "combinedPrimarymember",
+                        "dataType": "entityId"
+                      }
+                    },
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "reference": "combinedPrimarymember",
+                      "replaceWith": {
+                        "name": "primarymember",
+                        "sourceName": "msfsi_primarymember",
+                        "sourceOrdering": 35,
+                        "description": "Primary member of the group.",
+                        "displayName": "Primary member",
+                        "isNullable": true,
+                        "purpose": "hasA",
+                        "dataType": "entityId"
+                      }
+                    },
+                    {
+                      "$type": "addTypeAttribute",
+                      "typeAttribute": {
+                        "name": "primarymemberType",
+                        "dataType": "entityName"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

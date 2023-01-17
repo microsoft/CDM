@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmIncrementalPartitionType, PartitionFileStatusCheckType
-from cdm.utilities import ResolveOptions, time_utils, logger, Constants
+from cdm.utilities import FileStatusCheckOptions, ResolveOptions, time_utils, logger, Constants
 from cdm.enums import CdmLogCode
 
 from .cdm_collection import CdmCollection
@@ -98,7 +98,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
     async def file_status_check_async(self, partition_file_status_check_type: Optional[
         'PartitionFileStatusCheckType'] = PartitionFileStatusCheckType.FULL, incremental_type: Optional[
-        'CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE) -> None:
+        'CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE, file_status_check_options: Optional[FileStatusCheckOptions] = False) -> None:
         """Check the modified time for this object and any children."""
 
         context = self.ctx.corpus.storage.fetch_adapter(self.in_document._namespace).create_file_query_cache_context()
@@ -120,7 +120,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                                      Constants._INCREMENTAL_TRAIT_NAME,
                                      CdmLocalEntityDeclarationDefinition.data_partition_patterns.fget.__name__)
                     else:
-                        await pattern.file_status_check_async()
+                        await pattern.file_status_check_async(file_status_check_options)
 
                 for partition in self.data_partitions:
                     if partition.is_incremental:

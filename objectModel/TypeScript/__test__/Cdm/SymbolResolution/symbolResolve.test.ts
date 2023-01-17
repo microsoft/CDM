@@ -20,7 +20,7 @@ describe('Cdm/SymbolResolution/SymbolResolve', () => {
     /**
      * Test that symbols are set correctly and that object can be correctly fetched using the symbols
      */
-    it('TestSymbolResolution', async (done) => {
+    it('TestSymbolResolution', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSymbolResolution');
 
         // load the file
@@ -101,7 +101,5 @@ describe('Cdm/SymbolResolution/SymbolResolve', () => {
 
         expect(isTypeAttributeDefinition(typeAtt))
             .toBeTruthy();
-
-        done();
     });
 });

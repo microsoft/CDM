@@ -28,10 +28,10 @@ describe('Cdm/Projection/ForwardCompatibility', () => {
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('Projection operation not implemented yet.') === -1) {
-                fail(`Some unexpected failure - ${message}!`);
+                throw new Error(`Some unexpected failure - ${message}!`);
             }
         }, cdmStatusLevel.error);
 
-        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, [ 'referenceOnly' ]);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, ['referenceOnly']);
     });
 });

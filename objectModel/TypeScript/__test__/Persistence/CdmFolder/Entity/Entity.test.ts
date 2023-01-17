@@ -27,7 +27,7 @@ describe('Persistence.CdmFolder.Entity', () => {
     /**
      * Testing that trait with multiple properties are maintained even when one of the properties is null
      */
-    it('TestEntityProperties', async (done) => {
+    it('TestEntityProperties', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestEntityProperties');
 
         const obj: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/entA.cdm.json/Entity A');
@@ -51,8 +51,6 @@ describe('Persistence.CdmFolder.Entity', () => {
             .toBeUndefined();
         expect(result)
             .toBeUndefined();
-
-        done();
     });
 
     /**
@@ -60,7 +58,7 @@ describe('Persistence.CdmFolder.Entity', () => {
      * are created during resolution (no inDocument propagation during resolution). This error appears when running copyData
      * with stringRefs = true in certain cases
      */
-    it('TestFromAndToDataWithElevatedTraits', async (done) => {
+    it('TestFromAndToDataWithElevatedTraits', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestFromAndToDataWithElevatedTraits');
         // need to set schema docs to the cdm namespace instead of using resources
         corpus.storage.mount('cdm', new LocalAdapter(schemaDocsRoot));
@@ -77,13 +75,12 @@ describe('Persistence.CdmFolder.Entity', () => {
             new resolveOptions(resEntity.inDocument),
             { stringRefs: true }
         );
-        done();
     });
 
     /**
      * Testing that loading entities with missing references logs warnings when the resolve option shallowValidation = true.
      */
-    it('TestLoadingEntityWithShallowValidation', async (done) => {
+    it('TestLoadingEntityWithShallowValidation', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingEntityWithShallowValidation');
         corpus.storage.mount('cdm', new LocalAdapter(schemaDocsRoot));
         corpus.setEventCallback(
@@ -99,14 +96,12 @@ describe('Persistence.CdmFolder.Entity', () => {
         await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity', null, true);
         // Load resolved entity with shallowValidation = true.
         await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/ResolvedEntity.cdm.json/ResolvedEntity', null, true);
-
-        done();
     });
 
     /**
      * Testing that loading entities with missing references logs error when the resolve option shallowValidation = false.
      */
-    it('TestLoadingEntityWithoutShallowValidation', async (done) => {
+    it('TestLoadingEntityWithoutShallowValidation', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingEntityWithShallowValidation');
         corpus.storage.mount('cdm', new LocalAdapter(schemaDocsRoot));
         corpus.setEventCallback(
@@ -123,8 +118,6 @@ describe('Persistence.CdmFolder.Entity', () => {
         await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity');
         // Load resolved entity with shallowValidation = false.
         await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/ResolvedEntity.cdm.json/ResolvedEntity');
-
-        done();
     });
 
     /**

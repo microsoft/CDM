@@ -59,6 +59,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Tests if the OM is able to load a data type with a cycle and log an error when that occurs.
+        /// </summary>
+        [TestMethod]
+        public async Task TestCycleInDataType()
+        {
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrCycleInObjectDefinition, CdmLogCode.ErrResolutionFailure };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCycleInDataType", expectedCodes: expectedLogCodes);
+
+            // Force the symbols to be resolved.
+            var resOpt = new ResolveOptions
+            {
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
+            };
+
+            await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", resOpt: resOpt);
+
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrCycleInObjectDefinition, true);
+        }
+
+        /// <summary>
         /// Tests the FetchObjectAsync function with the lazy imports load.
         /// </summary>
         [TestMethod]

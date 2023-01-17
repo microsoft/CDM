@@ -534,7 +534,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
         }
 
-        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None)
+        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null)
         {
             using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
@@ -562,7 +562,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         else if (entity is CdmLocalEntityDeclarationDefinition)
                         {
-                            await (entity as CdmLocalEntityDeclarationDefinition).FileStatusCheckAsync(partitionFileStatusCheckType, incrementalType);
+                            await (entity as CdmLocalEntityDeclarationDefinition).FileStatusCheckAsync(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions);
                         }
                     }
 

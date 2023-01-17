@@ -41,7 +41,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
     /**
      * Tests if the owner of the entity is not changed when calling CreatedResolvedEntityAsync
      */
-    it('TestOwnerNotChanged', async (done) => {
+    it('TestOwnerNotChanged', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestOwnerNotChanged');
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity');
@@ -57,7 +57,6 @@ describe('Cdm/Resolution/EntityResolution', () => {
         // Test that entity's attribute's owner should have remained unchanged (same as the owning entity)
         expect(entity.attributes.allItems[0].owner)
             .toBe(entity);
-        done();
     });
 
     /**
@@ -104,9 +103,6 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * Test whether or not the test corpus can be resolved
      */
     it('TestResolveTestCorpus', async () => {
-        // this test takes more time than jest expects tests to take
-        jest.setTimeout(500000);
-
         // tslint:disable-next-line: non-literal-fs-path
         expect(fs.existsSync(schemaDocsRoot))
             .toBeTruthy();
@@ -130,10 +126,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
             .toBeDefined();
         expect(allResolved.length)
             .toBeGreaterThanOrEqual(1);
-
-        // setting back expected test timeout.
-        jest.setTimeout(10000);
-    });
+    }, 500000);
 
     /**
      * Test if the composite resolved entities match
@@ -188,7 +181,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * Test that monikered references on resolved entities can be resolved correctly, previously
      * the inclusion of the resolvedFrom moniker stopped the source document from being found
      */
-    it('TestResolveWithExtended', async (done) => {
+    it('TestResolveWithExtended', async () => {
         const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolveWithExtended');
         cdmCorpus.setEventCallback(
             (level, msg) => {
@@ -199,13 +192,12 @@ describe('Cdm/Resolution/EntityResolution', () => {
 
         const ent: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('local:/sub/Account.cdm.json/Account');
         await ent.createResolvedEntityAsync('Account_');
-        done();
     });
 
     /**
      * Testing that attributes that have the same name in extended entity are properly replaced
      */
-    it('TestAttributesThatAreReplaced', async (done) => {
+    it('TestAttributesThatAreReplaced', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAttributesThatAreReplaced');
 
         const extendedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/extended.cdm.json/extended');
@@ -236,13 +228,12 @@ describe('Cdm/Resolution/EntityResolution', () => {
                 .contents.allItems[0] as CdmAttributeReference;
         expect(fkReference.namedReference)
             .toBe('resExtended/hasAttributes/regardingObjectId');
-        done();
     });
 
     /**
      * Test that resolved attribute limit is calculated correctly and respected
      */
-    it('TestResolvedAttributeLimit', async (done) => {
+    it('TestResolvedAttributeLimit', async () => {
         var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrRelMaxResolvedAttrReached]);
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolvedAttributeLimit', undefined, false, expectedLogCodes);
 
@@ -306,14 +297,13 @@ describe('Cdm/Resolution/EntityResolution', () => {
         // and 2 attributes grouped in an attribute group
         expect(((mainEntity.attributes.allItems[2] as CdmAttributeGroupReference).explicitReference as CdmAttributeGroupDefinition).members.length)
             .toBe(2);
-        done();
     });
 
     /**
      * Test that "is.linkedEntity.name" and "is.linkedEntity.identifier" traits are set when "selectedTypeAttribute" and "foreignKeyAttribute"
      * are present in the entity's resolution guidance.
      */
-    it('TestSettingTraitsForResolutionGuidanceAttributes', async (done) => {
+    it('TestSettingTraitsForResolutionGuidanceAttributes', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSettingTraitsForResolutionGuidanceAttributes');
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Customer.cdm.json/Customer');
 
@@ -332,32 +322,27 @@ describe('Cdm/Resolution/EntityResolution', () => {
         expect(resolvedEntity.attributes.allItems[0].appliedTraits.item('is.linkedEntity.identifier'))
             .not
             .toBeUndefined();
-
-        done();
     });
 
     /**
      * Test that traits(including the ones inside of dataTypeRefence and PurposeReference) are applied to an entity attribute and type attribute.
      */
-    it('TestAppliedTraitsInAttributes', async (done) => {
+    it('TestAppliedTraitsInAttributes', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAppliedTraitsInAttributes');
         const expectedOutputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestAppliedTraitsInAttributes');
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
         await AttributeContextUtil.validateAttributeContext(expectedOutputFolder, 'Sales', resolvedEntity);
-
-        done();
     });
 
     /**
      * Test that foundations import is added to resolved doc if it exists in the unresolved doc
      */
-    it('TestFoundationsInResDoc', async (done) => {
+    it('TestFoundationsInResDoc', async () => {
         const corpus = testHelper.getLocalCorpus(testsSubpath, 'TestFoundationsInResDoc');
         const entity = await corpus.fetchObjectAsync<CdmEntityDefinition>('Entity.cdm.json/Entity');
         const resEntity = await entity.createResolvedEntityAsync('resolvedEntity');
         expect(resEntity.inDocument.imports.item('cdm:/foundations.cdm.json') != undefined)
             .toBeTruthy();
-        done();
     })
 });

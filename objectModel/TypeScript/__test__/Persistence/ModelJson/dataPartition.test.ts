@@ -60,7 +60,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
     /**
      * Tests that the trait is.partition.format.CSV is merged with the fileFormatSettings property during load.
      */
-    it('testLoadingCsvPartitionTraits', async () =>  {
+    it('testLoadingCsvPartitionTraits', async () => {
         var cdmCorpus = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingCsvPartitionTraits');
         var manifest = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('model.json');
 
@@ -90,7 +90,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
      * Tests that the trait is.partition.format.CSV is merged with the fileFormatSettings property during load.
      * Given that the trait is does not have arguments present on fileFormatSettings.
      */
-    it('testLoadingCsvPartitionTraitsFromFileFormatSettings', async () =>  {
+    it('testLoadingCsvPartitionTraitsFromFileFormatSettings', async () => {
         var cdmCorpus = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingCsvPartitionTraitsFromFileFormatSettings');
         var manifest = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('model.json');
 
@@ -119,7 +119,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
     /**
      * Tests that the trait is.partition.format.CSV is saved when contains arguments not supported by fileFormatSettings.
      */
-    it('testLoadingAndSavingCsvPartitionTraits', async () =>  {
+    it('testLoadingAndSavingCsvPartitionTraits', async () => {
         var cdmCorpus = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingCsvPartitionTraitsFromFileFormatSettings');
         var manifest = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('model.json');
 

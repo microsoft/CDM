@@ -11,7 +11,7 @@ describe('Cdm.ResolutionGuidancePolymorphism', () => {
     /**
      * Resolution Guidance Test - Polymorphism
      */
-    it('TestPolymorphism', async (done) => {
+    it('TestPolymorphism', async () => {
         const testName: string = 'TestPolymorphism';
         {
             const entityName: string = 'Customer';
@@ -59,13 +59,12 @@ describe('Cdm.ResolutionGuidancePolymorphism', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - Polymorphism With AttributeGroupRef
      */
-    it('TestPolymorphismWithAttributeGroupRef', async (done) => {
+    it('TestPolymorphismWithAttributeGroupRef', async () => {
         const testName: string = 'TestPolymorphismWithAttributeGroupRef';
         {
             const entityName: string = 'Customer';
@@ -113,13 +112,12 @@ describe('Cdm.ResolutionGuidancePolymorphism', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - Polymorphism With Rename As Member
      */
-    it('TestPolymorphismWithRenameAsMember', async (done) => {
+    it('TestPolymorphismWithRenameAsMember', async () => {
         const testName: string = 'TestPolymorphismWithRenameAsMember';
         {
             const entityName: string = 'Customer';
@@ -167,6 +165,5 @@ describe('Cdm.ResolutionGuidancePolymorphism', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 });

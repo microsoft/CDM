@@ -1,4 +1,4 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import datetime
@@ -16,10 +16,6 @@ from cdm.enums import AzureCloudEndpoint
 from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
 from cdm.objectmodel.cdm_corpus_context import CdmCorpusContext
-
-
-def IfRunTestsFlagNotSet():
-    return os.environ.get('ADLS_RUNTESTS') is not '1'
 
 
 class FakeTokenProvider(TokenProvider):
@@ -90,48 +86,48 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(manifest.entities[0].data_partitions[1].location, 'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv')
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_write_read_shared_key(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), "ADLS environment variables not set up")
     async def test_adls_write_read_client_id(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), "ADLS environment variables not set up")
     async def test_adls_write_read_with_blob_hostname(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key('', True))
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id('', False, True))
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_check_filetime_shared_key(self):
         await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_check_filetime_client_id(self):
         await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_file_enum_shared_key(self):
         await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_file_enum_client_id(self):
         await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_special_characters(self):
         await self.run_special_characters_test(AdlsTestHelper.create_adapter_with_client_id('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'))
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_avoid_retry_codes(self):
         """Tests if the adapter won't retry if a HttpStatusCode response with a code in AvoidRetryCodes is received."""
         adls_adapter = AdlsTestHelper.create_adapter_with_shared_key()
@@ -153,7 +149,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(1, count)
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_https_hostname(self):
         """Tests if the adapter handles requests correctly when the adls hostname contains https"""
         filename = 'HTTPSWriteTest/' + os.environ.get('USERNAME') + '_' + os.environ.get('COMPUTERNAME') + '_Python.txt'
@@ -170,7 +166,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
     Tests writing null content to ADLS. Expected behavior is not to leave any 0 byte file behind.
     '''
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_write_client_id_null_contents_no_empty_file_left(self):
         adls_adapter = AdlsTestHelper.create_adapter_with_client_id()
         adls_adapter.ctx = CdmCorpusContext(None, None)
@@ -191,7 +187,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
     Tests writing empty content to ADLS. Expected behavior is not to leave any 0 byte file behind.
     '''
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_write_client_id_empty_contents_no_empty_file_left(self):
         adls_adapter = AdlsTestHelper.create_adapter_with_client_id()
         filename = 'emptycheck_Python.txt'
@@ -210,7 +206,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
     Tests writing large file content to ADLS. Expected behavior is not to leave any 0 byte file behind.
     '''
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
     async def test_adls_write_client_id_large_file_contents_no_empty_file_left(self):
         adls_adapter = AdlsTestHelper.create_adapter_with_client_id()
         adls_adapter.ctx = CdmCorpusContext(None, None)

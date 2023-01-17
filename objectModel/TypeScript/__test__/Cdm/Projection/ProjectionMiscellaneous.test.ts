@@ -51,7 +51,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('ProjectionPersistence | Invalid operation type \'replaceAsForeignKey11111\'. | fromData') == -1) {
-                fail(message);
+                throw new Error(message);
             }
         }, cdmStatusLevel.warning);
 
@@ -74,7 +74,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
 
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            fail(message);
+            throw new Error(message);
         }, cdmStatusLevel.warning);
 
         // Create Local Root Folder
@@ -121,7 +121,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     /**
      * Tests if it resolves correct when there are two entity attributes in circular denpendency using projection
      */
-    it('TestCircularEntityAttributes', async (done) => {
+    it('TestCircularEntityAttributes', async () => {
         const testName: string = 'TestCircularEntityAttributes';
         const entityName: string = 'A';
 
@@ -135,13 +135,12 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
             .toBeDefined();
         expect(resEntity.attributes.length)
             .toEqual(2);
-        done();
     });
 
     /**
      * Tests if not setting the projection 'source' on an entity attribute triggers an error log
      */
-    it('TestEntityAttributeSource', () =>  {
+    it('TestEntityAttributeSource', () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         let errorCount: number = 0;
         corpus.setEventCallback((level, message) => {
@@ -207,7 +206,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     /**
      * Tests if setting the projection 'source' on a type attribute triggers an error log
      */
-    it('TestTypeAttributeSource', () =>  {
+    it('TestTypeAttributeSource', () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         let errorCount: number = 0;
         corpus.setEventCallback((level, message) => {

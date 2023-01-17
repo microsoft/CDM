@@ -44,7 +44,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
 
         await testRun(testName, entityName, false);
     });
-    
+
     /**
      * Projection scenario with the referenced entity not having any primary key
      */
@@ -88,7 +88,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
     /**
      * Non projection scenario with selectsSubAttribute set to one
      */
-     it('TestPolymorphicWithoutProj', async () => {
+    it('TestPolymorphicWithoutProj', async () => {
         const testName: string = 'TestPolymorphicWithoutProj';
         const entityName: string = 'CustomPerson';
 
@@ -146,7 +146,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
             .toBeTruthy();
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
         assertEntityShapeInReslovedEntity(resolvedEntity, isEntitySet);
-        
+
         await AttributeContextUtil.validateAttributeContext(expectedOutputFolder, entityName, resolvedEntity, updateExpectedOutput);
 
         await corpus.calculateEntityGraphAsync(manifest);
@@ -170,7 +170,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const actualManifestPath: string = `${actualOutputFolder}/${manifestFileName}`;
 
         if (!fs.existsSync(actualManifestPath)) {
-            fail('Unable to save manifest with relationship');
+            throw new Error('Unable to save manifest with relationship');
         } else {
             const savedManifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>(`output:/${manifestFileName}`);
             const actualSavedManifestRel: string = getRelationshipStrings(savedManifest.relationships);
@@ -205,7 +205,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
                 }
             }
         }
-        fail('Unable to find entity shape from resolved model.');
+        throw new Error('Unable to find entity shape from resolved model.');
     }
 
     /**
@@ -221,17 +221,17 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         return bldr;
     }
 
-        /**
+    /**
      * Get a string version of one relationship
      */
-         function getRelationshipString(rel: CdmE2ERelationship): string {
-            let nameAndPipe: string = '';
-            if (rel.name) {
-                nameAndPipe = `${rel.name}|`
-            }
-            
-            return `${nameAndPipe}${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
+    function getRelationshipString(rel: CdmE2ERelationship): string {
+        let nameAndPipe: string = '';
+        if (rel.name) {
+            nameAndPipe = `${rel.name}|`
         }
+
+        return `${nameAndPipe}${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
+    }
 
     /**
      * List the incoming and outgoing relationships
@@ -244,8 +244,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         // Loop through all the relationships where other entities point to this entity.
         for (const relationship of corpus.fetchIncomingRelationships(entity)) {
             const cacheKey: string = getRelationshipString(relationship);
-            if (!relCache.has(cacheKey))
-            {
+            if (!relCache.has(cacheKey)) {
                 bldr += printRelationship(relationship) + endOfLine;
                 relCache.add(cacheKey);
             }
@@ -255,8 +254,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         // Now loop through all the relationships where this entity points to other entities.
         for (const relationship of corpus.fetchOutgoingRelationships(entity)) {
             const cacheKey: string = getRelationshipString(relationship);
-            if (!relCache.has(cacheKey))
-            {
+            if (!relCache.has(cacheKey)) {
                 bldr += printRelationship(relationship) + endOfLine;
                 relCache.add(cacheKey);
             }
@@ -283,11 +281,11 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         if (relationship.exhibitsTraits != null && relationship.exhibitsTraits.length != 0) {
             bldr += '  ExhibitsTraits:' + endOfLine;
             var orderedAppliedTraits = relationship.exhibitsTraits.allItems.sort((a, b) => a.namedReference?.localeCompare(b.namedReference));
-            orderedAppliedTraits.forEach((trait : CdmTraitReferenceBase) => {
+            orderedAppliedTraits.forEach((trait: CdmTraitReferenceBase) => {
                 bldr += `      ${trait.namedReference}` + endOfLine;
 
                 if (trait instanceof CdmTraitReference) {
-                    (trait as CdmTraitReference).arguments.allItems.forEach((args : CdmArgumentDefinition) => {
+                    (trait as CdmTraitReference).arguments.allItems.forEach((args: CdmArgumentDefinition) => {
                         var attrCtxUtil = new AttributeContextUtil();
                         bldr += `          ${attrCtxUtil.getArgumentValuesAsString(args)}` + endOfLine;
                     });

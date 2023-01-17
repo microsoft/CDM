@@ -10,7 +10,7 @@ describe('Cdm.ResolutionGuidanceExpansionAndRename', () => {
     /**
      * Resolution Guidance Test - Expansion & Rename - Ordinal With AttributeGroupRef
      */
-    it('TestExpansionAndRenamedOrdinalWithAttributeGroupRef', async (done) => {
+    it('TestExpansionAndRenamedOrdinalWithAttributeGroupRef', async () => {
         const testName: string = 'TestExpansionAndRenamedOrdinalWithAttributeGroupRef';
         {
             const entityName: string = 'EmployeeAddresses';
@@ -56,13 +56,12 @@ describe('Cdm.ResolutionGuidanceExpansionAndRename', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - Expansion & Rename - Ordinal 2 to 3 and AddCount
      */
-    it('TestExpansionAndRenamedOrdinal23AndAddCount', async (done) => {
+    it('TestExpansionAndRenamedOrdinal23AndAddCount', async () => {
         const testName: string = 'TestExpansionAndRenamedOrdinal23AndAddCount';
         {
             const entityName: string = 'EmployeeAddresses';
@@ -108,6 +107,5 @@ describe('Cdm.ResolutionGuidanceExpansionAndRename', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 });

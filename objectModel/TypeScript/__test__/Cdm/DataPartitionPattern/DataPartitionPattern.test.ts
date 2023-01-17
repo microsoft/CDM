@@ -9,11 +9,15 @@ import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntity
 import { CdmManifestDefinition } from '../../../Cdm/CdmManifestDefinition';
 import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
 import { cdmObjectType } from '../../../Enums/cdmObjectType';
-import { CdmEntityDefinition, cdmIncrementalPartitionType, cdmLogCode, CdmParameterDefinition, CdmTraitDefinition, CdmTraitReference, constants, partitionFileStatusCheckType } from '../../../internal';
+import { CdmEntityDefinition, cdmIncrementalPartitionType, cdmLogCode, CdmParameterDefinition, CdmTraitDefinition, CdmTraitReference, constants, fileStatusCheckOptions, partitionFileStatusCheckType } from '../../../internal';
 import { CdmFolder } from '../../../Persistence';
 import { resolveContext } from '../../../Utilities/resolveContext';
 import { testHelper } from '../../testHelper';
 import { CdmDataPartitionPatternDefinition } from '../../../Cdm/CdmDataPartitionPatternDefinition';
+import { adlsTestHelper } from '../../adlsTestHelper';
+import { OverrideFetchAllFilesAdapter } from '../../Storage/TestAdapters/OverrideFetchAllFilesAdapter';
+import { NoOverrideAdapter } from '../../Storage/TestAdapters/NoOverrideAdapter';
+import { FetchAllMetadataNullAdapter } from '../../Storage/TestAdapters/FetchAllMetadataNullAdapter';
 
 // tslint:disable-next-line: max-func-body-length
 describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
@@ -25,7 +29,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
     /**
      * Tests refreshing files that match the regular expression
      */
-    it('TestRefreshDataPartitionPatterns', async (done) => {
+    it('TestRefreshDataPartitionPatterns', async () => {
         const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRefreshDataPartitionPatterns');
 
         const cdmManifest: CdmManifestDefinition =
@@ -113,13 +117,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe('partitions/testTooMany.csv');
         expect(tooManyPartition.arguments.size)
             .toBe(0);
-        done();
     });
 
     /**
      * Tests data partition objects created by a partition pattern do not share the same trait with the partition pattern
      */
-    it('TestRefreshesDataPartitionPatternsWithTrait', async (done) => {
+    it('TestRefreshesDataPartitionPatternsWithTrait', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRefreshesDataPartitionPatternsWithTrait');
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
 
@@ -135,7 +138,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         patternTraitRef.arguments.push("int", 1);
         patternTraitRef.arguments.push("bool", true);
         patternTraitRef.arguments.push("string", 'a');
-        
+
         await manifest.fileStatusCheckAsync();
 
         expect(partitionEntity.dataPartitions.length)
@@ -158,13 +161,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         partitionTraitRef.arguments.allItems[0].value = 2;
         expect((partitionEntity.dataPartitions.allItems[1].exhibitsTraits.item("testTrait") as CdmTraitReference).arguments.allItems[0].value)
             .toBe(1);
-        done();
     });
 
     /**
      * Tests refreshing incremental partition files that match the regular expression
      */
-    it('TestIncrementalPatternsRefreshesFullAndIncremental', async (done) => {
+    it('TestIncrementalPatternsRefreshesFullAndIncremental', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestIncrementalPatternsRefreshesFullAndIncremental');
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -192,7 +194,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         for (const partition of partitionEntity.incrementalPartitions) {
             switch (partition.location) {
                 case '/IncrementalData/2018/8/15/Deletes/delete1.csv':
-                    totalExpectedPartitionsFound++;                    
+                    totalExpectedPartitionsFound++;
                     expect(partition.arguments.size)
                         .toBe(4);
                     expect(partition.arguments.has('year'))
@@ -224,7 +226,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
                         .toBe('FullDataPattern');
                     break;
                 case '/IncrementalData/2018/8/15/Deletes/delete2.csv':
-                    totalExpectedPartitionsFound++;                
+                    totalExpectedPartitionsFound++;
                     expect(partition.arguments.size)
                         .toBe(4);
                     expect(partition.arguments.get('year')[0])
@@ -243,10 +245,10 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
                     expect(trait2.arguments.item('type').getValue())
                         .toBe(cdmIncrementalPartitionType[cdmIncrementalPartitionType.Delete]);
                     expect(trait2.arguments.item('fullDataPartitionPatternName').getValue())
-                        .toBe('FullDataPattern');                    
+                        .toBe('FullDataPattern');
                     break;
                 case "/IncrementalData/2018/8/15/Upserts/upsert1.csv":
-                    totalExpectedPartitionsFound++;                    
+                    totalExpectedPartitionsFound++;
                     expect(partition.arguments.size)
                         .toBe(4);
                     expect(partition.arguments.get('year')[0])
@@ -271,16 +273,15 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
                     totalExpectedPartitionsFound++;
                     break;
             }
-        }        
+        }
         expect(totalExpectedPartitionsFound)
             .toBe(4);
-        done();
     });
 
     /**
      * Tests only refreshing delete type incremental partition files.
      */
-     it('TestIncrementalPatternsRefreshesDeleteIncremental', async (done) => {
+    it('TestIncrementalPatternsRefreshesDeleteIncremental', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestIncrementalPatternsRefreshesDeleteIncremental');
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -303,8 +304,8 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
         let totalExpectedPartitionsFound: number = 0;
-        for (const partition of partitionEntity.incrementalPartitions){
-            if (partition.lastFileStatusCheckTime > timeBeforeLoad){
+        for (const partition of partitionEntity.incrementalPartitions) {
+            if (partition.lastFileStatusCheckTime > timeBeforeLoad) {
                 totalExpectedPartitionsFound++;
                 const traitRef = partition.exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
                 expect(traitRef.arguments.item('type').getValue())
@@ -345,8 +346,8 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Incremental, cdmIncrementalPartitionType.Delete);
 
-        for (const partition of partitionEntity.incrementalPartitions){
-            if (partition.lastFileStatusCheckTime > timeBeforeLoad){
+        for (const partition of partitionEntity.incrementalPartitions) {
+            if (partition.lastFileStatusCheckTime > timeBeforeLoad) {
                 totalExpectedPartitionsFound++;
                 const traitRef = partition.exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
                 expect(traitRef.arguments.item('type').getValue())
@@ -356,17 +357,15 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         expect(totalExpectedPartitionsFound)
             .toBe(3);
-
-        done();
     });
 
     /**
      * Tests refreshing partition pattern with invalid incremental partition trait and invalid arguments.
      */
-    it('TestPatternRefreshesWithInvalidTraitAndArgument', async (done) => {
+    it('TestPatternRefreshesWithInvalidTraitAndArgument', async () => {
         // providing invalid enum value of CdmIncrementalPartitionType in string
         // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
-        let expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrEnumConversionFailure ]);
+        let expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrEnumConversionFailure]);
         let corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         let manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -383,7 +382,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         // providing invalid argument value - supply integer
         // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitInvalidArgumentValueType ]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrTraitInvalidArgumentValueType]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -402,7 +401,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         // not providing argument
         // "traitReference": "is.partition.incremental", "arguments": []]
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitArgumentMissing ]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrTraitArgumentMissing]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -420,7 +419,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         //////////////////////////////////////////////////////////////////
 
         // not trait argument
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrMissingIncrementalPartitionTrait]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrMissingIncrementalPartitionTrait]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -437,7 +436,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         //////////////////////////////////////////////////////////////////
 
         // data partition pattern in DataPartitionPatterns collection contains incremental partition trait
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrUnexpectedIncrementalPartitionTrait]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrUnexpectedIncrementalPartitionTrait]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPatternRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -451,17 +450,15 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
-
-        done();
     });
 
     /**
      * Tests refreshing partition with invalid incremental partition trait and invalid arguments.
      */
-     it('TestPartitionRefreshesWithInvalidTraitAndArgument', async (done) => {
+    it('TestPartitionRefreshesWithInvalidTraitAndArgument', async () => {
         // providing invalid enum value of CdmIncrementalPartitionType in string
         // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
-        let expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrEnumConversionFailure ]);
+        let expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrEnumConversionFailure]);
         let corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         let manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
 
@@ -478,7 +475,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         // providing invalid argument value - supply integer
         // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": 123}]
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitInvalidArgumentValueType ]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrTraitInvalidArgumentValueType]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
 
@@ -497,7 +494,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         // not providing argument
         // "traitReference": "is.partition.incremental", "arguments": []]
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrTraitArgumentMissing ]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrTraitArgumentMissing]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
 
@@ -515,7 +512,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         //////////////////////////////////////////////////////////////////
 
         // not trait argument
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrMissingIncrementalPartitionTrait]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrMissingIncrementalPartitionTrait]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
 
@@ -532,7 +529,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         //////////////////////////////////////////////////////////////////
 
         // data partition in DataPartitions collection contains incremental partition trait
-        expectedLogCodes = new Set<cdmLogCode>([ cdmLogCode.ErrUnexpectedIncrementalPartitionTrait]);
+        expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrUnexpectedIncrementalPartitionTrait]);
         corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionRefreshesWithInvalidTraitAndArgument', undefined, undefined, expectedLogCodes);
         manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/partition.manifest.cdm.json');
 
@@ -546,14 +543,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait, true);
-
-        done();
     });
 
     /**
      * Tests fileStatusCheckAsync(), fileStatusCheckAsync(partitionFileStatusCheckType.Full), and fileStatusCheckAsync(partitionFileStatusCheckType.None).
      */
-    it('TestPartitionFileRefreshTypeFullOrNone', async (done) => {
+    it('TestPartitionFileRefreshTypeFullOrNone', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionFileRefreshTypeFullOrNone');
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/pattern.manifest.cdm.json');
 
@@ -574,7 +569,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         expect(partitionEntity.dataPartitions.allItems[0].isIncremental)
             .toBeFalsy();
         expect(partitionEntity.incrementalPartitions.length)
-            .toBe(0);            
+            .toBe(0);
 
         //////////////////////////////////////////////////////////////////
 
@@ -625,14 +620,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe(0);
         expect(partitionEntity.lastFileStatusCheckTime >= timeBeforeLoad)
             .toBe(true);
-        
-        done();
     });
 
     /**
      * Testing that error is handled when partition pattern contains a folder that does not exist
      */
-    it('TestPatternWithNonExistingFolder', async (done) => {
+    it('TestPatternWithNonExistingFolder', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPatternWithNonExistingFolder');
         const content: string = testHelper.getInputFileContent(testsSubpath, 'TestPatternWithNonExistingFolder', 'entities.manifest.cdm.json');
         const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
@@ -656,13 +649,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         expect(cdmManifest.entities.allItems[0].dataPartitionPatterns.allItems[0].lastFileStatusCheckTime)
             .not
             .toBeUndefined();
-        done();
     });
 
     /**
      * Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
      */
-    it('TestPatternWithDifferentNamespace', async (done) => {
+    it('TestPatternWithDifferentNamespace', async () => {
         const testName: string = 'TestPatternWithDifferentNamespace';
         const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         const localAdapter: LocalAdapter = cdmCorpus.storage.fetchAdapter('local') as LocalAdapter;
@@ -674,13 +666,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         expect(cdmManifest.entities.allItems[0].dataPartitions.length)
             .toBe(1);
-        done();
     });
 
     /**
      * Testing that patterns behave correctly with variations to rootLocation
      */
-    it('TestVariationsInRootLocation', async (done) => {
+    it('TestVariationsInRootLocation', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestVariationsInRootLocation');
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('pattern.manifest.cdm.json');
         await manifest.fileStatusCheckAsync();
@@ -708,13 +699,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe(1);
         expect(noSlash.dataPartitions.allItems[0].location)
             .toBe('partitions/testfile.csv');
-        done();
     });
 
     /**
      * Testing data partition patterns that use glob patterns
      */
-    it('TestPartitionPatternWithGlob', async (done) => {
+    it('TestPartitionPatternWithGlob', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPartitionPatternWithGlob');
 
         let patternsWithGlobAndRegex: number = 0;
@@ -924,14 +914,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         // matching this file means the glob pattern was (correctly) used
         expect(globAndRegex.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
-
-        done();
     });
 
     /**
      * Testing data partition patterns that use glob patterns with variations in path style
      */
-    it('TestGlobPathVariation', async (done) => {
+    it('TestGlobPathVariation', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestGlobPathVariation');
 
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('pattern.manifest.cdm.json');
@@ -1002,8 +990,6 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe(1);
         expect(noSlashOrStarAndRootLocation.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
-
-        done();
     });
 
     /**
@@ -1015,12 +1001,12 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         corpus.setEventCallback((level, message) => {
             if (level != cdmStatusLevel.error) {
-                fail(new Error('Error level message should have been reported'));
+                throw new Error('Error level message should have been reported');
             }
 
             if (message.indexOf('StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath') == -1 &&
                 message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPathAsync') == -1) {
-                fail(new Error('Unexpected error message received'));
+                throw new Error('Unexpected error message received');
             }
         }, cdmStatusLevel.warning);
 
@@ -1042,5 +1028,79 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         // This should not throw exception
         await manifest.fileStatusCheckAsync();
+    });
+
+    /**
+     * Test FetchAllFilesMetadata includes partition size and is added as a trait in FileStatusCheckAsync
+     */
+    it('TestFetchAllFilesMetadata', async () => {
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrFetchingFileMetadataNull]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestFetchAllFilesMetadata', undefined, false, expectedLogCodes);
+        const fileStatusCheckOptions: fileStatusCheckOptions = { includeDataPartitionSize: true };
+
+        // test local adapter
+        const localManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('manifest.manifest.cdm.json');
+        await localManifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+
+        const localDataPartitionList = localManifest.entities.allItems[0].dataPartitions.allItems;
+        expect(localDataPartitionList.length)
+            .toBe(1);
+        const localTraitIndex: number = localDataPartitionList[0].exhibitsTraits.indexOf('is.partition.size');
+        expect(localTraitIndex)
+            .not.toBe(-1);
+        const localTrait = localDataPartitionList[0].exhibitsTraits.allItems[localTraitIndex] as CdmTraitReference;
+        expect(localTrait.namedReference)
+            .toBe('is.partition.size');
+        expect(localTrait.arguments.allItems[0].value)
+            .toBe(2);
+
+        if (adlsTestHelper.isAdlsEnvironmentEnabled()) {
+            // test ADLS adapter
+            corpus.storage.mount('adls', adlsTestHelper.createAdapterWithSharedKey());
+            const adlsManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('adlsManifest.manifest.cdm.json');
+            await adlsManifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+
+            const adlsDataPartitionList = adlsManifest.entities.allItems[0].dataPartitions.allItems;
+            expect(adlsDataPartitionList.length)
+                .toBe(1);
+            const adlsTraitIndex: number = adlsDataPartitionList[0].exhibitsTraits.indexOf('is.partition.size');
+            expect(adlsTraitIndex)
+                .not.toBe(-1);
+            const adlsTrait = adlsDataPartitionList[0].exhibitsTraits.allItems[adlsTraitIndex] as CdmTraitReference;
+            expect(adlsTrait.namedReference)
+                .toBe('is.partition.size');
+            expect(adlsTrait.arguments.allItems[0].value)
+                .toBe(1);
+        }
+
+        const testLocalAdapter: LocalAdapter = corpus.storage.namespaceAdapters.get(corpus.storage.defaultNamespace) as LocalAdapter;
+
+        // check that there are no errors when FetchAllFilesAsync is not overridden, uses method from StorageAdapterBase
+        corpus.storage.mount('noOverride', new NoOverrideAdapter(testLocalAdapter));
+        const noOverrideManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('noOverride:/manifest.manifest.cdm.json');
+        await noOverrideManifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+
+        const noOverridePartitionList = noOverrideManifest.entities.allItems[0].dataPartitions;
+        expect(noOverridePartitionList.length)
+            .toBe(0);
+
+        // check that there are no errors when FetchAllFilesMetadataAsync is not overridden
+        corpus.storage.mount('overrideFetchAll', new OverrideFetchAllFilesAdapter(testLocalAdapter));
+        const overrideFetchAllManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('overrideFetchAll:/manifest.manifest.cdm.json');
+        await overrideFetchAllManifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+
+        const overrideFetchDataPartitionList = overrideFetchAllManifest.entities.allItems[0].dataPartitions;
+        expect(overrideFetchDataPartitionList.length)
+            .toBe(1);
+        const overrideFetchTraitIndex: number = overrideFetchDataPartitionList.allItems[0].exhibitsTraits.indexOf('is.partition.size');
+        expect(overrideFetchTraitIndex)
+            .toBe(-1);
+        expect(overrideFetchDataPartitionList.allItems[0].exhibitsTraits.length)
+            .toBe(1);
+
+        // check that error is correctly logged when FetchAllFilesMetadata is misconfigured and returns null
+        corpus.storage.mount('fetchNull', new FetchAllMetadataNullAdapter(testLocalAdapter));
+        var fetchNullManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('fetchNull:/manifest.manifest.cdm.json');
+        await fetchNullManifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
     });
 });

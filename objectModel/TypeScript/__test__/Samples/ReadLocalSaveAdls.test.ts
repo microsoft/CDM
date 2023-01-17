@@ -27,9 +27,7 @@ describe('Samples.ReadLocalSaveAdlsTests', () => {
 
     const sampleIt: jest.It = (process.env['SAMPLE_RUNTESTS'] === '1' && process.env['ADLS_RUNTESTS'] === '1') ? it : it.skip;
 
-    sampleIt('TestReadLocalSaveAdls', async (done) => {
-        jest.setTimeout(100000);
-
+    sampleIt('TestReadLocalSaveAdls', async () => {
         testHelper.deleteFilesFromActualOutput(testHelper.getActualOutputFolderPath(testsSubpath, testName));
         rootRelativePath = `Samples/TestReadLocalSaveAdls/${process.env['USERNAME']}_${process.env['COMPUTERNAME']}_Typescript`;
 
@@ -53,8 +51,7 @@ describe('Samples.ReadLocalSaveAdlsTests', () => {
 
         const expectedContent: string = adlsModelJsonTestHelper.getExpectedFileContent(testsSubpath, testName, 'model.json');
         testHelper.assertSameObjectWasSerialized(expectedContent, actualContent);
-        done();
-    });
+    }, 100000);
 
     function setupCdmCorpus(): CdmCorpusDefinition {
         // ------------------------------------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ import {
 } from '../../../internal';
 
 export function generateManifest(): CdmManifestDefinition {
-    const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(null, this.generateManifest.name, undefined, false, undefined, true);
+    const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(null, 'generateManifest', undefined, false, undefined, true);
 
     const manifest: CdmManifestDefinition = new CdmManifestDefinition(cdmCorpus.ctx, 'manifest');
     manifest.folderPath = '/';

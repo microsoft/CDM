@@ -70,6 +70,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A cycle was detected on this definition. An object cannot inherit from itself..
+        /// </summary>
+        internal static string ErrCycleInObjectDefinition {
+            get {
+                return ResourceManager.GetString("ErrCycleInObjectDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adapter not found for the document &apos;{0}&apos;.
         /// </summary>
         internal static string ErrDocAdapterNotFound {
@@ -174,6 +183,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrEnumConversionFailure {
             get {
                 return ResourceManager.GetString("ErrEnumConversionFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not fetch file metadata. The FetchAllFilesMetadata method of the {0} adapter may be misconfigured..
+        /// </summary>
+        internal static string ErrFetchingFileMetadataNull {
+            get {
+                return ResourceManager.GetString("ErrFetchingFileMetadataNull", resourceCulture);
             }
         }
         
@@ -804,15 +822,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrPersistSymsNotSupported {
             get {
                 return ResourceManager.GetString("ErrPersistSymsNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SyMS includes a spark partition for table &apos;{0}&apos; which is currently not supported by CDM..
-        /// </summary>
-        internal static string ErrPersistSymsPartitionNotSupported {
-            get {
-                return ResourceManager.GetString("ErrPersistSymsPartitionNotSupported", resourceCulture);
             }
         }
         

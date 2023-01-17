@@ -4,9 +4,11 @@
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
+import com.microsoft.commondatamodel.objectmodel.utilities.CdmFileMetadata;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.HashSet;  
@@ -126,14 +128,36 @@ public abstract class StorageAdapterBase {
   }
 
   /**
+   * @deprecated Deprecated in favor of fetchAllFilesMetadataAsync
+   * meant to be called externally at all. Please refrain from using it.
    * Returns a list of corpus paths to all files and folders at or under the provided corpus path to
    * a folder.
    *
    * @param folderCorpusPath Path to the folder to scan
    * @return List of corpus paths of all files and folders found
    */
+  @Deprecated
   public CompletableFuture<List<String>> fetchAllFilesAsync(String folderCorpusPath) {
     return CompletableFuture.completedFuture(null);
+  }
+
+  /**
+   * Returns a list of corpus paths to all files and folders at or under the provided corpus path to a folder.
+   * @param folderCorpusPath Path to the folder to scan
+   * @return Dictionary with list of corpus paths as keys and CdmFileMetadata info for each as the value
+   */
+  public CompletableFuture<HashMap<String, CdmFileMetadata>> fetchAllFilesMetadataAsync(String folderCorpusPath) {
+    List<String> allFiles = this.fetchAllFilesAsync(folderCorpusPath).join();
+
+    HashMap<String, CdmFileMetadata> filesMetadata = new HashMap<String, CdmFileMetadata>();
+
+    if (allFiles != null) {
+      for (final String file : allFiles) {
+        filesMetadata.put(file, null);
+      }
+    }
+
+    return CompletableFuture.completedFuture(filesMetadata);
   }
 
   /**

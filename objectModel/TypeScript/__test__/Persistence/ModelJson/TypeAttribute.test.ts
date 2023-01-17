@@ -20,7 +20,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
      * Testing that 'is.localized.describedAs' trait with a table of three entries (en, rs and cn)
      *  is fully preserved when running ModelJson TypeAttributePersistence ToData.
      */
-    it('TestModelJsonToDataTypeAttribute', async (done) => {
+    it('TestModelJsonToDataTypeAttribute', async () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         corpus.storage.mount('local', new LocalAdapter('C:\\Root\\Path'));
         corpus.storage.defaultNamespace = 'local';
@@ -67,6 +67,5 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBe('cn');
         expect(constantValues[2][1])
             .toBe('一些中文描述');
-        done();
     });
 });

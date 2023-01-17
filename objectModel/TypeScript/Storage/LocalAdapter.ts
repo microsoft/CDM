@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 import { StorageUtils } from '../Utilities/StorageUtils';
-import { configObjectType, StorageAdapterBase } from '../internal';
+import { CdmFileMetadata, configObjectType, StorageAdapterBase } from '../internal';
 
 let readFile, writeFile, stat, mkdir, readdir;
 
@@ -117,6 +117,19 @@ export class LocalAdapter extends StorageAdapterBase {
         // Returns a list corpus paths to all files and folders at or under the
         // provided corpus path to a folder
         return this._fetchAllFilesAsync(folderCorpusPath);
+    }
+
+    public async fetchAllFilesMetadataAsync(folderCorpusPath: string): Promise<Map<string, CdmFileMetadata>> {
+        const fileMetadatas: Map<string, CdmFileMetadata> = new Map<string, CdmFileMetadata>();
+        const fileNames: string[] = await this.fetchAllFilesAsync(folderCorpusPath);
+
+        for (const fileName of fileNames) {
+            const path: string = this.createAdapterPath(fileName);
+            const stats: fs.Stats = await stat(path);
+            fileMetadatas.set(fileName, { fileSizeBytes: stats.isFile ? stats.size : undefined });
+        }
+
+        return fileMetadatas;
     }
 
     public fetchConfig(): string {

@@ -17,6 +17,7 @@ import {
     CdmTraitReference,
     CdmTraitReferenceBase,
     constants,
+    fileStatusCheckOptions,
     Logger,
     partitionFileStatusCheckType,
     resolveOptions,
@@ -230,30 +231,34 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     /**
      * @inheritdoc
      */
-    public async fileStatusCheckAsync(partitionCheckType: partitionFileStatusCheckType = partitionFileStatusCheckType.Full, incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None): Promise<void> {
+    public async fileStatusCheckAsync(
+        partitionCheckType: partitionFileStatusCheckType = partitionFileStatusCheckType.Full,
+        incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None,
+        fileStatusCheckOptions: fileStatusCheckOptions = undefined
+    ): Promise<void> {
 
         let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
         let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
         try {
             const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
-            const modifiedTime: Date = this.isVirtual() ? await this.ctx.corpus.getLastModifiedTimeFromObjectAsync(this) 
-                                                        : await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
-            
+            const modifiedTime: Date = this.isVirtual() ? await this.ctx.corpus.getLastModifiedTimeFromObjectAsync(this)
+                : await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
+
             // check patterns first as this is a more performant way of querying file modification times 
             // from ADLS and we can cache the times for reuse in the individual partition checks below
-            if (partitionCheckType === partitionFileStatusCheckType.Full || partitionCheckType === partitionFileStatusCheckType.FullAndIncremental) {        
+            if (partitionCheckType === partitionFileStatusCheckType.Full || partitionCheckType === partitionFileStatusCheckType.FullAndIncremental) {
                 for (const pattern of this.dataPartitionPatterns) {
                     if (pattern.isIncremental) {
-                        Logger.error(pattern.ctx, this.TAG, this.fileStatusCheckAsync.name, pattern.atCorpusPath, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait, 
+                        Logger.error(pattern.ctx, this.TAG, this.fileStatusCheckAsync.name, pattern.atCorpusPath, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
                             CdmDataPartitionPatternDefinition.name, pattern.fetchObjectDefinitionName(), constants.INCREMENTAL_TRAIT_NAME, 'dataPartitionPatterns');
                     } else {
-                        await pattern.fileStatusCheckAsync();
+                        await pattern.fileStatusCheckAsync(fileStatusCheckOptions);
                     }
                 }
-    
+
                 for (const partition of this.dataPartitions) {
                     if (partition.isIncremental) {
-                        Logger.error(partition.ctx, this.TAG, this.fileStatusCheckAsync.name, partition.atCorpusPath, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait, 
+                        Logger.error(partition.ctx, this.TAG, this.fileStatusCheckAsync.name, partition.atCorpusPath, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
                             CdmDataPartitionDefinition.name, partition.fetchObjectDefinitionName(), constants.INCREMENTAL_TRAIT_NAME, 'dataPartitions');
                     } else {
                         await partition.fileStatusCheckAsync();
@@ -261,13 +266,13 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
                 }
             }
 
-            if (partitionCheckType === partitionFileStatusCheckType.Incremental || partitionCheckType === partitionFileStatusCheckType.FullAndIncremental) {        
+            if (partitionCheckType === partitionFileStatusCheckType.Incremental || partitionCheckType === partitionFileStatusCheckType.FullAndIncremental) {
                 for (const pattern of this.incrementalPartitionPatterns) {
                     if (this.shouldCallFileStatusCheck(incrementalType, true, pattern)) {
                         await pattern.fileStatusCheckAsync();
                     }
                 }
-    
+
                 for (const partition of this.incrementalPartitions) {
                     if (this.shouldCallFileStatusCheck(incrementalType, false, partition)) {
                         await partition.fileStatusCheckAsync();
@@ -281,7 +286,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
         }
         finally {
-            if(cacheContext != null) {
+            if (cacheContext != null) {
                 cacheContext.dispose()
             }
         }
@@ -293,11 +298,11 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public shouldCallFileStatusCheck(incrementalType: cdmIncrementalPartitionType, isPattern: boolean, patternOrPartitionObj: CdmObjectDefinitionBase): boolean {
         var update = true;
-        
+
         var traitRef: CdmTraitReference = patternOrPartitionObj.exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference;
-        if (traitRef === undefined){
-            Logger.error(patternOrPartitionObj.ctx, this.TAG, this.shouldCallFileStatusCheck.name, patternOrPartitionObj.atCorpusPath, cdmLogCode.ErrMissingIncrementalPartitionTrait, 
-                isPattern ? CdmDataPartitionPatternDefinition.name : CdmDataPartitionDefinition.name, patternOrPartitionObj.fetchObjectDefinitionName(), 
+        if (traitRef === undefined) {
+            Logger.error(patternOrPartitionObj.ctx, this.TAG, this.shouldCallFileStatusCheck.name, patternOrPartitionObj.atCorpusPath, cdmLogCode.ErrMissingIncrementalPartitionTrait,
+                isPattern ? CdmDataPartitionPatternDefinition.name : CdmDataPartitionDefinition.name, patternOrPartitionObj.fetchObjectDefinitionName(),
                 constants.INCREMENTAL_TRAIT_NAME, isPattern ? 'incrementalPartitionPatterns' : 'incrementalPartitions');
         } else {
             // None means update by default
@@ -307,7 +312,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             var traitRefIncrementalTypeValue = traitRef.arguments?.fetchValue('type');
             if (traitRefIncrementalTypeValue === undefined) {
                 update = false;
-                Logger.error(patternOrPartitionObj.ctx, this.TAG, this.shouldCallFileStatusCheck.name, patternOrPartitionObj.atCorpusPath, cdmLogCode.ErrTraitArgumentMissing, 
+                Logger.error(patternOrPartitionObj.ctx, this.TAG, this.shouldCallFileStatusCheck.name, patternOrPartitionObj.atCorpusPath, cdmLogCode.ErrTraitArgumentMissing,
                     'type', constants.INCREMENTAL_TRAIT_NAME, patternOrPartitionObj.fetchObjectDefinitionName());
             } else if (typeof traitRefIncrementalTypeValue !== 'string') {
                 update = false;
@@ -320,7 +325,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
                 } else {
                     update = false;
                     Logger.error(patternOrPartitionObj.ctx, this.TAG, this.shouldCallFileStatusCheck.name, patternOrPartitionObj.atCorpusPath, cdmLogCode.ErrEnumConversionFailure,
-                        traitRefIncrementalTypeValue, 'cdmIncrementalPartitionType', 
+                        traitRefIncrementalTypeValue, 'cdmIncrementalPartitionType',
                         `'parameter 'type' of trait '${constants.INCREMENTAL_TRAIT_NAME}' from '${patternOrPartitionObj.fetchObjectDefinitionName()}'`);
                 }
             }
@@ -373,21 +378,21 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         } else {
             if (!StringUtils.isNullOrWhiteSpace(incrementPartitionPatternName)) {
                 (newPartition.exhibitsTraits.item(constants.INCREMENTAL_TRAIT_NAME) as CdmTraitReference).arguments.push(constants.INCREMENTAL_PATTERN_PARAMETER_NAME, incrementPartitionPatternName);
-            } 
+            }
             this.incrementalPartitions.push(newPartition)
         }
 
     }
 
-    public setLastFileModifiedTime(value : Date): void {
+    public setLastFileModifiedTime(value: Date): void {
         this.setLastFileModifiedOldTime(this.lastFileModifiedTime);
         this.lastFileModifiedTime = value;
     }
-    
+
     public getlastFileModifiedTime(): Date {
         return this.lastFileModifiedTime;
     }
-    
+
     private setLastFileModifiedOldTime(value: Date): void {
         this.lastFileModifiedOldTime = value;
     }
@@ -397,6 +402,6 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     }
 
     public resetLastFileModifiedOldTime(): void {
-       this.setLastFileModifiedOldTime(null);
+        this.setLastFileModifiedOldTime(null);
     }
 }

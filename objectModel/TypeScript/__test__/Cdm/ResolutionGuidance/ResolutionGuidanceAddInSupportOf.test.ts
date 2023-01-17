@@ -10,7 +10,7 @@ describe('Cdm.ResolutionGuidanceAddInSupportOf', () => {
     /**
      * Resolution Guidance Test - AddInSupportOf
      */
-    it('TestAddInSupportOf', async (done) => {
+    it('TestAddInSupportOf', async () => {
         const testName: string = 'TestAddInSupportOf';
         {
             const entityName: string = 'Product';
@@ -56,13 +56,12 @@ describe('Cdm.ResolutionGuidanceAddInSupportOf', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - AddInSupportOf with IsCorrelatedWith
      */
-    it('TestAddInSupportOfWithIsCorrelatedWith', async (done) => {
+    it('TestAddInSupportOfWithIsCorrelatedWith', async () => {
         const testName: string = 'TestAddInSupportOfWithIsCorrelatedWith';
         {
             const entityName: string = 'Product';
@@ -108,6 +107,5 @@ describe('Cdm.ResolutionGuidanceAddInSupportOf', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 });

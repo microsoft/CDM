@@ -27,6 +27,7 @@ import {
     CdmTraitReference,
     CdmTraitReferenceBase,
     copyOptions,
+    fileStatusCheckOptions,
     importsLoadStrategy,
     Logger,
     partitionFileStatusCheckType,
@@ -111,7 +112,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             if (this.imports.visitArray(pathFrom, preChildren, postChildren)) {
                 return true;
             }
-        }        
+        }
         if (this.definitions) {
             if (this.definitions.visitArray(pathFrom, preChildren, postChildren)) {
                 return true;
@@ -287,7 +288,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
                 // make sure the new folder exists
                 const folder: CdmFolderDefinition = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newDocumentPath);
-                if(!isFolderDefinition(folder)) {
+                if (!isFolderDefinition(folder)) {
                     Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, newDocumentPath, "CdmFolderDefinition");
                     return undefined;
                 } else if (folder === undefined) {
@@ -337,7 +338,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.populateManifestRelationshipsAsync.name), async _ => {
             this.relationships.clear();
             const relCache: Set<string> = new Set<string>();
-            
+
             if (this.entities !== undefined) {
                 // Indexes on this manifest before calling `AddElevatedTraitsAndRelationships`
                 // and calls `RefreshAsync` after adding all imports and traits to relationships
@@ -448,7 +449,11 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     /**
      * @inheritdoc
      */
-    public async fileStatusCheckAsync(partitionCheckType: partitionFileStatusCheckType = partitionFileStatusCheckType.Full, incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None): Promise<void> {
+    public async fileStatusCheckAsync(
+        partitionCheckType: partitionFileStatusCheckType = partitionFileStatusCheckType.Full,
+        incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None,
+        fileStatusCheckOptions: fileStatusCheckOptions = undefined
+    ): Promise<void> {
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
             let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
             let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
@@ -471,7 +476,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                     if (isReferencedEntityDeclarationDefinition(entity)) {
                         await entity.fileStatusCheckAsync();
                     } else if (isLocalEntityDeclarationDefinition(entity)) {
-                        await entity.fileStatusCheckAsync(partitionCheckType, incrementalType);
+                        await entity.fileStatusCheckAsync(partitionCheckType, incrementalType, fileStatusCheckOptions);
                     }
                 }
 
@@ -644,7 +649,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
         if (this.subManifests !== undefined) {
             for (const subDeclaration of this.subManifests) {
-                const subManifest: CdmManifestDefinition  = await this.fetchDocumentDefinition(subDeclaration.definition) as CdmManifestDefinition;
+                const subManifest: CdmManifestDefinition = await this.fetchDocumentDefinition(subDeclaration.definition) as CdmManifestDefinition;
                 if (!subManifest || !await this.saveDocumentIfDirty(subManifest, options)) {
                     return false;
                 }
@@ -738,7 +743,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 this.imports.insert(0, new CdmImport(this.ctx, relativePath, undefined));
                 // Fetches the actual file of the import and indexes it
                 var importDocument = await this.ctx.corpus.fetchObjectAsync<CdmDocumentDefinition>(absPath);
-                if(!isDocumentDefinition(importDocument)) {
+                if (!isDocumentDefinition(importDocument)) {
                     Logger.error(this.ctx, this._TAG, this.addElevatedTraitsAndRelationships.name, this.atCorpusPath, cdmLogCode.ErrInvalidCast, absPath, "CdmDocumentDefinition");
                     continue;
                 }

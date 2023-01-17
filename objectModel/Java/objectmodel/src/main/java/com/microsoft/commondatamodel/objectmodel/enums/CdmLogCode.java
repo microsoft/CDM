@@ -10,6 +10,7 @@ public enum CdmLogCode
 {
     None,
     ErrAdapterNotFound,
+    ErrCycleInObjectDefinition,
     ErrDocAdapterNotFound,
     ErrDocAlreadyExist,
     ErrDocEntityDocSavingFailure,
@@ -22,6 +23,7 @@ public enum CdmLogCode
     ErrDocWrtDocNotfound,
     ErrEntityCreationFailed,
     ErrEnumConversionFailure,
+    ErrFetchingFileMetadataNull,
     ErrIndexFailed,
     ErrInvalidCast,
     ErrInvalidPath,

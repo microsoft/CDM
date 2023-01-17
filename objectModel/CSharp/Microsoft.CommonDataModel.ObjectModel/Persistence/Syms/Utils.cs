@@ -840,15 +840,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// </summary>
         internal static async Task<SymsManifestContent> GetSymsModel(StorageAdapterBase adapter, string databaseResponse, string docPath)
         {
-            var database = JsonConvert.DeserializeObject<DatabaseEntity>(databaseResponse);
+            var database = JsonConvert.DeserializeObject<DatabaseEntity>(databaseResponse, PersistenceLayer.SerializerSettings);
             var entities = await adapter.ReadAsync($"/{database.Name}/{database.Name}.manifest.cdm.json/entitydefinition");
             var relationships = await adapter.ReadAsync($"{docPath}/relationships");
 
             return new SymsManifestContent
             {
                 Database = database,
-                Entities = JsonConvert.DeserializeObject<SymsTableResponse>(entities).Tables,
-                Relationships = JsonConvert.DeserializeObject<SymsRelationshipResponse>(relationships).Relationships,
+                Entities = JsonConvert.DeserializeObject<SymsTableResponse>(entities, PersistenceLayer.SerializerSettings).Tables,
+                Relationships = JsonConvert.DeserializeObject<SymsRelationshipResponse>(relationships, PersistenceLayer.SerializerSettings).Relationships,
                 InitialSync = false,
                 RemovedEntities = null,
                 RemovedRelationships = null

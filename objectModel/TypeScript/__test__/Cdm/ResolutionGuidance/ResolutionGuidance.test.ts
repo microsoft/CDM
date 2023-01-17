@@ -19,7 +19,7 @@ describe('Cdm.ResolutionGuidance', () => {
     /**
      * Tests if a warning is logged if resolution guidance is used
      */
-     it('TestResolutionGuidanceDeprecation', async (done) => {
+     it('TestResolutionGuidanceDeprecation', async () => {
         var corpus = testHelper.getLocalCorpus(testsSubpath, 'TestResolutionGuidanceDeprecation');
 
         // Tests warning log when resolution guidance is used on a data typed attribute.
@@ -36,95 +36,84 @@ describe('Cdm.ResolutionGuidance', () => {
         entity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/ExtendsEntity.cdm.json/Entity');
         await entity.createResolvedEntityAsync('res-entity');
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnDeprecatedResolutionGuidance, true);
-
-        done();
     });
 
     /**
      * Resolution Guidance Test - Resolve entity by name
      */
-    it('TestByEntityName', async (done) => {
+    it('TestByEntityName', async () => {
         const testName: string = 'TestByEntityName';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - Resolve entity by primarykey
      */
-    it('TestByPrimaryKey', async (done) => {
+    it('TestByPrimaryKey', async () => {
         const testName: string = 'TestByPrimaryKey';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test- Empty ResolutionGuidance
      */
-    it('TestEmptyResolutionGuidance', async (done) => {
+    it('TestEmptyResolutionGuidance', async () => {
         const testName: string = 'TestEmptyResolutionGuidance';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - With RenameFormat property
      */
-    it('TestRenameFormat', async (done) => {
+    it('TestRenameFormat', async () => {
         const testName: string = 'TestRenameFormat';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - Empty EntityReference property
      */
-    it('TestEmptyEntityReference', async (done) => {
+    it('TestEmptyEntityReference', async () => {
         const testName: string = 'TestEmptyEntityReference';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - With AllowReferences = true
      */
-    it('TestAllowReferencesTrue', async (done) => {
+    it('TestAllowReferencesTrue', async () => {
         const testName: string = 'TestAllowReferencesTrue';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - With AlwaysIncludeForeignKey = true
      */
-    it('TestAlwaysIncludeForeignKeyTrue', async (done) => {
+    it('TestAlwaysIncludeForeignKeyTrue', async () => {
         const testName: string = 'TestAlwaysIncludeForeignKeyTrue';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - With ForeignKeyAttribute property
      */
-    it('TestForeignKeyAttribute', async (done) => {
+    it('TestForeignKeyAttribute', async () => {
         const testName: string = 'TestForeignKeyAttribute';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - With Cardinality = "one"
      */
-    it('TestCardinalityOne', async (done) => {
+    it('TestCardinalityOne', async () => {
         const testName: string = 'TestCardinalityOne';
         await runTest(testName, 'Sales');
-        done();
     });
 
     /**
      * Resolution Guidance Test - With SelectsSubAttribute - Take Names
      */
-    it('TestSelectsSubAttributeTakeNames', async (done) => {
+    it('TestSelectsSubAttributeTakeNames', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSelectsSubAttributeTakeNames');
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
         const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
@@ -138,13 +127,12 @@ describe('Cdm.ResolutionGuidance', () => {
             .toBe('SalesProductProductId');
         expect(att2.name)
             .toBe('SalesProductProductColor');
-        done();
     });
 
     /**
      * Resolution Guidance Test - With SelectsSubAttribute - Avoid Names
      */
-    it('TestSelectsSubAttributeAvoidNames', async (done) => {
+    it('TestSelectsSubAttributeAvoidNames', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSelectsSubAttributeAvoidNames');
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
         const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
@@ -157,14 +145,13 @@ describe('Cdm.ResolutionGuidance', () => {
             expect(att.name).not
                 .toBe('SalesProductProductColor');
         });
-        done();
     });
 
     /*
      * Resolution Guidance Test - With structured/normal imposed directives.
      * This test directly read imposed directives from json file instead of setting resOpt in code as runTest().
      */
-    it('TestImposedDirectives', async (done) => {
+    it('TestImposedDirectives', async () => {
         const testName: string = 'TestImposedDirectives';
         const testExpectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
         const testActualOutputPath: string = testHelper.getActualOutputFolderPath(testsSubpath, testName);
@@ -186,7 +173,6 @@ describe('Cdm.ResolutionGuidance', () => {
         resolvedEntity = await entity.createResolvedEntityAsync('Person_Resolved', undefined, actualOutputFolder);
         await resolvedEntity.inDocument.saveAsAsync('Person_Default_Resolved.cdm.json', true);
         validateOutput('Person_Default_Resolved.cdm.json', testExpectedOutputPath, testActualOutputPath);
-        done();
     });
 
     async function runTest(testName: string, sourceEntityName: string): Promise<void> {

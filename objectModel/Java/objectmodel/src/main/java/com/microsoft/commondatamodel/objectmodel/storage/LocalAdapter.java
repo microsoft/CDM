@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.microsoft.commondatamodel.objectmodel.utilities.CdmFileMetadata;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -212,6 +214,27 @@ public class LocalAdapter extends StorageAdapterBase {
 
       return allFiles;
     });
+  }
+
+  @Override
+  public CompletableFuture<HashMap<String, CdmFileMetadata>> fetchAllFilesMetadataAsync(final String folderCorpusPath) {
+    HashMap<String, CdmFileMetadata> fileMetadatas = new HashMap<String, CdmFileMetadata>();
+    List<String> fileNames = this.fetchAllFilesAsync(folderCorpusPath).join();
+
+    for (String fileName : fileNames) {
+      Path path = Paths.get(this.createAdapterPath(fileName));
+      if (Files.exists(path)) {
+        try {
+          fileMetadatas.put(fileName, new CdmFileMetadata(Files.size(path)));
+        } catch (IOException e) {
+        }
+      }
+      else {
+        fileMetadatas.put(fileName, null);
+      }
+    }
+
+    return CompletableFuture.completedFuture(fileMetadatas);
   }
 
   /**

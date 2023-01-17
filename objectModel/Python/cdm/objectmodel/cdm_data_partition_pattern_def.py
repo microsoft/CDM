@@ -13,6 +13,7 @@ from cdm.utilities import logger, ResolveOptions, StorageUtils, TraitToPropertyM
 from .cdm_file_status import CdmFileStatus
 from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
 from .cdm_object_def import CdmObjectDefinition
+from .cdm_trait_collection import CdmTraitCollection
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
@@ -92,7 +93,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
 
         return copy
 
-    async def file_status_check_async(self) -> None:
+    async def file_status_check_async(self, file_status_check_options = None) -> None:
         """Check the modified time for this object and any children."""
         with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
             namespace = None
@@ -116,15 +117,23 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                     logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ADAPTER_NOT_FOUND, self.in_document.name)
 
                 # get a list of all corpus_paths under the root.
-                file_info_list = await adapter.fetch_all_files_async(path_tuple[1])
+                file_info_list = await adapter.fetch_all_files_metadata_async(path_tuple[1])
             except Exception as e:
                 file_info_list = None
                 logger.warning(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path,
                                CdmLogCode.WARN_PARTITION_FILE_FETCH_FAILED, root_corpus, e)
 
-            if file_info_list is not None and namespace is not None:
+            # update modified times.
+            self.last_file_status_check_time = datetime.now(timezone.utc)
+
+            if file_info_list is None:
+                logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path,
+                CdmLogCode.ERR_FETCHING_FILE_METADATA_NULL, namespace)
+                return
+
+            if namespace is not None:
                 # remove root of the search from the beginning of all paths so anything in the root is not found by regex.
-                file_info_list = [(namespace + ':' + fi)[len(root_corpus):] for fi in file_info_list]
+                cleaned_file_list = {(namespace + ':' + k)[len(root_corpus):]: v for k,v in file_info_list.items()}
 
                 if isinstance(self.owner, CdmLocalEntityDeclarationDefinition):
                     local_ent_dec_def_owner = cast('CdmLocalEntityDeclarationDefinition', self.owner)
@@ -158,8 +167,8 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                 incremental_partition_location_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(incremental_partition.location, self.in_document)
                                 incremental_partition_path_hash_set.add(incremental_partition_location_full_path)
 
-                        for fi in file_info_list:
-                            m = reg.fullmatch(fi)
+                        for file_name,partition_metadata in cleaned_file_list.items():
+                            m = reg.fullmatch(file_name)
                             if m:
                                 # create a map of arguments out of capture groups.
                                 args = defaultdict(list)  # type: Dict[str, List[str]]
@@ -178,27 +187,33 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                         break
 
                                 # put the original but cleaned up root back onto the matched doc as the location stored in the partition.
-                                location_corpus_path = root_cleaned + fi
-                                full_path = root_corpus + fi
+                                location_corpus_path = root_cleaned + file_name
+                                full_path = root_corpus + file_name
                                 # Remove namespace from path
                                 path_tuple = StorageUtils.split_namespace_path(full_path)
                                 if not path_tuple:
                                     logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH)
                                     return
+                                
+                                exhibits_traits = self.exhibits_traits
+                                if file_status_check_options is not None and file_status_check_options['include_data_partition_size'] and partition_metadata is not None and partition_metadata['file_size_bytes'] is not None:
+                                    exhibits_traits = CdmTraitCollection(self.ctx, self)
+                                    for trait in self.exhibits_traits:
+                                        exhibits_traits.append(trait)
+                                    exhibits_traits.append('is.partition.size', [['value', partition_metadata['file_size_bytes']]])
+
                                 last_modified_time = await adapter.compute_last_modified_time_async(path_tuple[1])
 
                                 if self.is_incremental and full_path not in incremental_partition_path_hash_set:
                                     local_ent_dec_def_owner._create_partition_from_pattern(
-                                        location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time, True, self.name)
+                                        location_corpus_path, exhibits_traits, args, self.specialized_schema, last_modified_time, True, self.name)
                                     incremental_partition_path_hash_set.add(full_path)
 
                                 if not self.is_incremental and full_path not in data_partition_path_set:
                                     local_ent_dec_def_owner._create_partition_from_pattern(
-                                        location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
+                                        location_corpus_path, exhibits_traits, args, self.specialized_schema, last_modified_time)
                                     data_partition_path_set.add(full_path)
 
-                    # update modified times.
-            self.last_file_status_check_time = datetime.now(timezone.utc)
 
     def glob_pattern_to_regex(self, pattern: str) -> str:
         new_pattern = []
