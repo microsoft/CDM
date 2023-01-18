@@ -154,13 +154,13 @@ describe('Persistence.CdmFolder.Manifest', () => {
      * Test modified times for manifest and files beneath it
      * (loads and sets modified times correctly)
      */
-    it('TestLoadsAndSetsTimesCorrectly', async (done) => {
+    it('TestLoadsAndSetsTimesCorrectly', async () => {
         const timeBeforeLoad: Date = new Date();
 
         const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadsAndSetsTimesCorrectly');
         const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadsAndSetsTimesCorrectly');
         cdmCorpus.setEventCallback((level, msg) => {
-            done.fail(new Error('Unexpected log: ' + msg));
+            throw new Error('Unexpected log: ' + msg);
         }, cdmStatusLevel.warning)
         cdmCorpus.storage.mount('someNamespace', new LocalAdapter(inputPath));
         cdmCorpus.storage.unMount('cdm');
@@ -201,7 +201,6 @@ describe('Persistence.CdmFolder.Manifest', () => {
         const maxTime: Date = timeUtils.maxTime(entity.lastFileModifiedTime, subManifest.lastFileModifiedTime);
         expect(timeUtils.getFormattedDateString(cdmManifest.lastChildFileModifiedTime))
             .toBe(timeUtils.getFormattedDateString(maxTime));
-        done();
     });
 
     /**
@@ -327,37 +326,37 @@ describe('Persistence.CdmFolder.Manifest', () => {
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidPathFormat, true);
     });
 
-        /**
-         * Testpassing blank or empty values for manifest schema, name etc.
-         */
-        it('TestManifestWithBlankFields', () => {
-            const content: string = testHelper.getInputFileContent(
-                testsSubpath,
-                'testManifestWithBlankFields',
-                'blank.manifest.cdm.json'
-            );
-    
-            const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
-                new resolveContext(new CdmCorpusDefinition(), undefined), 'cdmTest', 'someNamespace', '/', JSON.parse(content));
-            expect(cdmManifest.getName())
-                .toBe('cdmTest');
-            expect(cdmManifest.schema)
-                .toBeUndefined();
-            expect(cdmManifest.documentVersion)
-                .toBeUndefined();
-            expect(cdmManifest.lastFileModifiedTime.toUTCString())
-                .toBe('Mon, 15 Sep 2008 23:53:23 GMT');
-            expect(cdmManifest.explanation)
-                .toBe('test cdm folder for cdm version 1.0+');
-            expect(cdmManifest.imports.length)
-                .toBe(1);
-            expect(cdmManifest.imports.allItems[0].corpusPath)
-                .toBe('/primitives.cdm.json');
-            expect(cdmManifest.entities.length)
-                .toBe(0);
-            expect(cdmManifest.exhibitsTraits.length)
-                .toBe(1);
-            expect(cdmManifest.subManifests.length)
-                .toBe(0);
-        });
+    /**
+     * Testpassing blank or empty values for manifest schema, name etc.
+     */
+    it('TestManifestWithBlankFields', () => {
+        const content: string = testHelper.getInputFileContent(
+            testsSubpath,
+            'testManifestWithBlankFields',
+            'blank.manifest.cdm.json'
+        );
+
+        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
+            new resolveContext(new CdmCorpusDefinition(), undefined), 'cdmTest', 'someNamespace', '/', JSON.parse(content));
+        expect(cdmManifest.getName())
+            .toBe('cdmTest');
+        expect(cdmManifest.schema)
+            .toBeUndefined();
+        expect(cdmManifest.documentVersion)
+            .toBeUndefined();
+        expect(cdmManifest.lastFileModifiedTime.toUTCString())
+            .toBe('Mon, 15 Sep 2008 23:53:23 GMT');
+        expect(cdmManifest.explanation)
+            .toBe('test cdm folder for cdm version 1.0+');
+        expect(cdmManifest.imports.length)
+            .toBe(1);
+        expect(cdmManifest.imports.allItems[0].corpusPath)
+            .toBe('/primitives.cdm.json');
+        expect(cdmManifest.entities.length)
+            .toBe(0);
+        expect(cdmManifest.exhibitsTraits.length)
+            .toBe(1);
+        expect(cdmManifest.subManifests.length)
+            .toBe(0);
+    });
 });

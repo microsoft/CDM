@@ -95,3 +95,22 @@ class ManifestResolution(unittest.TestCase):
 
         self.assertIsNone(res_manifest)
         TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_RESOLVE_MANIFEST_EXISTS, True, self)
+
+    @async_test
+    async def test_resolve_manifest_with_interdependent_polymorphic_source(self):
+        """
+        Test that manifest containing entities having dependency on each other for polymorphic sources resolves.
+        """
+        cdm_corpus = CdmCorpusDefinition()
+
+        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolve_manifest_with_interdependent_polymorphic_source')
+
+        manifest = await cdm_corpus.fetch_object_async('local:/Input.manifest.cdm.json')
+
+        resolved_manifest = await manifest.create_resolved_manifest_async('resolved', None)
+
+        self.assertEqual(2, len(resolved_manifest.entities))
+        self.assertEqual('resolved/group.cdm.json/group',
+                         resolved_manifest.entities[0].entity_path.lower())
+        self.assertEqual('resolved/groupmember.cdm.json/groupmember',
+                         resolved_manifest.entities[1].entity_path.lower())

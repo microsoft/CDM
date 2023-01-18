@@ -30,14 +30,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.DataTypeName;
         }
 
-        internal CdmDataTypeReference ExtendsDataTypeRef
-        {
-            get
-            {
-                return this.ExtendsDataType;
-            }
-        }
-
         /// <summary>
         /// Constructs a CdmDataTypeDefinition.
         /// </summary>
@@ -127,12 +119,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            return this.IsDerivedFromDef(resOpt, this.ExtendsDataTypeRef, this.GetName(), baseDef);
+            return this.IsDerivedFromDef(resOpt, this.ExtendsDataType, this.GetName(), baseDef);
         }
 
         internal override void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
-            this.ConstructResolvedTraitsDef(this.ExtendsDataTypeRef, rtsb, resOpt);
+            this.ConstructResolvedTraitsDef(this.ExtendsDataType, rtsb, resOpt);
             //rtsb.CleanUp();
         }
 

@@ -4,6 +4,7 @@
 export enum cdmLogCode {
     None,
     ErrAdapterNotFound,
+    ErrCycleInObjectDefinition,
     ErrDocAdapterNotFound,
     ErrDocAlreadyExist,
     ErrDocEntityDocSavingFailure,
@@ -16,6 +17,7 @@ export enum cdmLogCode {
     ErrDocWrtDocNotfound,
     ErrEntityCreationFailed,
     ErrEnumConversionFailure,
+    ErrFetchingFileMetadataNull,
     ErrIndexFailed,
     ErrInvalidCast,
     ErrInvalidPath,

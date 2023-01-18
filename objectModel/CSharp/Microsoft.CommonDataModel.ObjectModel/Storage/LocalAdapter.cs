@@ -158,6 +158,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             return await this._getAllFiles(folderCorpusPath);
         }
 
+        /// <inheritdoc />
+        public override async Task<IDictionary<string, CdmFileMetadata>> FetchAllFilesMetadataAsync(string folderCorpusPath)
+        {
+            IDictionary<string, CdmFileMetadata> fileMetadatas = new Dictionary<string, CdmFileMetadata>();
+            List<string> fileNames = await this.FetchAllFilesAsync(folderCorpusPath);
+
+            foreach (var fileName in fileNames)
+            {
+                string path = this.CreateAdapterPath(fileName);
+                FileInfo fi = new FileInfo(path);
+                if (fi.Exists)
+                {
+                    fileMetadatas.Add(fileName, new CdmFileMetadata { FileSizeBytes = fi.Length });
+                }
+            }
+
+            return fileMetadatas;
+        }
+
         /// <summary>
         /// Returns true if the directory exists from the given path, false otherwise
         /// </summary>

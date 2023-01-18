@@ -12,6 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Newtonsoft.Json.Serialization;
     using System;
     using System.Collections.Concurrent;
@@ -48,6 +49,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
                 Assert.Fail("Error should not be thrown when input json is invalid.");
             }
             Assert.IsNull(invalidManifest);
+        }
+
+        /// <summary>
+        /// Test that CDM does not modify gloabl JsonConvert settings
+        /// </summary>
+        [TestMethod]
+        public async Task TestDateTimeSerializerSettings()
+        {
+            // Create DefaultSettings that do not line up with CDM settings
+            Func<JsonSerializerSettings> defaultSettings = () => new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.DateTime,
+            };
+            JsonConvert.DefaultSettings = defaultSettings;
+
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestDateTimeSerializerSettings));
+
+            // fetch object to use custom serializer, but does not overwrite DefaultSettings
+            await corpus.FetchObjectAsync<CdmManifestDefinition>("empty.Manifest.cdm.json");
+
+            Assert.AreEqual(JsonConvert.DefaultSettings, defaultSettings);
         }
 
         /// <summary>
@@ -260,7 +282,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
         public async Task TestMissingPersistenceFormat()
         {
             var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrPersistClassMissing };
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMissingPersistenceFormat", expectedCodes:expectedLogCodes);
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMissingPersistenceFormat", expectedCodes: expectedLogCodes);
 
             CdmFolderDefinition folder = corpus.Storage.FetchRootFolder(corpus.Storage.DefaultNamespace);
 
@@ -329,7 +351,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             //var corpus = TestHelper.GetLocalCorpus(this.testsSubpath, nameof(this.TestSymsLoadSparkPartition));
             var corpus = new CdmCorpusDefinition();
             corpus.Storage.Unmount("remote");
-            
+
             var symsAdapter = SymsTestHelper.CreateAdapterWithClientId();
             corpus.Storage.Mount("syms", symsAdapter);
 
@@ -338,7 +360,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
 
             var tableName = "SparkPartitionTest";
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/default/{tableName}.manifest.cdm.json");
-            
+
             Assert.IsNotNull(manifest);
             Assert.AreEqual(1, manifest.Entities[0].DataPartitionPatterns.Count);
             Assert.AreEqual(0, manifest.Entities[0].DataPartitions.Count);

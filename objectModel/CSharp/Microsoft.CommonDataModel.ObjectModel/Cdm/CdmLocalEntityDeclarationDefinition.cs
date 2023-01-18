@@ -211,7 +211,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
         }
 
-        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None)
+        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null)
         {
             using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
             {
@@ -233,7 +233,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         else
                         {
-                            await pattern.FileStatusCheckAsync();
+                            await pattern.FileStatusCheckAsync(fileStatusCheckOptions);
                         }
                     }
 

@@ -95,7 +95,7 @@ export class projectionTestUtils {
     /**
      * Loads an entity, resolves it, and then validates the generated attribute contexts
      */
-    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string, 
+    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string,
         directives: string[], updateExpectedOutput: boolean = false): Promise<CdmEntityDefinition> {
         const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
 
@@ -192,7 +192,7 @@ export class projectionTestUtils {
             .toEqual(expectedAttrName);
         const trait: CdmTraitReference = attribute.appliedTraits.item('has.expansionInfo.list') as CdmTraitReference;
         expect(trait)
-            .not    
+            .not
             .toBeUndefined();
         expect(trait.arguments.fetchValue('expansionName'))
             .toEqual(expansionName);
@@ -209,7 +209,7 @@ export class projectionTestUtils {
      * @param attributesSize The expected size of the attributes collection
      * @internal
      */
-    public static validateAttributeGroup(attributes: CdmCollection<CdmAttributeItem>, attributeGroupName: string, attributesSize: number = 1, index: number = 0)  {
+    public static validateAttributeGroup(attributes: CdmCollection<CdmAttributeItem>, attributeGroupName: string, attributesSize: number = 1, index: number = 0) {
         expect(attributes.length)
             .toEqual(attributesSize);
         expect(attributes.allItems[index].objectType)
@@ -236,7 +236,7 @@ export class projectionTestUtils {
      */
     private static async validateAttributeContext(directives: string[], expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition, updateExpectedOutput: boolean = false): Promise<void> {
         if (!resolvedEntity.attributeContext) {
-            fail('ValidateAttributeContext called with not resolved entity.');
+            throw new Error('ValidateAttributeContext called with not resolved entity.');
         }
 
         const fileNamePrefix: string = `AttrCtx_${entityName}`;

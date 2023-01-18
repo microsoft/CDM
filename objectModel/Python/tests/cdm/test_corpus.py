@@ -39,6 +39,21 @@ class CorpusTests(unittest.TestCase):
         await corpus._compute_last_modified_time_async('local:/default.manifest.cdm.json')
 
     @async_test
+    async def test_cycle_in_data_type(self):
+        """Tests if the OM is able to load a data type with a cycle and log an error when that occurs."""
+
+        expectedLogCodes = { CdmLogCode.ERR_CYCLE_IN_OBJECT_DEFINITION, CdmLogCode.ERR_TRAIT_RESOLUTION_FAILURE }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_cycle_in_data_type', expected_codes=expectedLogCodes)
+
+        # Force the symbols to be resolved.
+        res_opt = ResolveOptions()
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
+
+        await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
+
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_CYCLE_IN_OBJECT_DEFINITION, True, self)
+
+    @async_test
     async def test_lazy_load_imports(self):
         """Tests the fetch_object_async function with the lazy imports load."""
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_imports_load_strategy')  # type: CdmCorpusDefinition

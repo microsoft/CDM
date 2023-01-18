@@ -7,7 +7,7 @@ import { URL } from 'url';
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse, TokenProvider } from '../Utilities/Network';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType } from '../internal';
+import { CdmFileMetadata, configObjectType } from '../internal';
 import { azureCloudEndpoint, AzureCloudEndpointConvertor } from '../Enums/azureCloudEndpoint';
 import { StringUtils } from '../Utilities/StringUtils';
 import { StorageAdapterException } from './StorageAdapterException';
@@ -117,7 +117,7 @@ export class ADLSAdapter extends NetworkAdapter {
                     }
                 } else {
                     this.tokenProvider = tenantOrSharedKeyorTokenProvider;
-              }
+                }
             }
         }
 
@@ -175,7 +175,6 @@ export class ADLSAdapter extends NetworkAdapter {
                 throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath + e);
             }
         }
-        
     }
 
     public canWrite(): boolean {
@@ -256,6 +255,11 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public async fetchAllFilesAsync(folderCorpusPath: string): Promise<string[]> {
+        const fileMetadatas = await this.fetchAllFilesMetadataAsync(folderCorpusPath);
+        return Array.from(fileMetadatas.keys());
+    }
+
+    public async fetchAllFilesMetadataAsync(folderCorpusPath: string): Promise<Map<string, CdmFileMetadata>> {
         if (folderCorpusPath === undefined || folderCorpusPath === null) {
             return undefined;
         }
@@ -268,7 +272,7 @@ export class ADLSAdapter extends NetworkAdapter {
         }
 
         let continuationToken: string = null;
-        const result: string[] = [];
+        const result: Map<string, CdmFileMetadata> = new Map<string, CdmFileMetadata>();
 
         do {
             let request: CdmHttpRequest;
@@ -297,7 +301,7 @@ export class ADLSAdapter extends NetworkAdapter {
                             name.substring(this.unescapedRootSubPath.length + 1) : name;
 
                         const path: string = this.formatCorpusPath(nameWithoutSubPath);
-                        result.push(path);
+                        result.set(path, { fileSizeBytes: Number(jObject.contentLength) });
 
                         if (jObject.lastModified && this.isCacheEnabled()) {
                             this.fileModifiedTimeCache.set(path, new Date(jObject.lastModified));
@@ -526,7 +530,7 @@ export class ADLSAdapter extends NetworkAdapter {
             try {
                 await super.executeRequest(await this.buildRequest(url, 'DELETE'));
                 return; // Return on delete success. Throw exception even if delete succeeds since file write operation failed.
-            } catch (e) {}
+            } catch (e) { }
         }
 
         throw new StorageAdapterException("Empty file was created but could not write ADLS content at path: " + corpusPath + innerException);
@@ -662,7 +666,7 @@ export class ADLSAdapter extends NetworkAdapter {
             const url = new URL(hostname);
             if (url.protocol === 'https:') {
                 return hostname.substring('https://'.length);
-            } 
+            }
         } catch (error) {
             throw new URIError('Please provide a valid hostname.');
         }

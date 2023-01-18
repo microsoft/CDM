@@ -69,10 +69,10 @@ describe('Network/MockCdmHttpClientTest', () => {
 
         try {
             await client.SendAsync(httpRequest, callback);
-            fail('This test case should\'ve failed and throw an exception due too many retries.');
+            throw new Error('This test case should\'ve failed and throw an exception due too many retries.');
         } catch (err) {
             expect(err)
-            .toBeInstanceOf(CdmNumberOfRetriesExceededException);
+                .toBeInstanceOf(CdmNumberOfRetriesExceededException);
         }
     });
 
@@ -90,10 +90,10 @@ describe('Network/MockCdmHttpClientTest', () => {
 
         try {
             await client.SendAsync(httpRequest, callback);
-            fail('This test case should\'ve failed and throw an exception due timeout.');
+            throw new Error('This test case should\'ve failed and throw an exception due timeout.');
         } catch (err) {
             expect(err)
-            .toBeInstanceOf(CdmTimedOutException);
+                .toBeInstanceOf(CdmTimedOutException);
         }
     });
 
@@ -111,7 +111,7 @@ describe('Network/MockCdmHttpClientTest', () => {
 
         try {
             await client.SendAsync(httpRequest, callback);
-            fail('This test case should\'ve failed and throw an exception due timeout.');
+            throw new Error('This test case should\'ve failed and throw an exception due timeout.');
         } catch (err) {
             expect(err)
                 .toBe('Maximum timeout exceeded.');

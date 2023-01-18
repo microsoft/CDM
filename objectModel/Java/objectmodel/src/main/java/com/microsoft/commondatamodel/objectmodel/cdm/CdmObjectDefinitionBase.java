@@ -3,13 +3,15 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements CdmObjectDefinition {
-
+  private static final String TAG = CdmObjectDefinitionBase.class.getSimpleName();
   private String explanation;
   private CdmTraitCollection exhibitsTraits;
 
@@ -103,6 +105,13 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     if (baseCdmObjectReference != null) {
       def = baseCdmObjectReference.fetchObjectDefinition(resOpt);
     }
+
+    // detects a direct definition cycle, doesn't work for cases like A->B->A.
+    if (def == this) {
+      Logger.error(this.getCtx(), TAG, "isDerivedFromDef", this.getAtCorpusPath(), CdmLogCode.ErrCycleInObjectDefinition);
+      return true;
+    }
+
     if (def != null) {
       return def.isDerivedFrom(seek, resOpt);
     }

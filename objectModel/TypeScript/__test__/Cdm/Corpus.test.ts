@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { 
+import {
     AttributeResolutionDirectiveSet,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
@@ -24,60 +24,72 @@ describe('Cdm/CdmCorpusDefinition', () => {
      * Tests if a symbol imported with a moniker can be found as the last resource.
      * When resolving symbolEntity with respect to wrtEntity, the symbol fromEntity should be found correctly.
      */
-    it('TestResolveSymbolReference', async (done) => {
+    it('TestResolveSymbolReference', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolveSymbolReference');
         corpus.setEventCallback((level, msg) => {
-            done.fail(new Error(msg));
+            throw new Error(msg);
         }, cdmStatusLevel.warning);
 
         const wrtEntity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/wrtEntity.cdm.json/wrtEntity');
         const resOpt = new resolveOptions(wrtEntity, new AttributeResolutionDirectiveSet());
         await wrtEntity.createResolvedEntityAsync('NewEntity', resOpt);
-        done();
     });
 
     /**
      * Tests if ComputeLastModifiedTimeAsync doesn't log errors related to reference validation.
      */
-    it('testComputeLastModifiedTimeAsync', async (done) => {
+    it('testComputeLastModifiedTimeAsync', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestComputeLastModifiedTimeAsync');
 
         corpus.setEventCallback((level, msg) => {
-            done.fail(new Error(msg));
+            throw new Error(msg);
         }, cdmStatusLevel.error);
 
         await corpus.computeLastModifiedTimeAsync('local:/default.manifest.cdm.json');
-        done();
+    });
+
+    /**
+     * Tests if the OM is able to load a data type with a cycle and log an error when that occurs.
+     */
+    it('testCycleInDataType', async () => {
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrCycleInObjectDefinition, cdmLogCode.ErrResolutionFailure]);
+        const corpus = testHelper.getLocalCorpus(testsSubpath, "TestCycleInDataType", undefined, undefined, expectedLogCodes);
+
+        // Force the symbols to be resolved.
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
+
+        await corpus.fetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", undefined, resOpt);
+
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrCycleInObjectDefinition, true);
     });
 
     /**
      * Tests the FetchObjectAsync function with the lazy imports load.
      */
-    it('TestLazyLoadImports', async (done) => {
+    it('TestLazyLoadImports', async () => {
         const corpus = testHelper.getLocalCorpus(testsSubpath, 'TestImportsLoadStrategy');
         corpus.setEventCallback((level, msg) => {
             // when the imports are not loaded, there should be no reference validation.
             // no error should be logged.
-            done.fail(new Error(msg));
+            throw new Error(msg);
         }, cdmStatusLevel.warning);
 
         // load with deferred imports.
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.lazyLoad;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
-
-        done();
     });
 
     /**
      * Tests if a document that was fetched with lazy load and imported by another document is property indexed when needed.
      */
-    it('testLazyLoadCreateResolvedEntity', async (done) => {
+    it('testLazyLoadCreateResolvedEntity', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLazyLoadCreateResolvedEntity');
         corpus.setEventCallback((level, message) => {
             // when the imports are loaded, there should be no reference validation.
             // no error should be logged.
-            done.fail(new Error(message));
+            throw new Error(message);
         }, cdmStatusLevel.warning);
 
         // load with deferred imports.
@@ -106,20 +118,19 @@ describe('Cdm/CdmCorpusDefinition', () => {
         expect(resEntA.inDocument.importPriorities)
             .not
             .toBeUndefined();
-        done();
     });
-    
+
     /**
      * Tests the FetchObjectAsync function with the imports load strategy set to load.
      */
-    it('TestLoadImports', async (done) => {
+    it('TestLoadImports', async () => {
         let errorCount = 0;
         let corpus = testHelper.getLocalCorpus(testsSubpath, 'TestImportsLoadStrategy');
         corpus.setEventCallback((level, msg) => {
             if (msg.indexOf('Unable to resolve the reference') !== -1) {
                 errorCount++;
             } else {
-                done.fail(new Error(msg));
+                throw new Error(msg);
             }
         }, cdmStatusLevel.error);
 
@@ -127,7 +138,7 @@ describe('Cdm/CdmCorpusDefinition', () => {
         let resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
-        expect(errorCount) 
+        expect(errorCount)
             .toEqual(1);
 
         errorCount = 0;
@@ -136,7 +147,7 @@ describe('Cdm/CdmCorpusDefinition', () => {
             if (level === cdmStatusLevel.warning && msg.indexOf('Unable to resolve the reference') !== -1) {
                 errorCount++;
             } else {
-                done.fail(new Error(msg));
+                throw new Error(msg);
             }
         }, cdmStatusLevel.warning);
 
@@ -145,38 +156,34 @@ describe('Cdm/CdmCorpusDefinition', () => {
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
         resOpt.shallowValidation = true;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
-        expect(errorCount) 
+        expect(errorCount)
             .toEqual(1);
-
-        done();
     });
 
     /**
      * Tests if a symbol imported with a moniker can be found as the last resource.
      * When resolving entityReference from wrtConstEntity, constEntity should be found and resolved.
      */
-    it('TestResolveConstSymbolReference', async (done) => {
+    it('TestResolveConstSymbolReference', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolveConstSymbolReference');
         corpus.setEventCallback((level, msg) => {
-            done.fail(new Error(msg));
+            throw new Error(msg);
         }, cdmStatusLevel.warning);
 
         const wrtEntity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/wrtConstEntity.cdm.json/wrtConstEntity');
         const resOpt = new resolveOptions(wrtEntity, new AttributeResolutionDirectiveSet());
         await wrtEntity.createResolvedEntityAsync('NewEntity', resOpt);
-        done();
     });
 
     /**
      * Tests that errors when trying to cast objects after fetching is handled correctly.
      */
-    it('TestIncorrectCastOnFetch', async (done) => {
+    it('TestIncorrectCastOnFetch', async () => {
         const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrInvalidCast]);
         const corpus = testHelper.getLocalCorpus(testsSubpath, 'TestIncorrectCastOnFetch', undefined, false, expectedLogCodes);
         const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
         // this function will fetch the entity inside it
         await corpus.calculateEntityGraphAsync(manifest);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrInvalidCast, true);
-        done();
     });
 });

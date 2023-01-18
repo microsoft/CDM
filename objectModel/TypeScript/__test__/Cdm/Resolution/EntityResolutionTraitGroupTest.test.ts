@@ -30,9 +30,9 @@ describe('Cdm/Resolution/EntityResolutionTraitGroupTest', () => {
     it('TestTraitsFromTraitGroup', async () => {
         const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolvedTraitGroup');
 
-        cdmCorpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => { 
-            if (message.indexOf('Resolution guidance is being deprecated in favor of Projections.') === -1){
-                fail(`Received ${statusLevel} message: ${message}`);
+        cdmCorpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
+            if (message.indexOf('Resolution guidance is being deprecated in favor of Projections.') === -1) {
+                throw new Error(`Received ${statusLevel} message: ${message}`);
             }
         }, cdmStatusLevel.warning);
 

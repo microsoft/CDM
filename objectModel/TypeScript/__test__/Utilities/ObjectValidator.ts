@@ -15,7 +15,7 @@ import {
  */
 export class ObjectValidator {
 
-    public static validateAttributeContext(expected: AttributeContextExpectedValue, actual: CdmAttributeContext) : void {
+    public static validateAttributeContext(expected: AttributeContextExpectedValue, actual: CdmAttributeContext): void {
         if (!expected || !actual) {
             expect(expected)
                 .toBeFalsy();
@@ -63,7 +63,7 @@ export class ObjectValidator {
         }
     }
 
-    public static validateAttributesCollection(expected: AttributeExpectedValue[], actual: CdmCollection<CdmAttributeItem>) : void {
+    public static validateAttributesCollection(expected: AttributeExpectedValue[], actual: CdmCollection<CdmAttributeItem>): void {
         expect(actual.length)
             .toEqual(expected.length);
         for (let i: number = 0; i < actual.allItems.length; i++) {
@@ -79,7 +79,7 @@ export class ObjectValidator {
         }
     }
 
-    public static validateTypeAttributeDefinition(expected: AttributeExpectedValue, actual: CdmTypeAttributeDefinition) : void {
+    public static validateTypeAttributeDefinition(expected: AttributeExpectedValue, actual: CdmTypeAttributeDefinition): void {
         expect(cdmDataFormat[actual.dataFormat].toLowerCase())
             .toEqual(expected.dataFormat.toLowerCase());
         expect(actual.dataType)
@@ -114,7 +114,7 @@ export class ObjectValidator {
         }
     }
 
-    public static validateAttributeGroupRef(expected: AttributeExpectedValue, actual: CdmAttributeGroupReference) : void {
+    public static validateAttributeGroupRef(expected: AttributeExpectedValue, actual: CdmAttributeGroupReference): void {
         if (expected.attributeGroupName !== null || expected.members !== null) {
             if (actual.explicitReference) {
                 const actualObj: CdmAttributeGroupDefinition = actual.explicitReference as CdmAttributeGroupDefinition;

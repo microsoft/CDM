@@ -31,8 +31,7 @@ describe('Samples.LogicalManipulationUsingProjections', () => {
 
     const sampleIt: jest.It = process.env['SAMPLE_RUNTESTS'] === '1' ? it : it.skip;
 
-    sampleIt('TestLogicalManipulationUsingProjections', async (done) => {
-        jest.setTimeout(100000);
+    sampleIt('TestLogicalManipulationUsingProjections', async () => {
         testHelper.deleteFilesFromActualOutput(testHelper.getActualOutputFolderPath(testsSubpath, testName));
 
         const corpus: CdmCorpusDefinition = setupCdmCorpus();
@@ -40,9 +39,7 @@ describe('Samples.LogicalManipulationUsingProjections', () => {
         testHelper.assertFolderFilesEquality(
             testHelper.getExpectedOutputFolderPath(testsSubpath, testName), 
             testHelper.getActualOutputFolderPath(testsSubpath, testName), true);
-        
-        done();
-    });
+    }, 100000);
 
     function setupCdmCorpus(): CdmCorpusDefinition {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();

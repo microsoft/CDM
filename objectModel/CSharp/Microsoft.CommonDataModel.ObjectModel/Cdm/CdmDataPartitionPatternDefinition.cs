@@ -181,7 +181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public async Task FileStatusCheckAsync()
+        public async Task FileStatusCheckAsync(FileStatusCheckOptions fileStatusCheckOptions)
         {
             using (Logger.EnterScope(nameof(CdmDataPartitionPatternDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
@@ -196,7 +196,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 string rootCorpus = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(rootCleaned, this.InDocument);
 
-                List<string> fileInfoList = null;
+                IDictionary<string, CdmFileMetadata> fileInfoList = null;
                 try
                 {
                     // Remove namespace from path
@@ -217,20 +217,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
 
                     // get a list of all corpusPaths under the root
-                    fileInfoList = await adapter.FetchAllFilesAsync(pathTuple.Item2);
+                    fileInfoList = await adapter.FetchAllFilesMetadataAsync(pathTuple.Item2);
                 }
                 catch (Exception e)
                 {
                     Logger.Warning(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
                 }
 
-                if (fileInfoList != null && nameSpace != null)
+                // update modified times
+                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+
+                if (fileInfoList == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrFetchingFileMetadataNull, nameSpace);
+                    return;
+                }
+
+                if (nameSpace != null)
                 {
                     // remove root of the search from the beginning of all paths so anything in the root is not found by regex
-                    for (int i = 0; i < fileInfoList.Count; i++)
+                    IDictionary<string, CdmFileMetadata> cleanedFileList = new Dictionary<string, CdmFileMetadata>();
+
+                    foreach (var entry in fileInfoList)
                     {
-                        fileInfoList[i] = $"{nameSpace}:{fileInfoList[i]}";
-                        fileInfoList[i] = fileInfoList[i].Slice(rootCorpus.Length);
+                        string newFileName = $"{nameSpace}:{entry.Key}";
+                        newFileName = newFileName.Slice(rootCorpus.Length);
+                        cleanedFileList.Add(newFileName, entry.Value);
                     }
 
                     if (this.Owner is CdmLocalEntityDeclarationDefinition localEntDecDefOwner)
@@ -285,10 +297,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 }
                             }
 
-                            foreach (var fi in fileInfoList)
+                            foreach (var fi in cleanedFileList)
                             {
-                                Match m = regexPattern.Match(fi);
-                                if (m.Success && m.Length > 1 && m.Value == fi)
+                                string fileName = fi.Key;
+                                CdmFileMetadata partitionMetadata = fi.Value;
+
+                                Match m = regexPattern.Match(fileName);
+                                if (m.Success && m.Length > 1 && m.Value == fileName)
                                 {
                                     // create a map of arguments out of capture groups
                                     Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
@@ -315,8 +330,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         }
                                     }
                                     // put the original but cleaned up root back onto the matched doc as the location stored in the partition
-                                    string locationCorpusPath = $"{rootCleaned}{fi}";
-                                    string fullPath = $"{rootCorpus}{fi}";
+                                    string locationCorpusPath = $"{rootCleaned}{fileName}";
+                                    string fullPath = $"{rootCorpus}{fileName}";
                                     // Remove namespace from path
                                     Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(fullPath);
                                     if (pathTuple == null)
@@ -325,17 +340,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         return;
                                     }
 
+                                    CdmTraitCollection exhibitsTraits = this.ExhibitsTraits;
+                                    if (fileStatusCheckOptions?.IncludeDataPartitionSize == true && partitionMetadata?.FileSizeBytes != null)
+                                    {
+                                        exhibitsTraits = new CdmTraitCollection(this.Ctx, this);
+                                        foreach (var trait in this.ExhibitsTraits)
+                                        {
+                                            exhibitsTraits.Add(trait);
+                                        }
+                                        exhibitsTraits.Add("is.partition.size", new List<Tuple<string, dynamic>> { new Tuple<string, dynamic>("value", partitionMetadata.FileSizeBytes) });
+                                    }
+
                                     try
                                     {
                                         DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
                                         if (this.IsIncremental && !incrementalPartitionPathHashSet.Contains(fullPath))
                                         {
-                                            localEntDecDefOwner.CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime, true, this.Name);
+                                            localEntDecDefOwner.CreateDataPartitionFromPattern(locationCorpusPath, exhibitsTraits, args, this.SpecializedSchema, lastModifiedTime, true, this.Name);
                                             incrementalPartitionPathHashSet.Add(fullPath);
                                         }
                                         else if (!this.IsIncremental && !dataPartitionPathHashSet.Contains(fullPath))
                                         {
-                                            localEntDecDefOwner.CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+                                            localEntDecDefOwner.CreateDataPartitionFromPattern(locationCorpusPath, exhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
                                             dataPartitionPathHashSet.Add(fullPath);
                                         }
                                     }
@@ -348,10 +374,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                     }
                 }
-
-                // update modified times
-                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
             }
+        }
+
+        /// <inheritdoc />
+        public async Task FileStatusCheckAsync()
+        {
+            await this.FileStatusCheckAsync(null);
         }
 
         /// <inheritdoc />

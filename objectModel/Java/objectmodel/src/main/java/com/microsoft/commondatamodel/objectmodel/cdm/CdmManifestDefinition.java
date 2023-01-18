@@ -464,7 +464,11 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     return fileStatusCheckAsync(partitionFileStatusCheckType, CdmIncrementalPartitionType.None);
   }
 
-  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType) {
+  public CompletableFuture<Void> fileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType) {
+    return fileStatusCheckAsync(partitionFileStatusCheckType, incrementalType, null);
+  }
+
+  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType, final FileStatusCheckOptions fileStatusCheckOptions) {
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
         StorageAdapterBase adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
@@ -494,7 +498,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             if (entity instanceof CdmReferencedEntityDeclarationDefinition) {
               entity.fileStatusCheckAsync().join();
             } else if (entity instanceof CdmLocalEntityDeclarationDefinition) {
-              ((CdmLocalEntityDeclarationDefinition)entity).fileStatusCheckAsync(partitionFileStatusCheckType, incrementalType).join();
+              ((CdmLocalEntityDeclarationDefinition)entity).fileStatusCheckAsync(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions).join();
             }
           }
 

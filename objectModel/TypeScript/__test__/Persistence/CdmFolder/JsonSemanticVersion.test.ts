@@ -17,7 +17,7 @@ describe('Persistence.CdmFolder.JsonSemanticVersionTest', () => {
     /**
      * Test loading a document with a semantic version bigger than the one supported.
      */
-    it('testLoadingUnsupportedVersion', async (done) => {
+    it('testLoadingUnsupportedVersion', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingUnsupportedVersion');
         let errorCount: number = 0;
 
@@ -29,7 +29,7 @@ describe('Persistence.CdmFolder.JsonSemanticVersionTest', () => {
         }, cdmStatusLevel.warning);
         await corpus.fetchObjectAsync('local:/resolvedDoc.cdm.json');
         if (errorCount !== 1) {
-            done.fail('Should have logged a warning.');
+            throw new Error('Should have logged a warning.');
         }
         errorCount = 0;
 
@@ -41,7 +41,7 @@ describe('Persistence.CdmFolder.JsonSemanticVersionTest', () => {
         }, cdmStatusLevel.error);
         await corpus.fetchObjectAsync('local:/logicalDoc.cdm.json');
         if (errorCount !== 1) {
-            done.fail('Should have logged an error.');
+            throw new Error('Should have logged an error.');
         }
         errorCount = 0;
 
@@ -53,15 +53,14 @@ describe('Persistence.CdmFolder.JsonSemanticVersionTest', () => {
         }, cdmStatusLevel.warning);
         await corpus.fetchObjectAsync('local:/missingDoc.cdm.json');
         if (errorCount !== 1) {
-            done.fail('Should have logged a warning for missing property.');
+            throw new Error('Should have logged a warning for missing property.');
         }
-        done();
     });
 
     /**
      * Test loading a document with a semantic version bigger than the one supported.
      */
-    it('testLoadingInvalidVersion', async (done) => {
+    it('testLoadingInvalidVersion', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingInvalidVersion');
         let errorCount: number = 0;
 
@@ -74,15 +73,14 @@ describe('Persistence.CdmFolder.JsonSemanticVersionTest', () => {
         // Test loading a version format "a.0.0".
         await corpus.fetchObjectAsync('local:/invalidVersionDoc.cdm.json');
         if (errorCount !== 1) {
-            done.fail('Should have logged a warning.');
+            throw new Error('Should have logged a warning.');
         }
         errorCount = 0;
 
         // Test loading a version format "1.0".
         await corpus.fetchObjectAsync('local:/invalidFormatDoc.cdm.json');
         if (errorCount !== 1) {
-            done.fail('Should have logged a warning.');
+            throw new Error('Should have logged a warning.');
         }
-        done();
     });
 });

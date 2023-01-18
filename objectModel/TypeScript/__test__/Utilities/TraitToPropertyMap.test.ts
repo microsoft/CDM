@@ -60,19 +60,19 @@ describe('Utilities.TraitToPropertyMapTests', () => {
     /**
      * Test getting primary key.
      */
-     it('TestFetchPrimaryKey', async () => {
+    it('TestFetchPrimaryKey', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, "TestFetchPrimaryKey");
         const doc: CdmDocumentDefinition = await corpus.fetchObjectAsync<CdmDocumentDefinition>("Account.cdm.json");
 
         if (doc == undefined) {
-            fail("Unable to load manifest account.cdm.json. Please inspect error log for additional details.");
+            throw new Error("Unable to load manifest account.cdm.json. Please inspect error log for additional details.");
         }
 
         const entity: CdmEntityDefinition = doc.definitions.allItems[0] as CdmEntityDefinition;
         try {
             const pk: string = entity.primaryKey;
         } catch (e) {
-            fail("Exception occur while reading primary key for entity account."  + e);
+            throw new Error("Exception occur while reading primary key for entity account." + e);
         }
 
     });

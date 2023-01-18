@@ -23,7 +23,7 @@ describe('Persistence.PersistenceLayerTest', () => {
     /**
      * Errors are not thrown when invalid json is loaded into the corpus
      */
-    it('TestInvalidJson', async (done) => {
+    it('TestInvalidJson', async () => {
         const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestInvalidJson');
 
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
@@ -42,7 +42,6 @@ describe('Persistence.PersistenceLayerTest', () => {
             .toBeFalsy();
         expect(invalidManifest)
             .toBeUndefined();
-        done();
     });
 
     /**
@@ -57,8 +56,7 @@ describe('Persistence.PersistenceLayerTest', () => {
 
         // Move manifest to output folder.
         const outputFolder = corpus.storage.fetchRootFolder("output");
-        for (const entityDec of manifest.entities)
-        {
+        for (const entityDec of manifest.entities) {
             var entity = await corpus.fetchObjectAsync<CdmEntityDefinition>(entityDec.entityPath, manifest);
             outputFolder.documents.push(entity.inDocument);
         }
@@ -84,7 +82,7 @@ describe('Persistence.PersistenceLayerTest', () => {
      * Test that a document is fetched and saved using the correct persistence class,
      * regardless of the case sensitivity of the file name/extension.
      */
-    it('TestFetchingAndSavingDocumentsWithCaseInsensitiveCheck', async (done) => {
+    it('TestFetchingAndSavingDocumentsWithCaseInsensitiveCheck', async () => {
         const testName: string = 'TestFetchingAndSavingDocumentsWithCaseInsensitiveCheck';
         const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, testName);
 
@@ -118,14 +116,12 @@ describe('Persistence.PersistenceLayerTest', () => {
         serializedManifest = allDocs.get(`/${newManifestFromModelJsonName}`);
         expectedOutputManifest = testHelper.getExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.name);
         testHelper.assertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
-
-        done();
     });
 
     /**
      * Test that saving a model.json that isn't named exactly as such fails to save.
      */
-    it('TestSavingInvalidModelJsonName', async (done) => {
+    it('TestSavingInvalidModelJsonName', async () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         corpus.setEventCallback(() => { }, cdmStatusLevel.error);
         corpus.storage.unMount('cdm');
@@ -144,14 +140,12 @@ describe('Persistence.PersistenceLayerTest', () => {
         // Will check the value returned from SaveAsAsync() when the problem is solved
         expect(allDocs.has(`/${newManifestFromModelJsonName}`))
             .toBeFalsy();
-
-        done();
     });
 
     /**
      * Test that loading a model.json that isn't named exactly as such fails to load.
      */
-    it('TestLoadingInvalidModelJsonName', async (done) => {
+    it('TestLoadingInvalidModelJsonName', async () => {
         const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingInvalidModelJsonName');
 
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
@@ -163,13 +157,12 @@ describe('Persistence.PersistenceLayerTest', () => {
         const invalidModelJson: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('test.model.json');
         expect(invalidModelJson)
             .toBeUndefined();
-        done();
     });
 
     /**
      * Testing that type attribute properties (ex. IsReadOnly, isPrimaryKey) are not persisted in model.json format.
      */
-    it('TestModelJsonTypeAttributePersistence', async (done) => {
+    it('TestModelJsonTypeAttributePersistence', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonTypeAttributePersistence');
         // we need to create a second adapter to the output folder to fool the OM into thinking it's different
         // this is because there is a bug currently that prevents us from saving and then loading a model.json
@@ -208,13 +201,12 @@ describe('Persistence.PersistenceLayerTest', () => {
         const typeAttribute: CdmTypeAttributeDefinition = newEnt.attributes.allItems[0] as CdmTypeAttributeDefinition;
         expect(typeAttribute.isReadOnly)
             .toBeTruthy();
-        done();
     });
 
     /**
      * Test that the persistence layer handles the case when the persistence format cannot be found.
      */
-    it('TestMissingPersistenceFormat', async (done) => {
+    it('TestMissingPersistenceFormat', async () => {
         const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrPersistClassMissing]);
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestMissingPersistenceFormat', undefined, false, expectedLogCodes);
 
@@ -226,13 +218,12 @@ describe('Persistence.PersistenceLayerTest', () => {
         const succeded: boolean = await manifest.saveAsAsync('manifest.unSupportedExtension');
         expect(succeded)
             .toBeFalsy();
-        done();
     });
 
     /**
      * Test that the persistence layer handles the case when the document is empty.
      */
-     it('TestLoadingEmptyJsonData', async (done) => {
+    it('TestLoadingEmptyJsonData', async () => {
         const testName: string = 'TestLoadingEmptyJsonData';
         const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrPersistFileReadFailure]);
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName, null, false, expectedLogCodes, false);
@@ -240,7 +231,5 @@ describe('Persistence.PersistenceLayerTest', () => {
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('empty.Manifest.cdm.json');
         expect(manifest).toBeUndefined();
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPersistFileReadFailure, true);
-
-        done();
     });
 });

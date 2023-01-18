@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Tests.Storage.TestAdapters;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
@@ -244,7 +245,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             Assert.AreEqual(CdmIncrementalPartitionType.Upsert.ToString(), traitRef0.Arguments.Item("type").Value.ToString());
             var traitRef1 = partitionEntity.IncrementalPartitionPatterns[1].ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
             Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), traitRef1.Arguments.Item("type").Value.ToString());
-            
+
             var timeBeforeLoad = DateTime.Now.AddSeconds(-1);
             await manifest.FileStatusCheckAsync(PartitionFileStatusCheckType.Incremental, CdmIncrementalPartitionType.Delete);
 
@@ -290,7 +291,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             foreach (CdmDataPartitionDefinition partition in partitionEntity.IncrementalPartitions)
             {
                 if (partition.LastFileStatusCheckTime > timeBeforeLoad)
-                { 
+                {
                     totalExpectedPartitionsFound++;
                     var traitRef = partition.ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
                     Assert.AreEqual(CdmIncrementalPartitionType.Delete.ToString(), traitRef.Arguments.Item("type").Value.ToString());
@@ -852,6 +853,71 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
 
             // This should not throw exception
             await manifest.FileStatusCheckAsync();
+        }
+
+        /// <summary>
+        /// Test FetchAllFilesMetadata includes partition size and is added as a trait in FileStatusCheckAsync
+        /// </summary>
+        [TestMethod]
+        public async Task TestFetchAllFilesMetadata()
+        {
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrFetchingFileMetadataNull };
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestFetchAllFilesMetadata), expectedCodes: expectedLogCodes);
+            var fileStatusCheckOptions = new FileStatusCheckOptions { IncludeDataPartitionSize = true };
+
+            // test local adapter
+            var localManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("manifest.manifest.cdm.json");
+            await localManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+
+            var localDataPartitionList = localManifest.Entities[0].DataPartitions;
+            Assert.AreEqual(localDataPartitionList.Count, 1);
+            var localTraitIndex = localDataPartitionList[0].ExhibitsTraits.IndexOf("is.partition.size");
+            Assert.AreNotEqual(localTraitIndex, -1);
+            var localTrait = localDataPartitionList[0].ExhibitsTraits[localTraitIndex] as CdmTraitReference;
+            Assert.AreEqual(localTrait.NamedReference, "is.partition.size");
+            Assert.AreEqual(localTrait.Arguments[0].Value, 2);
+
+            if (AdlsTestHelper.IsADLSEnvironmentEnabled())
+            {
+                // test ADLS adapter
+                corpus.Storage.Mount("adls", AdlsTestHelper.CreateAdapterWithSharedKey());
+                var adlsManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("adlsManifest.manifest.cdm.json");
+                await adlsManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+
+                var adlsDataPartitionList = adlsManifest.Entities[0].DataPartitions;
+                Assert.AreEqual(adlsDataPartitionList.Count, 1);
+                var adlsTraitIndex = adlsDataPartitionList[0].ExhibitsTraits.IndexOf("is.partition.size");
+                Assert.AreNotEqual(adlsTraitIndex, -1);
+                var adlsTrait = adlsDataPartitionList[0].ExhibitsTraits[adlsTraitIndex] as CdmTraitReference;
+                Assert.AreEqual(adlsTrait.NamedReference, "is.partition.size");
+                Assert.AreEqual(adlsTrait.Arguments[0].Value, 1);
+            }
+
+            var testLocalAdapter = (LocalAdapter)corpus.Storage.NamespaceAdapters[corpus.Storage.DefaultNamespace];
+
+            // check that there are no errors when FetchAllFilesAsync is not overridden, uses method from StorageAdapterBase
+            corpus.Storage.Mount("noOverride", new NoOverrideAdapter(testLocalAdapter));
+            var noOverrideManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("noOverride:/manifest.manifest.cdm.json");
+            await noOverrideManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+
+            var noOverridePartitionList = noOverrideManifest.Entities[0].DataPartitions;
+            Assert.AreEqual(noOverridePartitionList.Count, 0);
+
+            // check that there are no errors when FetchAllFilesMetadataAsync is not overridden
+            corpus.Storage.Mount("overrideFetchAll", new OverrideFetchAllFilesAdapter(testLocalAdapter));
+            var overrideFetchAllManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("overrideFetchAll:/manifest.manifest.cdm.json");
+            await overrideFetchAllManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+
+            var overrideFetchDataPartitionList = overrideFetchAllManifest.Entities[0].DataPartitions;
+            Assert.AreEqual(overrideFetchDataPartitionList.Count, 1);
+            var overrideFetchTraitIndex = overrideFetchDataPartitionList[0].ExhibitsTraits.IndexOf("is.partition.size");
+            Assert.AreEqual(overrideFetchTraitIndex , -1);
+            Assert.AreEqual(overrideFetchDataPartitionList[0].ExhibitsTraits.Count, 1);
+
+            // check that error is correctly logged when FetchAllFilesMetadata is misconfigured and returns null
+            corpus.Storage.Mount("fetchNull", new FetchAllMetadataNullAdapter(testLocalAdapter));
+            var fetchNullManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("fetchNull:/manifest.manifest.cdm.json");
+            await fetchNullManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
         }
     }
 }

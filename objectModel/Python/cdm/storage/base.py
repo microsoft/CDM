@@ -2,8 +2,9 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import datetime
+from typing import Dict, List, Optional
 from .cache_context import StorageAdapterCacheContext
-from typing import List, Optional
+from cdm.utilities.cdm_file_metadata import CdmFileMetadata
 
 
 class StorageAdapterBase:
@@ -15,7 +16,7 @@ class StorageAdapterBase:
     def __init__(self):
         self.location_hint = None  # type: Optional[str]
         self._ctx = None # type: CdmCorpusContext 
-    
+
         # --- internal ---
         self._active_cache_context = set() # type: Set[CacheContext] 
 
@@ -64,10 +65,16 @@ class StorageAdapterBase:
         return datetime.datetime.now()
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
-        """Return list of corpus paths to all files and folders under the specified corpus path to
+        """Deprecated: Deprecated in favor of fetch_all_files_metadata_async. Return list of corpus paths to all files and folders under the specified corpus path to
         a folder.
         """
         return None
+
+    async def fetch_all_files_metadata_async(self, folder_corpus_path: str) -> Dict[str, CdmFileMetadata]:
+        """Returns a list of dictionaries containing metadata about data partitions"""
+        all_files = await self.fetch_all_files_async(folder_corpus_path)
+
+        return {file: None for file in all_files} if all_files else {}
 
     def clear_cache(self) -> None:
         """Clear the cache of files and folders (if storage adapter uses a cache)."""        
@@ -94,4 +101,3 @@ class StorageAdapterBase:
                 self.clear_cache()
         cache_context.dispose = dispose
         return cache_context
-

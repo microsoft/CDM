@@ -11,7 +11,7 @@ describe('Cdm.Storage.StorageConfig', () => {
      */
     const testsSubpath: string = 'Storage';
 
-    it('TestLoadingAndSavingConfig', async (done) => {
+    it('TestLoadingAndSavingConfig', async () => {
         const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingAndSavingConfig');
 
         const testOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestLoadingAndSavingConfig');
@@ -36,10 +36,9 @@ describe('Cdm.Storage.StorageConfig', () => {
             .readAsync('/config.json');
 
         testHelper.assertObjectContentEquality(JSON.parse(outputConfig), JSON.parse(resultConfig));
-        done();
     });
 
-    it('TestLoadingConfigAndTryingToFetchManifest', async (done) => {
+    it('TestLoadingConfigAndTryingToFetchManifest', async () => {
         const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingConfigAndTryingToFetchManifest');
 
         // Create a corpus to load the config.
@@ -62,10 +61,9 @@ describe('Cdm.Storage.StorageConfig', () => {
             .toBeDefined();
         expect(unrecognizedAdapters.length)
             .toBe(1);
-        done();
     });
 
-    it('TestSystemAndResourceAdapters', async (done) => {
+    it('TestSystemAndResourceAdapters', async () => {
         // Create a corpus to load the config.
         const outputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestSystemAndResourceAdapters');
         const cdmCorpus: CdmCorpusDefinition = getLocalCorpus(outputFolder);
@@ -85,7 +83,6 @@ describe('Cdm.Storage.StorageConfig', () => {
             .readAsync('/config.json');
 
         testHelper.assertObjectContentEquality(JSON.parse(outputConfig), JSON.parse(resultConfig));
-        done();
     });
 });
 

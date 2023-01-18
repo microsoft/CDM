@@ -111,5 +111,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             Assert.IsNull(resManifest);
             TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestExists, true);
         }
+
+        /// <summary>
+        /// Test that manifest containing entities having dependency on each other for polymorphic sources resolves.
+        /// </summary>
+        [TestMethod]
+        public async Task TestResolveManifestWithInterdependentPolymorphicSource()
+        {
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestResolveManifestWithInterdependentPolymorphicSource));
+
+            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/Input.manifest.cdm.json");
+            var resolvedManifest = await manifest.CreateResolvedManifestAsync("resolved", null);
+
+            Assert.AreEqual(2, resolvedManifest.Entities.Count);
+            Assert.AreEqual("resolved/group.cdm.json/group", resolvedManifest.Entities[0].EntityPath.ToLowerInvariant());
+            Assert.AreEqual("resolved/groupmember.cdm.json/groupmember", resolvedManifest.Entities[1].EntityPath.ToLowerInvariant());
+        }
     }
 }

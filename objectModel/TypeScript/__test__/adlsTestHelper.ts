@@ -67,5 +67,9 @@ export const adlsTestHelper = {
         }
 
         return `${first}/${second}`;
+    },
+
+    isAdlsEnvironmentEnabled(): boolean {
+        return process.env['ADLS_RUNTESTS'] === '1';
     }
 };

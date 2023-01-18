@@ -97,7 +97,7 @@ const adlsTest = {
             expect(manifest.entities.allItems[0].dataPartitions.allItems[1].location)
                 .toBe('TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv');
         } catch (ex) {
-            fail(ex);
+            throw ex;
         }
     }
 };
@@ -106,7 +106,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
 
     const testSubpath: string = 'Storage';
 
-    const adlsIt: jest.It = process.env['ADLS_RUNTESTS'] === '1' ? it : it.skip;
+    const adlsIt: jest.It = adlsTestHelper.isAdlsEnvironmentEnabled() ? it : it.skip;
 
     /**
      * The tests declared with "adlsIt" will run only if the ADLS environment variables are setup.
@@ -175,7 +175,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
     /**
      * Tests if the adapter handles requests correctly when the adls hostname contains https
      */
-    adlsIt('TestHttpsHostname', async (done) => {
+    adlsIt('TestHttpsHostname', async () => {
         const filename: string = `HTTPSWriteTest/${process.env['USERNAME']}_${process.env['COMPUTERNAME']}_TypeScript.txt`;
         const adlsAdapter: ADLSAdapter = adlsTestHelper.createAdapterWithSharedKey(undefined, false, true);
         try {
@@ -183,10 +183,9 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             await adlsAdapter.computeLastModifiedTimeAsync(filename);
         } catch (ex) {
             if (ex.code === 'ERR_INVALID_URL') {
-                fail(ex);
+                throw ex;
             }
         }
-        done();
     });
 
     /**
@@ -326,7 +325,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             adlsAdapter1.sharedKey = 'sharedKey';
             adlsAdapter1.tokenProvider = new FakeTokenProvider();
         } catch {
-            fail('adlsAdapter initialized without secret shouldn\'t throw exception when updating config.')
+            throw new Error('adlsAdapter initialized without secret shouldn\'t throw exception when updating config.')
         }
 
         try {
@@ -337,7 +336,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             adlsAdapter2.tokenProvider = new FakeTokenProvider();
             adlsAdapter2.updateConfig(JSON.stringify(config));
         } catch {
-            fail('adlsAdapter initialized without secret shouldn\'t throw exception when updating config.')
+            throw new Error('adlsAdapter initialized without secret shouldn\'t throw exception when updating config.')
         }
     });
 
@@ -439,7 +438,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         try {
             const host3: string = 'http://storageaccount.dfs.core.windows.net';
             const adlsAdapter3: MockADLSAdapter = new MockADLSAdapter(host3, 'root-without-slash', 'test');
-            fail('Expected Exception for using a http:// hostname.')
+            throw new Error('Expected Exception for using a http:// hostname.')
         } catch (ex) {
             expect(ex instanceof URIError)
                 .toBeTruthy();
@@ -448,7 +447,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         try {
             const host4: string = 'https://bar:baz::]/foo/';
             const adlsAdapter4: MockADLSAdapter = new MockADLSAdapter(host4, 'root-without-slash', 'test');
-            fail('Expected Exception for using an invalid hostname.')
+            throw new Error('Expected Exception for using an invalid hostname.')
         } catch (ex) {
             expect(ex instanceof URIError)
                 .toBeTruthy();
@@ -478,7 +477,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             const configSnakeCase: string = testHelper.getInputFileContent(testSubpath, 'TestLoadingAndSavingEndpointInConfig', 'config-SnakeCase.json');
             const corpusSnakeCase: CdmCorpusDefinition = new CdmCorpusDefinition();
             corpusSnakeCase.storage.mountFromConfig(configSnakeCase);
-            fail('Expected RuntimeException for config.json using endpoint value in snake case.')
+            throw new Error('Expected RuntimeException for config.json using endpoint value in snake case.')
         } catch (ex) {
             const message: string = "Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.";
             expect(ex.message)
@@ -497,15 +496,15 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         let writeContents: string;
         try {
             await adapter.writeAsync(filename, writeContents);
-        } catch (e) {}
-        
+        } catch (e) { }
+
         try {
             await adapter.readAsync(filename);
         } catch (e) {
             const message: string = "The specified path does not exist";
             expect(e.message)
                 .toContain(message);
-        } 
+        }
     });
 
     /**
@@ -517,15 +516,15 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         let writeContents: string = '';
         try {
             await adapter.writeAsync(filename, writeContents);
-        } catch (e) {}
-        
+        } catch (e) { }
+
         try {
             await adapter.readAsync(filename);
         } catch (e) {
             const message: string = "The specified path does not exist";
             expect(e.message)
                 .toContain(message);
-        } 
+        }
     });
 
 });

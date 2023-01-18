@@ -4,11 +4,13 @@
 import {
     CdmCorpusContext,
     CdmCorpusDefinition,
+    cdmLogCode,
     CdmObjectBase,
     CdmObjectDefinition,
     CdmObjectReference,
     CdmObjectReferenceBase,
     CdmTraitCollection,
+    Logger,
     ResolvedTraitSetBuilder,
     resolveOptions,
     VisitCallback
@@ -115,6 +117,13 @@ export abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
             }
 
             const def: CdmObjectDefinition = baseCdmObjectRef ? baseCdmObjectRef.fetchObjectDefinition(resOpt) : undefined;
+            
+            // detects a direct definition cycle, doesn't work for cases like A->B->A.
+            if (def === this) {
+                Logger.error(this.ctx, CdmObjectDefinitionBase.name, this.isDerivedFromDef.name, this.atCorpusPath, cdmLogCode.ErrCycleInObjectDefinition);
+                return true;
+            }
+
             if (def) {
                 return def.isDerivedFrom(seek, resOpt);
             }

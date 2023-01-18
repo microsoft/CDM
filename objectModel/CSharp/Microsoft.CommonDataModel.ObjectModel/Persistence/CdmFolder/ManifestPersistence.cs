@@ -181,7 +181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
         public static CdmManifestDefinition FromData(CdmCorpusContext ctx, string docName, string jsonData, CdmFolderDefinition folder)
         {
-            var dataObj = JsonConvert.DeserializeObject<ManifestContent>(jsonData);
+            var dataObj = JsonConvert.DeserializeObject<ManifestContent>(jsonData, PersistenceLayer.SerializerSettings);
             return FromObject(ctx, docName, folder.Namespace, folder.FolderPath, dataObj);
         }
 

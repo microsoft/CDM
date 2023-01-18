@@ -125,7 +125,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
     /**
      * Test if when loading a model.json file the foundations is imported correctly.
      */
-    it('TestManifestFoundationImport', async (done) => {
+    it('TestManifestFoundationImport', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestManifestFoundationImport');
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message1: string) => {
             if (statusLevel >= cdmStatusLevel.error) {
@@ -134,13 +134,12 @@ describe('Persistence.ModelJson.ModelJson', () => {
         });
         const cdmManifest: CdmManifestDefinition =
             await corpus.fetchObjectAsync<CdmManifestDefinition>(modelJsonExtension, corpus.storage.fetchRootFolder('local'));
-        done();
     });
 
     /**
      * Test if the imports location are relative to the root level file.
      */
-    it('TestImportsRelativePath', async (done) => {
+    it('TestImportsRelativePath', async () => {
         // the corpus path in the imports are relative to the document where it was defined.
         // when saving in model.json the documents are flattened to the manifest level
         // so it is necessary to recalculate the path to be relative to the manifest.
@@ -174,7 +173,6 @@ describe('Persistence.ModelJson.ModelJson', () => {
             .toBe(1);
         expect(imports[0].corpusPath)
             .toBe('EntityName/subfolder/EntityName.cdm.json');
-        done();
     });
 
     /**

@@ -38,8 +38,8 @@ export const testHelper = {
     /**
      * The log codes that are allowed to be logged without failing the test\
      */
-     ignoredLogCodes: new Set<string>([
-           cdmLogCode[cdmLogCode.WarnDeprecatedResolutionGuidance]
+    ignoredLogCodes: new Set<string>([
+        cdmLogCode[cdmLogCode.WarnDeprecatedResolutionGuidance]
     ]),
 
     getInputFolderPath: (testSubpath: string, testName: string, isLanguageSpecific?: boolean) =>
@@ -106,7 +106,7 @@ export const testHelper = {
         if (isArray(expected) && isArray(actual)) {
             let expectedList: any[] = expected as Array<any>;
             let actualList: any[] = actual as Array<any>;
-            
+
             while (expectedList.length !== 0 && actualList.length !== 0) {
                 const indexInExpected: number = expectedList.length - 1;
                 let found: boolean = false;
@@ -123,7 +123,7 @@ export const testHelper = {
                         // tslint:disable-next-line: no-console
                         console.log('Arrays do not match. Found list member in expected, but not in actual : ', expectedList[indexInExpected]);
                     }
-    
+
                     return false;
                 }
             }
@@ -156,7 +156,7 @@ export const testHelper = {
                     if (logError) {
                         // tslint:disable-next-line: no-console
                         console.log('object content not equal for key = ', key,
-                                    ' expected[key] = ', (expected as object)[key], ' actual[key] = ', (actual as object)[key]);
+                            ' expected[key] = ', (expected as object)[key], ' actual[key] = ', (actual as object)[key]);
                     }
 
                     return false;
@@ -168,7 +168,7 @@ export const testHelper = {
                     if (logError) {
                         // tslint:disable-next-line: no-console
                         console.log('object content not equal for key = ', key,
-                                    ' expected[key] = ', (expected as object)[key], ' actual[key] = ', (actual as object)[key]);
+                            ' expected[key] = ', (expected as object)[key], ' actual[key] = ', (actual as object)[key]);
                     }
 
                     return false;
@@ -199,7 +199,7 @@ export const testHelper = {
             const itemPath: string = path.join(actualOutputFolderPath, itemName);
             if (fs.lstatSync(itemPath).isFile()) {
                 fs.unlinkSync(itemPath);
-            } else if(fs.lstatSync(itemPath).isDirectory()) {
+            } else if (fs.lstatSync(itemPath).isDirectory()) {
                 testHelper.deleteFilesFromActualOutput(itemPath);
                 fs.rmdirSync(itemPath)
             }
@@ -233,11 +233,11 @@ export const testHelper = {
         }
         expectedPaths.forEach((expectedRelativePath: string) => {
             const expectedPath: string = path.join(expectedFolderPath, expectedRelativePath)
-            const isSpecialConfig: boolean = expectedRelativePath === "config-TypeScript.json";            
+            const isSpecialConfig: boolean = expectedRelativePath === "config-TypeScript.json";
             if (expectedRelativePath.endsWith("-CSharp.json")
                 || expectedRelativePath.endsWith("-Java.json")
                 || expectedRelativePath.endsWith("-Python.json")) {
-                    return;
+                return;
             }
             const actualPath: string = path.join(actualFolderPath, isSpecialConfig && differentConfig ? "config.json" : expectedRelativePath);
             if (fs.lstatSync(expectedPath).isFile() && fs.lstatSync(actualPath).isFile()) {
@@ -248,7 +248,7 @@ export const testHelper = {
                 } else {
                     testHelper.assertSameObjectWasSerialized(expectedFileContent, actualFileContent);
                 }
-            } else if(fs.lstatSync(expectedPath).isDirectory() && fs.lstatSync(actualPath).isDirectory()) {
+            } else if (fs.lstatSync(expectedPath).isDirectory() && fs.lstatSync(actualPath).isDirectory()) {
                 testHelper.assertFolderFilesEquality(expectedPath, actualPath);
             }
         });
@@ -331,7 +331,7 @@ export const testHelper = {
             }
         }
     },
-            
+
     /**
     *Asserts the logcode, if unexpected log code is present in log codes recorded list.
     *Asserts in logcode, if expected log code in log codes recorded list (isPresent = false)
@@ -342,14 +342,14 @@ export const testHelper = {
     expectCdmLogCodeEquality(corpus: CdmCorpusDefinition, expectedCode: cdmLogCode, isPresent: boolean): void {
         var toAssert: boolean = false;
         corpus.ctx.events.allItems.forEach(logEntry => {
-            if ( ((cdmLogCode[expectedCode].startsWith('Warn') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.warning])
-            || (cdmLogCode[expectedCode].startsWith('Err') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.error]))
-            && logEntry.get('code') === cdmLogCode[expectedCode]) {
+            if (((cdmLogCode[expectedCode].startsWith('Warn') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.warning])
+                || (cdmLogCode[expectedCode].startsWith('Err') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.error]))
+                && logEntry.get('code') === cdmLogCode[expectedCode]) {
                 toAssert = true;
             }
         });
 
-        if ( isPresent === true ) {
+        if (isPresent === true) {
             expect(toAssert).toBe(true);
         }
         else {
@@ -374,8 +374,8 @@ function getTestFolderPath(testSubpath: string, testName: string, use: testFolde
             throw new Error('Invalid folder specified');
     }
 
-    const testFolderPath: string = isLanguageSpecific ? `${testHelper.testDataPath}/${testSubpath}/${testName}/${folderName}/TypeScript` 
-                                    : `${testHelper.testDataPath}/${testSubpath}/${testName}/${folderName}`;
+    const testFolderPath: string = isLanguageSpecific ? `${testHelper.testDataPath}/${testSubpath}/${testName}/${folderName}/TypeScript`
+        : `${testHelper.testDataPath}/${testSubpath}/${testName}/${folderName}`;
 
     if (use === testFolders.ActualOutput && !fs.existsSync(testFolderPath)) {
         fs.mkdirSync(testFolderPath, { recursive: true });

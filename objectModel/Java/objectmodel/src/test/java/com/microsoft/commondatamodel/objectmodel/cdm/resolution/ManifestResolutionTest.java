@@ -136,5 +136,24 @@ public class ManifestResolutionTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-}
+    }
+
+    /**
+     * Test that manifest containing entities having dependency on each other for polymorphic sources resolves.
+     */
+    @Test
+    public void testResolveManifestWithInterdependentPolymorphicSource()
+    {
+      try {
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveManifestWithInterdependentPolymorphicSource");
+        final CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/Input.manifest.cdm.json").join();
+        final CdmManifestDefinition resolvedManifest = manifest.createResolvedManifestAsync("resolved", null).join();
+
+        Assert.assertEquals(2, resolvedManifest.getEntities().getCount());
+        Assert.assertEquals("resolved/group.cdm.json/group", resolvedManifest.getEntities().get(0).getEntityPath().toLowerCase());
+        Assert.assertEquals("resolved/groupmember.cdm.json/groupmember", resolvedManifest.getEntities().get(1).getEntityPath().toLowerCase());
+      } catch (Exception e) {
+        Assert.fail("Exception should not be thrown when resolving a manifest containing entities having dependency on each other for polymorphic sources.");
+      }
+    }
 }

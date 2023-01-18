@@ -10,7 +10,7 @@ describe('Cdm.ResolutionGuidanceFilterIn', () => {
     /**
      * Resolution Guidance Test - FilterIn - Some
      */
-    it('TestFilterInSome', async (done) => {
+    it('TestFilterInSome', async () => {
         const testName: string = 'TestFilterInSome';
         {
             const entityName: string = 'Employee';
@@ -100,13 +100,12 @@ describe('Cdm.ResolutionGuidanceFilterIn', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - FilterIn - Some With AttributeGroupRef
      */
-    it('TestFilterInSomeWithAttributeGroupRef', async (done) => {
+    it('TestFilterInSomeWithAttributeGroupRef', async () => {
         const testName: string = 'TestFilterInSomeWithAttributeGroupRef';
         {
             const entityName: string = 'Employee';
@@ -196,13 +195,12 @@ describe('Cdm.ResolutionGuidanceFilterIn', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - FilterIn - All
      */
-    it('TestFilterInAll', async (done) => {
+    it('TestFilterInAll', async () => {
         const testName: string = 'TestFilterInAll';
         {
             const entityName: string = 'Employee';
@@ -292,13 +290,12 @@ describe('Cdm.ResolutionGuidanceFilterIn', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 
     /**
      * Resolution Guidance Test - FilterIn - All With AttributeGroupRef
      */
-    it('TestFilterInAllWithAttributeGroupRef', async (done) => {
+    it('TestFilterInAllWithAttributeGroupRef', async () => {
         const testName: string = 'TestFilterInAllWithAttributeGroupRef';
         {
             const entityName: string = 'Employee';
@@ -388,6 +385,5 @@ describe('Cdm.ResolutionGuidanceFilterIn', () => {
                 expected_referenceOnly_normalized_structured
             );
         }
-        done();
     });
 });

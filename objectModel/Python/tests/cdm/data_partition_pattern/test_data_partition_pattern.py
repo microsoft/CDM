@@ -10,12 +10,16 @@ import unittest
 from cdm.objectmodel import CdmManifestDefinition, CdmLocalEntityDeclarationDefinition, CdmTraitDefinition, CdmParameterDefinition, CdmTraitReference
 from cdm.utilities import Constants
 
-from tests.common import async_test, TestHelper
 from cdm.persistence.cdmfolder import ManifestPersistence
 from cdm.persistence.cdmfolder.types import ManifestContent
 from cdm.objectmodel.cdm_corpus_context import CdmCorpusContext
 from cdm.enums import CdmStatusLevel, PartitionFileStatusCheckType, CdmIncrementalPartitionType, CdmObjectType, \
     CdmLogCode
+from tests.adls_test_helper import AdlsTestHelper
+from tests.common import async_test, TestHelper
+from tests.storage.testAdapters.fetch_all_metadata import FetchAllMetadataNullAdapter
+from tests.storage.testAdapters.no_override import NoOverride
+from tests.storage.testAdapters.override_fetch_all_files import OverrideFetchAllFiles
 
 
 class DataPartitionPatternTest(unittest.TestCase):
@@ -470,6 +474,7 @@ class DataPartitionPatternTest(unittest.TestCase):
         cdmManifest = ManifestPersistence.from_object(CdmCorpusContext(corpus, None), "entities", "local", "/", manifest_content)
 
         error_logged = 0
+
         def callback(level: CdmStatusLevel, message: str):
             if 'Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception:' in message:
                 nonlocal error_logged
@@ -700,3 +705,60 @@ class DataPartitionPatternTest(unittest.TestCase):
         self.assertEqual(no_slash_or_star_and_root_location.data_partition_patterns[0].glob_pattern, 't*.csv')
         self.assertEqual(len(no_slash_or_star_and_root_location.data_partitions), 1)
         self.assertEqual(no_slash_or_star_and_root_location.data_partitions[0].location, '/partitions/testfile.csv')
+
+    @async_test
+    async def test_fetch_all_files_metadata(self):
+        expected_log_codes = {CdmLogCode.ERR_FETCHING_FILE_METADATA_NULL}
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'TestFetchAllFilesMetadata', expected_codes=expected_log_codes)
+        file_status_check_options = {'include_data_partition_size': True}
+
+        # test local adapter
+        local_manifest = await corpus.fetch_object_async('manifest.manifest.cdm.json')
+        await local_manifest.file_status_check_async(file_status_check_options=file_status_check_options)
+
+        local_data_partition_list = local_manifest.entities[0].data_partitions
+        self.assertEqual(len(local_data_partition_list), 1)
+        local_trait_index = local_data_partition_list[0].exhibits_traits.index('is.partition.size')
+        self.assertNotEqual(local_trait_index, -1)
+        local_trait = local_data_partition_list[0].exhibits_traits[local_trait_index]
+        self.assertEqual(local_trait.named_reference, 'is.partition.size')
+        self.assertEqual(local_trait.arguments[0].value, 2)
+
+        if AdlsTestHelper.is_adls_env_enabled():
+            # test adls adapter
+            corpus.storage.mount('adls', AdlsTestHelper.create_adapter_with_shared_key())
+            adls_manifest = await corpus.fetch_object_async('adlsManifest.manifest.cdm.json')
+            await adls_manifest.file_status_check_async(file_status_check_options=file_status_check_options)
+
+            adls_data_partition_list = adls_manifest.entities[0].data_partitions
+            self.assertEqual(len(adls_data_partition_list), 1)
+            adls_trait_index = adls_data_partition_list[0].exhibits_traits.index('is.partition.size')
+            self.assertNotEqual(adls_trait_index, -1)
+            adls_trait = adls_data_partition_list[0].exhibits_traits[adls_trait_index]
+            self.assertEqual(adls_trait.named_reference, 'is.partition.size')
+            self.assertEqual(adls_trait.arguments[0].value, 1)
+
+        test_local_adapter = corpus.storage.namespace_adapters.get(corpus.storage.default_namespace)
+
+        # check that there are no errors when FetchAllFilesAsync is not overridden, uses method from StorageAdapterBase
+        corpus.storage.mount('no_override', NoOverride(test_local_adapter))
+        no_override_manifest = await corpus.fetch_object_async('no_override:/manifest.manifest.cdm.json')
+        await no_override_manifest.file_status_check_async(PartitionFileStatusCheckType.FULL, CdmIncrementalPartitionType.NONE, file_status_check_options)
+
+        no_override_partition_list = no_override_manifest.entities[0].data_partitions
+        self.assertEqual(len(no_override_partition_list), 0)
+
+        # check that there are no errors when FetchAllFilesMetadataAsync is not overridden
+        corpus.storage.mount('override_fetch_all', OverrideFetchAllFiles(test_local_adapter))
+        override_fetch_all_manifest = await corpus.fetch_object_async('override_fetch_all:/manifest.manifest.cdm.json')
+        await override_fetch_all_manifest.file_status_check_async(PartitionFileStatusCheckType.FULL, CdmIncrementalPartitionType.NONE, file_status_check_options)
+
+        override_fetch_data_partition_list = override_fetch_all_manifest.entities[0].data_partitions
+        override_fetch_trait_index = override_fetch_data_partition_list[0].exhibits_traits.index('is.partition.size')
+        self.assertEqual(override_fetch_trait_index, -1)
+        self.assertEqual(len(override_fetch_data_partition_list[0].exhibits_traits), 1)
+
+        # check that error is correctly logged when FetchAllFilesMetadata is misconfigured and returns null
+        corpus.storage.mount('fetchNull', FetchAllMetadataNullAdapter(test_local_adapter))
+        fetch_null_manifest = await corpus.fetch_object_async('fetchNull:/manifest.manifest.cdm.json')
+        await fetch_null_manifest.file_status_check_async(PartitionFileStatusCheckType.FULL, CdmIncrementalPartitionType.NONE, file_status_check_options)

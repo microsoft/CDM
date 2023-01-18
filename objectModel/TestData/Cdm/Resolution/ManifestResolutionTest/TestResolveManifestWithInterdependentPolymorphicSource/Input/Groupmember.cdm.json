@@ -1,0 +1,92 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "cdm:/core/cdsConcepts.cdm.json"
+    },
+    {
+      "corpusPath": "Group.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "GroupMember",
+      "displayName": "Group member",
+      "description": "An association between a customer and a Group.",
+      "sourceName": "msfsi_groupmember",
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "groupMemberId",
+                "sourceName": "msfsi_groupmemberid",
+                "sourceOrdering": 1,
+                "description": "Unique identifier for entity instances.",
+                "displayName": "Group member",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId"
+              },
+              {
+                "name": "name",
+                "sourceName": "msfsi_name",
+                "sourceOrdering": 34,
+                "description": "The name that identifies this group member.",
+                "displayName": "Name",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100"
+              },
+              {
+                "name": "Group",
+                "sourceName": "msfsi_group",
+                "sourceOrdering": 35,
+                "description": "The group the member belongs to.",
+                "displayName": "Group",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Group",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "groupId",
+                      "replaceWith": {
+                        "name": "group",
+                        "sourceName": "msfsi_group",
+                        "sourceOrdering": 35,
+                        "description": "The group the member belongs to.",
+                        "displayName": "Group",
+                        "isNullable": true,
+                        "purpose": "hasA",
+                        "dataType": "entityId"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "isPrimaryGroup",
+                "sourceName": "msfsi_isprimarygroup",
+                "sourceOrdering": 36,
+                "description": "Defines if the group is the primary group of the contact.",
+                "displayName": "Is group primary",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "boolean"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -97,7 +97,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
         /// </summary>
-        public string SasToken {
+        public string SasToken
+        {
             get
             {
                 return _sasToken;
@@ -105,8 +106,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             set
             {
                 // Remove the leading question mark, so we can append this token to URLs that already have it
-                _sasToken = value != null ? 
-                    (value.StartsWith("?") ? value.Substring(1) : value) 
+                _sasToken = value != null ?
+                    (value.StartsWith("?") ? value.Substring(1) : value)
                     : null;
             }
         }
@@ -424,6 +425,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public override async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
         {
+            var fileMetadatas = await this.FetchAllFilesMetadataAsync(folderCorpusPath);
+            return fileMetadatas.Select(x => x.Key).ToList();
+        }
+
+        /// <inheritdoc />
+        public override async Task<IDictionary<string, CdmFileMetadata>> FetchAllFilesMetadataAsync(string folderCorpusPath)
+        {
             if (folderCorpusPath == null)
             {
                 return null;
@@ -438,7 +446,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 directory = directory.Substring(1);
             }
 
-            List<string> result = new List<string>();
+            Dictionary<string, CdmFileMetadata> result = new Dictionary<string, CdmFileMetadata>();
             string continuationToken = null;
 
             do
@@ -481,7 +489,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                                 name.ToString().Substring(this.unescapedRootSubPath.Length + 1) : name.ToString();
 
                             string path = this.FormatCorpusPath(nameWithoutSubPath);
-                            result.Add(path);
+
+                            jObject.TryGetValue("contentLength", StringComparison.OrdinalIgnoreCase, out JToken contentLengthToken);
+                            long.TryParse(contentLengthToken.ToString(), out long contentLength);
+
+                            result.Add(path, new CdmFileMetadata { FileSizeBytes = contentLength });
 
                             jObject.TryGetValue("lastModified", StringComparison.OrdinalIgnoreCase, out JToken lastModifiedTime);
 
@@ -583,11 +595,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 this.LocationHint = configJson["locationHint"].ToString();
             }
 
-            if (configJson["endpoint"] != null) {
+            if (configJson["endpoint"] != null)
+            {
                 AzureCloudEndpoint endpoint;
-                if (Enum.TryParse(configJson["endpoint"].ToString(), out endpoint)) {
+                if (Enum.TryParse(configJson["endpoint"].ToString(), out endpoint))
+                {
                     this.Endpoint = endpoint;
-                } 
+                }
                 else
                 {
                     throw new ArgumentException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
@@ -682,7 +696,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <returns>URL with the SAS token appended</returns>
         private string ApplySasToken(string url)
         {
-            return $"{url}{(url.Contains("?")? "&" : "?")}{SasToken}";
+            return $"{url}{(url.Contains("?") ? "&" : "?")}{SasToken}";
         }
 
         /// <summary>
@@ -792,7 +806,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     return; // Return on delete success. Throw exception even if delete succeeds since file write operation failed.
                 }
                 catch (Exception)
-                {}
+                { }
             }
             throw new StorageAdapterException($"Empty file was created but could not write ADLS content at path: '{corpusPath}'", innerException);
         }
@@ -893,7 +907,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             return hostname;
         }
 
-        private string GetEscapedRoot() {
+        private string GetEscapedRoot()
+        {
             return string.IsNullOrEmpty(this.escapedRootSubPath) ?
                 "/" + this.rootBlobContainer
                 : "/" + this.rootBlobContainer + "/" + this.escapedRootSubPath;
@@ -985,7 +1000,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 if (outUri.Scheme == Uri.UriSchemeHttps)
                 {
                     return hostname.Substring("https://".Length);
-                } 
+                }
                 throw new ArgumentException("ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.");
             }
 

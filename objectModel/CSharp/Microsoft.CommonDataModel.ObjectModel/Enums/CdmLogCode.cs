@@ -7,6 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
     {
         None,
         ErrAdapterNotFound,
+        ErrCycleInObjectDefinition,
         ErrDocAdapterNotFound,
         ErrDocAlreadyExist,
         ErrDocEntityDocSavingFailure,
@@ -19,6 +20,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrDocWrtDocNotfound,
         ErrEntityCreationFailed,
         ErrEnumConversionFailure,
+        ErrFetchingFileMetadataNull,
         ErrIndexFailed,
         ErrInvalidPath,
         ErrInvalidCast,

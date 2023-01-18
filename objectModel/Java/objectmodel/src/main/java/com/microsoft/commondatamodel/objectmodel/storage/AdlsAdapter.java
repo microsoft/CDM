@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint;
+import com.microsoft.commondatamodel.objectmodel.utilities.CdmFileMetadata;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -36,13 +37,14 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class AdlsAdapter extends NetworkAdapter {
@@ -307,6 +309,13 @@ public class AdlsAdapter extends NetworkAdapter {
   @Override
   public CompletableFuture<List<String>> fetchAllFilesAsync(final String folderCorpusPath) {
     return CompletableFuture.supplyAsync(() -> {
+      final HashMap<String, CdmFileMetadata> filesMetadatas = this.fetchAllFilesMetadataAsync(folderCorpusPath).join();
+      return new ArrayList<>(filesMetadatas.keySet());
+    });
+  }
+
+  public CompletableFuture<HashMap<String, CdmFileMetadata>> fetchAllFilesMetadataAsync(final String folderCorpusPath) {
+    return CompletableFuture.supplyAsync(() -> {
       if (folderCorpusPath == null) {
         return null;
       }
@@ -323,10 +332,10 @@ public class AdlsAdapter extends NetworkAdapter {
 
       String directory = this.escapedRootSubPath + this.formatCorpusPath(escapedFolderCorpusPath);
       if (directory.startsWith("/")) {
-          directory = directory.substring(1);
+        directory = directory.substring(1);
       }
 
-      List<String> result = new ArrayList<>();
+      HashMap<String, CdmFileMetadata> result = new HashMap<>();
       String continuationToken = null;
 
       do {
@@ -347,15 +356,15 @@ public class AdlsAdapter extends NetworkAdapter {
           }
 
           request = this.buildRequest(
-                    url + "?continuation=" + escapedContinuationToken + "&directory=" + directory + "&maxResults=" + this.httpMaxResults + "&recursive=True&resource=filesystem",
-                    "GET");
+                  url + "?continuation=" + escapedContinuationToken + "&directory=" + directory + "&maxResults=" + this.httpMaxResults + "&recursive=True&resource=filesystem",
+                  "GET");
         }
 
         final CdmHttpResponse cdmResponse = executeRequest(request).join();
 
         if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
           continuationToken = cdmResponse.getResponseHeaders().containsKey(HTTP_XMS_CONTINUATION) ?
-                  cdmResponse.getResponseHeaders().get(HTTP_XMS_CONTINUATION): null;
+                  cdmResponse.getResponseHeaders().get(HTTP_XMS_CONTINUATION) : null;
 
           final String json = cdmResponse.getContent();
           final JsonNode jObject1;
@@ -373,13 +382,15 @@ public class AdlsAdapter extends NetworkAdapter {
                           ? name.substring(this.unescapedRootSubPath.length() + 1)
                           : name;
                   String filepath = this.formatCorpusPath(nameWithoutSubPath);
-                  result.add(filepath);
+
+                  final JsonNode contentLength = path.get("contentLength");
+                  result.put(filepath, new CdmFileMetadata(contentLength.asLong()));
 
                   OffsetDateTime lastTime = DateUtils.parseDate(path.get("lastModified").asText())
                           .toInstant()
                           .atOffset(ZoneOffset.UTC);
 
-                  if(this.getIsCacheEnabled()) {
+                  if (this.getIsCacheEnabled()) {
                     this.fileModifiedTimeCache.put(filepath, lastTime);
                   }
                 }
@@ -391,7 +402,7 @@ public class AdlsAdapter extends NetworkAdapter {
             return null;
           }
         }
-      } while(!StringUtils.isNullOrTrimEmpty(continuationToken));
+      } while (!StringUtils.isNullOrTrimEmpty(continuationToken));
 
       return result;
     });
