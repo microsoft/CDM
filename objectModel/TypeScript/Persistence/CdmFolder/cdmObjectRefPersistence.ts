@@ -79,7 +79,7 @@ export class cdmObjectRefPersistence {
                 const traitRef: TraitReference = copy as TraitReference;
                 traitRef.traitReference = refTo as string | Trait;
                 traitRef.arguments = copyDataUtils.arrayCopyData<Argument>(resOpt, (instance as CdmTraitReference).arguments, options);
-
+                traitRef.verb = (instance as CdmTraitReference).verb ? (instance as CdmTraitReference).verb.copyData(resOpt, options) as (string | TraitReference) : undefined;
                 return traitRef;
             case cdmObjectType.traitGroupRef:
                 const traitGroupRef: TraitGroupReference = copy as TraitGroupReference;

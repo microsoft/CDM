@@ -54,6 +54,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
+            if (obj["applyToTraits"] is JValue)
+            {
+                alterTraitsOp.ApplyToTraits = new List<string>
+                {
+                    (string)obj["applyToTraits"]
+                };
+            }
+            else if (obj["applyToTraits"] is JArray applyToTraitsArray)
+            {
+                alterTraitsOp.ApplyToTraits = applyToTraitsArray.ToObject<List<string>>();
+            }
+            else if (obj["applyToTraits"] != null)
+            {
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjUnsupportedProp, "applyToTraits", "string or list of strings");
+                return null;
+            }
+
             return alterTraitsOp;
         }
 
@@ -69,6 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             obj.TraitsToRemove = CopyDataUtils.ListCopyData(resOpt, instance.TraitsToRemove, options);
             obj.ArgumentsContainWildcards = instance.ArgumentsContainWildcards;
             obj.ApplyTo = instance.ApplyTo;
+            obj.ApplyToTraits = instance.ApplyToTraits;
 
             return obj;
         }

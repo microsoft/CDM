@@ -26,9 +26,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         public static readonly string[] Formats = { PersistenceLayer.CdmExtension };
 
         /// <summary>
-        /// The maximum json semantic version supported by this ObjectModel version.
+        /// The maximum json semantic version supported by this ObjectModel version
         /// </summary>
-        public static readonly string JsonSemanticVersion = CdmDocumentDefinition.CurrentJsonSchemaSemanticVersion;
+        public static readonly string JsonSemanticVersionMax = CdmObjectBase.JsonSchemaSemanticVersionMaximumSaveLoad;
+        /// <summary>
+        /// The minimum json semantic version supported by this ObjectModel version
+        /// </summary>
+        public static readonly string JsonSemanticVersionMin = CdmObjectBase.JsonSchemaSemanticVersionMinimumLoad;
 
         public static CdmDocumentDefinition FromObject(CdmCorpusContext ctx, string name, string nameSpace, string path, DocumentContent obj)
         {
@@ -107,11 +111,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 {
                     if (isResolvedDoc)
                     {
-                        Logger.Warning(ctx, Tag, nameof(FromObject), null, CdmLogCode.WarnPersistUnsupportedJsonSemVer, JsonSemanticVersion, doc.JsonSchemaSemanticVersion);
+                        Logger.Warning(ctx, Tag, nameof(FromObject), null, CdmLogCode.WarnPersistUnsupportedJsonSemVer, JsonSemanticVersionMax, doc.JsonSchemaSemanticVersion);
                     }
                     else
                     {
-                        Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistUnsupportedJsonSemVer, JsonSemanticVersion, doc.JsonSchemaSemanticVersion);
+                        Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistUnsupportedJsonSemVer, JsonSemanticVersionMax, doc.JsonSchemaSemanticVersion);
                     }
                 }
             }
@@ -146,35 +150,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         /// </summary>
         /// <param name="documentSemanticVersion"></param>
         /// <returns>
-        /// 1 => if documentSemanticVersion > JsonSemanticVersion
-        /// 0 => if documentSemanticVersion == JsonSemanticVersion or if documentSemanticVersion is invalid
-        /// -1 => if documentSemanticVersion < JsonSemanticVersion
+        /// 1 => if documentSemanticVersion > JsonSemanticVersionMax
+        /// 0 => if documentSemanticVersion between JsonSemanticVersionMin and JsonSemanticVersionMax or if documentSemanticVersion is invalid
+        /// -1 => if documentSemanticVersion < JsonSemanticVersionMin
         /// </returns>
         private static int CompareJsonSemanticVersion(CdmCorpusContext ctx, string documentSemanticVersion)
         {
-            var docSemanticVersionSplit = documentSemanticVersion.Split('.');
-            var currSemanticVersionSplit = JsonSemanticVersion.Split('.').Select(value => int.Parse(value)).ToList();
-
-            if (docSemanticVersionSplit.Length != 3)
+            var docVer = CdmObjectBase.SemanticVersionStringToNumber(documentSemanticVersion);
+            if (docVer == -1)
             {
                 Logger.Warning(ctx, Tag, nameof(CompareJsonSemanticVersion), null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
                 return 0;
             }
 
-            for (var i = 0; i < 3; ++i)
+            var minVer = CdmObjectBase.SemanticVersionStringToNumber(JsonSemanticVersionMin);
+            var maxVer = CdmObjectBase.SemanticVersionStringToNumber(JsonSemanticVersionMax);
+
+            if (docVer < minVer)
             {
-                if (!int.TryParse(docSemanticVersionSplit[i], out int version))
-                {
-                    Logger.Warning(ctx, Tag, nameof(CompareJsonSemanticVersion), null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
-                    return 0;
-                }
-
-                if (version != currSemanticVersionSplit[i])
-                {
-                    return version < currSemanticVersionSplit[i] ? -1 : 1;
-                }
+                return -1;
             }
-
+            else if (docVer > maxVer)
+            {
+                return 1;
+            }
             return 0;
         }
     }

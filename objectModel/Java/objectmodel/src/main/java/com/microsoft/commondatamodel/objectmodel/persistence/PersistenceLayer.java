@@ -294,8 +294,11 @@ public class PersistenceLayer {
             final String newName,
             final boolean saveReferenced,
             final CopyOptions options) {
-        // Find out if the storage adapter is able to write.
         return CompletableFuture.supplyAsync(() -> {
+            // update the jsonSemanticVersion to the max(author setting, mimimum required by usage)
+            doc.discoverMinimumRequiredJsonSemanticVersion();
+
+            // Find out if the storage adapter is able to write.
             String ns = doc.getNamespace();
             if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isBlankByCdmStandard(ns)) {
                 ns = this.corpus.getStorage().getDefaultNamespace();

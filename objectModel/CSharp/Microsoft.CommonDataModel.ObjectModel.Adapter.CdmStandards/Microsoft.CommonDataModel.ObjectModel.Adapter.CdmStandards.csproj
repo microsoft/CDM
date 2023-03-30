@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
+		<version>$(CdmStandardsVersion)</version>
+		<Description>CdmStandards component provides access to packaged schema definitions required by the Microsoft Common Data Model Object Model.</Description>
+
+		<Authors>Microsoft</Authors>
+		<Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+		<Platforms>AnyCPU;x64</Platforms>
+		<RepositoryUrl>https://commondatamodel.visualstudio.com/CDM/_git/CDM.ObjectModel</RepositoryUrl>
+		<PackageProjectUrl>https://commondatamodel.visualstudio.com/CDM</PackageProjectUrl>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="..\..\..\schemaDocuments\*.cdm.json">
+			<Link>Resources\%(FileName).json</Link>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="..\..\..\schemaDocuments\extensions\*.cdm.json">
+			<Link>Resources\extensions\%(FileName).json</Link>
+		</EmbeddedResource>
+
+		<EmbeddedResource Include="..\..\..\schemaDocuments\cdmfoundation\*.cdm.json">
+			<Link>Resources\cdmfoundation\%(FileName).json</Link>
+		</EmbeddedResource>
+
+		<EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.6.cdm.json" />
+		<EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.7.cdm.json" />
+		<EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.8.cdm.json" />
+		<EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.8.1.cdm.json" />
+		<EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.9.cdm.json" />
+		<EmbeddedResource Remove="..\..\..\schemaDocuments\*.manifest.cdm.json" />
+		<EmbeddedResource Remove="..\..\..\schemaDocuments\cdmfoundation\*.manifest.cdm.json" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+		<PackageReference Include="Microsoft.CSharp" Version="4.6.2" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+		<PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+	</ItemGroup>
+</Project>

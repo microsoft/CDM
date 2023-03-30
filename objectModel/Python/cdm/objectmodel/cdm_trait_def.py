@@ -4,6 +4,7 @@
 from typing import Optional, List, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
+from cdm.objectmodel import CdmObject
 from cdm.resolvedmodel import ParameterCollection
 from cdm.utilities import ResolveOptions, logger
 from cdm.enums import CdmLogCode
@@ -12,8 +13,9 @@ from .cdm_object_def import CdmObjectDefinition
 from .cdm_collection import CdmCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmParameterDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmParameterDefinition, CdmArgumentValue, CdmAttributeContext
     from cdm.utilities import VisitCallback
+    from cdm.resolvedmodel.resolved_trait_set import ResolvedTraitSet, ResolvedTraitSetBuilder
 
 
 class CdmTraitDefinition(CdmObjectDefinition):
@@ -38,6 +40,11 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
         # if trait is user facing or not.
         self.ugly = None  # type: Optional[bool]
+
+        # Gets or sets the default verb that should be assumed for uses of this trait when no verb property
+        # is given in the trait reference. Note that the verb property is itself a trait reference because
+        # verbs are described using traits. 
+        self.default_verb = None # type: Optional[CdmTraitReference]
 
         # internal
 
@@ -83,11 +90,19 @@ class CdmTraitDefinition(CdmObjectDefinition):
         copy.ugly = self.ugly
         copy.associated_properties = list(self.associated_properties) if self.associated_properties else None
 
+        if self.default_verb:
+            copy.default_verb = self.default_verb.copy(res_opt)
+
         self._copy_def(res_opt, copy)
         return copy
 
     def get_name(self):
         return self.trait_name
+
+    def _get_minimum_semantic_version(self) -> int:
+        if self.default_verb or self.exhibits_traits and len(self.exhibits_traits) > 0:
+            return CdmObject.semantic_version_string_to_number(CdmObject.json_schema_semantic_version_traits_on_traits)
+        return super()._get_minimum_semantic_version()
 
     def _fetch_resolved_traits(self, res_opt: 'ResolveOptions') -> 'ResolvedTraitSet':
         from cdm.resolvedmodel import ResolvedTrait, ResolvedTraitSet
@@ -154,24 +169,26 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
             self._has_set_flags = True
             parameter_collection = self._fetch_all_parameters(res_opt)
-            argument_values = []  # type: List[CdmArgumentValue]
-            was_set = []  # type: List[bool]
+            # a null probably means a failure to resolve a symbol, for compat just ignore this trait in the set. an error will fire
+            if parameter_collection:
+                argument_values = []  # type: List[CdmArgumentValue]
+                was_set = []  # type: List[bool]
 
-            self._this_is_known_to_have_parameters = bool(parameter_collection.sequence)
-            for i in range(len(parameter_collection.sequence)):
-                # either use the default value or (higher precidence) the value taken from the base reference
-                value = parameter_collection.sequence[i].default_value
-                if base_values and i < len(base_values):
-                    base_value = base_values[i]
-                    if base_value:
-                        value = base_value
-                argument_values.append(value)
-                was_set.append(False)
+                self._this_is_known_to_have_parameters = bool(parameter_collection.sequence)
+                for i in range(len(parameter_collection.sequence)):
+                    # either use the default value or (higher precidence) the value taken from the base reference
+                    value = parameter_collection.sequence[i].default_value
+                    if base_values and i < len(base_values):
+                        base_value = base_values[i]
+                        if base_value:
+                            value = base_value
+                    argument_values.append(value)
+                    was_set.append(False)
 
-            # save it
-            res_trait = ResolvedTrait(self, parameter_collection, argument_values, was_set)
-            rts_result = ResolvedTraitSet(res_opt)
-            rts_result.merge(res_trait, False)
+                # save it
+                res_trait = ResolvedTrait(self, parameter_collection, argument_values, was_set, None, None)
+                rts_result = ResolvedTraitSet(res_opt)
+                rts_result.merge(res_trait, False)
 
             # register set of possible symbols
             ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
@@ -218,6 +235,14 @@ class CdmTraitDefinition(CdmObjectDefinition):
         if self.parameters and self.parameters._visit_array('{}/hasParameters/'.format(path), pre_children, post_children):
             return True
 
+        if self.default_verb:
+            self.default_verb.owner = self
+            if self.default_verb.visit('{}/defaultVerb/'.format(path), pre_children, post_children):
+                return True
+
+        if self._visit_def(path, pre_children, post_children):
+            return True
+
         if post_children and post_children(self, path):
             return True
 
@@ -230,7 +255,11 @@ class CdmTraitDefinition(CdmObjectDefinition):
         # Get parameters from base if there is one
         prior = None
         if self.extends_trait:
-            prior = self.extends_trait.fetch_object_definition(res_opt)._fetch_all_parameters(res_opt)
+            ext_def = self.extends_trait.fetch_object_definition(res_opt)
+            if not ext_def:
+                logger.error(self.ctx, self._TAG, '_fetch_all_parameters', self.at_corpus_path, CdmLogCode.ERR_RESOLVE_REFERENCE_FAILURE, self.at_corpus_path, "extends_trait")
+                return None
+            prior =  ext_def._fetch_all_parameters(res_opt)
 
         self._all_parameters = ParameterCollection(prior)
         if self.parameters:

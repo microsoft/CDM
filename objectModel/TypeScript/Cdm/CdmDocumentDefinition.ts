@@ -127,10 +127,25 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
      * @internal
      */
     public _fileSystemModifiedTime: Date;
+    
     /**
-     * The maximum json semantic version supported by this ObjectModel version.
+     *  finds the highest required semantic version in the document and set it
      */
-    public static currentJsonSchemaSemanticVersion = '1.4.0';
+    discoverMinimumRequiredJsonSemanticVersion() : void {
+        let maxVersion = CdmObjectBase.semanticVersionStringToNumber(this.jsonSchemaSemanticVersion); // may return -1, that is fine
+
+        this.visit('', (obj: CdmObject, objPath: string) => {
+            const objectBase: CdmObjectBase = obj as CdmObjectBase;
+            // the object knows if semantics are being used that need a certain version
+            const objVersion = objectBase.getMinimumSemanticVersion();
+            if (objVersion > maxVersion) {
+                maxVersion = objVersion;
+            }
+            return false;
+        }, undefined);
+
+        this.jsonSchemaSemanticVersion = CdmObjectBase.semanticVersionNumberToString(maxVersion);
+    }
 
     /**
      * A list of all objects contained by this document.
@@ -145,7 +160,8 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.inDocument = this;
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
-            this.jsonSchemaSemanticVersion = CdmDocumentDefinition.currentJsonSchemaSemanticVersion;
+            // this is the default minimum version we will save, it may be set higher by a designer or during a save when making use of higher version features
+            this.jsonSchemaSemanticVersion = CdmDocumentDefinition.jsonSchemaSemanticVersionMinimumSave;
             this.documentVersion = undefined;
             this.needsIndexing = true;
             this.importsIndexed = false;
@@ -153,7 +169,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.isDirty = true;
             this.currentlyIndexing = false;
             this.isValid = true;
-            this.namespace = null;
+            this.namespace = undefined;
 
             this.imports = new CdmImportCollection(ctx, this);
             this.definitions = new CdmDefinitionCollection(ctx, this);
@@ -895,7 +911,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         if (!oldFolder) {
             newPath = this.ctx.corpus.storage.createRelativeCorpusPath(path, newFolder);
         } else {
-            // if the current value != the absolute path, then assume it is a relative path
+            // if the current value !== the absolute path, then assume it is a relative path
             const absPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(path, oldFolder);
             if (absPath === path) {
                 newPath = absPath; // leave it alone
@@ -1063,7 +1079,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 if (docCheck.importPriorities && docCheck.importPriorities.monikerPriorityMap && docCheck.importPriorities.monikerPriorityMap.size > 0) {
                     for (const monPair of docCheck.importPriorities.monikerPriorityMap) {
                         const pathFound: string = internalImportPathToDoc(monPair[1], `${path}${monPair[0]}/`);
-                        if (pathFound != null) {
+                        if (pathFound !== undefined) {
                             return pathFound;
                         }
                     }

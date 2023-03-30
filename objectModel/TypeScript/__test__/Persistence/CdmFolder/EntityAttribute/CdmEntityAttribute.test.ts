@@ -20,7 +20,7 @@ describe('Persistence.CdmFolder.CdmEntityAttribute', () => {
             'name': entityName,
             'displayName': displayName,
             'description': description,
-            'entity': null
+            'entity': undefined
         };
 
         const instance = EntityAttributePersistence.fromData(corpus.ctx, inputData);
@@ -30,7 +30,7 @@ describe('Persistence.CdmFolder.CdmEntityAttribute', () => {
         expect(instance.displayName)
             .toEqual(displayName);
 
-        const data = EntityAttributePersistence.toData(instance, null, null);
+        const data = EntityAttributePersistence.toData(instance, undefined, undefined);
 
         expect(data.description)
             .toEqual(description);

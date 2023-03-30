@@ -6,13 +6,15 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmTraitDefinition,
-    CdmTraitReference
+    CdmTraitReference,
+    CdmTraitReferenceBase
 } from '../../internal';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import {
     Argument,
     TraitReference
 } from './types';
+import * as utils from './utils';
 
 export class TraitReferencePersistence extends cdmObjectRefPersistence {
     public static fromData(ctx: CdmCorpusContext, object: string | TraitReference): CdmTraitReference {
@@ -24,6 +26,8 @@ export class TraitReferencePersistence extends cdmObjectRefPersistence {
         let optional: boolean | undefined;
         let trait: string | CdmTraitDefinition;
         let args: (string | Argument)[];
+        let trVerb: CdmTraitReference = undefined;
+        let appliedTraits: Array<CdmTraitReferenceBase> = undefined;
         
         if (typeof (object) === 'string') {
             trait = object;
@@ -37,6 +41,9 @@ export class TraitReferencePersistence extends cdmObjectRefPersistence {
             } else {
                 trait = CdmFolder.TraitPersistence.fromData(ctx, object.traitReference);
             }
+
+            trVerb = TraitReferencePersistence.fromData(ctx, object.verb);
+            appliedTraits = utils.createTraitReferenceArray(ctx, object.appliedTraits);
         }
 
         const traitReference: CdmTraitReference = ctx.corpus.MakeRef(cdmObjectType.traitRef, trait, simpleReference);
@@ -50,6 +57,9 @@ export class TraitReferencePersistence extends cdmObjectRefPersistence {
                 traitReference.arguments.push(CdmFolder.ArgumentPersistence.fromData(ctx, a));
             });
         }
+        
+        traitReference.verb = trVerb;
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(traitReference.appliedTraits, appliedTraits);
 
         return traitReference;
     }

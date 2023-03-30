@@ -18,7 +18,7 @@ export class CdmEntityReference extends CdmObjectReferenceBase {
      * @internal
      */
     public get isProjection(): boolean {
-        return this.explicitReference?.objectType == cdmObjectType.projectionDef;
+        return this.explicitReference?.objectType === cdmObjectType.projectionDef;
     }
 
     public static get objectType(): cdmObjectType {

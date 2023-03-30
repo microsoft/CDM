@@ -6,7 +6,7 @@ from typing import cast, Dict, List, Optional, Set, TYPE_CHECKING
 from cdm.resolvedmodel.parameter_value import ParameterValue
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmArgumentValue, CdmArgumentDefinition, CdmTraitDefinition, SpewCatcher
+    from cdm.objectmodel import CdmArgumentValue, CdmArgumentDefinition, CdmTraitDefinition, CdmTraitReference, CdmTraitReferenceBase, SpewCatcher
     from cdm.resolvedmodel import ResolvedTrait
     from cdm.utilities import ResolveOptions
 
@@ -40,6 +40,7 @@ class ResolvedTraitSet:
         if trait in trait_set_result.lookup_by_trait:
             rt_old = trait_set_result.lookup_by_trait[trait]
             av_old = rt_old.parameter_values.values if rt_old.parameter_values else None
+            was_set_old = rt_old.parameter_values.was_set if rt_old.parameter_values else None 
 
             if av and av_old:
                 # The new values take precedence.
@@ -49,9 +50,25 @@ class ResolvedTraitSet:
                             trait_set_result = trait_set_result.shallow_copy_with_exception(trait)
                             rt_old = trait_set_result.lookup_by_trait[trait]
                             av_old = rt_old.parameter_values.values
+                            was_set_old = rt_old.parameter_values.was_set
                             copy_on_write = False
 
                         av_old[i] = ParameterValue.fetch_replacement_value(self.res_opt, av_old[i], av[i], was_set[i])
+                        was_set_old[i] = (was_set_old[i] or was_set[i])
+
+            # is an explicit verb given with this reference?
+            if to_merge.explicit_verb is not None:
+                if copy_on_write:
+                    trait_set_result = trait_set_result.shallow_copy_with_exception(trait)
+                    rt_old = trait_set_result.lookup_by_trait[trait]
+                    copy_on_write = False
+                rt_old.explicit_verb = to_merge.explicit_verb
+            # are meta traits set on this newer reference?
+            if to_merge.meta_traits is not None and len(to_merge.meta_traits) > 0:
+                if copy_on_write:
+                    trait_set_result = trait_set_result.shallow_copy_with_exception(trait)
+                    rt_old = trait_set_result.lookup_by_trait[trait]
+                rt_old.meta_traits = to_merge.meta_traits.copy()
         else:
             if copy_on_write:
                 trait_set_result = trait_set_result.shallow_copy()
@@ -135,6 +152,14 @@ class ResolvedTraitSet:
                 rt.collect_trait_names(self.res_opt, collection)
 
         return collection
+
+    def set_explicit_verb(self, trait: 'CdmTraitDefinition', verb: 'CdmTraitReference')->None:
+        res_trait = self.get(trait)
+        res_trait.explicit_verb = verb
+
+    def set_meta_traits(self, trait: 'CdmTraitDefinition', meta_traits: List['CdmTraitReferenceBase'] )->None:
+        res_trait = self.get(trait)
+        res_trait.meta_traits = meta_traits.copy()
 
     def set_parameter_value_from_argument(self, trait: 'CdmTraitDefinition', arg: 'CdmArgumentDefinition') -> None:
         res_trait = self.get(trait)

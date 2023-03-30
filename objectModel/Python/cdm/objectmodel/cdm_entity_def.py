@@ -24,9 +24,9 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmAttributeGroupDefinition, CdmAttributeGroupReference, \
         CdmAttributeItem, CdmAttributeResolutionGuidanceDefinition, CdmCollection, CdmCorpusContext, \
         CdmEntityAttributeDefinition, CdmEntityReference, CdmFolderDefinition, CdmTraitReference, \
-        CdmTypeAttributeDefinition, CdmObjectReference, CdmArgumentCollection
+        CdmTypeAttributeDefinition, CdmObjectReference, CdmArgumentCollection, CdmAttributeReference
     from cdm.resolvedmodel import ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet, \
-        ResolvedTraitSetBuilder, TraitSpec
+        ResolvedTraitSetBuilder, ResolvedTraitSet, TraitSpec
     from cdm.utilities import TraitToPropertyMap, VisitCallback
 
 
@@ -390,8 +390,11 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             orig_doc = self.ctx.corpus.storage.create_relative_corpus_path(orig_doc, doc_res)  # just in case we missed the prefix
             doc_res.imports.append(orig_doc, "resolvedFrom")
 
+            # if the source document imports foundations, then the resolved one should do the same
             if self.in_document.imports.item(Constants._FOUNDATIONS_CORPUS_PATH) is not None:
                 doc_res.imports.append(Constants._FOUNDATIONS_CORPUS_PATH)
+            if self.in_document.imports.item(Constants._FOUNDATION_FOUNDATIONS_CORPUS_PATH) is not None:
+                doc_res.imports.append(Constants._FOUNDATION_FOUNDATIONS_CORPUS_PATH)
 
             doc_res.document_version = self.in_document.document_version
 

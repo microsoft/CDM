@@ -71,7 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 // deep copy the content
                 copy.ConstantValues = new List<List<string>>();
-                foreach(var row in this.ConstantValues)
+                foreach (var row in this.ConstantValues)
                 {
                     copy.ConstantValues.Add(new List<string>(row));
                 }

@@ -132,7 +132,7 @@ export class ProjectionPersistence {
                         projection.operations.push(addArtifactAttributeOp);
                         break;                    
                     default:
-                        Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjInvalidOpsType, type);
+                        Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistProjInvalidOpsType, type);
                 }
             });
         }

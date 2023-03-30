@@ -310,13 +310,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     if (!response.StatusCode.Equals(HttpStatusCode.OK)) // Data was not flushed correctly. Delete empty file.
                     {
                         await this.DeleteContentAtPath(corpusPath, url, null);
-                        throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'");
+                        throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at \"{corpusPath}\" during the flush action. Reason: {response.Reason}");
                     }
                 }
                 else
                 {
                     await this.DeleteContentAtPath(corpusPath, url, null);
-                    throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'");
+                    throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at \"{corpusPath}\" during the append action. Reason: {response.Reason}");
                 }
             }
             catch (StorageAdapterException exc)
@@ -796,9 +796,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <param name="innerException">inner exception.</param>
         private async Task DeleteContentAtPath(string corpusPath, string url, Exception innerException)
         {
-            dynamic value = true;
-            bool isFeatureFlagSet = this.Ctx != null && this.Ctx.FeatureFlags != null && this.Ctx.FeatureFlags.TryGetValue("ADLSAdapter_deleteEmptyFile", out value);
-            if (!isFeatureFlagSet || value)
+            dynamic value = this.Ctx.GetFeatureFlagValue("ADLSAdapter_deleteEmptyFile");
+            if (value == null || value == true)
             {
                 try
                 {

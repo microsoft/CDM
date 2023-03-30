@@ -163,7 +163,6 @@ describe('Persistence.CdmFolder.Manifest', () => {
             throw new Error('Unexpected log: ' + msg);
         }, cdmStatusLevel.warning)
         cdmCorpus.storage.mount('someNamespace', new LocalAdapter(inputPath));
-        cdmCorpus.storage.unMount('cdm');
 
         const cdmManifest: CdmManifestDefinition =
             await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('someNamespace:/default.manifest.cdm.json');

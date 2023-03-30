@@ -1211,7 +1211,7 @@ export class CdmCorpusDefinition {
                 Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
             }
         }
-        return null;
+        return undefined;
     }
 
     /**
@@ -1376,8 +1376,8 @@ export class CdmCorpusDefinition {
             for (const subAttCtx of attCtx.contents.allItems) {
                 if (subAttCtx.objectType === cdmObjectType.attributeContextDef) {
                     // find the top level entity definition's attribute context
-                    if (entityAttAttContext === undefined && attCtx.type == cdmAttributeContextType.attributeDefinition
-                        && attCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt)?.objectType == cdmObjectType.entityAttributeDef) {
+                    if (entityAttAttContext === undefined && attCtx.type === cdmAttributeContextType.attributeDefinition
+                        && attCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt)?.objectType === cdmObjectType.entityAttributeDef) {
                         entityAttAttContext = attCtx;
                     }
                     // find entity references that identifies the 'this' entity
@@ -1460,7 +1460,7 @@ export class CdmCorpusDefinition {
      */
     private fetchPurposeTraitRefsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): [CdmTraitReference, string][] {
         const def: CdmObjectDefinition = attributeCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
-        if (def?.objectType == cdmObjectType.entityAttributeDef && (def as CdmEntityAttributeDefinition)?.purpose !== undefined) {
+        if (def?.objectType === cdmObjectType.entityAttributeDef && (def as CdmEntityAttributeDefinition)?.purpose !== undefined) {
             var resolvedTraitSet = (def as CdmEntityAttributeDefinition).purpose.fetchResolvedTraits(resOpt);
             if (resolvedTraitSet !== undefined) {
                 return this.findElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
@@ -1516,7 +1516,7 @@ export class CdmCorpusDefinition {
                     const newE2ERel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, tuple[2]);
                     newE2ERel.fromEntity = this.storage.createAbsoluteCorpusPath(fromEntity, unResolvedEntity);
                     newE2ERel.fromEntityAttribute = fromAtts[i].fetchObjectDefinitionName();
-                    newE2ERel.toEntity = this.storage.createAbsoluteCorpusPath(tuple[0], unResolvedEntity);
+                    newE2ERel.toEntity = this.storage.createAbsoluteCorpusPath(tuple[0], resEntity);
                     newE2ERel.toEntityAttribute = tuple[1];
 
                     this.addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);

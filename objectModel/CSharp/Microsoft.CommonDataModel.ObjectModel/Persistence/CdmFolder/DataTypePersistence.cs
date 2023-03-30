@@ -33,7 +33,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 Explanation = instance.Explanation,
                 DataTypeName = instance.DataTypeName,
-                ExtendsDataType =  Utils.JsonForm(instance.ExtendsDataType, resOpt, options),
+                ExtendsDataType = Utils.JsonForm(instance.ExtendsDataType, resOpt, options),
                 ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
             };
         }

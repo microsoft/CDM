@@ -77,7 +77,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             MakeDocumentDirty();
             currObject.Owner = this.Owner;
             PropagateInDocument(currObject, this.Owner.InDocument);
-            AllItems.Add(currObject);
+            lock (this.AllItems)
+            {
+                this.AllItems.Add(currObject);
+            }
             return currObject;
         }
 
@@ -97,7 +100,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public bool Remove(T currObject)
         {
-            bool wasRemoved = AllItems.Remove(currObject);
+            bool wasRemoved;
+            lock (this.AllItems)
+            {
+                wasRemoved = this.AllItems.Remove(currObject);
+            }
             PropagateInDocument(currObject, null);
             if (wasRemoved)
             {
@@ -112,9 +119,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public void RemoveAt(int index)
         {
-            if (index >= 0 && index < this.Count)
+            lock (AllItems)
             {
-                this.Remove(this.AllItems[index]);
+                if (index >= 0 && index < this.Count)
+                {
+                    this.Remove(AllItems[index]);
+                }
             }
         }
 
@@ -123,7 +133,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public T Item(string name)
         {
-            return this.AllItems.Find(x => x.FetchObjectDefinitionName() == name);
+            lock (this.AllItems)
+            {
+                return this.AllItems.Find(x => x.FetchObjectDefinitionName() == name);
+            }
         }
 
         /// <summary>
@@ -157,9 +170,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmCollection<T> Copy(ResolveOptions resOpt, CdmObject host = null)
         {
             var copy = new CdmCollection<T>(this.Ctx, this.Owner, this.DefaultType);
-            foreach (var element in this.AllItems)
+            lock (this.AllItems)
             {
-                copy.Add((T)element.Copy(resOpt));
+                foreach (var element in this.AllItems)
+                {
+                    copy.Add((T)element.Copy(resOpt));
+                }
             }
             return copy;
         }
@@ -180,7 +196,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             item.Owner = this.Owner;
             PropagateInDocument(item, this.Owner.InDocument);
             MakeDocumentDirty();
-            this.AllItems.Insert(index, item);
+            lock (this.AllItems)
+            {
+                this.AllItems.Insert(index, item);
+            }
         }
 
         /// <summary>
@@ -188,13 +207,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public void Clear()
         {
-            foreach (T item in this.AllItems)
+            lock (this.AllItems)
             {
-                item.Owner = null;
-                PropagateInDocument(item, null);
+                foreach (T item in this.AllItems)
+                {
+                    item.Owner = null;
+                    PropagateInDocument(item, null);
+                }
+                MakeDocumentDirty();
+                this.AllItems.Clear();
             }
-            MakeDocumentDirty();
-            this.AllItems.Clear();
         }
 
         /// <summary>
@@ -202,7 +224,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public bool Contains(T item)
         {
-            return this.AllItems.Contains(item);
+            lock (this.AllItems)
+            {
+                return this.AllItems.Contains(item);
+            }
         }
 
         /// <summary>
@@ -210,7 +235,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            this.AllItems.CopyTo(array, arrayIndex);
+            lock (this.AllItems)
+            {
+                this.AllItems.CopyTo(array, arrayIndex);
+            }
         }
 
         public bool IsReadOnly => ((IList<T>)AllItems).IsReadOnly;

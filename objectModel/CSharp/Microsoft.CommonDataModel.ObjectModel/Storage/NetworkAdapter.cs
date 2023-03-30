@@ -18,7 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     /// </summary>
     public abstract class NetworkAdapter : StorageAdapterBase, IDisposable
     {
-        protected CdmHttpClient httpClient;
+        protected ICdmHttpClient httpClient;
 
         // Use some default values in milliseconds in the case a user doesn't set them up.
         protected const double DefaultTimeout = 2000;

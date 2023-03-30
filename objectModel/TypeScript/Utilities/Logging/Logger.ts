@@ -76,7 +76,7 @@ export class Logger {
                         ['method', method]
                     ]);
 
-                    if (cdmStatusLevel.error == level || cdmStatusLevel.warning == level) {
+                    if (cdmStatusLevel.error === level || cdmStatusLevel.warning === level) {
                         theEvent.set('code', cdmLogCode[code]);
                     }
 
@@ -84,7 +84,7 @@ export class Logger {
                         theEvent.set('cid', ctx.correlationId);
                     }
 
-                    if (corpusPath !== null) {
+                    if (corpusPath !== undefined) {
                         theEvent.set('path', corpusPath);
                     }
 
@@ -131,7 +131,7 @@ export class Logger {
     private static formatMessage(className: string, message: string, method?: string, correlationId?: string, corpusPath?: string): string {
         method = method !== undefined ? ` | ${method}` : ``;
         correlationId = correlationId !== undefined ? ` | ${correlationId}` : ``;
-        corpusPath = corpusPath !== null ? ` | ${corpusPath}` : ``;
+        corpusPath = corpusPath !== undefined ? ` | ${corpusPath}` : ``;
         return `${className} | ${message}${method}${correlationId}${corpusPath}`;
     }
 
@@ -144,7 +144,7 @@ export class Logger {
         // Get the namespace of the storage for the manifest
         let storageNamespace: string = manifest.namespace;
 
-        if (storageNamespace === null || storageNamespace === undefined) {
+        if (storageNamespace === undefined) {
             storageNamespace = manifest.ctx.corpus.storage.defaultNamespace;
         }
 
@@ -174,14 +174,14 @@ export class Logger {
         // Get detailed info for each entity
         for (const entityDec of manifest.entities) {
             // Get data partition info, if any
-            if (entityDec.dataPartitions !== undefined && entityDec.dataPartitions !== null) {
+            if (entityDec.dataPartitions !== undefined && entityDec.dataPartitions !== undefined) {
                 partitionNum += entityDec.dataPartitions.length;
 
                 for (const pattern of entityDec.dataPartitionPatterns) {
                     // If both globPattern and regularExpression is set, globPattern will be used.
-                    if (pattern.globPattern !== null && pattern.globPattern !== undefined) {
+                    if (pattern.globPattern !== undefined && pattern.globPattern !== undefined) {
                         partitionGlobPatternNum++;
-                    } else if (pattern.regularExpression !== null && pattern.regularExpression !== undefined) {
+                    } else if (pattern.regularExpression !== undefined && pattern.regularExpression !== undefined) {
                         partitionRegExPatternNum++;
                     }
                 }
@@ -224,7 +224,7 @@ export class Logger {
         // Get entity storage namespace
         let entityNamespace: string = entity.inDocument.namespace;
 
-        if (entityNamespace === null || entityNamespace === undefined) {
+        if (entityNamespace === undefined) {
             entityNamespace = entity.ctx.corpus.storage.defaultNamespace;
         }
 
@@ -327,7 +327,7 @@ export class LoggerScope {
             this.isTopLevelMethod = true;
         }
 
-        Logger.debug(this.state.ctx, this.state.className, this.state.path, null, 'Entering scope');
+        Logger.debug(this.state.ctx, this.state.className, this.state.path, undefined, 'Entering scope');
     }
 
     /**
@@ -340,7 +340,7 @@ export class LoggerScope {
         // In C# - Cache is a concurrent dict, and getting the Count on it is getting blocked by other cache updates
         // const message: string = `Leaving scope. Time elapsed: ${(new Date()).valueOf() - this.Time.valueOf()} ms; Cache memory used: ${(this.state.ctx as resolveContext).attributeCache.size}.`;
         
-        Logger.debug(this.state.ctx, this.state.className, this.state.path, null, message, this.isTopLevelMethod);
+        Logger.debug(this.state.ctx, this.state.className, this.state.path, undefined, message, this.isTopLevelMethod);
         
         this.state.ctx.events.disable();
     }

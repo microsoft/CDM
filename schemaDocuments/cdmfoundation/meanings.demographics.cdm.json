@@ -1,6 +1,6 @@
 {
-  "$schema": "/schema.cdm.json",
-  "jsonSchemaSemanticVersion": "1.0.0",
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
   "imports": [
     {
       "corpusPath": "primitives.cdm.json"
@@ -11,36 +11,562 @@
   ],
   "definitions": [
     {
+      "traitName": "demographic",
+      "defaultVerb": "classifiedAs"
+    },
+    {
       "traitName": "means.demographic",
-      "extendsTrait": "means"
+      "extendsTrait": "demographic",
+      "defaultVerb": "means",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "entityType",
+          "verb": "classifiedAs"
+        },
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        },
+        {
+          "verb": "contains",
+          "traitReference": "options.anyOf",
+          "appliedTraits": [
+            {
+              "traitReference": "person.fullName",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.title",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.age",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.birthDate",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.ethnicity",
+              "verb": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "person.fullName",
+      "explanation": "a complete identifying name for a person (IS A completeName [contains->identityKind[means->person]]) has [parts of a name]",
+      "extendsTrait": {
+        "traitReference": "identity.completeName",
+        "appliedTraits": [
+          {
+            "verb": "contains",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "person"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.anyOf",
+          "appliedTraits": [
+            {
+              "traitReference": "person.initials",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.firstName",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.middleName",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.prefix",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.lastNamePrefix",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.lastName",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "person.suffix",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "means.identity.person.fullName",
+      "extendsTrait": "person.fullName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "dataTypeName": "fullName",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.person.fullName"
+      ]
+    },
+    {
+      "traitName": "person.initials",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "person.prefix",
+      "defaultVerb": "means",
+      "explanation": "A salutation such as a rank or honorific to place before a person's name",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "person.title",
+      "defaultVerb": "means",
+      "explanation": "A personal or professional title",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "means.identity.person.prefix",
+      "defaultVerb": "means",
+      "extendsTrait": "person.prefix",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.firstName",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "person"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "A person's given or first name.",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "means.identity.person.firstName",
+      "extendsTrait": "person.firstName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "dataTypeName": "firstName",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.person.firstName"
+      ]
+    },
+    {
+      "traitName": "person.middleName",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "person"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "A person's middle name",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "means.identity.person.middleName",
+      "extendsTrait": "person.middleName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "dataTypeName": "middleName",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.person.middleName"
+      ]
+    },
+    {
+      "traitName": "person.lastNamePrefix",
+      "explanation": "one of the standardized, culture specific last name prefixes, such as 'Van' or 'Le'",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "person.lastName",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "person"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "A person's surname, family name or last name.",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "means.identity.person.lastName",
+      "extendsTrait": "person.lastName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "dataTypeName": "lastName",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.person.lastName"
+      ]
+    },
+    {
+      "traitName": "person.suffix",
+      "defaultVerb": "means",
+      "explanation": "Follows a person's name and provides additional information about their position, education or honorific",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "means.identity.person.suffix",
+      "extendsTrait": "person.suffix",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.age",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.demographic.age",
-      "extendsTrait": "means.demographic"
+      "extendsTrait": "person.age",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.gender",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "person.genderKind",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "person.gender"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "qualification.female",
+      "defaultVerb": "qualifiedBy",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        },
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "qualification.male",
+      "defaultVerb": "qualifiedBy",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        },
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "person.genderKind.female",
+      "extendsTrait": {
+        "traitReference": "person.genderKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.female"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "person.genderKind.male",
+      "extendsTrait": {
+        "traitReference": "person.genderKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.male"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "person.genderKind.other",
+      "extendsTrait": {
+        "traitReference": "person.genderKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.other"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "person.genderKind.unknown",
+      "extendsTrait": {
+        "traitReference": "person.genderKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.unknown"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "person.genderKind.unspecified",
+      "extendsTrait": {
+        "traitReference": "person.genderKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.unspecified"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.demographic.gender",
-      "extendsTrait": "means.demographic"
+      "extendsTrait": "person.gender",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.ethnicity",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.demographic.ethnicity",
-      "extendsTrait": "means.demographic"
+      "extendsTrait": "person.ethnicity",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.maritalStatus",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "person.maritalStatusKind",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "person.maritalStatus"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.demographic.maritalStatus",
-      "extendsTrait": "means.demographic"
+      "extendsTrait": "person.maritalStatus",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.birthDate",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.demographic.birthDate",
-      "extendsTrait": "means.demographic"
+      "extendsTrait": "person.birthDate",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.incomeLevel",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.demographic.income",
-      "extendsTrait": "means.demographic"
+      "extendsTrait": "person.incomeLevel",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "person.educationAttainment",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "person.educationAttainmentKind",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "person.educationAttainment"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "demographic",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.demographic.education",
-      "extendsTrait": "means.demographic"
+      "extendsTrait": "person.educationAttainment",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
       "dataTypeName": "age",
@@ -79,5 +605,5 @@
       ]
     }
   ],
-  "documentVersion": "1.0"
+  "documentVersion": "2.0"
 }

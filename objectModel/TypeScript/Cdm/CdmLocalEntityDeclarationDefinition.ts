@@ -238,7 +238,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     ): Promise<void> {
 
         let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
-        let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
+        let cacheContext: StorageAdapterCacheContext = (adapter !== undefined) ? adapter.createFileQueryCacheContext() : undefined;
         try {
             const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
             const modifiedTime: Date = this.isVirtual() ? await this.ctx.corpus.getLastModifiedTimeFromObjectAsync(this)
@@ -286,7 +286,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
         }
         finally {
-            if (cacheContext != null) {
+            if (cacheContext !== undefined) {
                 cacheContext.dispose()
             }
         }
@@ -402,6 +402,6 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     }
 
     public resetLastFileModifiedOldTime(): void {
-        this.setLastFileModifiedOldTime(null);
+        this.setLastFileModifiedOldTime(undefined);
     }
 }

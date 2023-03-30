@@ -7,6 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Newtonsoft.Json.Linq;
+    using System.Collections.Generic;
 
     class TraitReferencePersistence
     {
@@ -21,6 +22,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             bool? optional = null;
             dynamic trait;
             JToken args = null;
+            CdmTraitReference trVerb = null;
+            List<CdmTraitReferenceBase> appliedTraits = null;
 
             if (obj is JValue)
             {
@@ -43,6 +46,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     trait = (string)obj["traitReference"];
                 else
                     trait = TraitPersistence.FromData(ctx, obj["traitReference"]);
+
+                trVerb = TraitReferencePersistence.FromData(ctx, obj["verb"]);
+
+                appliedTraits = Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]);
             }
 
             CdmTraitReference traitReference = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, trait, simpleReference);
@@ -59,6 +66,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     traitReference.Arguments.Add(ArgumentPersistence.FromData(ctx, a));
                 }
             }
+
+            traitReference.Verb = trVerb;
+
+            Utils.AddListToCdmCollection(traitReference.AppliedTraits, appliedTraits);
 
             return traitReference;
         }

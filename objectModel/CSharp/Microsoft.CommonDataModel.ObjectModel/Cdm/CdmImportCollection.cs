@@ -82,7 +82,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmImport Item(string corpusPath, string moniker = null, bool checkMoniker = true)
         {
             return this.AllItems.Find(x => checkMoniker ?
-                                            x.CorpusPath == corpusPath && x.Moniker == moniker : 
+                                            x.CorpusPath == corpusPath && x.Moniker == moniker :
                                             x.CorpusPath == corpusPath);
         }
     }

@@ -8,3 +8,5 @@ class Constants:
     _INCREMENTAL_PATTERN_PARAMETER_NAME = 'incrementPartitionPatternName'
 
     _FOUNDATIONS_CORPUS_PATH = 'cdm:/foundations.cdm.json'
+    
+    _FOUNDATION_FOUNDATIONS_CORPUS_PATH = 'cdm:/cdmfoundation/foundations.cdm.json'

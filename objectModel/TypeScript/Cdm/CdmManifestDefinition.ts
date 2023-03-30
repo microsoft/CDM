@@ -195,7 +195,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 return undefined;
             }
 
-            if (newEntityDocumentNameFormat == undefined) {
+            if (newEntityDocumentNameFormat === undefined || newEntityDocumentNameFormat === null) {
                 newEntityDocumentNameFormat = '{f}resolved/{n}.cdm.json';
             } else if (newEntityDocumentNameFormat === '') { // for back compat
                 newEntityDocumentNameFormat = '{n}.cdm.json';
@@ -456,7 +456,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     ): Promise<void> {
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
             let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
-            let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
+            let cacheContext: StorageAdapterCacheContext = (adapter !== undefined) ? adapter.createFileQueryCacheContext() : undefined;
             try {
                 const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeFromObjectAsync(this);
 
@@ -485,7 +485,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 }
             }
             finally {
-                if (cacheContext != null) {
+                if (cacheContext !== undefined) {
                     cacheContext.dispose()
                 }
             }

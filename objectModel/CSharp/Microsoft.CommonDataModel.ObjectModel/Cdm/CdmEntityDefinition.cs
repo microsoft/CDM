@@ -537,6 +537,40 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // things that need to go away
             rasb.RemoveRequestedAtts();
 
+            // // if requested, the 'meaning of this entity' traits are going to get added as meta traits (with verb 'of') to the 'meaning' traits of every attribute
+            // // this way we get  [personName of student] as a trait on the 'name' attribute of a 'currentStudents' entity
+            // if (resOpt.DecorateMeaningTraits == true)
+            // {
+            //     // means traits on the entity
+            //     var entProf = this.FetchTraitProfiles(resOpt, "means");
+            //     if (entProf != null)
+            //     {
+            //         // will need the "of" verb trait object
+            //         var trefOf = Ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "of", true);
+            //         if (trefOf != null)
+            //         {
+            //             // actually, a reference to that
+            //             foreach(var ra in rasb.ResolvedAttributeSet.Set)
+            //             {
+            //                 foreach(var rt in ra.ResolvedTraits.Set)
+            //                 {
+            //                     // 1000%, yes we need to cache these
+            //                     var attTraitProf = rt.FetchTraitProfile(resOpt, "means");
+            //                     if (attTraitProf != null)
+            //                     {
+            //                         // apply all from the entity
+            //                         foreach(var entMeans in entProf)
+            //                         {
+            //                             var trefEntMeans = Ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, entMeans.TraitName, true);
+            //                             rt.AddMetaTrait(trefEntMeans, trefOf);
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+
             // recursively sets the target owner's to be this entity.
             // required because the replaceAsForeignKey operation uses the owner to generate the `is.linkedEntity.identifier` trait.
             rasb.ResolvedAttributeSet.SetTargetOwner(this);
@@ -659,9 +693,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 origDoc = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.Imports.Add(origDoc, "resolvedFrom");
 
+                // if the source document imports foundations, then the resolved one should do the same
                 if (this.InDocument.Imports.Item(Constants.FoundationsCorpusPath) != null)
                 {
                     docRes.Imports.Add(Constants.FoundationsCorpusPath);
+                }
+                if (this.InDocument.Imports.Item(Constants.FoundationFoundationsCorpusPath) != null)
+                {
+                    docRes.Imports.Add(Constants.FoundationFoundationsCorpusPath);
                 }
 
                 docRes.DocumentVersion = this.InDocument.DocumentVersion;
@@ -1026,7 +1065,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             if (et is CdmTraitReference)
                             {
-                                replaceTraitAttRef(et as CdmTraitReference, newEntName, false); 
+                                replaceTraitAttRef(et as CdmTraitReference, newEntName, false);
                             }
                         }
 
@@ -1116,7 +1155,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void IndicateAbstractionLevel(string level, ResolveOptions resOpt)
         {
             // see if entitySchemaAbstractionLevel is a known trait to this entity
-            if (resOpt != null && 
+            if (resOpt != null &&
                 this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, "has.entitySchemaAbstractionLevel", CdmObjectType.TraitDef, retry: false) == null)
             {
                 return;

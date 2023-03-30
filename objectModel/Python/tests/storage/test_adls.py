@@ -5,17 +5,25 @@ import datetime
 from datetime import timezone
 import time
 import json
+from typing import TYPE_CHECKING
 import unittest
 import os
+from unittest.mock import Mock
+from cdm.utilities.network.cdm_http_response import CdmHttpResponse
 
 from tests.common import async_test, TestHelper
 from tests.adls_test_helper import AdlsTestHelper
 from cdm.enums import CdmStatusLevel
 from cdm.storage.adls import ADLSAdapter
 from cdm.enums import AzureCloudEndpoint
+from cdm.utilities.network.cdm_http_client import CdmHttpClient
 from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
 from cdm.objectmodel.cdm_corpus_context import CdmCorpusContext
+from tests.storage.testAdapters.mock_adls_adapter import MockADLSAdapter
+
+if TYPE_CHECKING:
+    from cdm.objectmodel import CdmDocumentDefinition, CdmFolderDefinition
 
 
 class FakeTokenProvider(TokenProvider):
@@ -28,7 +36,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
     def create_dummy_adapter(self):
         adapter = ADLSAdapter(root='/fs', hostname='dummy.dfs.core.windows.net', tenant='dummyTenant', resource='dummyResource',
-            client_id='dummyClientId', secret='dummySecret')
+                              client_id='dummyClientId', secret='dummySecret')
         adapter.number_of_retries = 0
         return adapter
 
@@ -82,8 +90,10 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(len(manifest.entities), 1)
         self.assertEqual(len(manifest.entities[0].data_partitions), 2)
 
-        self.assertEqual(manifest.entities[0].data_partitions[0].location, 'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-0.csv')
-        self.assertEqual(manifest.entities[0].data_partitions[1].location, 'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv')
+        self.assertEqual(manifest.entities[0].data_partitions[0].location,
+                         'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-0.csv')
+        self.assertEqual(manifest.entities[0].data_partitions[1].location,
+                         'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv')
 
     @async_test
     @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), 'ADLS environment variables not set up')
@@ -214,7 +224,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
         filename = 'largefilecheck_Python.txt'
         write_contents = "x" * 100000000
-        
+
         try:
             await adls_adapter.write_async(filename, write_contents)
         except Exception as e:
@@ -292,14 +302,20 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
         # Check that an adapter path is correctly created from a corpus path with colons
         corpus_path_with_colons = 'namespace:/a/path:with:colons/some-file.json'
-        self.assertEqual('https://storageaccount.dfs.core.windows.net/fs/a/path%3Awith%3Acolons/some-file.json', adls_adapter.create_adapter_path(corpus_path_with_colons))
-        self.assertEqual('/a/path:with:colons/some-file.json', adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%3Awith%3Acolons/some-file.json'))
-        self.assertEqual('/a/path:with:colons/some-file.json', adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%3awith%3acolons/some-file.json'))
+        self.assertEqual('https://storageaccount.dfs.core.windows.net/fs/a/path%3Awith%3Acolons/some-file.json',
+                         adls_adapter.create_adapter_path(corpus_path_with_colons))
+        self.assertEqual('/a/path:with:colons/some-file.json',
+                         adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%3Awith%3Acolons/some-file.json'))
+        self.assertEqual('/a/path:with:colons/some-file.json',
+                         adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%3awith%3acolons/some-file.json'))
 
         # Check other special characters
-        self.assertEqual('https://storageaccount.dfs.core.windows.net/fs/a/path%20with%3Dspecial%3Dcharacters/some-file.json', adls_adapter.create_adapter_path('namespace:/a/path with=special=characters/some-file.json'))
-        self.assertEqual('/a/path with=special=characters/some-file.json', adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%20with%3dspecial%3dcharacters/some-file.json'))
-        self.assertEqual('/a/path with=special=characters/some-file.json', adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%20with%3dspecial%3Dcharacters/some-file.json'))
+        self.assertEqual('https://storageaccount.dfs.core.windows.net/fs/a/path%20with%3Dspecial%3Dcharacters/some-file.json',
+                         adls_adapter.create_adapter_path('namespace:/a/path with=special=characters/some-file.json'))
+        self.assertEqual('/a/path with=special=characters/some-file.json',
+                         adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%20with%3dspecial%3dcharacters/some-file.json'))
+        self.assertEqual('/a/path with=special=characters/some-file.json',
+                         adls_adapter.create_corpus_path('https://storageaccount.dfs.core.windows.net/fs/a/path%20with%3dspecial%3Dcharacters/some-file.json'))
 
         # Check that an adapter path is null if the corpus path provided is null
         self.assertIsNone(adls_adapter.create_adapter_path(None))
@@ -446,13 +462,111 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
         try:
             config_snake_case = TestHelper.get_input_file_content(self.test_subpath, 'test_loading_and_saving_endpoint_in_config',
-                                                       'config-SnakeCase.json')
+                                                                  'config-SnakeCase.json')
             corpus_snake_case = CdmCorpusDefinition()
             corpus_snake_case.storage.mount_from_config(config_snake_case)
             self.fail('Expected RuntimeException for config.json using endpoint value in snake case.')
         except Exception as ex:
             message = 'Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.'
             self.assertEqual(ex.args[0], message)
+
+    @async_test
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), "ADLS environment variables not set up")
+    async def test_adls_write_upload_error(self):
+        # first request creates an empty file
+        first_response = CdmHttpResponse(201)
+        first_response.is_successful = True
+
+        # second request to throw error
+        second_response = CdmHttpResponse(404)
+        second_response.is_successful = True
+
+        # before error is logged, request is made to delete content at path
+        third_response = CdmHttpResponse()
+        third_response.is_successful = True
+
+        arg = 0
+
+        async def return_values(request, callback, ctx):
+            nonlocal arg
+            arg = arg + 1
+            if arg == 1:
+                return first_response
+            if arg == 2:
+                return second_response
+            if arg == 3:
+                return third_response
+
+        http_client = CdmHttpClient()
+        http_client._send_async = Mock()
+        http_client._send_async.side_effect = return_values
+
+        uploaded_data_not_accepted_error = False
+
+        def callback(_, message: str):
+            nonlocal uploaded_data_not_accepted_error
+            if 'Could not write ADLS content at path, there was an issue at "/someDoc.cdm.json" during the append action.' in message:
+                uploaded_data_not_accepted_error = True
+
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_adls_write_upload_error')
+        corpus.set_event_callback(callback, CdmStatusLevel.ERROR)
+        corpus.storage.mount('adls', MockADLSAdapter(http_client))
+        adls_folder = corpus.storage._namespace_folders.get('adls')  # type: CdmFolderDefinition
+        some_doc = adls_folder._documents.append('someDoc')  # type: CdmDocumentDefinition
+        await some_doc.save_as_async('someDoc.cdm.json')
+        self.assertTrue(uploaded_data_not_accepted_error)
+
+    @async_test
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), "ADLS environment variables not set up")
+    async def test_adls_write_flush_error(self):
+        # first request creates an empty file
+        first_response = CdmHttpResponse(201)
+        first_response.is_successful = True
+
+        # second request is accepted, uploaded data worked correctly
+        second_response = CdmHttpResponse(202)
+        second_response.is_successful = True
+
+        # before error is logged, request is made to delete content at path
+        third_response = CdmHttpResponse()
+        third_response.is_successful = True
+
+        # this failure occurs when data was not flushed correctly
+        fourth_response = CdmHttpResponse(304)
+        fourth_response.is_successful = True
+
+        arg = 0
+
+        async def return_values(request, callback, ctx):
+            nonlocal arg
+            arg = arg + 1
+            if arg == 1:
+                return first_response
+            if arg == 2:
+                return second_response
+            if arg == 3:
+                return third_response
+            if arg == 4:
+                return fourth_response
+
+        http_client = CdmHttpClient()
+        http_client._send_async = Mock()
+        http_client._send_async.side_effect = return_values
+
+        uploaded_data_not_accepted_error = False
+
+        def callback(_, message: str):
+            nonlocal uploaded_data_not_accepted_error
+            if 'Could not write ADLS content at path, there was an issue at "/someDoc.cdm.json" during the flush action.' in message:
+                uploaded_data_not_accepted_error = True
+
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_adls_write_flush_error')
+        corpus.set_event_callback(callback, CdmStatusLevel.ERROR)
+        corpus.storage.mount('adls', MockADLSAdapter(http_client))
+        adls_folder = corpus.storage._namespace_folders.get('adls')  # type: CdmFolderDefinition
+        some_doc = adls_folder._documents.append('someDoc')  # type: CdmDocumentDefinition
+        await some_doc.save_as_async('someDoc.cdm.json')
+        self.assertTrue(uploaded_data_not_accepted_error)
 
 
 if __name__ == '__main__':

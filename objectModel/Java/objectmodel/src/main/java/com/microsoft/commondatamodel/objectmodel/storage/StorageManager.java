@@ -45,10 +45,14 @@ public class StorageManager {
 
     // Set up default adapters.
     this.mount("local", new LocalAdapter(System.getProperty("user.dir") + "\\objectmodel"));
-    this.mount("cdm", new CdmStandardsAdapter());
-
     systemDefinedNamespaces.add("local");
-    systemDefinedNamespaces.add("cdm");
+
+    try {
+      this.mount("cdm", new CdmStandardsAdapter());
+      systemDefinedNamespaces.add("cdm");
+    } catch (ClassNotFoundException e) {
+      Logger.error(this.corpus.getCtx(), TAG, "constructor", null, CdmLogCode.ErrStorageCdmStandardsMissing, "com.microsoft.commondatamodel.cdmStandards");
+    }
   }
 
   public void mount(final String nameSpace, final StorageAdapterBase adapter) {
@@ -123,7 +127,11 @@ public class StorageManager {
 
         switch (itemType) {
           case CdmStandardsAdapter.TYPE:
-            adapter = new CdmStandardsAdapter();
+            try {
+              adapter = new CdmStandardsAdapter();
+            } catch (ClassNotFoundException e) {
+              Logger.error(this.corpus.getCtx(), TAG, "constructor", null, CdmLogCode.ErrStorageCdmStandardsMissing, "com.microsoft.commondatamodel.cdmStandards");
+            }
             break;
           case LocalAdapter.TYPE:
             adapter = new LocalAdapter();

@@ -1,19 +1,22 @@
 {
-  "$schema": "/schema.cdm.json",
-  "jsonSchemaSemanticVersion": "1.0.0",
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
   "imports": [
     {
       "corpusPath": "primitives.cdm.json"
     },
     {
       "corpusPath": "meanings.cdm.json"
+    },
+    {
+      "corpusPath": "relationshipPurposes.cdm.json"
     }
   ],
   "definitions": [
     {
       "traitName": "is.application",
-      "extendsTrait": "is",
-      "explanation": "root trait for application information"
+      "explanation": "root trait for application information",
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.application.releaseVersion",
@@ -30,9 +33,9 @@
     },
     {
       "traitName": "is.CDM",
-      "extendsTrait": "is",
       "elevated": true,
-      "explanation": "root trait for information about the CDM itself."
+      "explanation": "root trait for information about the CDM itself.",
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.CDM.entityVersion",
@@ -82,7 +85,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
@@ -105,7 +108,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
@@ -133,7 +136,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
@@ -156,10 +159,29 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
+      ]
+    },
+    {
+      "traitName": "attributeInterations.exclusionGroup",
+      "explanation": "associates a named exclusion group with an attribute. For all attributes in the same named exclusion group, only one of them per record will contain valid data.",
+      "defaultVerb": "has",
+      "hasParameters": [
+        {
+          "name": "exclusionGroupName",
+          "dataType": "string",
+          "required": true
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "options.oneOf",
+          "verb": "means"
+        },
+        "fundamental"
       ]
     },
     {
@@ -184,7 +206,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
@@ -192,12 +214,11 @@
     },
     {
       "traitName": "is.virtual.attribute",
-      "extendsTrait": "is",
-      "explanation": "Marks an attribute added to an entity to document or represent a concept, often regarding other attributes. When working with data, be aware that virtual attributes might never have corresponding data values in an entity's partition or might only have data values if special measures are taken to manifest them."
+      "explanation": "Marks an attribute added to an entity to document or represent a concept, often regarding other attributes. When working with data, be aware that virtual attributes might never have corresponding data values in an entity's partition or might only have data values if special measures are taken to manifest them.",
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.localized",
-      "extendsTrait": "is",
       "explanation": "Associates a list of localized string with an object",
       "hasParameters": [
         {
@@ -215,7 +236,8 @@
           },
           "explanation": "a reference to the constant entity holding the list of localized text"
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.localized.displayedAs",
@@ -256,7 +278,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
@@ -279,7 +301,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
@@ -308,7 +330,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
             }
           ]
         }
@@ -337,7 +359,34 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.6"
+              "value": "3.0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entityName": "listLookupKindOfMapping",
+      "explanation": "a list of data values and corresponding 'kindOf' trait references ",
+      "hasAttributes": [
+        {
+          "name": "attributeValue",
+          "dataType": "string",
+          "explanation": "One of the enumerated values for this attribute"
+        },
+        {
+          "name": "traitPath",
+          "dataType": "string",
+          "explanation": "A CDM corpus path for the specific 'kindOf' trait definition. For instance: cdm:/meanings.commerce.cdm.json/commerce.partyKind.individual"
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "3.0"
             }
           ]
         }
@@ -356,26 +405,26 @@
       ],
       "associatedProperties": [
         "defaultValue"
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.nullable",
-      "extendsTrait": "is",
       "explanation": "The attribute value may be set to NULL.",
       "associatedProperties": [
         "isNullable"
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.readOnly",
-      "extendsTrait": "is",
       "associatedProperties": [
         "isReadOnly"
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.requiredAtLevel",
-      "extendsTrait": "is",
       "explanation": "The requirement level for setting values into this attribute in CDS for Applications or for including this attribute in entities created in CDS for Analytics",
       "hasParameters": [
         {
@@ -385,11 +434,11 @@
           "direction": "both",
           "explanation": "values can be: 'systemrequired', 'required', 'recommended', 'none'"
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.constrained",
-      "extendsTrait": "is",
       "explanation": "maximum length or value constraints",
       "hasParameters": [
         {
@@ -409,11 +458,11 @@
         "maximumValue",
         "minimumValue",
         "maximumLength"
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.constrainedList",
-      "extendsTrait": "is",
       "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities",
       "hasParameters": [
         {
@@ -433,11 +482,11 @@
       ],
       "associatedProperties": [
         "valueConstrainedToList"
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.constrainedList.correlated",
-      "extendsTrait": "is",
       "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities that represent correlated status",
       "hasParameters": [
         {
@@ -457,11 +506,11 @@
       ],
       "associatedProperties": [
         "valueConstrainedToList"
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.constrainedList.string",
-      "extendsTrait": "is",
       "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities",
       "hasParameters": [
         {
@@ -481,11 +530,11 @@
       ],
       "associatedProperties": [
         "valueConstrainedToList"
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.constrainedList.wellKnown",
-      "extendsTrait": "is",
       "explanation": "The values of an attribute are taken from or looked up from a fixed list of possibilities which are defined in an identified public location.",
       "hasParameters": [
         {
@@ -502,7 +551,32 @@
       ],
       "associatedProperties": [
         "valueConstrainedToList"
-      ]
+      ],
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "constrainedList.kindOfMapping",
+      "explanation": "The values of an attribute can be mapped (using the values in this table) into a standard set of 'kindOf' trait references",
+      "hasParameters": [
+        {
+          "name": "defaultList",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "listLookupKindOfMapping"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "associatedProperties": [
+        "valueConstrainedToList"
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "means.entityState",
@@ -518,17 +592,25 @@
       ]
     },
     {
-      "traitName": "is.correlatedWith",
-      "extendsTrait": "is",
-      "explanation": "the attribute value is correlated with the sourceAttribute",
+      "traitName": "attributeInterations.correlated",
+      "explanation": "applied to an attribute to indicate a dependency or correlation with another attribute in the same entity",
+      "defaultVerb": "has",
       "hasParameters": [
         {
           "name": "sourceAttribute",
+          "explanation": "name or path to name of attribute in the same entity with which this attribute is correlated or dependent.",
           "dataType": "attributeName",
-          "direction": "both",
           "required": true
         }
+      ],
+      "exhibitsTraits": [
+        "fundamental"
       ]
+    },
+    {
+      "traitName": "is.correlatedWith",
+      "extendsTrait": "attributeInterations.correlated",
+      "explanation": "the attribute value is correlated with the sourceAttribute"
     },
     {
       "purposeName": "representsCorrelatedStatusWith",
@@ -588,8 +670,8 @@
     },
     {
       "traitName": "is.partition",
-      "extendsTrait": "is",
-      "explanation": "The base trait for partition specific traits."
+      "explanation": "The base trait for partition specific traits.",
+      "defaultVerb": "is"
     },
     {
       "traitName": "is.partition.format",
@@ -658,6 +740,36 @@
           "defaultValue": "false",
           "required": false,
           "explanation": "Individual records of data in the csv file might be missing column values at the end of the record."
+        },
+        {
+          "name": "inferSchema",
+          "dataType": "boolean",
+          "defaultValue": "false",
+          "explanation": "The infer Schema which infers the input schema automatically from data. It requires one extra pass over the data."
+        },
+        {
+          "name": "ignoreLeadingWhiteSpace",
+          "dataType": "boolean",
+          "defaultValue": "false",
+          "explanation": "It defines whether or not leading whitespaces from values being read should be skipped."
+        },
+        {
+          "name": "IgnoreTrailingWhiteSpace",
+          "dataType": "boolean",
+          "defaultValue": "false",
+          "explanation": "It defines whether or not trailing whitespaces from values being read should be skipped."
+        },
+        {
+          "name": "timestampFormat",
+          "dataType": "string",
+          "defaultValue": "yyyy-MM-dd'T'HH:mm:ss.SSSZZ",
+          "explanation": "It sets the string that indicates a timestamp format."
+        },
+        {
+          "name": "multiLine",
+          "dataType": "boolean",
+          "defaultValue": "false",
+          "explanation": "It enables multiple lines."
         }
       ]
     },
@@ -707,7 +819,8 @@
           "explanation": "the name of the compression format: gzip; Snappy; lto",
           "required": true
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.partition.culture",
@@ -719,7 +832,22 @@
           "dataType": "string",
           "defaultValue": "en-us"
         }
-      ]
+      ],
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "has.dbSource",
+      "extendsTrait": "has",
+      "explanation": "A trait defining the location of database in format 'abfss://<filesystem>@storageAccount.dfs.core.windows.net/'",
+      "hasParameters": [
+        {
+          "name": "location",
+          "dataType": "string",
+          "explanation": "the location of database in format 'abfss://<filesystem>@<storageAccount>.dfs.core.windows.net/'",
+          "required": true
+        }
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.partition.incremental",
@@ -803,9 +931,21 @@
       ]
     },
     {
+      "traitName": "has.partition.details",
+      "extendsTrait": "has",
+      "explanation": "Indicates additional details pertinent to the partition object.",
+      "hasParameters": [
+        {
+          "name": "partitioningColumns",
+          "explanation": "A string containing a comma-separated list of column names used for table partitioning",
+          "dataType": "listLookupMultiple"
+        }
+      ]
+    },
+    {
       "traitName": "is.modelConversion",
-      "extendsTrait": "is",
-      "explanation": "Represents a correlation with model.json to CDM model conversion."
+      "explanation": "Represents a correlation with model.json to CDM model conversion.",
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.modelConversion.modelVersion",
@@ -842,7 +982,6 @@
     },
     {
       "traitName": "is.managedBy",
-      "extendsTrait": "is",
       "explanation": "The value denotes information about a service/entity who is owning a model.",
       "hasParameters": [
         {
@@ -850,7 +989,8 @@
           "dataType": "string",
           "explanation": "The name of the managing entity or service."
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.entitySchemaAbstractionLevel",
@@ -863,7 +1003,8 @@
           "defaultValue": "logical",
           "explanation": "Possible values: logical, composition, resolved"
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.schemaObjectIdentifier",
@@ -876,7 +1017,8 @@
           "explanation": "The identifier for the schema object. There is no uniqueness guarantee enforced by CDM. It is a contract between reader and writer of the schema.",
           "required": true
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.description",
@@ -898,7 +1040,8 @@
             ]
           }
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.displayName",
@@ -920,7 +1063,8 @@
             ]
           }
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.displayFolder",
@@ -942,12 +1086,14 @@
             ]
           }
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.origin",
       "extendsTrait": "has",
-      "explanation": "The root trait for the hierarchy related to the origin of schema."
+      "explanation": "The root trait for the hierarchy related to the origin of schema.",
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.origin.domain",
@@ -978,7 +1124,8 @@
     {
       "traitName": "has.relational",
       "extendsTrait": "has",
-      "explanation": "The root trait for all traits related specifically to Relational activity."
+      "explanation": "The root trait for all traits related specifically to Relational activity.",
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.relational.defaultAggregation",
@@ -1128,8 +1275,8 @@
     },
     {
       "traitName": "means.relationship",
-      "extendsTrait": "means",
-      "explanation": "root trait for semantic traits relevant to relationships"
+      "explanation": "root trait for semantic traits relevant to relationships",
+      "defaultVerb": "has"
     },
     {
       "traitName": "means.relationship.parent",
@@ -1194,18 +1341,19 @@
     },
     {
       "traitName": "is.relationship",
-      "extendsTrait": "is",
-      "explanation": "root trait for structural traits relevant to relationships"
+      "explanation": "root trait for structural traits relevant to relationships",
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.relationship.default",
-      "extendsTrait": "is",
-      "explanation": "The default relationship when there are multiple relationships between two entities."
+      "explanation": "The default relationship when there are multiple relationships between two entities.",
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.relationship",
       "extendsTrait": "has",
-      "explanation": "The root trait for annotative traits relevant to relationships"
+      "explanation": "The root trait for annotative traits relevant to relationships",
+      "defaultVerb": "has"
     },
     {
       "traitName": "has.relationship.constraint",
@@ -1217,8 +1365,77 @@
           "explanation": "relationship constraint in the chosen syntax",
           "dataType": "string"
         }
+      ],
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "rowSelectionCriteria",
+      "explanation": "Applied to attributes (with a 'means' or 'has' verb) to express that the attribute should be used in some way to select or disambiguate a given record from a set of other records.",
+      "defaultVerb": "has",
+      "exhibitsTraits": [
+        "fundamental"
       ]
+    },
+    {
+      "traitName": "rowSelectionCriteria.null",
+      "explanation": "(see rowSelectionCriteria) The affected attribute indicates a selected value when the attribute value is null. Example: from a group of possible records, pick the one where 'periodEndDate' is NULL.",
+      "extendsTrait": {
+        "traitReference": "rowSelectionCriteria",
+        "appliedTraits": [
+          "qualification.null"
+        ]
+      }
+    },
+    {
+      "traitName": "rowSelectionCriteria.exists",
+      "explanation": "(see rowSelectionCriteria) The affected attribute indicates a selected value when the attribute value is not null. Example: from a group of possible records, pick the one where 'assignedWorker' is NOT NULL.",
+      "extendsTrait": {
+        "traitReference": "rowSelectionCriteria",
+        "appliedTraits": [
+          "qualification.exists"
+        ]
+      }
+    },
+    {
+      "traitName": "rowSelectionCriteria.true",
+      "explanation": "(see rowSelectionCriteria) The affected attribute indicates a selected value when the attribute value is true. Example: from a group of possible records, pick the one where 'isActiveRecord' is true.",
+      "extendsTrait": {
+        "traitReference": "rowSelectionCriteria",
+        "appliedTraits": [
+          "qualification.true"
+        ]
+      }
+    },
+    {
+      "traitName": "rowSelectionCriteria.false",
+      "explanation": "(see rowSelectionCriteria) The affected attribute indicates a selected value when the attribute value is false. Example: from a group of possible records, pick the one where 'isExpired' is false.",
+      "extendsTrait": {
+        "traitReference": "rowSelectionCriteria",
+        "appliedTraits": [
+          "qualification.false"
+        ]
+      }
+    },
+    {
+      "traitName": "rowSelectionCriteria.maximum",
+      "explanation": "(see rowSelectionCriteria) The affected attribute indicates a selected value by having the highest attribute value in the set. Example: from a group of possible records, pick the one with the greatest 'periodStartDate' value",
+      "extendsTrait": {
+        "traitReference": "rowSelectionCriteria",
+        "appliedTraits": [
+          "qualification.maximum"
+        ]
+      }
+    },
+    {
+      "traitName": "rowSelectionCriteria.minimum",
+      "explanation": "(see rowSelectionCriteria) The affected attribute indicates a selected value by having the lowest attribute value in the set. Example: from a group of possible records, pick the one with the lowest 'daysRemaining' value",
+      "extendsTrait": {
+        "traitReference": "rowSelectionCriteria",
+        "appliedTraits": [
+          "qualification.minimum"
+        ]
+      }
     }
   ],
-  "documentVersion": "2.6"
+  "documentVersion": "3.0"
 }

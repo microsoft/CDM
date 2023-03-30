@@ -380,7 +380,7 @@ class CdmCorpusDefinition:
                     new_e2e_rel = CdmE2ERelationship(self.ctx, tuple[2])
                     new_e2e_rel.from_entity = self.storage.create_absolute_corpus_path(from_entity, unresolved_entity)
                     new_e2e_rel.from_entity_attribute = from_atts[i].fetch_object_definition_name()
-                    new_e2e_rel.to_entity = self.storage.create_absolute_corpus_path(tuple[0], unresolved_entity)
+                    new_e2e_rel.to_entity = self.storage.create_absolute_corpus_path(tuple[0], res_entity)
                     new_e2e_rel.to_entity_attribute = tuple[1]
 
                     self._add_trait_refs_and_corpus_paths_to_relationship(trait_refs_and_corpus_paths, new_e2e_rel)

@@ -1682,7 +1682,7 @@ public class CdmCorpusDefinition {
           CdmE2ERelationship newE2ERel = new CdmE2ERelationship(this.ctx, tuple.get(2));
           newE2ERel.setFromEntity(this.getStorage().createAbsoluteCorpusPath(fromEntity, unResolvedEntity));
           newE2ERel.setFromEntityAttribute(fromAtts.get(i).fetchObjectDefinitionName());
-          newE2ERel.setToEntity(this.getStorage().createAbsoluteCorpusPath(tuple.get(0), unResolvedEntity));
+          newE2ERel.setToEntity(this.getStorage().createAbsoluteCorpusPath(tuple.get(0), resEntity));
           newE2ERel.setToEntityAttribute(tuple.get(1));
 
           this.addTraitRefsAndCorpusPathsToRelationship(traitRefsAndCorpusPaths, newE2ERel);

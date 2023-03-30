@@ -117,19 +117,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
                     if (entityObj["type"] != null)
                     {
-                       if (entityObj["type"].ToString() == EntityDeclarationDefinitionType.LocalEntity)
-                       {
+                        if (entityObj["type"].ToString() == EntityDeclarationDefinitionType.LocalEntity)
+                        {
                             entity = LocalEntityDeclarationPersistence.FromData(ctx, fullPath, entityObj);
-                       }
-                       else if (entityObj["type"].ToString() == EntityDeclarationDefinitionType.ReferencedEntity)
-                       {
+                        }
+                        else if (entityObj["type"].ToString() == EntityDeclarationDefinitionType.ReferencedEntity)
+                        {
                             entity = ReferencedEntityDeclarationPersistence.FromData(ctx, fullPath, entityObj);
-                       }
-                       else
-                       {
+                        }
+                        else
+                        {
                             Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistEntityDeclarationMissing, (string)entityObj["entityName"]);
-                       }
-                    } 
+                        }
+                    }
                     else
                     {
                         // We see old structure of entity declaration, check for entity schema/declaration.
@@ -144,7 +144,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                             entity = ReferencedEntityDeclarationPersistence.FromData(ctx, fullPath, entityObj);
                         }
                     }
-                    
+
                     manifest.Entities.Add(entity);
                 }
 

@@ -63,6 +63,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
+        {
+            // use the base implementation to get the attributes first
+            ResolvedAttributeSetBuilder rasb = base.ConstructResolvedAttributes(resOpt, under);
+            // traits applied to an attribute group mean the traits are applied to the attributes from that group.
+            if (this.AppliedTraits != null && this.AppliedTraits.Count > 0 && rasb.ResolvedAttributeSet.Size > 0)
+            {
+                // get the resolved form of these applied traits
+                ResolvedTraitSetBuilder rtsbApplied = new ResolvedTraitSetBuilder();
+                foreach (CdmTraitReference trait in this.AppliedTraits)
+                {
+                    rtsbApplied.MergeTraits(trait.FetchResolvedTraits(resOpt));
+                }
+                // push down to the atts
+                rasb.ResolvedAttributeSet.ApplyTraits(rtsbApplied.ResolvedTraitSet);
+            }
+
+            return rasb;
+        }
+
+
         [Obsolete("For internal use only.")]
         public ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {

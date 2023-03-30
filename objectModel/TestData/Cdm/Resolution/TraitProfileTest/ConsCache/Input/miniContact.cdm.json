@@ -1,0 +1,578 @@
+{
+    "$schema": "./schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [{ "corpusPath": "cdm:/cdmfoundation/foundations.cdm.json"}],
+
+    "definitions" : [
+        {
+          "entityName" : "Contact",
+          "exhibitsTraits" : [
+            "commerce.individualCustomer"
+          ],
+          "hasAttributes" : [
+            {
+              "name" : "gendercode",
+              "dataType": "integer",
+              "appliedTraits" : [
+                {"verb": "means", "traitReference": "person.genderKind",
+                  "appliedTraits":[
+                      {"verb": "has", "traitReference": "constrainedList.kindOfMapping",
+                          "arguments": [{
+                              "entityReference": {
+                                  "explanation": "The constantValues below correspond to the attributes of the 'listLookupKindOfMapping' entityShape which are: {attributeValue, traitPath}",
+                                  "entityShape": "listLookupKindOfMapping",
+                                  "constantValues": [
+                                      ["2", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.female"],
+                                      ["1", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.male"],
+                                      ["0", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.unknown"],
+                                      ["", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.unknown"]
+                                  ]
+                              }
+                          }]
+                      }
+                  ]
+                }
+              ]
+           },
+            {
+              "name" : "familystatuscode",
+              "dataType": "integer",
+              "appliedTraits" : [{"traitReference":"person.maritalStatusKind"}]
+            },
+            {
+              "name" : "contactid",
+              "dataType": "entityId",
+              "appliedTraits" : []
+    
+            },
+            {
+              "name" : "msfsi_joindate",
+              "appliedTraits" : [
+                {
+                  "traitReference":"means.measurement.date",
+                  "appliedTraits": [{"verb":"means", "traitReference": "qualification.effective"}, {"verb":"of", "traitReference": "commerce.customer"}]
+                }
+                 
+              ],
+              "dataType" : "date"
+            },
+            {
+              "name" : "fullname",
+              "dataType": "string",
+              "appliedTraits" : ["person.fullName"]
+    
+            }
+          ]
+        },
+        {
+            "entityName": "Customer",
+            "exhibitsTraits": [
+                "commerce.customer"
+            ],
+            "displayName": "Customer",
+            "description": "A customer is an individual or legal entity that has or has purchased a product or service.\n\nA potential customer is an individual or legal entity that has the desire to acquire a product or service, the financial ability to pay for that product or service and is located in a location in which the product or service can be delivered to them.\n\nThe definition of 'customer' is of critical importance for every organization.    \n\nIt is the customer that is the focus of product planning, marketing, sales, service, reporting and analytics.    Without 'customer' there would be no need for the organization to exist since its purpose is to serve the customer and profit from that interaction.\n\nThe definition of 'customer' must be consistent with how customers exist and interact with the organization in the real world.  An artificial or conceptual definition of 'customer' that is not consistent with these two objectives is doomed to fail because the data will not be consistent with the definition and employees will not accept concepts or terms that are not consistent with what they see, know and how they interact with customers on a working basis.\n\nMicrosoft defines 'customer' to meet these objectives.    When we look out into the real world we see two dominant types of customers:  human beings and legal entities.     \n\nHuman beings are obviously male and female individuals of various ages, sex, demographics and a variety of similar dimensions that describe and define them who purchase products, good and services.    \n\nLegal entities are those legally-defined entities such as corporations, partnerships, non-profit organizations, government organizations etc. that purchase products, goods and services.\n\nThis view of 'customer' is consistent with the real world and consistent with how employees view and interact with customers.\n\nOf course, that is just the start of identifying, defining and understanding each type of 'customer'.     There is a great deal of detail, complexity and related data that can be used to define each type of customer to various levels of detail and different dimensions of information.\n\nMicrosoft implements these detailed concepts and related data via two distinct business area models that expand the coverage and complexity of each type of customer:\n\n-  INDIVIDUAL CUSTOMER Business Area Model\n-  LEGAL ENTITY CUSTOMER Business Area Model\n\nNote:\nEach of the Microsoft models - enterprise, business area or data warehouse - have a representative level of detail for the appropriate type of customer, which is a 'subset' of the total data available in the associated INDIVIDUAL CUSTOMER or LEGAL ENTITY CUSTOMER business area models..   Reference either of those models to expand the coverage or level of detail in each respective data model.\n\nThe actual customer implemented in each model depends upon the dominant use of customer for that industry.     \n\nFor example, in the pharmaceutical industry the customer is a legal entity, which represents another corporation, company, government organization etc. that purchases the pharmaceutical product and then distributes that product to the end-customer, which is an individual in a retail environment or a government-distribution scheme.    \n\nFor this example, the pharmaceutical models will have the legal entity customer represented but not the individual 'end customer' since that is represented in the appropriate retail industry models, which are a different offering.     \n\nOf course, the entire set of data available for a legal entity customer is contained in the associated LEGAL ENTITY CUSTOMER Business Area Model.   Reference the LEGAL ENTITY CUSTOMER Business Area Model to incorporate additional data that may be of relevance.\n\nIn many industries both types of customers are represented since a legal entity or individual can purchase products, goods or services and enter into contracts.    For these industries, both types of customers are represented by some of the more significant or relevant data derived from the associated LEGAL ENTITY or INDIVIDUAL CUSTOMER business area models.   These models can be used to expand the scope or level of detail in any of the enterprise, business area or data warehouse models.",
+            "hasAttributes": [
+                {
+                    "name": "CustomerId",
+                    "purpose": "identifiedBy",
+                    "dataType": "bigInteger",
+                    "isNullable": false,
+                    "appliedTraits": [
+                        "means.identity.entityId"
+                    ],
+                    "displayName": "Customer ID",
+                    "description": "The unique identifier of a Customer."
+                },
+                {
+                    "name": "CustomerEstablishedDate",
+                    "purpose": "hasA",
+                    "dataType": "date",
+                    "isNullable": true,
+                    "appliedTraits": [
+                        {
+                            "traitReference":"means.measurement.date",
+                            "appliedTraits": [{"verb":"means", "traitReference": "qualification.effective"}]
+                        }
+                    ],
+                    "displayName": "Customer Established Date",
+                    "description": "The date that the Customer relationship was established."
+                },
+                {
+                    "name": "PartyId",
+                    "entity": {
+                        "entityReference": "Party",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Party/(resolvedAttributes)/PartyId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "name": "PartyId",
+                                "purpose": "hasA",
+                                "dataType": "bigInteger",
+                                "isNullable": true,
+                                "displayName": "Party ID",
+                                "description": "The unique identifier of a Party."
+                            }
+                        }
+                    },
+                    "appliedTraits": [
+                    ]
+                }
+            ]
+        },
+        {
+            "entityName": "CustomerGender",
+            "exhibitsTraits": [
+                "commerce.individualCustomer",
+                "person.genderKind"
+            ],
+            "displayName": "Customer Gender",
+            "description": "The gender associated with the Customer.\nThe gender that an individual associates with can change over a period of time and is represented with 'period start date/period end date' qualifications, which represented the best case for knowing this information.",
+            "hasAttributes": [
+                {
+                    "name": "customer",
+                    "entity": {
+                        "source": "IndividualCustomer",
+                        "operations": [
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "condition": "referenceOnly",
+                                "reference": "CustomerId",
+                                "replaceWith": {
+                                    "name": "CustomerId",
+                                    "dataType": "bigInteger",
+                                    "displayName": "Customer ID",
+                                    "description": "The unique identifier of a Customer.",
+                                    "appliedTraits": [
+                                        {"traitReference": "identity.entityId", "appliedTraits":[{"verb": "of", "traitReference": "commerce.individualCustomer"}]},
+                                        {
+                                            "traitReference": "has.schemaObjectIdentifier",
+                                            "arguments": [
+                                                "{02C45237-A643-4782-9702-FD03D8D95518}"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "PeriodStartDate",
+                    "purpose": "identifiedBy",
+                    "dataType": "date",
+                    "isNullable": false,
+                    "appliedTraits": [
+                        "means.measurement.date.start.scd"
+                    ],
+                    "displayName": "Period Start Date",
+                    "description": "The period start date for which the associated data is effective or 'as-of'."
+                },
+                {
+                    "name": "PeriodEndDate",
+                    "purpose": "hasA",
+                    "dataType": "date",
+                    "isNullable": true,
+                    "appliedTraits": [
+                        "means.measurement.date.end.scd",
+                        {"verb": "has", "traitReference": "rowSelectionCriteria.null"}
+                    ],
+                    "displayName": "Period End Date",
+                    "description": "The period end date for which the associated data is effective or 'as-of'."
+                },
+                {
+                    "name": "GenderId",
+                    "entity": {
+                        "entityReference": "Gender",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Gender/(resolvedAttributes)/GenderId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "name": "GenderId",
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "isNullable": false,
+                                "displayName": "Gender ID",
+                                "description": "The unique identifier of a Gender.",
+                                "appliedTraits":[{"traitReference": "identity.entityId", "appliedTraits":[{"verb": "of", "traitReference": "person.genderKind"}]}
+                            ]
+                            }
+                        }
+                    },
+                    "appliedTraits": [
+                    ]
+                },
+                {
+                    "name": "CustomerGenderNote",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 2048,
+                    "isNullable": true,
+                    "appliedTraits": [
+                    ],
+                    "displayName": "Customer Gender Note",
+                    "description": "A note, comment or additional information regarding the Customer's gender."
+                }
+            ]
+        },
+        {
+            "entityName": "CustomerMaritalStatus",
+            "exhibitsTraits": [
+                "commerce.individualCustomer",
+                "person.maritalStatusKind"
+            ],
+            "displayName": "Customer Marital Status",
+            "description": "The marital status of the Individual Customer.\n\nThese criteria can change over a period of time and are represented with 'period start date/period end date' qualifications, which represented the best case for knowing this information.    If the data is only randomly sampled or recorded then you could use a single 'date' to identify its recording or effective as-of date.",
+            "hasAttributes": [
+                {
+                    "name": "CustomerId",
+                    "entity": {
+                        "entityReference": "IndividualCustomer",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "IndividualCustomer/(resolvedAttributes)/CustomerId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "name": "CustomerId",
+                                "purpose": "identifiedBy",
+                                "dataType": "bigInteger",
+                                "isNullable": false,
+                                "appliedTraits": [
+                                    "is.linkedEntity.identifier",
+                                    {"traitReference": "identity.entityId", "appliedTraits":[{"verb": "of", "traitReference": "commerce.individualCustomer"}]}
+                                ],
+                                "displayName": "Customer ID",
+                                "description": "The unique identifier of a Customer."
+                            }
+                        }
+                    },
+                    "appliedTraits": [
+                    ]
+                },
+                {
+                    "name": "PeriodStartDate",
+                    "purpose": "identifiedBy",
+                    "dataType": "date",
+                    "isNullable": false,
+                    "appliedTraits": [
+                        "means.measurement.date.start.scd",
+                        "rowSelectionCriteria.maximum"
+                    ],
+                    "displayName": "Period Start Date",
+                    "description": "The period start date for which the associated data is effective or 'as-of'."
+                },
+                {
+                    "name": "PeriodEndDate",
+                    "purpose": "hasA",
+                    "dataType": "date",
+                    "isNullable": true,
+                    "appliedTraits": [
+                        "means.measurement.date.start.scd"
+                    ],
+                    "displayName": "Period End Date",
+                    "description": "The period end date for which the associated data is effective or 'as-of'."
+                },
+                {
+                    "name": "MaritalStatusId",
+                    "entity": {
+                        "entityReference": "MaritalStatus",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "MaritalStatus/(resolvedAttributes)/MaritalStatusId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "name": "MaritalStatusId",
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "isNullable": false,
+                                "displayName": "Marital Status ID",
+                                "description": "The unique identifier of the Customer's Marital Status.",
+                                "appliedTraits":[{"traitReference": "identity.entityId", "appliedTraits":[{"verb": "of", "traitReference": "person.maritalStatusKind"}]}]
+                            }
+                        }
+                    },
+                    "appliedTraits": [
+                    ]
+                },
+                {
+                    "name": "CustomerMaritalStatusNote",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 2048,
+                    "isNullable": true,
+                    "appliedTraits": [
+                    ],
+                    "displayName": "Customer Marital Status Note",
+                    "description": "A note, comment or additional information regarding the individual customer's marital status."
+                }
+            ]
+        },
+        {
+            "entityName": "IndividualCustomer",
+            "exhibitsTraits": [
+                "commerce.individualCustomer"
+            ],
+            "displayName": "Individual Customer",
+            "description": "An 'individual customer' is one of the two types of customers upon which the Microsoft data models focus.      'Legal entity customer' is the other.\n\nThe definition of 'customer' is of critical importance for every organization.    \n\nIt is the customer that is the focus of product planning, marketing, sales, service, reporting and analytics.    Without 'customer' there would be no need for the organization to exist since its purpose is to serve the customer and profit from that interaction.\n\nThe definition of 'customer' must be consistent with how customers exist and interact with the organization in the real world.  \n\nAn artificial or conceptual definition of 'customer' that is not consistent with these two objectives is doomed to fail because the data will not be consistent with the definition and employees will not accept concepts or terms that are not consistent with what they see, know and how they interact with customers on a working basis.\n\nMicrosoft defines 'customer' to meet these objectives.    When we look out into the real world we see two dominant types of customers:  human beings ('individual customers') and legal entities ('legal entity customers')>    \n\nIndividual customers are human beings, male and female individuals, of various ages, sex, demographics and a variety of similar dimensions that describe and define those who purchase products, good and services.    \n\nLegal entities are those legally-defined entities such as corporations, partnerships, non-profit organizations, government organizations etc. that purchase products, goods and services.\n\nThis view of 'customer' is consistent with the real world and consistent with how employees view and interact with customers.\n\nOf course, that is just the start of identifying, defining and understanding each corresponding type of 'customer'.     There is a great deal of detail, complexity and related data that can be used to define each type of customer to various levels of detail and different dimensions of information.    Microsoft implements these detailed concepts and related data via two distinct business area models that expand the coverage and complexity of each type of customer:\n\n-  INDIVIDUAL CUSTOMER Business Area Model\n-  LEGAL ENTITY CUSTOMER Business Area Model\n\nNote:\nEach of the Microsoft models - enterprise, business area or data warehouse - have a representative level of detail for the appropriate type of customer, which is a 'subset' of the total data available in the associated INDIVIDUAL CUSTOMER or LEGAL ENTITY CUSTOMER business area models..   Reference either of those models to expand the coverage or level of detail in each respective data model.\n\nThe actual customer implemented in each model depends upon the dominant use of customer for that industry.     \n\nFor example, in the pharmaceutical industry the customer is a legal entity, which represents another corporation, company, government organization etc. that purchases the pharmaceutical product and then distributes that product to the end-customer, which is an individual in a retail environment or a government-distribution scheme.    \n\nFor this example, the pharmaceutical models will have the legal entity customer represented but not the individual 'end customer' since that is represented in the appropriate retail industry models, which are a different offering.     \n\nOf course, the entire set of data available for a legal entity customer is contained in the associated LEGAL ENTITY CUSTOMER Business Area Model.   Reference the LEGAL ENTITY CUSTOMER Business Area Model to incorporate additional data that may be of relevance.\n\nIn many industries both types of customers are represented since a legal entity or individual can purchase products, goods or services and enter into contracts.    For these industries, both types of customers are represented by some of the more significant or relevant data derived from the associated LEGAL ENTITY or INDIVIDUAL CUSTOMER business area models.   These models can be used to expand the scope or level of detail in any of the enterprise, business area or data warehouse models.",
+            "hasAttributes": [
+                {
+                    "name": "CustomerId",
+                    "entity": {
+                        "entityReference": "Customer",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Customer/(resolvedAttributes)/CustomerId"
+                                ]
+                            },
+                            "means.identity.entityId"
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "name": "CustomerId",
+                                "dataType": "bigInteger",
+                                "isNullable": false,
+                                "appliedTraits": [
+                                    "is.linkedEntity.identifier",
+                                    {"traitReference": "means.identity.entityId", "appliedTraits":[{"verb": "of", "traitReference": "commerce.customer"}]}
+                                ],
+                                "displayName": "Customer ID",
+                                "description": "The unique identifier of a Customer."
+                            }
+                        }
+                    },
+                    "appliedTraits": [
+                        {
+                            "traitReference": "has.schemaObjectIdentifier",
+                            "arguments": [
+                                "{0A62D879-DAD1-4E9D-A015-F7DB975C28C4}"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "IndividualCustomerName",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 256,
+                    "isNullable": true,
+                    "appliedTraits": [
+                        "person.fullName"
+                    ],
+                    "displayName": "Individual Customer Name",
+                    "description": "The name of the Individual Customer."
+                },
+                {
+                    "name": "DateOfBirth",
+                    "purpose": "hasA",
+                    "dataType": "date",
+                    "isNullable": true,
+                    "appliedTraits": [
+                    ],
+                    "displayName": "Date Of Birth",
+                    "description": "The date of birth of the individual customer."
+                }
+            ]
+        },
+        {
+            "entityName": "Party",
+            "exhibitsTraits": [
+            ],
+            "displayName": "Party",
+            "description": "A party is an individual, organization, legal entity, social organization or business unit of interest to the business.\n\nParty is a concept that enables individuals, organizations, legal entities, social organization and business units to be related or defined with the context of roles, events and relationships.\n\nThis enables us to 'anchor' disparate instances or implementations of each of the above to a common or singular instance of that individual, organization, legal entity, social organization or business unit.\n\nFor example, a large business has 20 customer masters that are used internally.    PARTY enables the organization to identify and define each customer as a single party and relate (cleanse and synchronize) the multiple instances of customer to a single set of customer information.\n\nIt also allows the business to look at the multiple relationships that exist among parties playing different roles over various periods of time.    \n\nFor example, a business might have a vendor who is also a customer that has employees who are also customers of the business.     A business might have employees who are also customers and whose spouse or family members are also customers.\n\nIn short, party enables the business to examine and record the real-world interactions of individuals, organizations, legal entities, social organizations and business units as they perform those many roles that characterize their activities and relationships to other parties.      Party also provides an 'anchor' upon which to resolve multiple instances or definitions of that party so the business can develop a 'single-view' of the party.",
+            "hasAttributes": [
+                {
+                    "name": "PartyId",
+                    "purpose": "identifiedBy",
+                    "dataType": "bigInteger",
+                    "isNullable": false,
+                    "appliedTraits": [
+                        "means.identity.entityId"
+                    ],
+                    "displayName": "Party ID",
+                    "description": "The unique identifier of a Party."
+                },
+                {
+                    "name": "PartyName",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 256,
+                    "isNullable": true,
+                    "appliedTraits": [
+                    ],
+                    "displayName": "Party Name",
+                    "description": "The name of the Party."
+                },
+                {
+                    "name": "GlobalLocationNumber",
+                    "purpose": "hasA",
+                    "dataType": "decimal",
+                    "isNullable": true,
+                    "appliedTraits": [
+                    ],
+                    "displayName": "Global Location Number (GLN)",
+                    "description": "The Global Location Number (GLN) is a simple tool used to uniquely identify locations. It can be used to identify physical locations such as a warehouse, legal entities, or a function / department within a legal entity. The GLN is part of the GS1 system of standards."
+                }
+            ]
+        },
+        {
+            "entityName": "Gender",
+            "exhibitsTraits": [
+                "person.genderKind"
+            ],
+            "displayName": "Gender",
+            "description": "The social roles based on the sex of the person (culturally learned) or personal identification of one's own gender based on an internal awareness (gender identity).\n\nEx.:\n- Male\n- Female\n- Transgender\n- Agender\n- Androgyne\n- Androgynous\n- Bigender\n- Cis\n- Cisgender\n- Cis Female\n- Cis Male\n- Cis Man\n- Cis Woman\n- Cisgender Female\n- Cisgender Male\n- Cisgender Man\n- Cisgender Woman\n- Female to Male\n- FTM\n- Gender Fluid\n- Gender Nonconforming\n- Gender Questioning\n- Gender Variant\n- Genderqueer\n- Intersex\n- Male to Female\n- MTF\n- Neither\n- Neutrois\n- Non-binary\n- Other\n- Pangender\n- Trans\n- Trans*\n- Trans Female\n- Trans* Female\n- Trans Male\n- Trans* Male\n- Trans Man\n- Trans* Man\n- Trans Person\n- Trans* Person\n- Trans Woman\n- Trans* Woman\n- Transfeminine\n- Transgender Female\n- Transgender Male\n- Transgender Man\n- Transgender Person\n- Transgender Woman\n- Transmasculine\n- Transsexual\n- Transsexual Female\n- Transsexual Male\n- Transsexual Man\n- Transsexual Person\n- Transsexual Woman\n- Two-Spirit",
+            "hasAttributes": [
+                {
+                    "name": "GenderId",
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "isNullable": false,
+                    "appliedTraits": [
+                        "identity.entityId"
+                    ],
+                    "displayName": "Gender ID",
+                    "description": "The unique identifier of a Gender."
+                },
+                {
+                    "name": "GenderName",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 256,
+                    "isNullable": true,
+                    "appliedTraits": [
+                        {"verb": "means", "traitReference": "person.genderKind",
+                            "appliedTraits":[
+                                {"verb": "has", "traitReference": "constrainedList.kindOfMapping",
+                                    "arguments": [{
+                                        "entityReference": {
+                                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupKindOfMapping' entityShape which are: {attributeValue, traitPath}",
+                                            "entityShape": "listLookupKindOfMapping",
+                                            "constantValues": [
+                                                ["Female", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.female"],
+                                                ["Male", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.male"],
+                                                ["Other", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.other"],
+                                                ["Unknown", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.unknown"],
+                                                ["", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.unknown"],
+                                                ["Unspecified", "cdm:/cdmfoundation/meanings.demographics.cdm.json/person.genderKind.unspecified"]
+                                            ]
+                                        }
+                                    }]
+                                }
+                            ]
+                        }
+                    ],
+                    "displayName": "Gender Name",
+                    "description": "The name of the Gender."
+                },
+                {
+                    "name": "GenderDescription",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 2048,
+                    "isNullable": true,
+                    "appliedTraits": [
+                    ],
+                    "displayName": "Gender Description",
+                    "description": "The description of the Gender."
+                }
+            ]
+        },
+        {
+            "entityName": "MaritalStatus",
+            "exhibitsTraits": [
+                "person.maritalStatusKind"
+            ],
+            "displayName": "Marital Status",
+            "description": "The marital status of an individual.\n\nThe US Bureau of Census identifies four major categories: \n\n-  never married\n-  married\n-  widowed\n-  divorced \n\nThe category \"married\" is further divided into \"married, spouse present,\" \"separated,\" and \"other married, spouse absent.\" A person was classified as \"married, spouse present\" if the husband or wife was reported as a member of the household, even though he or she may have been temporarily absent on business or on vacation, visiting, in a hospital, etc., at the time of the enumeration. People reported as separated included those with legal separations, those living apart with intentions of obtaining a divorce, and other people permanently or temporarily separated because of marital discord. The group \"other married, spouse absent\" includes married people living apart because either the husband or wife was employed and living at a considerable distance from home, was serving away from home in the Armed Forces, had moved to another area, or had a different place of residence for any other reason except separation as defined above.\n\nNEVER MARRIED\nIncludes all persons who have never been married, including persons whose only marriage(s) was annulled. \n\nMARRIED\nMarried is a status for those who on the enumeration date were bound by marriage, regardless of whether they are living together or not. This includes those who by law (e.g. tradition, religion, state, etc.) are formally married but also those who live together and are regarded by their community as husbands and wives.\n\nWIDOWED\nWidowed is a status for those whose husbands or wives were deceased and had not yet remarried.\n\nDIVORCED\nRefers to a category for those who divorced their husbands or wives and have not yet remarried.\n\nSEPARATED\nIncludes persons legally separated or otherwise absent from their spouse because of marital discord. Included are persons who have been deserted or who have parted because they no longer want to live together but who have not obtained a divorce. \n\nNOW MARRIED/EXCEPT SEPARATED\nIncludes persons whose current marriage has not ended through widowhood, divorce, or separation (regardless of previous marital history). The category may also include couples who live together or persons in common-law marriages if they consider this category the most appropriate. In certain tabulations, currently married persons are further classified as \"spouse present\" or \"spouse absent.\" \n\nUNMARRIED COUPLE\nA couple that is not married but are living together.\n\nCOMMON-LAW MARRIAGE\nA common law marriage comes about when a man and woman who are free to marry agree to live together as husband and wife without the formal ceremony. In order to be common law married, both spouses must have intended to be husband and wife. Certain states do not recognize common law marriages.",
+            "hasAttributes": [
+                {
+                    "name": "MaritalStatusId",
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "isNullable": false,
+                    "appliedTraits": [
+                        "identity.entityId"
+                    ],
+                    "displayName": "Marital Status ID",
+                    "description": "The unique identifier of the Marital Status."
+                },
+                {
+                    "name": "MaritalStatusName",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 256,
+                    "isNullable": true,
+                    "appliedTraits": [
+                        "person.maritalStatusKind"
+                    ],
+                    "displayName": "Marital Status Name",
+                    "description": "The name of the Marital Status."
+                },
+                {
+                    "name": "MaritalStatusDescription",
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "maximumLength": 2048,
+                    "isNullable": true,
+                    "appliedTraits": [
+                    ],
+                    "displayName": "Marital Status Description",
+                    "description": "The description of the Marital Status."
+                }
+            ]
+        }
+
+
+
+
+
+
+
+
+
+      ]
+  }
+  

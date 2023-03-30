@@ -37,6 +37,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             this.Events = new EventList();
             this.SuppressedLogCodes = new HashSet<CdmLogCode>();
             this.FeatureFlags = new ConcurrentDictionary<string, dynamic>();
+
+        }
+
+        /// <summary>
+        /// returns the current set value of a named flag or null if flag is not set.
+        /// </summary>
+        public dynamic GetFeatureFlagValue(string flagName)
+        {
+            if (FeatureFlags == null)
+            {
+                return null;
+            }
+            dynamic value;
+            if (FeatureFlags.TryGetValue(flagName, out value) == false)
+            {
+                return null;
+            }
+            return value;
         }
     }
 }

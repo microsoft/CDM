@@ -80,7 +80,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         // Read from an unresolved entity schema.
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership.cdm.json/TeamMembership', null, resOpt);
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership.cdm.json/TeamMembership', undefined, resOpt);
         const attributeGroupRef: CdmAttributeGroupReference = entity.attributes.allItems[0] as CdmAttributeGroupReference;
         const attributeGroup: CdmAttributeGroupDefinition = attributeGroupRef.explicitReference as CdmAttributeGroupDefinition;
         const typeAttribute: CdmTypeAttributeDefinition = attributeGroup.members.allItems[0] as CdmTypeAttributeDefinition;
@@ -94,7 +94,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         expect(((isIdentifiedBy1 as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference).namedReference).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
 
         // Read from a resolved entity schema.
-        const resolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership_Resolved.cdm.json/TeamMembership', null, resOpt);
+        const resolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership_Resolved.cdm.json/TeamMembership', undefined, resOpt);
         const resolvedTypeAttribute: CdmTypeAttributeDefinition = resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition;
 
         expect(resolvedTypeAttribute.isPrimaryKey)

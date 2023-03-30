@@ -44,7 +44,15 @@ export class OperationAlterTraitsPersistence {
         } else if (Array.isArray(object.applyTo)) {
             alterTraitsOp.applyTo = object.applyTo;
         } else if (object.applyTo !== undefined) {
-            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjUnsupportedProp, cdmLogCode.ErrPersistProjUnsupportedProp, "applyTo", "string or list of strings");
+            Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistProjUnsupportedProp, cdmLogCode.ErrPersistProjUnsupportedProp, "applyTo", "string or list of strings");
+        }
+
+        if (typeof (object.applyToTraits) === 'string') {
+            alterTraitsOp.applyToTraits = [object.applyToTraits]
+        } else if (Array.isArray(object.applyToTraits)) {
+            alterTraitsOp.applyToTraits = object.applyToTraits;
+        } else if (object.applyToTraits !== undefined) {
+            Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistProjUnsupportedProp, cdmLogCode.ErrPersistProjUnsupportedProp, "applyToTraits", "string or list of strings");
         }
 
         return alterTraitsOp;
@@ -60,6 +68,7 @@ export class OperationAlterTraitsPersistence {
         data.traitsToRemove = copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.traitsToRemove, options);
         data.argumentsContainWildcards = instance.argumentsContainWildcards;
         data.applyTo = instance.applyTo;
+        data.applyToTraits = instance.applyToTraits;
 
         return data;
     }

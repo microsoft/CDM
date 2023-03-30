@@ -12,6 +12,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public abstract class CdmObjectBase : CdmObject
     {
+        /// <summary>
+        /// The minimum json semantic versions that can be loaded by this ObjectModel version.
+        /// </summary>
+        public static readonly string JsonSchemaSemanticVersionMinimumLoad = "1.0.0";
+        /// <summary>
+        /// The minimum json semantic versions that can be saved by this ObjectModel version.
+        /// </summary>
+        public static readonly string JsonSchemaSemanticVersionMinimumSave = "1.1.0";
+        /// <summary>
+        /// The maximum json semantic versions that can be loaded and saved by this ObjectModel version.
+        /// </summary>
+        public static readonly string JsonSchemaSemanticVersionMaximumSaveLoad = "1.5.0";
+
+        // known semantic versions changes
+        public static readonly string JsonSchemaSemanticVersionProjections = "1.4.0";
+        public static readonly string JsonSchemaSemanticVersionTraitsOnTraits = "1.5.0";
+
         public CdmObjectBase(CdmCorpusContext ctx)
         {
             if (ctx?.Corpus != null)
@@ -25,6 +42,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // acquire spinlock
                     ctx.Corpus.spinLock.Enter(ref lockTaken);
                     this.Id = CdmCorpusDefinition.NextId();
+                    // why not use System.Threading.Interlocked.Increment;
 
                 }
                 finally
@@ -91,6 +109,100 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <inheritdoc />
         public virtual CdmDocumentDefinition InDocument { get; set; }
+
+        /// returns a list of TraitProfile descriptions, one for each trait applied to or exhibited by this object.
+        /// each description of a trait is an expanded picture of a trait reference.
+        /// the goal of the profile is to make references to structured, nested, messy traits easier to understand and compare.
+        /// we do this by promoting and merging some information as far up the trait inheritance / reference chain as far as we can without 
+        /// giving up important meaning.
+        /// in general, every trait profile includes:
+        /// 1. the name of the trait
+        /// 2. a TraitProfile for any trait that this trait may 'extend', that is, a base class trait
+        /// 3. a map of argument / parameter values that have been set
+        /// 4. an applied 'verb' trait in the form of a TraitProfile
+        /// 5. an array of any "classifier" traits that have been applied
+        /// 6. and array of any other (non-classifier) traits that have been applied or exhibited by this trait
+        /// 
+        /// adjustments to these ideas happen as trait information is 'bubbled up' from base definitons. adjustments include
+        /// 1. the most recent verb trait that was defined or applied will propigate up the hierarchy for all references even those that do not specify a verb. 
+        /// This ensures the top trait profile depicts the correct verb
+        /// 2. traits that are applied or exhibited by another trait using the 'classifiedAs' verb are put into a different collection called classifiers.
+        /// 3. classifiers are accumulated and promoted from base references up to the final trait profile. this way the top profile has a complete list of classifiers 
+        /// but the 'deeper' profiles will not have the individual classifications set (to avoid an explosion of info)
+        /// 3. In a similar way, trait arguments will accumulate from base definitions and default values. 
+        /// 4. traits used as 'verbs' (defaultVerb or explicit verb) will not include classifier descriptions, this avoids huge repetition of somewhat pointless info and recursive effort
+
+        public List<TraitProfile> FetchTraitProfiles(ResolveOptions resOpt = null, TraitProfileCache cache = null, string forVerb = null)
+        {
+            if (cache == null)
+            {
+                cache = new TraitProfileCache();
+            }
+
+            if (resOpt == null)
+            {
+                // resolve symbols with default directive and WRTDoc from this object's point of view
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var result = new List<TraitProfile>();
+
+            CdmTraitCollection traits = null;
+            TraitProfile prof = null;
+            if (this is CdmAttributeItem)
+            {
+                traits = (this as CdmAttributeItem).AppliedTraits;
+            }
+            else if (this is CdmTraitDefinition)
+            {
+                prof = TraitProfile.traitDefToProfile(this as CdmTraitDefinition, resOpt, false, false, cache);
+            }
+            else if (this is CdmObjectDefinition)
+            {
+                traits = (this as CdmObjectDefinition).ExhibitsTraits;
+            }
+            else if (this is CdmTraitReference)
+            {
+                prof = TraitProfile.traitRefToProfile(this as CdmTraitReference, resOpt, false, false, true, cache);
+            }
+            else if (this is CdmTraitGroupReference)
+            {
+                prof = TraitProfile.traitRefToProfile(this as CdmTraitGroupReference, resOpt, false, false, true, cache);
+            }
+            else if (this is CdmObjectReference)
+            {
+                traits = (this as CdmObjectReference).AppliedTraits;
+            }
+            // one of these two will happen
+            if (prof != null)
+            {
+                if (prof.Verb == null || forVerb == null || prof.Verb.TraitName == forVerb)
+                {
+                    result.Add(prof);
+                }
+            }
+            if (traits != null)
+            {
+                foreach (var tr in traits)
+                {
+                    prof = TraitProfile.traitRefToProfile(tr, resOpt, false, false, true, cache);
+                    if (prof != null)
+                    {
+                        if (prof.Verb == null || forVerb == null || prof.Verb.TraitName == forVerb)
+                        {
+                            result.Add(prof);
+                        }
+                    }
+                }
+            }
+
+            if (result.Count == 0)
+            {
+                result = null;
+            }
+
+            return result;
+        }
 
         internal virtual void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
@@ -246,6 +358,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (rasbCache == null)
             {
+                // to help view the hierarchy of loops in resolving entities
+                if (this is CdmEntityDefinition && this.Ctx.GetFeatureFlagValue("core_entResDbg") == true)
+                {
+                    string spew = "[entResDbg] ";
+                    foreach (var chain in resOpt.CurrentlyResolvingEntities)
+                        spew += ">:";
+                    spew += "(Reslv)";
+                    spew += (this as CdmEntityDefinition).EntityName;
+                    System.Diagnostics.Debug.WriteLine(spew);
+                }
+
                 // a new context node is needed for these attributes, 
                 // this tree will go into the cache, so we hang it off a placeholder parent
                 // when it is used from the cache (or now), then this placeholder parent is ignored and the things under it are
@@ -293,6 +416,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             else
             {
+                // to help view the hierarchy of loops in resolving entities
+                //if (this is CdmEntityDefinition)
+                //{
+                //    string spew = "[entResDbg] ";
+                //    foreach (var chain in resOpt.CurrentlyResolvingEntities)
+                //        spew += ">";
+                //    spew += "(Cache):";
+                //    spew += (this as CdmEntityDefinition).EntityName;
+                //    System.Diagnostics.Debug.WriteLine(spew);
+                //}
+
                 // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
                 // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
                 // copies of all cached children
@@ -449,10 +583,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal static CdmTraitReference ResolvedTraitToTraitRef(ResolveOptions resOpt, ResolvedTrait rt)
         {
-            CdmTraitReference traitRef = null;
+            // if nothing extra needs a mention, make a simple string ref
+            CdmTraitReference traitRef = rt.Trait.Ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, rt.TraitName,
+                                                                !((rt.ParameterValues != null && rt.ParameterValues.Length > 0) ||
+                                                                rt.ExplicitVerb != null || rt.MetaTraits != null));
+
             if (rt.ParameterValues != null && rt.ParameterValues.Length > 0)
             {
-                traitRef = rt.Trait.Ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, rt.TraitName, false);
                 int l = rt.ParameterValues.Length;
                 if (l == 1)
                 {
@@ -476,8 +613,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
             }
-            else
-                traitRef = rt.Trait.Ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, rt.TraitName, true);
+            if (rt.ExplicitVerb != null)
+            {
+                traitRef.Verb = rt.ExplicitVerb.Copy(resOpt) as CdmTraitReference;
+                traitRef.Verb.Owner = traitRef;
+            }
+
+            if (rt.MetaTraits != null)
+            {
+                foreach(var trMeta in rt.MetaTraits)
+                {
+                    var trMetaCopy = trMeta.Copy(resOpt) as CdmTraitReference;
+                    traitRef.AppliedTraits.Add(trMetaCopy);
+                }
+            }
             if (resOpt.SaveResolutionsOnCopy)
             {
                 // used to localize references between documents
@@ -487,7 +636,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // always make it a property when you can, however the dataFormat traits should be left alone
             // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.
             // so until we figure out how to move the enums away from default value, show that trait too
-            if (rt.Trait.AssociatedProperties != null && !rt.Trait.IsDerivedFrom("is.dataFormat", resOpt) && !(rt.Trait.TraitName == "is.constrainedList.wellKnown"))
+            if (rt.Trait.AssociatedProperties != null && rt.Trait.AssociatedProperties.Count > 0 && !rt.Trait.IsDerivedFrom("is.dataFormat", resOpt) && !(rt.Trait.TraitName == "is.constrainedList.wellKnown"))
                 traitRef.IsFromProperty = true;
             return traitRef;
         }
@@ -495,5 +644,63 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public abstract CdmObjectReference CreateSimpleReference(ResolveOptions resOpt = null);
         internal abstract CdmObjectReference CreatePortableReference(ResolveOptions resOpt);
+        virtual internal long GetMinimumSemanticVersion()
+        {
+            return CdmObjectBase.DefaultJsonSchemaSemanticVersionNumber;
+        }
+        /// <summary>
+        /// converts a string in the form MM.mm.pp into a single comparable long integer
+        /// limited to 3 parts where each part is 5 numeric digits or fewer
+        /// returns -1 if failure
+        /// </summary>
+        public static long SemanticVersionStringToNumber(string version)
+        {
+            if (version == null)
+            {
+                return -1;
+            }
+
+            // must have the three parts
+            var SemanticVersionSplit = version.Split('.');
+            if (SemanticVersionSplit.Length != 3)
+            {
+                return -1;
+            }
+
+            // accumulate the result
+            long numVer = 0;
+            for (var i = 0; i < 3; ++i)
+            {
+                if (!int.TryParse(SemanticVersionSplit[i], out int verPart))
+                {
+                    return -1;
+                }
+                // 6 digits?
+                if (verPart > 100000)
+                {
+                    return -1;
+                }
+                // shift the previous accumulation over 5 digits and add in the new part
+                numVer *= 100000;
+                numVer += verPart;
+            }
+            return numVer;
+        }
+
+        /// <summary>
+        /// converts a number encoding 3 version parts into a string in the form MM.mm.pp
+        /// assumes 5 digits per encoded version part
+        /// </summary>
+        public static string SemanticVersionNumberToString(long version)
+        {
+            var verPartM = version / (100000L * 100000L);
+            version = version - (verPartM * (100000L * 100000L));
+            var verPartm = version / 100000L;
+            var verPartP = version - (verPartm * 100000L);
+            return $"{verPartM}.{verPartm}.{verPartP}";
+        }
+
+        internal static long DefaultJsonSchemaSemanticVersionNumber = SemanticVersionStringToNumber(JsonSchemaSemanticVersionMinimumSave);
+
     }
 }

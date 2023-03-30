@@ -353,10 +353,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
         private static void ValidateOutput(string outputEntityFileName, string testExpectedOutputPath, string testActualOutputPath)
         {
-            Assert.AreEqual(
-                File.ReadAllText(Path.Combine(testExpectedOutputPath, outputEntityFileName)),
-                File.ReadAllText(Path.Combine(testActualOutputPath, outputEntityFileName))
-                );
+            // to allow all of the tests to run and fake pass in order to get update expected outputs, do this try catch
+            //try
+            {
+                Assert.AreEqual(
+                    File.ReadAllText(Path.Combine(testExpectedOutputPath, outputEntityFileName)),
+                    File.ReadAllText(Path.Combine(testActualOutputPath, outputEntityFileName))
+                    );
+            }
+            //catch(Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException)
+            {
+                // just keep swimming
+            }
         }
     }
 }

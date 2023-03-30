@@ -81,7 +81,7 @@ export async function standardImportDetection(
     for (let traitIndex: number = localExtensionTraitDefList.length - 1; traitIndex >= 0; traitIndex--) {
         const extensionTraitDef: CdmTraitDefinition = localExtensionTraitDefList[traitIndex];
         if (!traitDefIsExtension(extensionTraitDef)) {
-            Logger.error(ctx, TAG, standardImportDetection.name, null, cdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
+            Logger.error(ctx, TAG, standardImportDetection.name, undefined, cdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
             return undefined;
         }
 
@@ -180,7 +180,7 @@ export function processExtensionFromJson(
         const extensionTraitRef: CdmTraitReference = ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, traitName);
         const extensionValue = sourceObject[extensionKey];
         const isArray: boolean = Array.isArray(extensionValue);
-        if (extensionValue !== null && typeof extensionValue === 'object' && !isArray) {
+        if (extensionValue !== undefined && typeof extensionValue === 'object' && !isArray) {
             const extVals = Object.keys(extensionValue)
                 .filter((extension: string) => !extension.startsWith('_'));
             for (const extensionProperty of extVals) {

@@ -14,7 +14,8 @@ from .cdm_attribute_def import CdmAttribute
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmEntityReference
-    from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSetBuilder, ResolvedTraitSetBuilder
+    from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSetBuilder, ResolvedTraitSetBuilder, ResolvedAttributeSet, ResolvedEntityReferenceSet
+    from cdm.utilities import AttributeContextParameters, VisitCallback
 
 
 class CdmEntityAttributeDefinition(CdmAttribute):
@@ -247,7 +248,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                         # hope I never need to do this again and then need to make a function for this
                         tr = self.ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.linkedEntity.array', True)
                         t = tr.fetch_object_definition(res_opt)
-                        rt = ResolvedTrait(t, None, [], [])
+                        rt = ResolvedTrait(t, None, [], [], None, None)
                         ra_sub.resolved_traits = ra_sub.resolved_traits.merge(rt, True)
                     depth = rasb._resolved_attribute_set._depth_traveled
                     rasb = ResolvedAttributeSetBuilder()

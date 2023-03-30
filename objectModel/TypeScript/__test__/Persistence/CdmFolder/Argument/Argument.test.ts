@@ -22,7 +22,7 @@ describe('Persistence.CdmFolder.Argument', () => {
     expect(argument.value)
       .toEqual(0);
 
-    var argumentToData = CdmFolder.ArgumentPersistence.toData(argument, null, null);
+    var argumentToData = CdmFolder.ArgumentPersistence.toData(argument, undefined, undefined);
     expect(argumentToData)
       .toEqual(0);
   });

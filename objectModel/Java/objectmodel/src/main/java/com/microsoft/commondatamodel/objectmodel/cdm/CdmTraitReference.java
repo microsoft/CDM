@@ -25,6 +25,7 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
   protected boolean resolvedArguments;
   private final CdmArgumentCollection arguments;
   private boolean fromProperty;
+  private CdmTraitReference verb;
 
   public CdmTraitReference(final CdmCorpusContext ctx, final Object trait, final boolean simpleReference,
                            final boolean hasArguments) {
@@ -61,6 +62,11 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
         }
       }
     }
+    if (this.verb != null) {
+      this.verb.setOwner(this);
+      if (this.verb.visit(pathFrom + "/verb/", preChildren, postChildren))
+      return true;
+    }
     return result;
   }
 
@@ -82,6 +88,20 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
 
   public void setFromProperty(final boolean value) {
     this.fromProperty = value;
+  }
+
+  /**
+   * 
+   * Gets or sets a reference to a trait used to describe the 'verb' explaining how the trait's meaning should be applied to the 
+   * object that holds this traitReference. This optional property can override the meaning of any defaultVerb that could be part of the 
+   * referenced trait's definition
+   */
+  public CdmTraitReference getVerb() {
+    return this.verb;
+  }
+
+  public void setVerb(final CdmTraitReference value) {
+    this.verb = value;
   }
 
   public Object fetchArgumentValue(String name) {
@@ -122,6 +142,15 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
       arg.setName(name);
       arg.setValue(value);
     }
+  }
+
+  @Override
+  public long getMinimumSemanticVersion()
+  {
+      if (this.verb != null || this.getAppliedTraits() != null && this.getAppliedTraits().size() > 0) {
+          return CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.getJsonSchemaSemanticVersionTraitsOnTraits());
+      }
+      return super.getMinimumSemanticVersion();
   }
 
   /**
@@ -210,6 +239,16 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
       }
     }
 
+    // if an explicit verb is set, remember this. don't resolve that verb trait, cuz that sounds nuts.
+    if (this.verb != null) {
+        rtsResult.setExplicitVerb(trait, this.verb);
+    }
+    // if a collection of meta traits exist, save on the resolved but don't resolve these. again, nuts
+    if (this.getAppliedTraits() != null && this.getAppliedTraits().getCount() > 0) {
+        rtsResult.setMetaTraits(trait, this.getAppliedTraits().allItems);
+    }
+   
+
     // Register set of possible symbols.
     ctx.getCorpus()
         .registerDefinitionReferenceSymbols(this.fetchObjectDefinition(resOpt), kind,
@@ -260,7 +299,6 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
       copy.getArguments().clear();
     }
 
-
     if (!simpleReference) {
       copy.resolvedArguments = this.resolvedArguments;
     }
@@ -268,6 +306,8 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
     for (final CdmArgumentDefinition arg : this.arguments) {
       copy.getArguments().add((CdmArgumentDefinition)arg.copy(resOpt));
     }
+
+    copy.setVerb((CdmTraitReference) (this.verb == null ? null : this.verb.copy(resOpt)));
 
     return copy;
   }

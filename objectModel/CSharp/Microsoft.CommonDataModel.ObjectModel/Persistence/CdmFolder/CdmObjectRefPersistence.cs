@@ -38,6 +38,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (instance.AppliedTraits.Count > 0)
                 copy.AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits, options);
+            
             return copy;
         }
 
@@ -59,6 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     copy = new TraitReferenceDefinition();
                     copy.TraitReference = refTo;
                     copy.Arguments = Utils.ListCopyData<dynamic>(resOpt, ((CdmTraitReference)instance).Arguments, options)?.ConvertAll<JToken>(a => JToken.FromObject(a, JsonSerializationUtil.JsonSerializer));
+                    copy.Verb = Utils.JsonForm(((CdmTraitReference)instance).Verb, resOpt, options);
                     return copy;
                 case CdmObjectType.TraitGroupRef:
                     return new TraitGroupReferenceDefinition { TraitGroupReference = refTo };

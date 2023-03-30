@@ -26,7 +26,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             Utils.AddListToCdmCollection(attributeGroup.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
             if (obj["members"] != null)
             {
-                foreach(var att in obj["members"])
+                foreach (var att in obj["members"])
                     attributeGroup.Members.Add(Utils.CreateAttribute(ctx, att, entityName));
             }
 

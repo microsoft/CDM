@@ -5,9 +5,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
@@ -97,7 +94,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             string createDatabaseRequest = TestHelper.GetInputFileContent(testSubpath, testName, "createDatabase.json");
             string getDatabaseExpectedResponse = TestHelper.GetExpectedOutputFileContent(testSubpath, testName, "expectedDatabaseResponse.json");
             await TestCreateDatabase(adapter, createDatabaseRequest, getDatabaseExpectedResponse);
-            
+
             string tableName = "symsTestTable";
             string createTableRequest = TestHelper.GetInputFileContent(testSubpath, testName, "createTableRequest.json");
             string getTableExpectedResponse = TestHelper.GetExpectedOutputFileContent(testSubpath, testName, "expectedTableResponse.json");
@@ -108,7 +105,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             await TestCreateorUpdateTable(adapter, tableName, updatedTableRequest, updatedTableExpectedResponse);
 
             await TestRemoveTable(adapter, tableName);
-           
+
             string relationshipTableName = "E1_E2_relationship";
             string createRelationshipTableRequest = TestHelper.GetInputFileContent(testSubpath, testName, "createRelationship.json");
             string getRelationshipTableExpectedResponse = TestHelper.GetExpectedOutputFileContent(testSubpath, testName, "expectedRelationshipResponse.json");

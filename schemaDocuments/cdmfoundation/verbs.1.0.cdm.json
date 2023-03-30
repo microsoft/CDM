@@ -1,0 +1,117 @@
+{
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
+  "definitions": [
+    {
+      "traitName": "fundamental",
+      "explanation": "a trait used to classify other traits that are 'fundamental' to the operation of the system, AKA 'internal use'",
+      "defaultVerb": "classifiedAs"
+    },
+    {
+      "traitName": "meta",
+      "explanation": "a trait used as the verb for other traits that are only used as verbs or other internal indicators of meta meaning",
+      "exhibitsTraits": [
+        "fundamental"
+      ]
+    },
+    {
+      "traitName": "verb",
+      "explanation": "a trait used to classify the special 'verb' traits explain how other traits are being applied or used or related",
+      "defaultVerb": "classifiedAs",
+      "exhibitsTraits": [
+        "fundamental"
+      ]
+    },
+    {
+      "traitName": "is",
+      "explanation": "OBJECT [is->TRAIT] asserts that the data values from OBJECT (entity records, attribute values) take the form specified by TRAIT. Generally used for data formats or other structural guidance",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "means",
+      "explanation": "OBJECT [means->TRAIT] asserts that the data values from OBJECT (entity records, attribute values, trait domain) have the semantic meaning specified by TRAIT. If an entity 'means' 'contract' then the records in that entity represent contract. If an attribute 'means' phoneNumber, then the values for that attribute in the entity records should contain phone numbers. If trait1 'means' trait2, it indicates a 'specialization' (see kindOf for more details) ",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "has",
+      "explanation": "OBJECT [has->TRAIT] asserts that the class of OBJECT (entity definition, attribute specification, trait) has attached to it the class specified by TRAIT.",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "contains",
+      "explanation": "OBJECT [contains->TRAIT] asserts that the class of OBJECT (entity definition, attribute specification, trait) owns, contains, is made from the class specified by TRAIT. 'contains' has the inverse implications of 'of'",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "of",
+      "explanation": "('of' is not a verb but 'is belonging to' is awkward) OBJECT [of->TRAIT] asserts that OBJECT (most likely a trait) is a part of, belongs to, comes from, is for TRAIT. 'address'[of->'customer'] for example. 'of' has the inverse implications of 'contains'",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "qualifiedBy",
+      "explanation": "OBJECT [qualifiedBy->TRAIT] asserts that OBJECT is given the quality described by TRAIT. Note this relationship is different from 'of' and 'means' in that qualifiedBy is used to ascribe characteristics, not ownership or specialization. In 'date' [qualifiedBy->'estimate'] for example a date is not 'part of' estimate nor is estimateDate a specialization of date",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "classifiedAs",
+      "explanation": "OBJECT [classifiedAs->TRAIT] asserts that OBJECT falls into the category described by TRAIT. Note that one OBJECT can have many 'classifiedAs' TRAITS ascribed to it.",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "does",
+      "explanation": "OBJECT [does->TRAIT] asserts that OBJECT performs the action indicated by TRAIT.",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "kindOf",
+      "explanation": "A specialization of the 'means' verb to use in a 'non-verb' way like for the meaning, classification or application of an object that describe the 'kind of' or 'type of' another object. This is semantically equivalent to the 'means' verb but it helps avoid a super mind bending problem. For example, a phoneNumberType column contains words like 'mobile'. So, the values in the domain of the column tells you the semantic type of a phone number. The trait 'means' indicates this exact concept (used to name the semantic type of another thing)  and so one should ascribe that trait to the phoneNumberType column ... using the 'means' verb. Oh no! That would be phoneNumberType means means phoneNumber. I wrote this and I can't follow it. If we just swap in the words 'kindOf' to use as the semantic type we get phoneNumberType means kindOf phoneNumber. To be more precise, it would be kindOf[of->phoneNumber] since the kind is a property of the phone number. I think that makes total sense. This trait can also get used with a 'has' verb to attach a specific type onto an object. For instance, the mobilePhoneNumber column 'means' phoneNumber but 'has' kindOf[of->phoneNumber, means->mobile]. An even more abstract case is a boolean typed column called isThisAMobilePhoneNumber because it contains values from the domain of kindOf[of->phoneNumber, means->mobile] (right? the domain of that trait is only 'yes it is' or 'no it isn't') therefore we would say isThisAMobilePhoneNumber means->kindOf [of->phoneNumber, means->mobile]. As you can see, this kind of kindOf trait kind of helps with understanding the non-verb uses of the 'means' trait, even though in truth it means means means.",
+      "extendsTrait": "means",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "fundamental"
+      ]
+    },
+    {
+      "traitName": "inverseMeans",
+      "explanation": "OBJECT [inverseMeans->TRAIT] asserts that OBJECT 'means' the inverse or opposite of the given TRAIT",
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    }
+  ],
+  "documentVersion": "1.0"
+}

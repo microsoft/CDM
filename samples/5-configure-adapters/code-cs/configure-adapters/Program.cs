@@ -21,9 +21,8 @@ namespace configure_adapters
             {
                 Console.WriteLine("List of storage adapters:");
                 Console.WriteLine("  1: LocalAdapter");
-                Console.WriteLine("  2: CdmStandardsAdapter");
-                Console.WriteLine("  3: RemoteAdapter");
-                Console.WriteLine("  4: ADLSAdapter");
+                Console.WriteLine("  2: RemoteAdapter");
+                Console.WriteLine("  3: ADLSAdapter");
                 Console.WriteLine("Pick a number to configure that storage adapter or press [enter] to exit.");
 
                 // Get the user's input.
@@ -41,16 +40,12 @@ namespace configure_adapters
                         case 1:
                             ConfigureLocalAdapter();
                             break;
-                        // CDM Standards adapter.
-                        case 2:
-                            ConfigureCdmStandardsAdapter();
-                            break;
                         // Remote adapter.
-                        case 3:
+                        case 2:
                             ConfigureRemoteAdapter();
                             break;
                         // ADLS adapter.
-                        case 4:
+                        case 3:
                             ConfigureADLSAdapter();
                             break;
                         default:
@@ -77,40 +72,6 @@ namespace configure_adapters
             // List the newly configured adapter's properties.
             Console.WriteLine("\nLocalAdapter configured. Properties of this LocalAdapter are:");
             Console.WriteLine("  Root: " + adapter.Root);
-            Console.WriteLine();
-        }
-
-        // The CDM Standards adapter is configured to point to a CDN endpoint from where the standards schemas can be reliably fetched.
-        static void ConfigureCdmStandardsAdapter()
-        {
-            // Default values for the optional parameters used by the CDM standards adapter.
-            string timeout = "2000";
-            string maximumTimeout = "10000";
-            string numberOfRetries = "2";
-
-            // Ask the user if optional parameters should be configured, or if defaults should just be used.
-            if (ConfigureOptionalParameters("CdmStandardsAdapter"))
-            {
-                // Configure optional parameters.
-                timeout = GetOptionalParameterValueFromUser("timeout", "CdmStandardsAdapter", timeout /* this is just to show what the value should look like. */);
-                maximumTimeout = GetOptionalParameterValueFromUser("maximum timeout", "CdmStandardsAdapter", maximumTimeout);
-                numberOfRetries = GetOptionalParameterValueFromUser("number of retries", "CdmStandardsAdapter", numberOfRetries);
-            }
-
-            // Create a CDM Standards adapter with the parameter values given by the user.
-            var adapter = new CdmStandardsAdapter()
-            {
-                Timeout = TimeSpan.FromMilliseconds(int.Parse(timeout)),
-                MaximumTimeout = TimeSpan.FromMilliseconds(int.Parse(maximumTimeout)),
-                NumberOfRetries = int.Parse(numberOfRetries)
-                // WaitTimeCallback is another optional parameter and can also be configured here.
-            };
-
-            // List the newly configured adapter's properties.
-            Console.WriteLine("\nCdmStandardsAdapter configured. Properties of this CdmStandardsAdapter are:");
-            Console.WriteLine("  Timeout: " + adapter.Timeout.Value.TotalMilliseconds);
-            Console.WriteLine("  MaximumTimeout: " + adapter.MaximumTimeout.Value.TotalMilliseconds);
-            Console.WriteLine("  NumberOfRetries: " + adapter.NumberOfRetries);
             Console.WriteLine();
         }
 

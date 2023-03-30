@@ -37,7 +37,7 @@ export class ReferencedEntityDeclarationPersistence {
         const corpusPath: string = ctx.corpus.storage.adapterPathToCorpusPath(location);
 
         if (corpusPath === undefined) {
-            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, location, referencedEntity.entityName);
+            Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, location, referencedEntity.entityName);
             return undefined;
         }
 
@@ -74,7 +74,7 @@ export class ReferencedEntityDeclarationPersistence {
         processExtensionFromJson(ctx, dataObj, referenceEntityBaseProperties, extensionTraits, extensionTraitDefList);
 
         if (extensionTraitDefList.length > 0) {
-            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistCustomExtNotSupported);
+            Logger.warning(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.WarnPersistCustomExtNotSupported);
         }
 
         return referencedEntity;

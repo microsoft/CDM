@@ -497,8 +497,12 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         origDoc = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
         docRes.getImports().add(origDoc, "resolvedFrom");
 
+        // if the source document imports foundations, then the resolved one should do the same
         if (this.getInDocument().getImports().item(Constants.FoundationsCorpusPath) != null) {
           docRes.getImports().add(Constants.FoundationsCorpusPath);
+        }
+        if (this.getInDocument().getImports().item(Constants.FoundationFoundationsCorpusPath) != null) {
+          docRes.getImports().add(Constants.FoundationFoundationsCorpusPath);
         }
 
         docRes.setDocumentVersion(this.getInDocument().getDocumentVersion());

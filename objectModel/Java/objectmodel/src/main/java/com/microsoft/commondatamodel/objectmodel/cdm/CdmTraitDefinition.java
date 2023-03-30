@@ -38,6 +38,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   private List<String> associatedProperties;
   private ParameterCollection allParameters;
   private boolean hasSetFlags;
+  private CdmTraitReference defaultVerb;
   private CdmCollection<CdmParameterDefinition> parameters;
 
   public CdmTraitDefinition(final CdmCorpusContext ctx, final String name) {
@@ -55,6 +56,15 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   @Override
   public String getName() {
     return getTraitName();
+  }
+
+  @Override
+  public long getMinimumSemanticVersion()
+  {
+      if (this.defaultVerb != null || this.getExhibitsTraits() != null && this.getExhibitsTraits().size() > 0) {
+          return CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.getJsonSchemaSemanticVersionTraitsOnTraits());
+      }
+      return super.getMinimumSemanticVersion();
   }
 
   /**
@@ -124,26 +134,29 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
       }
       this.hasSetFlags = true;
       final ParameterCollection parameterCollection = this.fetchAllParameters(resOpt);
-      final List<Object> argumentValues = new ArrayList<>();
-      final List<Boolean> wasSet = new ArrayList<>();
-      this.thisIsKnownToHaveParameters = parameterCollection.getSequence().size() > 0;
-      for (int i = 0; i < parameterCollection.getSequence().size(); i++) {
-        // either use the default value or (higher precidence) the value taken from the base reference
-        Object value = parameterCollection.getSequence().get(i).getDefaultValue();
-        if (baseInfo.getValues() != null && i < baseInfo.getValues().size()) {
-          Object baseValue = baseInfo.getValues().get(i);
-          if (baseValue != null) {
-            value = baseValue;
+      // a null probably means a failure to resolve a symbol, for compat just ignore this trait in the set. an error will fire
+      if (parameterCollection != null) {
+        final List<Object> argumentValues = new ArrayList<>();
+        final List<Boolean> wasSet = new ArrayList<>();
+        this.thisIsKnownToHaveParameters = parameterCollection.getSequence().size() > 0;
+        for (int i = 0; i < parameterCollection.getSequence().size(); i++) {
+          // either use the default value or (higher precidence) the value taken from the base reference
+          Object value = parameterCollection.getSequence().get(i).getDefaultValue();
+          if (baseInfo.getValues() != null && i < baseInfo.getValues().size()) {
+            Object baseValue = baseInfo.getValues().get(i);
+            if (baseValue != null) {
+              value = baseValue;
+            }
           }
+          argumentValues.add(value);
+          wasSet.add(false);
         }
-        argumentValues.add(value);
-        wasSet.add(false);
-      }
 
-      // save it
-      final ResolvedTrait resTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet);
-      rtsResult = new ResolvedTraitSet(resOpt);
-      rtsResult.merge(resTrait, false);
+        // save it
+        final ResolvedTrait resTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet, null, null);
+        rtsResult = new ResolvedTraitSet(resOpt);
+        rtsResult.merge(resTrait, false);
+      }
 
       // register set of possible symbols
       ctx.getCorpus()
@@ -199,6 +212,16 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
         .visitList(path + "/hasParameters/", preChildren, postChildren)) {
       return true;
     }
+
+    if (this.getDefaultVerb() != null){
+        this.getDefaultVerb().setOwner(this);
+        if (this.getDefaultVerb().visit(path + "/defaultVerb/", preChildren, postChildren))
+            return true;
+    }
+
+    if (this.visitDef(path, preChildren, postChildren))
+        return true;
+
     return postChildren != null && postChildren.invoke(this, path);
   }
 
@@ -281,6 +304,21 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
     this.ugly = value;
   }
 
+  /**
+   * 
+   * Gets or sets the default verb that should be assumed for uses of this trait when no verb property
+   * is given in the trait reference. Note that the verb property is itself a trait reference because
+   * verbs are described using traits. 
+   */
+  public CdmTraitReference getDefaultVerb() {
+    return this.defaultVerb;
+  }
+
+  public void setDefaultVerb(final CdmTraitReference value) {
+    this.defaultVerb = value;
+  }
+
+
   ParameterCollection fetchAllParameters(final ResolveOptions resOpt) {
     if (this.allParameters != null) {
       return this.allParameters;
@@ -289,7 +327,12 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
     // get parameters from base if there is one
     ParameterCollection prior = null;
     if (this.extendsTrait != null) {
-      prior = ((CdmTraitDefinition) this.extendsTrait.fetchObjectDefinition(resOpt)).fetchAllParameters(resOpt);
+      CdmTraitDefinition extDef = this.extendsTrait.fetchObjectDefinition(resOpt);
+      if (extDef == null) {
+          Logger.error(this.getCtx(), TAG, "fetchAllParameters", this.getAtCorpusPath(), CdmLogCode.ErrResolveReferenceFailure, this.getAtCorpusPath(), "ExtendsTrait");
+          return null;
+      }
+      prior = extDef.fetchAllParameters(resOpt);
     }
     this.allParameters = new ParameterCollection(prior);
     if (this.parameters != null) {
@@ -349,6 +392,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
     copy.allParameters = null;
     copy.setUgly(this.ugly);
     copy.setAssociatedProperties(this.associatedProperties != null ? new ArrayList<>(this.associatedProperties) : null);
+    copy.setDefaultVerb((CdmTraitReference) (this.defaultVerb == null ? null : this.defaultVerb.copy(resOpt)));
     this.copyDef(resOpt, copy);
     return copy;
   }

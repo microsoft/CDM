@@ -23,7 +23,9 @@ import {
     ResolvedTraitSetBuilder,
     resolveOptions,
     SymbolSet,
-    VisitCallback
+    VisitCallback,
+    CdmDocumentDefinition,
+    CdmObjectBase
 } from '../internal';
 
 export class CdmTraitDefinition extends CdmObjectDefinitionBase {
@@ -46,6 +48,14 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
     public traitName: string;
     public extendsTrait?: CdmTraitReference;
     public ugly: boolean;
+
+    /// <summary>
+    /// Gets or sets the default verb that should be assumed for uses of this trait when no verb property
+    /// is given in the trait reference. Note that the verb property is itself a trait reference because
+    /// verbs are described using traits. 
+    /// </summary>
+    public defaultVerb: CdmTraitReference;
+
     /**
      * @internal
      */
@@ -94,6 +104,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
             copy.elevated = this.elevated;
             copy.ugly = this.ugly;
             copy.associatedProperties = this.associatedProperties ? this.associatedProperties.slice() : undefined;
+            copy.defaultVerb = this.defaultVerb?.copy(resOpt) as CdmTraitReference;
             this.copyDef(resOpt, copy);
 
             return copy;
@@ -180,6 +191,16 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
                     return true;
                 }
             }
+
+            if (this.defaultVerb !== undefined) {
+                this.defaultVerb.owner = this;
+                if (this.defaultVerb.visit(path + '/defaultVerb/', preChildren, postChildren))
+                    return true;
+            }
+
+            if (this.visitDef(path, preChildren, postChildren))
+                return true;
+
             if (postChildren && postChildren(this, path)) {
                 return true;
             }
@@ -187,6 +208,17 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
             return false;
         }
         // return p.measure(bodyCode);
+    }
+
+    /**
+     * @internal
+     */
+    public getMinimumSemanticVersion() : number
+    {
+        if (this.defaultVerb !== undefined || this.exhibitsTraits !== undefined && this.exhibitsTraits.length > 0) {
+            return CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.jsonSchemaSemanticVersionTraitsOnTraits);
+        }
+        return super.getMinimumSemanticVersion();
     }
 
     /**
@@ -266,27 +298,30 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
                 }
                 this.hasSetFlags = true;
                 const parameterCollection: ParameterCollection = this.fetchAllParameters(resOpt);
-                const argumentValues: (ArgumentValue)[] = [];
-                const wasSet: (boolean)[] = [];
-                this.thisIsKnownToHaveParameters = (parameterCollection.sequence.length > 0);
-                for (let i: number = 0; i < parameterCollection.sequence.length; i++) {
-                    // either use the default value or (higher precidence) the value taken from the base reference
-                    let value: ArgumentValue = parameterCollection.sequence[i].defaultValue;
-                    let baseValue: ArgumentValue;
-                    if (baseValues && i < baseValues.length) {
-                        baseValue = baseValues[i];
-                        if (baseValue) {
-                            value = baseValue;
+                // a null probably means a failure to resolve a symbol, for compat just ignore this trait in the set. an error will fire
+                if (parameterCollection !== undefined) {
+                    const argumentValues: (ArgumentValue)[] = [];
+                    const wasSet: (boolean)[] = [];
+                    this.thisIsKnownToHaveParameters = (parameterCollection.sequence.length > 0);
+                    for (let i: number = 0; i < parameterCollection.sequence.length; i++) {
+                        // either use the default value or (higher precidence) the value taken from the base reference
+                        let value: ArgumentValue = parameterCollection.sequence[i].defaultValue;
+                        let baseValue: ArgumentValue;
+                        if (baseValues && i < baseValues.length) {
+                            baseValue = baseValues[i];
+                            if (baseValue) {
+                                value = baseValue;
+                            }
                         }
+                        argumentValues.push(value);
+                        wasSet.push(false);
                     }
-                    argumentValues.push(value);
-                    wasSet.push(false);
-                }
 
-                // save it
-                const resTrait: ResolvedTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet);
-                rtsResult = new ResolvedTraitSet(resOpt);
-                rtsResult.merge(resTrait, false);
+                    // save it
+                    const resTrait: ResolvedTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet, undefined, undefined);
+                    rtsResult = new ResolvedTraitSet(resOpt);
+                    rtsResult.merge(resTrait, false);
+                }
 
                 // register set of possible symbols
                 ctx.corpus.registerDefinitionReferenceSymbols(this.fetchObjectDefinition(resOpt), kind, resOpt.symbolRefSet);
@@ -330,9 +365,12 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
             // get parameters from base if there is one
             let prior: ParameterCollection;
             if (this.extendsTrait) {
-                prior = this.fetchExtendsTrait()
-                    .fetchObjectDefinition<CdmTraitDefinition>(resOpt)
-                    .fetchAllParameters(resOpt);
+                let extDef = this.fetchExtendsTrait().fetchObjectDefinition<CdmTraitDefinition>(resOpt);
+                if (extDef === undefined) {
+                    Logger.error(this.ctx, this.TAG, this.fetchAllParameters.name, this.atCorpusPath, cdmLogCode.ErrResolveReferenceFailure, this.atCorpusPath, "ExtendsTrait");
+                    return undefined;
+                }
+                prior = extDef.fetchAllParameters(resOpt);
             }
             this.allParameters = new ParameterCollection(prior);
             if (this.parameters) {

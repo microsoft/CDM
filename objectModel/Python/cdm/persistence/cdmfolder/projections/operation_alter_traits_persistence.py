@@ -44,6 +44,13 @@ class OperationAlterTraitsPersistence:
         elif data.applyTo is not None:
             logger.error(ctx, _TAG, OperationAlterTraitsPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_UNSUPPORTED_PROP, 'applyTo', 'string or list of strings')
 
+        if isinstance(data.applyToTraits, str):
+            alter_traits_op.apply_to_traits = [data.applyToTraits]
+        elif isinstance(data.applyToTraits, list):
+            alter_traits_op.apply_to_traits = data.applyToTraits
+        elif data.applyToTraits is not None:
+            logger.error(ctx, _TAG, OperationAlterTraitsPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_UNSUPPORTED_PROP, 'applyToTraits', 'string or list of strings')
+
         return alter_traits_op
 
     @staticmethod
@@ -56,5 +63,6 @@ class OperationAlterTraitsPersistence:
         obj.traitsToRemove = instance.traits_to_remove
         obj.argumentsContainWildcards = instance.arguments_contain_wildcards
         obj.applyTo = instance.apply_to
+        obj.applyToTraits = instance.apply_to_traits
 
         return obj

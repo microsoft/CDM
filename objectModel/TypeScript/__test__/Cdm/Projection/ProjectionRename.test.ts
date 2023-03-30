@@ -63,7 +63,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         projection.operations.push(renameAttrsOp);
 
         // Create an entity reference to hold this projection
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create an entity attribute that contains this projection and add this to the entity
@@ -72,7 +72,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         entity.attributes.push(entityAttribute);
 
         // Resolve the entity.
-        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, null, localRoot);
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, undefined, localRoot);
 
         // Verify correctness of the resolved attributes after running the RenameAttributes operation
         // Original set of attributes: ['id', 'name', 'value', 'date']
@@ -109,14 +109,14 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         projection.operations.push(renameAttrsOp);
 
         // Create an entity reference to hold this projection
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Set the entity's ExtendEntity to be the projection
         entity.extendsEntity = projectionEntityRef;
 
         // Resolve the entity
-        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, null, localRoot);
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, undefined, localRoot);
 
         // Verify correctness of the resolved attributes after running the RenameAttributes operation
         // Original set of attributes: ['id', 'name', 'value', 'date']
@@ -153,7 +153,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         projection.operations.push(renameAttrsOp);
 
         // Create an entity reference to hold this projection
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create another projection that uses the previous projection as its source
@@ -167,7 +167,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         projection2.operations.push(renameAttrsOp2);
 
         // Create an entity reference to hold this projection
-        const projectionEntityRef2: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef2: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef2.explicitReference = projection2;
 
         // Create an entity attribute that contains this projection and add this to the entity
@@ -176,7 +176,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         entity.attributes.push(entityAttribute);
 
         // Resolve the entity
-        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, null, localRoot);
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, undefined, localRoot);
 
         // Verify correctness of the resolved attributes after running the RenameAttributes operations
         // Original set of attributes: ['id', 'name', 'value', 'date']
@@ -213,7 +213,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         projection.operations.push(renameAttrsOp);
 
         // Create an entity reference to hold this projection
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create an entity attribute that contains this projection and add this to the entity
@@ -222,7 +222,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         entity.attributes.push(entityAttribute);
 
         // Resolve the entity.
-        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, null, localRoot);
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, undefined, localRoot);
 
         // Verify correctness of the resolved attributes after running the RenameAttributes operation
         // Original set of attributes: ['id', 'name', 'value', 'date']
@@ -260,7 +260,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         projection.operations.push(renameAttrsOp);
 
         // Create an entity reference to hold this projection.
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create an entity attribute that contains this projection and add this to the entity.

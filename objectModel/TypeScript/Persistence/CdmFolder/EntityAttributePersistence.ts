@@ -57,7 +57,7 @@ export class EntityAttributePersistence {
 
         // Ignore resolution guidance if the entity is a projection
         if (object.resolutionGuidance && object.entity && typeof (object.entity) !== 'string' && 'source' in object.entity) {
-            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityAttrUnsupported, entityAttribute.name);
+            Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistEntityAttrUnsupported, entityAttribute.name);
         } else {
             entityAttribute.resolutionGuidance =
                 CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);

@@ -1,21 +1,14 @@
-﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-import datetime
-from datetime import timezone
-import time
 import json
 import unittest
-import os
 
 from tests.common import async_test, TestHelper
 from tests.syms_test_helper import SymsTestHelper
-from cdm.enums import CdmStatusLevel
-from cdm.storage.adls import ADLSAdapter
 from cdm.storage.syms import SymsAdapter
-from cdm.enums import AzureCloudEndpoint
 from cdm.utilities.network.token_provider import TokenProvider
-from cdm.objectmodel import CdmCorpusDefinition
+
 
 class FakeTokenProvider(TokenProvider):
     def get_token(self) -> str:

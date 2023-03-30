@@ -211,7 +211,7 @@ describe('Persistence/CdmFolder/Projection', () => {
         expect(entityActual)
             .toBeTruthy();
 
-        const entityContentActual: Entity = PersistenceLayer.toData<CdmEntityDefinition, Entity>(entityActual, null, null, "CdmFolder");
+        const entityContentActual: Entity = PersistenceLayer.toData<CdmEntityDefinition, Entity>(entityActual, undefined, undefined, "CdmFolder");
         expect(entityContentActual)
             .toBeTruthy();
         expect(entityContentActual.hasAttributes)

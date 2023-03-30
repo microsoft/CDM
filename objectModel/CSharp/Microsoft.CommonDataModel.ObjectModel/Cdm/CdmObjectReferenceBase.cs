@@ -23,9 +23,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string NamedReference { get; set; }
 
         /// <inheritdoc />
-        public CdmObjectDefinition ExplicitReference 
-        { 
-            get => this.explicitRererence; 
+        public CdmObjectDefinition ExplicitReference
+        {
+            get => this.explicitRererence;
             set
             {
                 if (value != null)
@@ -193,7 +193,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void LocalizePortableReference(string importPath)
         {
             string newDeclaredPath = this.PortableReference.DeclaredPath;
-            newDeclaredPath =  newDeclaredPath?.EndsWith("/(ref)") == true ? newDeclaredPath.Substring(0, newDeclaredPath.Length - 6) : newDeclaredPath;
+            newDeclaredPath = newDeclaredPath?.EndsWith("/(ref)") == true ? newDeclaredPath.Substring(0, newDeclaredPath.Length - 6) : newDeclaredPath;
             this.NamedReference = $"{importPath}{newDeclaredPath}";
         }
 

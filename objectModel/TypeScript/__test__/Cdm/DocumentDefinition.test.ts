@@ -238,7 +238,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
         expect(document.documentVersion)
             .toEqual('1.5');
 
-        const resManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync(`res-${manifest.name}`, null);
+        const resManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync(`res-${manifest.name}`, undefined);
         const resEntity: CdmEntityDefinition = await corpus.fetchObjectAsync(resManifest.entities.allItems[0].entityPath, resManifest);
         var resDocument = resEntity.inDocument;
 

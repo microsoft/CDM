@@ -14,6 +14,7 @@ public class OperationAlterTraits extends OperationBase {
     private ArrayNode traitsToRemove;
     private Boolean argumentsContainWildcards;
     private Object applyTo;
+    private Object applyToTraits;
 
     public JsonNode getTraitsToAdd() {
         return traitsToAdd;
@@ -45,5 +46,13 @@ public class OperationAlterTraits extends OperationBase {
 
     public void setApplyTo(final Object applyTo) {
         this.applyTo = applyTo;
+    }
+
+    public Object getApplyToTraits() {
+        return applyToTraits;
+    }
+
+    public void setApplyToTraits(final Object applyToTraits) {
+        this.applyToTraits = applyToTraits;
     }
 }

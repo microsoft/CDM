@@ -36,7 +36,7 @@ export class CdmTraitGroupReference extends CdmTraitReferenceBase {
     public copyRefObject(resOpt: resolveOptions, refTo: string | CdmTraitGroupDefinition, simpleReference: boolean, host?: CdmObjectReferenceBase): CdmObjectReferenceBase {
         // let bodyCode = () =>
         {
-            if (host == null)
+            if (host === undefined)
                 return new CdmTraitGroupReference(this.ctx, refTo, simpleReference);
             else
                 return host.copyToHost(this.ctx, refTo, simpleReference);

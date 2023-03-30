@@ -6,15 +6,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Net;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Tests.Storage.TestAdapters;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Moq;
     using Newtonsoft.Json.Linq;
-
+    using static Microsoft.CommonDataModel.ObjectModel.Utilities.Network.CdmHttpClient;
     using Assert = AssertExtension;
 
     [TestClass]
@@ -27,7 +30,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
                 return "TOKEN";
             }
         }
-        
+
         private readonly string testSubpath = "Storage";
 
         private static async Task RunWriteReadTest(ADLSAdapter adapter)
@@ -38,7 +41,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             string readContents = await adapter.ReadAsync(filename);
             Assert.IsTrue(string.Equals(writeContents, readContents));
         }
-        
+
         private static async Task RunCheckFileTimeTest(ADLSAdapter adapter)
         {
             DateTimeOffset? offset1 = await adapter.ComputeLastModifiedTimeAsync("/FileTimeTest/CheckFileTime.txt");
@@ -340,7 +343,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             var adlsAdapter1WithFolders = new ADLSAdapter(host1, "root-without-slash/folder1/folder2", string.Empty);
             Assert.AreEqual("/root-without-slash/folder1/folder2", adlsAdapter1WithFolders.Root);
-            
+
             var adapterPath2 = "https://storageaccount.dfs.core.windows.net/root-without-slash/folder1/folder2/a/1.csv";
             var corpusPath2 = adlsAdapter1WithFolders.CreateCorpusPath(adapterPath2);
             Assert.AreEqual("/a/1.csv", corpusPath2);
@@ -437,7 +440,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
                 var corpusSnakeCase = new CdmCorpusDefinition();
                 corpusSnakeCase.Storage.MountFromConfig(configSnakeCase);
                 Assert.Fail("Expected RuntimeException for config.json using endpoint value in snake case.");
-            } 
+            }
             catch (Exception ex)
             {
                 String message = "Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.";
@@ -538,7 +541,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
                 await adapter.WriteAsync(filename, writeContents);
             }
             catch (Exception e)
-            {}
+            { }
 
             try
             {
@@ -557,7 +560,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         [TestMethod]
         public async Task ADLSWriteClientIdLargeFileContentsNoEmptyFileLeft()
         {
-            
             AdlsTestHelper.CheckADLSEnvironment();
             string filename = "largefilecheck_CSharp.txt";
             string writeContents = new string('A', 100000000);
@@ -582,5 +584,128 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             }
         }
 
+        /// <summary>
+        /// Tests that ADLS upload error on write are handled correctly
+        /// </summary>
+        [TestMethod]
+        public async Task ADLSWriteUploadError()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+
+            // first request creates an empty file
+            var firstResponse = new CdmHttpResponse(HttpStatusCode.Created)
+            {
+                IsSuccessful = true,
+            };
+
+            // second request to throw error
+            var secondResponse = new CdmHttpResponse(HttpStatusCode.NotFound)
+            {
+                IsSuccessful = true,
+            };
+
+            // before error is logged, request is made to delete content at path
+            var thirdResponse = new CdmHttpResponse()
+            {
+                IsSuccessful = true,
+            };
+
+            var mockCdmHttpClient = new Mock<ICdmHttpClient>();
+            var sequence = new MockSequence();
+
+            mockCdmHttpClient.InSequence(sequence).Setup(foo => foo.SendAsync(It.IsAny<CdmHttpRequest>(), It.IsAny<Callback>(), It.IsAny<CdmCorpusContext>()))
+                .ReturnsAsync(firstResponse);
+            mockCdmHttpClient.InSequence(sequence).Setup(foo => foo.SendAsync(It.IsAny<CdmHttpRequest>(), It.IsAny<Callback>(), It.IsAny<CdmCorpusContext>()))
+                .ReturnsAsync(secondResponse);
+            mockCdmHttpClient.InSequence(sequence).Setup(foo => foo.SendAsync(It.IsAny<CdmHttpRequest>(), It.IsAny<Callback>(), It.IsAny<CdmCorpusContext>()))
+                .ReturnsAsync(thirdResponse);
+
+            bool uploadedDataNotAcceptedError = false;
+
+            var corpus = TestHelper.GetLocalCorpus(testSubpath, "ADLSWriteErrors");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (status, message) =>
+                {
+                    if (message.Contains("Could not write ADLS content at path, there was an issue at \"/someDoc.cdm.json\" during the append action. Reason: "))
+                    {
+                        uploadedDataNotAcceptedError = true;
+                    }
+                }
+            }, CdmStatusLevel.Error);
+            corpus.Storage.Mount("adls", new MockAdlsAdapter(mockCdmHttpClient.Object));
+
+            var adlsFolder = corpus.Storage.NamespaceFolders["adls"];
+            var someDoc = adlsFolder.Documents.Add("someDoc");
+            await someDoc.SaveAsAsync("someDoc.cdm.json");
+
+            Assert.IsTrue(uploadedDataNotAcceptedError);
+        }
+
+        /// <summary>
+        /// Tests that ADLS flush error on write are handled correctly
+        /// </summary>
+        [TestMethod]
+        public async Task ADLSWriteFlushError()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+
+            var firstResponse = new CdmHttpResponse(HttpStatusCode.Created)
+            {
+                IsSuccessful = true,
+            };
+            var secondResponse = new CdmHttpResponse(HttpStatusCode.Accepted)
+            {
+                IsSuccessful = true,
+            };
+            var thirdResponse = new CdmHttpResponse()
+            {
+                IsSuccessful = true,
+            };
+            var fourthResponse = new CdmHttpResponse(HttpStatusCode.NotModified)
+            {
+                IsSuccessful = true,
+            };
+
+            var mockCdmHttpClient = new Mock<ICdmHttpClient>();
+            var sequence = new MockSequence();
+
+            // first request creates an empty file
+            mockCdmHttpClient.InSequence(sequence).Setup(foo => foo.SendAsync(It.IsAny<CdmHttpRequest>(), It.IsAny<Callback>(), It.IsAny<CdmCorpusContext>()))
+                .ReturnsAsync(firstResponse);
+
+            // second request is accepted, uploaded data worked correctly
+            mockCdmHttpClient.InSequence(sequence).Setup(foo => foo.SendAsync(It.IsAny<CdmHttpRequest>(), It.IsAny<Callback>(), It.IsAny<CdmCorpusContext>()))
+                .ReturnsAsync(secondResponse);
+
+            // before error is logged, request is made to delete content at path
+            mockCdmHttpClient.InSequence(sequence).Setup(foo => foo.SendAsync(It.IsAny<CdmHttpRequest>(), It.IsAny<Callback>(), It.IsAny<CdmCorpusContext>()))
+                .ReturnsAsync(thirdResponse);
+
+            // this failure occurs when data was not flushed correctly
+            mockCdmHttpClient.InSequence(sequence).Setup(foo => foo.SendAsync(It.IsAny<CdmHttpRequest>(), It.IsAny<Callback>(), It.IsAny<CdmCorpusContext>()))
+                .ReturnsAsync(fourthResponse);
+
+            bool notFlushedErrorHit = false;
+
+            var corpus = TestHelper.GetLocalCorpus(testSubpath, "ADLSWriteErrors");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (status, message) =>
+                {
+                    if (message.Contains("Could not write ADLS content at path, there was an issue at \"/someDoc.cdm.json\" during the flush action. Reason: "))
+                    {
+                        notFlushedErrorHit = true;
+                    }
+                }
+            }, CdmStatusLevel.Error);
+            corpus.Storage.Mount("adls", new MockAdlsAdapter(mockCdmHttpClient.Object));
+
+            var adlsFolder = corpus.Storage.NamespaceFolders["adls"];
+            var someDoc = adlsFolder.Documents.Add("someDoc");
+            await someDoc.SaveAsAsync("someDoc.cdm.json");
+
+            Assert.IsTrue(notFlushedErrorHit);
+        }
     }
 }

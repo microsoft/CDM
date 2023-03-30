@@ -108,8 +108,8 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
         projCtx: ProjectionContext,
         attrCtxUnder: CdmAttributeContext,
         target_attr_or_resolved_attr: CdmAttribute | ResolvedAttribute,
-        overrideDefaultName: string = null,
-        addedSimpleRefTraits: string[] = null
+        overrideDefaultName: string = undefined,
+        addedSimpleRefTraits: string[] = undefined
     ): ResolvedAttribute {
 
         const targetAttr: CdmAttribute = target_attr_or_resolved_attr instanceof CdmAttribute 
@@ -170,7 +170,7 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
                 return ''
             }
 
-            const ordinal: string = currentPAS.ordinal != null ? currentPAS.ordinal.toString() : "";
+            const ordinal: string = currentPAS.ordinal !== undefined ? currentPAS.ordinal.toString() : "";
             const originalMemberAttributeName: string = (currentPAS.currentResolvedAttribute.target as CdmAttribute)?.name ?? "";
             const resolvedMemberAttributeName: string = currentPAS.currentResolvedAttribute.resolvedName ?? "";
             

@@ -209,12 +209,12 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         this.lineage.push(refLineage);
 
         // debugging. get the parent of the context tree and validate that this node is in that tree
-        // if (validate == true) {
+        // if (validate === true) {
         //     CdmAttributeContext trace = refLineage.explicitReference as CdmAttributeContext;
-        //     while (trace.parent != null) {
+        //     while (trace.parent !== undefined) {
         //         trace = trace.parent.explicitReference as CdmAttributeContext;
         //     }
-        //     trace.validateLineage(null);
+        //     trace.validateLineage(undefined);
         // }
 
         return refLineage;
@@ -225,7 +225,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         // use this whenever we need to keep references pointing at things that were already found. used when 'fixing' references by localizing to a new document
         resOptCopy.saveResolutionsOnCopy = true;
         // for debugging help
-        // if (resOptCopy.mapOldCtxToNewCtx != null) {
+        // if (resOptCopy.mapOldCtxToNewCtx !== undefined) {
         //     return undefined;
         // }
         resOptCopy.mapOldCtxToNewCtx = new Map<CdmAttributeContext, CdmAttributeContext>();
@@ -538,7 +538,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
                 inRemove = true; // triggers us to know what to do in the next code block.
             }
             let removedAttribute: boolean = false;
-            if (ac.type == cdmAttributeContextType.attributeDefinition) {
+            if (ac.type === cdmAttributeContextType.attributeDefinition) {
                 // empty attribute nodes are descriptions of source attributes that may or may not be needed. lineage will sort it out.
                 // the exception is for attribute descriptions under a remove attributes operation. they are gone from the resolved att set, so
                 // no history would remain 

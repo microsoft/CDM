@@ -24,7 +24,8 @@ import {
     ResolvedTraitSet,
     resolveOptions,
     VisitCallback,
-    StringUtils
+    StringUtils,
+    CdmObjectBase
 } from '../../internal';
 import { ExpressionTree } from '../../ResolvedModel/ExpressionParser/ExpressionTree';
 import { InputValues } from '../../ResolvedModel/ExpressionParser/InputValues';
@@ -90,7 +91,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         }
 
         copy.condition = this.condition;
-        copy.source = this.source ? this.source.copy() as CdmEntityReference : null;
+        copy.source = this.source ? this.source.copy() as CdmEntityReference : undefined;
 
         for (const operation of this.operations) {
             copy.operations.push(operation.copy() as CdmOperationBase);
@@ -139,7 +140,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         } else if (!this.source.explicitReference || this.source.explicitReference.objectType !== cdmObjectType.projectionDef) {
             // If reached the inner most projection
             const rootOwner: CdmObject = this.getRootOwner();
-            if (rootOwner.objectType == cdmObjectType.typeAttributeDef) {
+            if (rootOwner.objectType === cdmObjectType.typeAttributeDef) {
                 // If the projection is used in a type attribute
                 Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrProjSourceError);
             }
@@ -196,6 +197,15 @@ export class CdmProjection extends CdmObjectDefinitionBase {
     }
 
     /**
+     * @internal
+     */
+    public getMinimumSemanticVersion() : number
+    {
+        return CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.jsonSchemaSemanticVersionProjections);
+    }
+    
+
+    /**
      * @inheritdoc
      * @internal
      */
@@ -243,6 +253,11 @@ export class CdmProjection extends CdmObjectDefinitionBase {
 
         if (this.source) {
             const source: CdmObjectDefinition = this.source.fetchObjectDefinition<CdmObjectDefinition>(projDirective.resOpt);
+            if (source === undefined) {
+                Logger.error(this.ctx, this.TAG, this.constructProjectionContext.name, this.atCorpusPath, cdmLogCode.ErrProjFailedToResolve);
+                return undefined;
+            }
+
             if (source.objectType === cdmObjectType.projectionDef) {
                 // A Projection
 
@@ -261,7 +276,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
                 ras = this.source.fetchResolvedAttributes(projDirective.resOpt, acpSourceProjection);
 
                 // If polymorphic keep original source as previous state
-                let polySourceSet: Map<string, ProjectionAttributeState[]> = null;
+                let polySourceSet: Map<string, ProjectionAttributeState[]> = undefined;
                 if (projDirective.isSourcePolymorphic) {
                     polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras);
                 }
@@ -321,7 +336,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
 
                 // If RunSequentially is not true then all the operations will receive the source input
                 // Unless the operation overwrites this behavior using the SourceInput property
-                const sourceInput: boolean = operation.sourceInput != null ? operation.sourceInput : !this.runSequentially;
+                const sourceInput: boolean = operation.sourceInput !== undefined ? operation.sourceInput : !this.runSequentially;
 
                 // If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
                 if (sourceInput || firstOperationToRun) {
@@ -359,7 +374,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
      * @internal
      */
     public extractResolvedAttributes(projCtx: ProjectionContext, attCtxUnder: CdmAttributeContext): ResolvedAttributeSet {
-        const resolvedAttributeSet: ResolvedAttributeSet = new ResolvedAttributeSet();
+        let resolvedAttributeSet: ResolvedAttributeSet = new ResolvedAttributeSet();
         resolvedAttributeSet.attributeContext = attCtxUnder;
 
         if (!projCtx) {
@@ -368,7 +383,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         }
 
         for (const pas of projCtx.currentAttributeStateSet.states) {
-            resolvedAttributeSet.merge(pas.currentResolvedAttribute);
+            resolvedAttributeSet = resolvedAttributeSet.merge(pas.currentResolvedAttribute);
         }
 
         return resolvedAttributeSet;

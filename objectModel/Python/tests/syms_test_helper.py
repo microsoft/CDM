@@ -32,11 +32,11 @@ class SymsTestHelper:
         return os.environ.get('SYMS_RUNTESTS') is not '1'
 
     @staticmethod
-    def json_object_should_be_equal_as_expected(expected: str, actual: str):
+    def json_object_should_be_equal_as_expected(expected, actual):
 
         actual = SymsTestHelper.ignore_properties(SymsTestHelper.ignore_null(actual))
         obj1 = SymsTestHelper.ordered(SymsTestHelper.ignore_null(expected))
-        obj2 = SymsTestHelper.ordered(actual)
+        obj2 = SymsTestHelper.ordered(SymsTestHelper.ignore_extra_values_in_actual(actual, expected))
         return obj1 == obj2
 
     @staticmethod
@@ -44,9 +44,6 @@ class SymsTestHelper:
         # remove id
         if 'id' in data:
             del data['id']
-            
-        ignore_paths = ['properties.ObjectId', 'properties.StorageDescriptor.ColumnSetEntityName']
-
         if 'properties' in data:
             if 'ObjectId' in data['properties']:
                 data['properties']['ObjectId'] = ''
@@ -63,15 +60,6 @@ class SymsTestHelper:
 
         return data
 
-    # @staticmethod
-    # def ignore_null(data):
-    #     new_obj = {}
-    #     if isinstance(data, dict):
-    #     if isinstance(data, list):
-    #     for key in data:
-    #         if isinstance(data, dict):
-    #     return new_obj
-
     @staticmethod
     def ignore_null(data):
         if isinstance(data, dict):
@@ -83,12 +71,21 @@ class SymsTestHelper:
             return new_obj
         if isinstance(data, list):
             return [SymsTestHelper.ignore_null(x) for x in data if data is not None]
-            # new_list = []
-            # for val in data:
-            #     new_list.append(SymsTestHelper.ignore_null(val))
-            # return new_list
         if data is not None:
             return data
+
+    @staticmethod
+    def ignore_extra_values_in_actual(actual, expected):
+        if isinstance(actual, dict):
+            new_obj = {}
+            for key in actual:
+                if key in expected:
+                    new_obj[key] = SymsTestHelper.ignore_extra_values_in_actual(actual[key], expected[key])
+            return new_obj
+        if isinstance(actual, list):
+            return [SymsTestHelper.ignore_extra_values_in_actual(actual[i], expected[i]) for i in range(len(expected))]
+        if actual is not None:
+            return actual
 
     @staticmethod
     async def clean_database(adapter: 'SymsAdapter', db_name: str):

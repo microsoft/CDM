@@ -72,7 +72,7 @@ export class TypeAttributePersistence {
         if (object.dataFormat !== undefined) {
             typeAttribute.dataFormat = TypeAttributePersistence.dataTypeFromData(object.dataFormat);
             if (typeAttribute.dataFormat === undefined) {
-                Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersitEnumNotFound, object.dataFormat);
+                Logger.warning(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.WarnPersitEnumNotFound, object.dataFormat);
             }
         }
         if (object.defaultValue !== undefined) {

@@ -19,8 +19,8 @@ export class ArgumentPersistence {
     public static fromData(ctx: CdmCorpusContext, object: string | Argument): CdmArgumentDefinition {
         const argument: CdmArgumentDefinition = ctx.corpus.MakeObject(cdmObjectType.argumentDef);
         
-        // must use `object != undefined` here, since when object is null, null != undefined => false but null !== undefined => true
-        if (typeof object === 'object' && object != undefined && object.value !== undefined) {
+        // must use `object !== undefined` here, since when object is null, null !== undefined => false but null !== undefined => true
+        if (typeof object === 'object' && object !== undefined && object.value !== undefined) {
             argument.value = utils.createConstant(ctx, object.value as CdmJsonType);
             if (object.name) {
                 argument.name = object.name;

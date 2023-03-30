@@ -170,7 +170,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.LastFileModifiedOldTime = null;
         }
-        
+
         /// <summary>
         /// Standardized way of turning a relationship object into a key for caching
         /// without using the object itself as a key (could be duplicate relationship objects).

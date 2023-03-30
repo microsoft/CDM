@@ -60,6 +60,11 @@ export class PersistenceLayer {
         this.ctx = this.corpus.ctx;
         this.registeredPersistenceFormats = new Map<string, any>();
         this.isRegisteredPersistenceAsync = new Map<any, boolean>();
+        // why do this? because in some mysterious situations the CdmFolder and ModelJson imported objects (turn into a required)
+        // are undefined when the PersistenceTypes const is initialized.
+        // later, like when this constructor is called and all the code is loaded and they are set.
+        PersistenceTypes.CdmFolder = CdmFolder;
+        PersistenceTypes.ModelJson = ModelJson;
     }
 
     /**
@@ -121,7 +126,7 @@ export class PersistenceLayer {
      * @param docContainer The loaded document, if it was previously loaded.
      * @param resOpt Optional parameter. The resolve options.
      */
-    public async LoadDocumentFromPathAsync(folder: CdmFolderDefinition, docName: string, docContainer: CdmDocumentDefinition, resOpt: resolveOptions = null):
+    public async LoadDocumentFromPathAsync(folder: CdmFolderDefinition, docName: string, docContainer: CdmDocumentDefinition, resOpt: resolveOptions = undefined):
         Promise<CdmDocumentDefinition> {
         let docContent: CdmDocumentDefinition;
         let jsonData: string;
@@ -204,7 +209,7 @@ export class PersistenceLayer {
             }
         } catch (e) {
             // Could not find a registered persistence class to handle this document type.
-            Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, null, cdmLogCode.ErrPersistDocConversionFailure, docName, e.message);
+            Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, undefined, cdmLogCode.ErrPersistDocConversionFailure, docName, e.message);
             return undefined;
         }
 
@@ -246,6 +251,10 @@ export class PersistenceLayer {
         options: copyOptions,
         newName: string,
         saveReferenced: boolean): Promise<boolean> {
+
+        // update the jsonSemanticVersion to the max(author setting, mimimum required by usage)
+        doc.discoverMinimumRequiredJsonSemanticVersion();
+
         // find out if the storage adapter is able to write.
         let ns: string = doc.namespace;
         if (StringUtils.isBlankByCdmStandard(ns)) {

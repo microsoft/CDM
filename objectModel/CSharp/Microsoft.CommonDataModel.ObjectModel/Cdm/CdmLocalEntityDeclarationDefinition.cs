@@ -54,8 +54,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the last file modified time.
         /// </summary>
-        public DateTimeOffset? LastFileModifiedTime { get { return lastFileModifiedTime; } 
-            set { LastFileModifiedOldTime = lastFileModifiedTime; lastFileModifiedTime = value; } }
+        public DateTimeOffset? LastFileModifiedTime
+        {
+            get { return lastFileModifiedTime; }
+            set { LastFileModifiedOldTime = lastFileModifiedTime; lastFileModifiedTime = value; }
+        }
 
         internal DateTimeOffset? LastFileModifiedOldTime { get; private set; }
 
@@ -216,7 +219,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
             {
                 string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
-                DateTimeOffset? modifiedTime = this.IsVirtual ? await this.Ctx.Corpus.GetLastModifiedTimeFromObjectAsync(this) 
+                DateTimeOffset? modifiedTime = this.IsVirtual ? await this.Ctx.Corpus.GetLastModifiedTimeFromObjectAsync(this)
                                                               : await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
 
                 // check patterns first as this is a more performant way of querying file modification times 
@@ -255,16 +258,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     foreach (var pattern in this.IncrementalPartitionPatterns)
                     {
-                        if (this.ShouldCallFileStatusCheck(incrementalType, true, pattern)) {
+                        if (this.ShouldCallFileStatusCheck(incrementalType, true, pattern))
+                        {
                             await pattern.FileStatusCheckAsync();
                         }
                     }
 
                     foreach (var partition in this.IncrementalPartitions)
-                    if (this.ShouldCallFileStatusCheck(incrementalType, false, partition))
-                    {
-                        await partition.FileStatusCheckAsync();
-                    }
+                        if (this.ShouldCallFileStatusCheck(incrementalType, false, partition))
+                        {
+                            await partition.FileStatusCheckAsync();
+                        }
                 }
 
                 // update modified times
@@ -288,8 +292,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmTraitReference traitRef = patternOrPartitionObj.ExhibitsTraits.Item(Constants.IncrementalTraitName) as CdmTraitReference;
             if (traitRef == null)
             {
-                Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrMissingIncrementalPartitionTrait, 
-                    isPattern ? nameof(CdmDataPartitionPatternDefinition) : nameof(CdmDataPartitionDefinition), patternOrPartitionObj.FetchObjectDefinitionName(), 
+                Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrMissingIncrementalPartitionTrait,
+                    isPattern ? nameof(CdmDataPartitionPatternDefinition) : nameof(CdmDataPartitionDefinition), patternOrPartitionObj.FetchObjectDefinitionName(),
                     Constants.IncrementalTraitName, isPattern ? nameof(IncrementalPartitionPatterns) : nameof(IncrementalPartitions));
             }
             else
@@ -303,7 +307,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (traitRefIncrementalTypeValue == null)
                 {
                     update = false;
-                    Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrTraitArgumentMissing, 
+                    Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrTraitArgumentMissing,
                         "type", Constants.IncrementalTraitName, patternOrPartitionObj.FetchObjectDefinitionName());
                 }
                 else if (traitRefIncrementalTypeValue is string == false)
@@ -323,7 +327,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         update = false;
                         Logger.Error(patternOrPartitionObj.Ctx, Tag, nameof(ShouldCallFileStatusCheck), patternOrPartitionObj.AtCorpusPath, CdmLogCode.ErrEnumConversionFailure,
-                            traitRefIncrementalTypeValue, nameof(CdmIncrementalPartitionType), 
+                            traitRefIncrementalTypeValue, nameof(CdmIncrementalPartitionType),
                             $"parameter 'type' of trait '{Constants.IncrementalTraitName}' from '{patternOrPartitionObj.FetchObjectDefinitionName()}'");
                     }
                 }

@@ -47,7 +47,7 @@ describe('Utilities.EventList', () => {
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrValdnMissingDoc, true)
 
         // Test resolving a manifest not added to a folder, this should yield at least one error message in the recorder
-        await manifest.createResolvedManifestAsync('new dummy', null);
+        await manifest.createResolvedManifestAsync('new dummy', undefined);
         TestBasicLogsState(corpus);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrResolveManifestFailed, true)
 
@@ -121,7 +121,7 @@ describe('Utilities.EventList', () => {
         corpus.storage.fetchRootFolder('local').documents.push(entity1Doc);
 
         manifest.entities.push(entity1);
-        await manifest.createResolvedManifestAsync('new dummy 2', null);
+        await manifest.createResolvedManifestAsync('new dummy 2', undefined);
 
         TestBasicLogsState(corpus);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrResolveReferenceFailure, true)
@@ -139,7 +139,7 @@ describe('Utilities.EventList', () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestEventList');
         corpus.setEventCallback(eventCallback, cdmStatusLevel.info, DummyCorrelationId);
 
-        corpus.storage.mount('dummy', null);
+        corpus.storage.mount('dummy', undefined);
         TestBasicLogsState(corpus);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullAdapter, true);
 
@@ -148,7 +148,7 @@ describe('Utilities.EventList', () => {
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnStorageRemoveAdapterFailed, true);
 
         // No errors/warnings expected here
-        corpus.storage.fetchRootFolder(null);
+        corpus.storage.fetchRootFolder(undefined);
         TestBasicLogsState(corpus);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullNamespace, true);
 
@@ -161,11 +161,11 @@ describe('Utilities.EventList', () => {
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageAdapterNotFound, true);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNamespaceNotRegistered, true);
 
-        corpus.storage.createAbsoluteCorpusPath(null);
+        corpus.storage.createAbsoluteCorpusPath(undefined);
         TestBasicLogsState(corpus);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath, true);
 
-        corpus.storage.createRelativeCorpusPath(null);
+        corpus.storage.createRelativeCorpusPath(undefined);
         TestBasicLogsState(corpus);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath, true);
         

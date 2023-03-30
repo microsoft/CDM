@@ -189,6 +189,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             return false;
         }
+        internal override long GetMinimumSemanticVersion()
+        {
+            return CdmObjectBase.SemanticVersionStringToNumber(CdmDocumentDefinition.JsonSchemaSemanticVersionProjections);
+        }
+
 
         /// <inheritdoc />
         internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
@@ -243,6 +248,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.Source != null)
             {
                 CdmObjectDefinitionBase source = this.Source.FetchObjectDefinition<CdmObjectDefinitionBase>(projDirective.ResOpt);
+                if (source == null)
+                {
+                    Logger.Error(this.Ctx, nameof(CdmProjection), "ConstructProjectionContext", this.AtCorpusPath, CdmLogCode.ErrProjFailedToResolve);
+                    return null;
+                }
                 if (source.ObjectType == CdmObjectType.ProjectionDef)
                 {
                     // A Projection
@@ -406,7 +416,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             foreach (var pas in projCtx.CurrentAttributeStateSet.States)
             {
-                resolvedAttributeSet.Merge(pas.CurrentResolvedAttribute);
+                resolvedAttributeSet = resolvedAttributeSet.Merge(pas.CurrentResolvedAttribute);
             }
 
             return resolvedAttributeSet;

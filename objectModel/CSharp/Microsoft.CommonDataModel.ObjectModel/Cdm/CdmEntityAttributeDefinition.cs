@@ -451,7 +451,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             // put a resolved trait on this att group, hope I never need to do this again and then need to make a function for this
                             CdmTraitReference tr = this.Ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "is.linkedEntity.array", true);
                             var t = tr.FetchObjectDefinition<CdmTraitDefinition>(resOpt);
-                            ResolvedTrait rt = new ResolvedTrait(t, null, new List<dynamic>(), new List<bool>());
+                            ResolvedTrait rt = new ResolvedTrait(t, null, new List<dynamic>(), new List<bool>(), null, null);
                             raSub.ResolvedTraits = raSub.ResolvedTraits.Merge(rt, true);
                         }
                         int depth = rasb.ResolvedAttributeSet.DepthTraveled;

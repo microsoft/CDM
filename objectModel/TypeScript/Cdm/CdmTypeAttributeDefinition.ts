@@ -313,7 +313,7 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             rasb.ownOne(newAtt);
             const rts: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
 
-            if (this.owner && this.owner.objectType == cdmObjectType.entityDef) {
+            if (this.owner && this.owner.objectType === cdmObjectType.entityDef) {
                 rasb.ras.setTargetOwner(this.owner as CdmEntityDefinition);
             }
 

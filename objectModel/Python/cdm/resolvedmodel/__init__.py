@@ -15,6 +15,7 @@ from .resolved_entity_reference_side import ResolvedEntityReferenceSide
 from .resolved_trait import ResolvedTrait
 from .resolved_trait_set import ResolvedTraitSet
 from .resolved_trait_set_builder import ResolvedTraitSetBuilder
+from .trait_profile import TraitProfile, TraitProfileCache
 from .trait_param_spec import TraitParamSpec, TraitSpec
 
 __all__ = [
@@ -34,5 +35,7 @@ __all__ = [
     'ResolvedTraitSet',
     'ResolvedTraitSetBuilder',
     'TraitParamSpec',
+    'TraitProfile',
+    'TraitProfileCache',
     'TraitSpec'
 ]

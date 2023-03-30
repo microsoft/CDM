@@ -622,13 +622,13 @@ export class traitToPropertyMap {
                                     const row: any = {};
                                     const rawRow: string[] = rawValues[i];
                                     if (rawRow.length === 2 || (lookup && rawRow.length === 4) || (corr && rawRow.length === 5)) {
-                                        row.languageTag = rawRow[0] !== undefined ? rawRow[0] : null;
-                                        row.displayText = rawRow[1] !== undefined ? rawRow[1] : null;
+                                        row.languageTag = rawRow[0] !== undefined ? rawRow[0] : undefined;
+                                        row.displayText = rawRow[1] !== undefined ? rawRow[1] : undefined;
                                         if (lookup || corr) {
-                                            row.attributeValue = rawRow[2] !== undefined ? rawRow[2] : null;
-                                            row.displayOrder = rawRow[3] !== undefined ? rawRow[3] : null;
+                                            row.attributeValue = rawRow[2] !== undefined ? rawRow[2] : undefined;
+                                            row.displayOrder = rawRow[3] !== undefined ? rawRow[3] : undefined;
                                             if (corr) {
-                                                row.correlatedValue = rawRow[4] !== undefined ? rawRow[4] : null;
+                                                row.correlatedValue = rawRow[4] !== undefined ? rawRow[4] : undefined;
                                             }
                                         }
                                     }
@@ -687,10 +687,10 @@ export class traitToPropertyMap {
                 newDefault = this.ctx.corpus.MakeRef(cdmObjectType.entityRef, cEnt, false);
                 this.updateTraitArgument('does.haveDefault', 'default', newDefault);
             } else {
-                Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrValdnMissingLanguageTag);
+                Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, undefined, cdmLogCode.ErrValdnMissingLanguageTag);
             }
         } else {
-            Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrUnsupportedType);
+            Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, undefined, cdmLogCode.ErrUnsupportedType);
         }
     }
 

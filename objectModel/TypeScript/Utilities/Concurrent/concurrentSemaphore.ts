@@ -34,7 +34,7 @@ export class ConcurrentSemaphore {
      */
     public acquire(): Promise<void> {
         // if permits is null, it means that the queue is unbounded.
-        if (this.permits === undefined || this.permits === null) {
+        if (this.permits === undefined) {
             return Promise.resolve();
         }
 
@@ -61,7 +61,7 @@ export class ConcurrentSemaphore {
         if (nextPromise !== undefined) {
             // there is another completable future waiting to run, allow it but don't modify the number of permits.
             nextPromise.resolve();
-        } else if (this.permits !== undefined && this.permits !== null) {
+        } else if (this.permits !== undefined) {
             // there is no completable waiting to run so just increment the number of available permits.
             this.permits++;
         }

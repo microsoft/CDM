@@ -29,7 +29,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="ctx">The context.</param>
         /// <param name="owner">The folder that contains this collection.</param>
         public CdmDocumentCollection(CdmCorpusContext ctx, CdmFolderDefinition owner)
-            :base(ctx, owner, CdmObjectType.DocumentDef)
+            : base(ctx, owner, CdmObjectType.DocumentDef)
         {
         }
 
@@ -42,7 +42,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // why is this collection unlike all other collections?
             // because documents are in folders. folders are not in documents.
             document.Owner = this.Owner;
-            this.AllItems.Insert(index, document);
+            lock (AllItems)
+            {
+                this.AllItems.Insert(index, document);
+            }
             return true;
         }
 
@@ -55,7 +58,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // why is this collection unlike all other collections?
             // because documents are in folders. folders are not in documents.
             document.Owner = this.Owner;
-            AllItems.Add(document);
+            lock (AllItems)
+            {
+                AllItems.Add(document);
+            }
             return document;
         }
 
@@ -81,7 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public new void AddRange(IEnumerable<CdmDocumentDefinition> documents)
         {
-            foreach(var document in documents)
+            foreach (var document in documents)
             {
                 this.Add(document);
             }
@@ -103,7 +109,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.Owner.DocumentLookup.ContainsKey(name))
             {
                 this.RemoveItemModifications(name);
-                var index = this.AllItems.FindIndex((d) => string.Equals(d.Name, name));
+                int index;
+                lock (AllItems)
+                {
+                    index = this.AllItems.FindIndex((d) => string.Equals(d.Name, name));
+                }
                 // setting this currentlyResolving flag will keep the base collection code from setting the inDocument to null
                 // this makes sense because a document is "in" itself. always.
                 bool bSave = this.Ctx.Corpus.isCurrentlyResolving;
@@ -118,16 +128,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public new void RemoveAt(int index)
         {
-            if (index >= 0 && index < this.AllItems.Count)
+            lock (AllItems)
             {
-                this.Remove(this.AllItems[index].Name);
+                if (index >= 0 && index < this.AllItems.Count)
+                {
+                    this.Remove(this.AllItems[index].Name);
+                }
             }
         }
 
         /// <inheritdoc />
         public new void Clear()
         {
-            this.AllItems.ForEach((doc) => this.RemoveItemModifications(doc.Name));
+            lock (AllItems)
+            {
+                this.AllItems.ForEach((doc) => this.RemoveItemModifications(doc.Name));
+            }
             base.Clear();
         }
 

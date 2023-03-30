@@ -54,7 +54,7 @@ export class CdmFolderCollection extends CdmCollection<CdmFolderDefinition> {
     public getOrCreate(name: string): CdmFolderDefinition {
         let result: CdmFolderDefinition;
         for (const folder of this.allItems) {
-            if (name.toLowerCase() == folder.name.toLowerCase()) {
+            if (name.toLowerCase() === folder.name.toLowerCase()) {
                 // found our folder.
                 result = folder;
                 break;

@@ -45,7 +45,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// Number of documents read concurrently when loading imports.
         /// </summary>
-        public int? MaxConcurrentReads 
+        public int? MaxConcurrentReads
         {
             get
             {
@@ -67,25 +67,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             this.NamespaceAdapters = new Dictionary<string, StorageAdapterBase>();
             this.NamespaceFolders = new Dictionary<string, CdmFolderDefinition>();
             this.systemDefinedNamespaces = new HashSet<string>();
-            
+
             // If an adapter (such as ADLSAdapter) is not present in the current assembly
             // we will register it as null for the given key name
+
             this.RegisteredAdapterTypes = new Dictionary<string, Type>()
             {
                 { "local", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.LocalAdapter") },
                 { "adls", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.ADLSAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Adls") },
                 { "remote", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.RemoteAdapter") },
                 { "github", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.GithubAdapter") },
-                { "cdm-standards", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.CdmStandardsAdapter") },
                 { "syms", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.SymsAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Syms") },
             };
 
             // Set up default adapters.
             this.Mount("local", new LocalAdapter(Directory.GetCurrentDirectory()));
-            this.Mount("cdm", new CdmStandardsAdapter());
-
             systemDefinedNamespaces.Add("local");
-            systemDefinedNamespaces.Add("cdm");
+
+            try
+            {
+                this.Mount("cdm", new CdmStandardsAdapter());
+                systemDefinedNamespaces.Add("cdm");
+            }
+            catch (Exception e)
+            {
+                Logger.Error(this.Ctx, Tag, nameof(StorageManager), null, CdmLogCode.ErrStorageCdmStandardsMissing, "Microsoft.CommonDataModel.ObjectModel.Adapter.CdmStandards", e.Message);
+            }
         }
 
         /// <summary>
@@ -180,6 +187,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 if (nameSpace == "cdm")
                 {
                     this.Mount(nameSpace, new ResourceAdapter());
+                    Logger.Warning(this.Ctx, Tag, nameof(Unmount), null, CdmLogCode.WarnUnMountCdmNamespace);
                 }
 
                 return true;
@@ -246,7 +254,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 CdmFolderDefinition folder = null;
                 if (this.NamespaceFolders.ContainsKey(nameSpace))
                     this.NamespaceFolders.TryGetValue(nameSpace, out folder);
-                else
+                else if (this.DefaultNamespace != null)
                     this.NamespaceFolders.TryGetValue(this.DefaultNamespace, out folder);
 
                 if (folder == null)
@@ -526,7 +534,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     Logger.Error(this.Ctx, Tag, nameof(MountFromConfig), null, CdmLogCode.ErrStorageMissingJsonConfig, nameSpace);
                     continue;
                 }
-                    
+
                 if (item["type"] == null)
                 {
                     Logger.Error(this.Ctx, Tag, nameof(MountFromConfig), null, CdmLogCode.ErrStorageMissingTypeJsonConfig, nameSpace);
@@ -592,7 +600,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 //Invalid Path.
             }
-          
+
             else
                 return false;
 

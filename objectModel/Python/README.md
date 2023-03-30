@@ -27,3 +27,14 @@ Note: If in step 6 on Mac you receive error mentioning TLSV1_ALERT_PROTOCOL_VERS
 
 1. To run the unit tests type `python -m unittest`
 1. A set of Azure Data Lake Storage Gen2 tests are included but disabled by default. To enable them follow the instructions [here](../CSharp/Microsoft.CommonDataModel.ObjectModel.Tests/README.md)
+
+
+If running Python: Create Terminal gives errors about running scripts and execution policies, add this to the settings.json for vscode:
+"terminal.integrated.profiles.windows": {
+  "PowerShell": {
+    "source": "PowerShell",
+    "icon": "terminal-powershell",
+    "args": ["-ExecutionPolicy", "Bypass"]
+  }
+},
+"terminal.integrated.defaultProfile.windows": "PowerShell",

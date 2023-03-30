@@ -5,7 +5,7 @@ from typing import List
 
 from cdm.enums import CdmObjectType
 from cdm.persistence import PersistenceLayer
-from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityDefinition
+from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityDefinition, CdmObject
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils, logger
 from cdm.utilities.string_utils import StringUtils
 
@@ -27,8 +27,10 @@ class DocumentPersistence:
 
     formats = [PersistenceLayer.CDM_EXTENSION]
 
-    # The maximum json semantic version supported by this ObjectModel version.
-    json_semantic_version = CdmDocumentDefinition.current_json_schema_semantic_version
+    # The maximum json semantic version supported by this ObjectModel version
+    json_semantic_version_max = CdmObject.json_schema_semantic_version_maximum_save_load
+    # The minimum json semantic version supported by this ObjectModel version
+    json_semantic_version_min = CdmObject.json_schema_semantic_version_minimum_save
 
     @staticmethod
     def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmDocumentDefinition':
@@ -87,10 +89,10 @@ class DocumentPersistence:
                 if DocumentPersistence._compare_json_semantic_version(ctx, document.json_schema_semantic_version) > 0:
                     if is_resolved_doc:
                         logger.warning(ctx, _TAG, DocumentPersistence.from_data.__name__, None,
-                                       CdmLogCode.WARN_PERSIST_UNSUPPORTED_JSON_SEM_VER, DocumentPersistence.json_semantic_version, document.json_schema_semantic_version)
+                                       CdmLogCode.WARN_PERSIST_UNSUPPORTED_JSON_SEM_VER, DocumentPersistence.json_semantic_version_max, document.json_schema_semantic_version)
                     else:
                         logger.error(ctx, _TAG, DocumentPersistence.from_data.__name__, None,
-                                     CdmLogCode.ERR_PERSIST_UNSUPPORTED_JSON_SEM_VER, DocumentPersistence.json_semantic_version, document.json_schema_semantic_version)
+                                     CdmLogCode.ERR_PERSIST_UNSUPPORTED_JSON_SEM_VER, DocumentPersistence.json_semantic_version_max, document.json_schema_semantic_version)
             else:
                 logger.warning(ctx, _TAG, DocumentPersistence.from_data.__name__, document.at_corpus_path, CdmLogCode.WARN_PERSIST_JSON_SEM_VER_MANDATORY)
 
@@ -109,26 +111,23 @@ class DocumentPersistence:
     @staticmethod
     def _compare_json_semantic_version(ctx: 'CdmCorpusContext', document_semantic_version: str) -> int:
         """Compares the document version with the json semantic version supported.
-        1 => if document_semantic_version > json_semantic_version
-        0 => if document_semantic_version == json_semantic_version or if document_semantic_version is invalid
-        -1 => if document_semantic_version < json_semantic_version"""
-        curr_semantic_version_split = [int(x) for x in DocumentPersistence.json_semantic_version.split('.')]
+        1 => if document_semantic_version > json_semantic_version_max
+        0 => if document_semantic_version between json_semantic_version_min and json_semantic_version_max or if document_semantic_version is invalid
+        -1 => if document_semantic_version < json_semantic_version_min"""
 
         error_message = 'jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.'
 
-        try:
-            doc_semantic_version_split = [int(x) for x in document_semantic_version.split('.')]
-        except ValueError:
+        doc_ver = CdmObject.semantic_version_string_to_number(document_semantic_version)
+        if doc_ver == -1:
             logger.warning(ctx, _TAG, DocumentPersistence._compare_json_semantic_version.__name__, None,
                            CdmLogCode.WARN_PERSIST_JSON_SEM_VER_INVALID_FORMAT)
             return 0
 
-        if len(doc_semantic_version_split) != 3:
-            logger.warning(ctx, _TAG, DocumentPersistence._compare_json_semantic_version.__name__, None,
-                           CdmLogCode.WARN_PERSIST_JSON_SEM_VER_INVALID_FORMAT)
-            return 0
+        min_ver = CdmObject.semantic_version_string_to_number(DocumentPersistence.json_semantic_version_min)
+        max_ver = CdmObject.semantic_version_string_to_number(DocumentPersistence.json_semantic_version_max)
 
-        for i in range(3):
-            if doc_semantic_version_split[i] != curr_semantic_version_split[i]:
-                return -1 if doc_semantic_version_split[i] < curr_semantic_version_split[i] else 1
+        if doc_ver < min_ver:
+            return -1
+        elif doc_ver > max_ver:
+            return 1
         return 0

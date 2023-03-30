@@ -37,8 +37,8 @@ describe('Utilities.TraitToPropertyMapTests', () => {
         expect(result.length).toBe(1);
         expect(result[0]['languageTag']).toBe('en');
         expect(result[0]['displayText']).toBe('Fax');
-        expect(result[0]['attributeValue']).toBeNull();
-        expect(result[0]['displayOrder']).toBeNull();
+        expect(result[0]['attributeValue']).toBe(undefined);
+        expect(result[0]['displayOrder']).toBe(undefined);
     });
 
     /**

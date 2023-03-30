@@ -4,23 +4,23 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmAttributeContextType
-from cdm.objectmodel import CdmObjectDefinition, CdmOperationCollection, CdmAttributeContext
+from cdm.objectmodel import CdmObject, CdmObjectDefinition, CdmOperationCollection, CdmAttributeContext
 from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.expression_parser.expression_tree import ExpressionTree
 from cdm.resolvedmodel.expression_parser.input_values import InputValues
 from cdm.resolvedmodel.expression_parser.node import Node
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
+from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
 from cdm.utilities import logger, AttributeContextParameters
 from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmEntityReference
+    from cdm.objectmodel import CdmCorpusContext, CdmEntityReference 
     from cdm.utilities import ResolveOptions, VisitCallback
-
-    from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
+    from cdm.resolvedmodel import ResolvedTraitSet 
 
 
 class CdmProjection(CdmObjectDefinition):
@@ -136,6 +136,9 @@ class CdmProjection(CdmObjectDefinition):
 
         return False
 
+    def _get_minimum_semantic_version(self) -> int:
+        return CdmObject.semantic_version_string_to_number(CdmObject.json_schema_semantic_version_projections)
+
     def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
         return self.source._fetch_resolved_traits(res_opt)
 
@@ -177,6 +180,10 @@ class CdmProjection(CdmObjectDefinition):
 
         if self.source:
             source = self.source.fetch_object_definition(proj_directive._res_opt)
+            if not source:
+                logger.error(self.ctx, self._TAG, '_construct_projection_context', self.at_corpus_path, CdmLogCode.ERR_PROJ_FAILED_TO_RESOLVE)
+                return None
+
             if source.object_type == CdmObjectType.PROJECTION_DEF:
                 # A Projection
 
@@ -301,7 +308,7 @@ class CdmProjection(CdmObjectDefinition):
             return resolved_attribute_set
 
         for pas in proj_ctx._current_attribute_state_set._states:
-            resolved_attribute_set.merge(pas._current_resolved_attribute)
+            resolved_attribute_set = resolved_attribute_set.merge(pas._current_resolved_attribute)
 
         return resolved_attribute_set
 

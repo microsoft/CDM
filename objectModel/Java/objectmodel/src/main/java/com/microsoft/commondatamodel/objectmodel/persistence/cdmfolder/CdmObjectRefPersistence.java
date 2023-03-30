@@ -96,6 +96,7 @@ public class CdmObjectRefPersistence {
         ((TraitReferenceDefinition) copy).setTraitReference(refTo);
         ((TraitReferenceDefinition) copy).setArguments(
                 Utils.listCopyDataAsArrayNode(((CdmTraitReference) instance).getArguments(), resOpt, options));
+        ((TraitReferenceDefinition) copy).setVerb(Utils.jsonForm(((CdmTraitReference)instance).getVerb(), resOpt, options));
         return copy;
       case TraitGroupRef:
         TraitGroupReferenceDefinition tgrd = new TraitGroupReferenceDefinition();

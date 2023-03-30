@@ -120,7 +120,7 @@ export class CdmTraitGroupDefinition extends CdmObjectDefinitionBase {
      * @internal
      */
     public constructResolvedTraits(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): void {
-        this.constructResolvedTraitsDef(null, rtsb, resOpt);
+        this.constructResolvedTraitsDef(undefined, rtsb, resOpt);
     }
 
     /**

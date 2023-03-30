@@ -155,13 +155,13 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
         let remainingPath: string = path;
         let childFolder: CdmFolderDefinition = this;
 
-        while (childFolder && remainingPath.indexOf('/') != -1) {
+        while (childFolder && remainingPath.indexOf('/') !== -1) {
             let first: number = remainingPath.indexOf('/');
             name = remainingPath.slice(0, first);
             remainingPath = remainingPath.slice(first + 1);
 
             if (name.toLowerCase() !== childFolder.name.toLowerCase()) {
-                Logger.error(this.ctx, this.TAG, this.fetchChildFolderFromPath.name, null, cdmLogCode.ErrInvalidPath);
+                Logger.error(this.ctx, this.TAG, this.fetchChildFolderFromPath.name, undefined, cdmLogCode.ErrInvalidPath);
                 return undefined;
             }
 
@@ -172,7 +172,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
             first = remainingPath.indexOf('/')
             let childFolderName: string = remainingPath
-            if (first != -1) {
+            if (first !== -1) {
                 childFolderName = remainingPath.slice(0, first);
             } else {
                 // the last part of the path will be considered part of the part depending on the make_folder flag.
@@ -197,7 +197,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
     public async fetchDocumentFromFolderPathAsync(
         objectPath: string,
         forceReload: boolean = false,
-        resOpt: resolveOptions = null): Promise<CdmDocumentDefinition> {
+        resOpt: resolveOptions = undefined): Promise<CdmDocumentDefinition> {
         let docName: string;
         let remainingPath: string;
         const first: number = objectPath.indexOf('/', 0);
@@ -219,7 +219,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
             // remove them from the caches since they will be back in a moment
             if (doc.isDirty) {
-                Logger.warning(this.ctx, this.TAG, this.fetchDocumentFromFolderPathAsync.name, null, cdmLogCode.WarnDocChangesDiscarded, doc.name);
+                Logger.warning(this.ctx, this.TAG, this.fetchDocumentFromFolderPathAsync.name, undefined, cdmLogCode.WarnDocChangesDiscarded, doc.name);
             }
             this.documents.remove(docName);
         }

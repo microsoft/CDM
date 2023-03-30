@@ -3,9 +3,12 @@
 
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
+import java.util.ArrayList;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -33,8 +36,16 @@ public class AttributeGroupReferencePersistence {
       }
     }
 
-    return ctx.getCorpus().makeRef(CdmObjectType.AttributeGroupRef,
-            attributeGroup, simpleReference);
+    CdmAttributeGroupReference attGroupReference = ctx.getCorpus().makeRef(CdmObjectType.AttributeGroupRef, attributeGroup, simpleReference);
+
+    // now with applied traits!
+    ArrayList<CdmTraitReferenceBase> appliedTraits = null;
+    if (!obj.isValueNode()) {
+        appliedTraits = Utils.createTraitReferenceList(ctx, obj.get("appliedTraits"));
+    }
+    Utils.addListToCdmCollection(attGroupReference.getAppliedTraits(), appliedTraits);
+
+    return attGroupReference;
   }
 
   public static Object toData(final CdmAttributeGroupReference instance, final ResolveOptions resOpt, final CopyOptions options) {

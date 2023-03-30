@@ -14,6 +14,7 @@ import {
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
+    CdmTraitReference,
     CdmTraitReferenceBase,
     Logger,
     ParameterValueSet,
@@ -25,6 +26,7 @@ import {
     ResolvedAttributeSet,
     ResolvedTraitSet,
     resolveOptions,
+    traitProfileCache,
     VisitCallback
 } from '../../internal';
 
@@ -33,11 +35,14 @@ import {
  */
 export class CdmOperationAlterTraits extends CdmOperationBase {
     private TAG: string = CdmOperationAlterTraits.name;
+    // this cache is for all the traits we might get profiles about. because once is enough
+    private profCache: traitProfileCache = new traitProfileCache();
 
     public traitsToAdd: CdmCollection<CdmTraitReferenceBase>;
     public traitsToRemove: CdmCollection<CdmTraitReferenceBase>;
     public argumentsContainWildcards?: boolean;
     public applyTo: string[];
+    public applyToTraits: string[];
 
     constructor(ctx: CdmCorpusContext) {
         super(ctx);
@@ -68,6 +73,7 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
         }
 
         copy.applyTo = this.applyTo ? this.applyTo.slice() : undefined;
+        copy.applyToTraits = this.applyToTraits ? this.applyToTraits.slice() : undefined;
         copy.argumentsContainWildcards = this.argumentsContainWildcards;
 
         this.copyProj(resOpt, copy);
@@ -149,6 +155,22 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
         // We use the top-level names because the applyTo list may contain a previous name our current resolved attributes had
         const topLevelSelectedAttributeNames: Map<string, string> = this.applyTo !== undefined ? ProjectionResolutionCommonUtil.getTopList(projCtx, this.applyTo) : undefined;
 
+        // if set, make a hashset of trait names that need to be removed
+        const traitNamesToRemove = new Set<string>();
+        if (this.traitsToRemove !== undefined) {
+            for (const traitRef of this.traitsToRemove) {
+                // resolve this because it could be a traitgroup name and turn into many other traits
+                const resolvedTraitSet: ResolvedTraitSet = traitRef.fetchResolvedTraits(projCtx.projectionDirective.resOpt);
+                resolvedTraitSet.set.forEach(rt => traitNamesToRemove.add(rt.traitName));
+            }
+        }
+
+        // if set, make a hashset from the applyToTraits for fast lookup later
+        let applyToTraitNames: Set<string> = undefined;
+        if (this.applyToTraits !== undefined) {
+            applyToTraitNames = new Set<string>(this.applyToTraits.slice());
+        }
+
         // Iterate through all the projection attribute states generated from the source's resolved attributes
         // Each projection attribute state contains a resolved attribute that it is corresponding to
         for (const currentPAS of projCtx.currentAttributeStateSet.states) {
@@ -162,7 +184,7 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
                     name: currentPAS.currentResolvedAttribute.resolvedName
                 };
                 const attrCtxNewAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxNewAttrParam);
-                let newResAttr: ResolvedAttribute = null;
+                let newResAttr: ResolvedAttribute = undefined;
 
                 if (currentPAS.currentResolvedAttribute.target instanceof ResolvedAttributeSet) {
                     // Attribute group
@@ -182,8 +204,64 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
                     break;
                 }
 
-                newResAttr.resolvedTraits = newResAttr.resolvedTraits.mergeSet(this.resolvedNewTraits(projCtx, currentPAS));
-                this.removeTraitsInNewAttribute(projCtx.projectionDirective.resOpt, newResAttr);
+                const newTraits = this.resolvedNewTraits(projCtx, currentPAS);
+                // if the applyToTraits property was set, then these traits apply to the traits of the selected attributes, else to the attribute directly
+                if (applyToTraitNames === undefined) {
+                    // alter traits of atts
+                    newResAttr.resolvedTraits = newResAttr.resolvedTraits.mergeSet(newTraits);
+                    // remove if requested
+                    if (traitNamesToRemove !== undefined) {
+                        traitNamesToRemove.forEach(traitName => newResAttr.resolvedTraits.remove(projCtx.projectionDirective.resOpt, traitName));
+                    }
+                } else {
+                    // alter traits of traits of atts
+                    // for every current resolved trait on this attribute, find the ones that match the criteria.
+                    // a match is the trait name or extended name or any classifications set on it
+                    // will need trait references for these resolved traits because metatraits are 'un resolved'
+                    const newTraitRefs = new Array<CdmTraitReferenceBase>();
+                    for (const nrt of newTraits.set) {
+                        newTraitRefs.push(CdmObjectBase.resolvedTraitToTraitRef(projCtx.projectionDirective.resOpt, nrt));
+                    }
+
+                    for (const rt of newResAttr.resolvedTraits.set) {
+                        // so get a hashset of the 'tokens' that classify this trait
+                        const classifiers = new Set<string>();
+                        // this profile lists the classifiers and all base traits
+                        var profile = rt.fetchTraitProfile(projCtx.projectionDirective.resOpt, this.profCache, undefined);
+                        if (profile !== undefined) {
+                            profile = profile.consolidate(this.profCache);
+                            // all classifications 
+                            if (profile.classifications !== undefined) {
+                                for (const c of profile.classifications) {
+                                    classifiers.add(c.traitName);
+                                }
+                            }
+                            while (profile !== undefined) {
+                                classifiers.add(profile.traitName);
+                                profile = profile.IS_A;
+                            }
+                        }
+
+                        // is there an intersection between the set of things to look for and the set of things that describe the trait?
+                        // astonished to learn there are no native set algebra funcs for Set in js. then why have a Set?
+                        const intersection = new Set([...classifiers].filter(x => applyToTraitNames.has(x)))
+                        if (intersection.size > 0) {
+                            // add the specified and fixed up traits to the metatraits of the resolved
+                            if (newTraitRefs !== undefined && newTraitRefs.length > 0) {
+                                if (rt.metaTraits === undefined)
+                                    rt.metaTraits = new Array<CdmTraitReferenceBase>();
+                                rt.metaTraits = rt.metaTraits.concat(newTraitRefs);
+                            }
+                            // remove some?
+                            if (traitNamesToRemove !== undefined && traitNamesToRemove.size > 0 && rt.metaTraits !== undefined) {
+                                rt.metaTraits = rt.metaTraits.filter((mtr) => !(traitNamesToRemove.has(mtr.fetchObjectDefinitionName())));
+                                if (rt.metaTraits !== undefined && rt.metaTraits.length === 0) {
+                                    rt.metaTraits = undefined;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 // Create a projection attribute state for the new attribute with new applied traits by creating a copy of the current state
                 // Copy() sets the current state as the previous state for the new one
@@ -206,11 +284,12 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
         let resolvedTraitSet: ResolvedTraitSet = new ResolvedTraitSet(projCtx.projectionDirective.resOpt);
         const projectionOwnerName: string = projCtx.projectionDirective.originalSourceAttributeName ?? "";
 
-        for (const traitRef of this.traitsToAdd)
-        {
-            const traitRefCopy: ResolvedTraitSet = traitRef.fetchResolvedTraits(projCtx.projectionDirective.resOpt).deepCopy();
-            this.replaceWildcardCharacters(projCtx.projectionDirective.resOpt, traitRefCopy, projectionOwnerName, currentPAS);
-            resolvedTraitSet = resolvedTraitSet.mergeSet(traitRefCopy);
+        if (this.traitsToAdd !== undefined ) {
+            for (const traitRef of this.traitsToAdd) {
+                const traitRefCopy: ResolvedTraitSet = traitRef.fetchResolvedTraits(projCtx.projectionDirective.resOpt).deepCopy();
+                this.replaceWildcardCharacters(projCtx.projectionDirective.resOpt, traitRefCopy, projectionOwnerName, currentPAS);
+                resolvedTraitSet = resolvedTraitSet.mergeSet(traitRefCopy);
+            }
         }
 
         return resolvedTraitSet;
@@ -220,7 +299,7 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
      * Replace wild characters in the arguments if argumentsContainWildcards is true.
      */
     private replaceWildcardCharacters(resOpt: resolveOptions, resolvedTraitSet: ResolvedTraitSet, projectionOwnerName: string, currentPAS: ProjectionAttributeState): void {
-        if (this.argumentsContainWildcards !== undefined && this.argumentsContainWildcards == true) {
+        if (this.argumentsContainWildcards !== undefined && this.argumentsContainWildcards === true) {
             resolvedTraitSet.set.forEach(resolvedTrait => {
 
                 const parameterValueSet: ParameterValueSet = resolvedTrait.parameterValues;
@@ -228,7 +307,7 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
                     var value = parameterValueSet.fetchValue(i);
                     if (typeof value === 'string'){
                         var newVal = CdmOperationBase.replaceWildcardCharacters(value, projectionOwnerName, currentPAS);
-                        if (newVal != value) {
+                        if (newVal !== value) {
                             parameterValueSet.setParameterValue(resOpt, parameterValueSet.fetchParameterAtIndex(i).getName(), newVal);
                         }
                     }

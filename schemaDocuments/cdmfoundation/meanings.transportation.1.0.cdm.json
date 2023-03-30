@@ -1,0 +1,1320 @@
+{
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
+  "explanation": "Transportation concepts and ideas",
+  "imports": [
+    {
+      "corpusPath": "primitives.2.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "traitName": "transportation",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "transportation.carrier",
+      "extendsTrait": {
+        "traitReference": "commerce.party",
+        "appliedTraits": [
+          {
+            "verb": "does",
+            "traitReference": "commerce.itemTransportation"
+          }
+        ]
+      },
+      "explanation": "a party in the role of carrier who transports products or materials",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        },
+        {
+          "verb": "classifiedAs",
+          "traitReference": "businessProcess"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "transportation.billOfLading",
+      "explanation": "a document issued by a carrier or their agen to acknowledge receipt of cargo for shipment",
+      "extendsTrait": {
+        "traitReference": "commerce.contract",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.itemTransportation",
+            "verb": "means"
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.billOfLadingNumber",
+      "explanation": "an identification number for a bill of lading document issued by a carrier or their agent",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "transportation.billOfLading"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.trackingNumber",
+      "explanation": "an identification number issued by a carrier to track the status and location of a shipment",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.track"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.shippingContainer",
+      "explanation": "a reusable transport and storage unit for moving products and raw materials between locations or countries. Also a unit of measurement for item transportation.",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "transportation.pallet",
+      "explanation": "a unit of measurement for item storage and transportation",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.carton",
+      "explanation": "a unit of measurement for item packaging, storage and transportation",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.shippingContainerId",
+      "explanation": "a ISO6346:1995(E) compliant shipping container identification",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "transportation.shippingContainer"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.vehicle",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "transportation.vehicle.ship",
+      "extendsTrait": "transportation.vehicle"
+    },
+    {
+      "traitName": "transportation.vehicle.train",
+      "extendsTrait": "transportation.vehicle"
+    },
+    {
+      "traitName": "transportation.vehicle.truck",
+      "extendsTrait": "transportation.vehicle"
+    },
+    {
+      "traitName": "transportation.IMONumber",
+      "explanation": "an IMO ship identification number",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "transportation.vehicle.ship"
+              },
+              {
+                "verb": "qualifiedBy",
+                "traitReference": "organization.InternationalMaritimeOrganization"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.trainNumber",
+      "explanation": "the best known identification number or code that one can find for the region",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "transportation.vehicle.train"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.port",
+      "extendsTrait": {
+        "traitReference": "location",
+        "verb": "means"
+      },
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        },
+        "entityType",
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.UNLOCODE",
+      "explanation": "The United Nations Code for Trade and Transport Locations, is a geographic coding scheme developed and maintained by United Nations Economic Commission for Europe (UNECE). UN/LOCODE assigns codes to locations used in trade and transport with functions such as seaports, rail and road terminals, airports, Postal Exchange Office and border crossing points.",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "transportation.port"
+              },
+              {
+                "verb": "qualifiedBy",
+                "traitReference": "organization.UnitedNations"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        }
+      ]
+    },
+    {
+      "traitName": "transportation.freightTerms",
+      "extendsTrait": {
+        "traitReference": "commerce.contract",
+        "verb": "means"
+      },
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "transportation"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "transportation.enumeration.incoterms",
+      "explanation": "The Incoterms or International Commercial Terms are a series of pre-defined commercial terms published by the International Chamber of Commerce (ICC) relating to international commercial law. They are widely used in international commercial transactions or procurement processes and their use is encouraged by trade councils, courts and international lawyers. A series of three-letter trade terms related to common contractual sales practices, the Incoterms rules are intended primarily to clearly communicate the tasks, costs, and risks associated with the global or international transportation and delivery of goods. Incoterms inform sales contracts defining respective obligations, costs, and risks involved in the delivery of goods from the seller to the buyer, but they do not themselves conclude a contract, determine the price payable, currency or credit terms, govern contract law or define where title to goods transfers.",
+      "defaultVerb": "means",
+      "extendsTrait": {
+        "traitReference": "transportation.freightTerms",
+        "appliedTraits": [
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "organization.InternationalChamberOfCommerce"
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "transportation",
+          "verb": "classifiedAs"
+        },
+        {
+          "traitReference": "is.constrainedList.string",
+          "arguments": [
+            {
+              "entityReference": {
+                "explanation": "The constantValues below correspond to the attributes of the 'listLookupStringValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                "entityShape": "listLookupStringValues",
+                "constantValues": [
+                  [
+                    "en",
+                    "EXW - Ex Works (named place of delivery)",
+                    "EXW",
+                    "0"
+                  ],
+                  [
+                    "en",
+                    "FCA - Free Carrier (named place of delivery)",
+                    "FCA",
+                    "1"
+                  ],
+                  [
+                    "en",
+                    "CPT - Carriage Paid To (named place of destination)",
+                    "CPT",
+                    "2"
+                  ],
+                  [
+                    "en",
+                    "CIP - Carriage and Insurance Paid to (named place of destination)",
+                    "CIP",
+                    "3"
+                  ],
+                  [
+                    "en",
+                    "DPU - Delivered At Place Unloaded (named place of destination)",
+                    "DPU",
+                    "4"
+                  ],
+                  [
+                    "en",
+                    "DAP - Delivered At Place (named place of destination)",
+                    "DAP",
+                    "5"
+                  ],
+                  [
+                    "en",
+                    "DDP - Delivered Duty Paid (named place of destination)",
+                    "DDP",
+                    "6"
+                  ],
+                  [
+                    "en",
+                    "FAS - Free Alongside Ship (named port of shipment)",
+                    "FAS",
+                    "7"
+                  ],
+                  [
+                    "en",
+                    "FOB - Free on Board (named port of shipment)",
+                    "FOB",
+                    "8"
+                  ],
+                  [
+                    "en",
+                    "CFR - Cost and Freight (named port of destination)",
+                    "CFR",
+                    "9"
+                  ],
+                  [
+                    "en",
+                    "CIF - Cost, Insurance & Freight (named port of destination)",
+                    "CIF",
+                    "10"
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "associatedProperties": []
+    },
+    {
+      "traitName": "transportation.enumeration.SCAC",
+      "explanation": "The Standard Carrier Alpha Code (SCAC) is a privately controlled US code used to identify vessel operating common carriers (VOCC). It is typically two to four letters long. The National Motor Freight Traffic Association developed the SCAC code in the 1960s to help road transport companies computerize data and records.",
+      "defaultVerb": "means",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "transportation.carrier"
+              },
+              {
+                "verb": "qualifiedBy",
+                "traitReference": "organization.NationalMotorFreightTrafficAssociation"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "transportation",
+          "verb": "classifiedAs"
+        },
+        {
+          "traitReference": "is.constrainedList.string",
+          "arguments": [
+            {
+              "entityReference": {
+                "explanation": "The constantValues below correspond to the attributes of the 'listLookupStringValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                "entityShape": "listLookupStringValues",
+                "constantValues": [
+                  [
+                    "en",
+                    "AYAF - AAFES PRIVATE FLEET",
+                    "AYAF",
+                    "1"
+                  ],
+                  [
+                    "en",
+                    "ABFS - ABF FREIGHT",
+                    "ABFS",
+                    "2"
+                  ],
+                  [
+                    "en",
+                    "PYLE - A. DUIE PYLE, INC.",
+                    "PYLE",
+                    "3"
+                  ],
+                  [
+                    "en",
+                    "ALLV - ALLIED VAN LINES",
+                    "ALLV",
+                    "4"
+                  ],
+                  [
+                    "en",
+                    "ARFW - AMERICAN FREIGHTWAYS",
+                    "ARFW",
+                    "5"
+                  ],
+                  [
+                    "en",
+                    "ANRM - ALIANCA",
+                    "ANRM",
+                    "6"
+                  ],
+                  [
+                    "en",
+                    "ANTC - AMINO TRANSPORT",
+                    "ANTC",
+                    "7"
+                  ],
+                  [
+                    "en",
+                    "AVRT - Averitt Express",
+                    "AVRT",
+                    "8"
+                  ],
+                  [
+                    "en",
+                    "BAXG - BAX GLOBAL",
+                    "BAXG",
+                    "9"
+                  ],
+                  [
+                    "en",
+                    "BKFB - Bulk FR8 (Liquid Bulk)",
+                    "BKFB",
+                    "10"
+                  ],
+                  [
+                    "en",
+                    "BLOJ - Bridge Logistics",
+                    "BLOJ",
+                    "11"
+                  ],
+                  [
+                    "en",
+                    "BNAF - BAX GLOBAL (air)",
+                    "BNAF",
+                    "12"
+                  ],
+                  [
+                    "en",
+                    "BTEY - BT EXPRESS FREIGHT SYSTEMS",
+                    "BTEY",
+                    "13"
+                  ],
+                  [
+                    "en",
+                    "CHRP - CHEEMA TRANSPORT INC",
+                    "CHRP",
+                    "14"
+                  ],
+                  [
+                    "en",
+                    "CBNP - CARBONITE LOGISTICS",
+                    "CBNP",
+                    "15"
+                  ],
+                  [
+                    "en",
+                    "CTII - CENTRAL TRANSPORT",
+                    "CTII",
+                    "16"
+                  ],
+                  [
+                    "en",
+                    "CNPC - Carolina Transportation Inc",
+                    "CNPC",
+                    "17"
+                  ],
+                  [
+                    "en",
+                    "CGSQ - Carolina Logistics Inc",
+                    "CGSQ",
+                    "18"
+                  ],
+                  [
+                    "en",
+                    "CDNK - Celadon",
+                    "CDNK",
+                    "19"
+                  ],
+                  [
+                    "en",
+                    "CHKA - Chermak Cartage, LLC",
+                    "CHKA",
+                    "20"
+                  ],
+                  [
+                    "en",
+                    "CJRF - CJR Trucking, Inc.",
+                    "CJRF",
+                    "21"
+                  ],
+                  [
+                    "en",
+                    "CJRQ - Cheeseman Transport",
+                    "CJRQ",
+                    "22"
+                  ],
+                  [
+                    "en",
+                    "CKOC - Clark Oil Company",
+                    "CKOC",
+                    "23"
+                  ],
+                  [
+                    "en",
+                    "CMDU - CMA CGM",
+                    "CMDU",
+                    "24"
+                  ],
+                  [
+                    "en",
+                    "COSU - China Ocean Shipping Lines",
+                    "COSU",
+                    "25"
+                  ],
+                  [
+                    "en",
+                    "COTO - Country Transport",
+                    "COTO",
+                    "26"
+                  ],
+                  [
+                    "en",
+                    "CPGP - Container Port Group",
+                    "CPGP",
+                    "27"
+                  ],
+                  [
+                    "en",
+                    "CESF - Continental Expedited Services, Inc.",
+                    "CESF",
+                    "28"
+                  ],
+                  [
+                    "en",
+                    "CWAS - Cowan systems, LLC",
+                    "CWAS",
+                    "29"
+                  ],
+                  [
+                    "en",
+                    "CWCE - CON-WAY CENTRAL EXPRESS",
+                    "CWCE",
+                    "30"
+                  ],
+                  [
+                    "en",
+                    "CWIM - CON-WAY INTERMODAL",
+                    "CWIM",
+                    "31"
+                  ],
+                  [
+                    "en",
+                    "CWSE - CON-WAY SOUTHERN EXPRESS",
+                    "CWSE",
+                    "32"
+                  ],
+                  [
+                    "en",
+                    "CWWE - CON-WAY WESTERN EXPRESS",
+                    "CWWE",
+                    "33"
+                  ],
+                  [
+                    "en",
+                    "CSXT - CSX TRANSPORTATION",
+                    "CSXT",
+                    "34"
+                  ],
+                  [
+                    "en",
+                    "CIMC - CUSHING TRANSPORTATION,",
+                    "CIMC",
+                    "35"
+                  ],
+                  [
+                    "en",
+                    "DYLT - Daylight Transport LLC",
+                    "DYLT",
+                    "36"
+                  ],
+                  [
+                    "en",
+                    "DAFG - DAYTON FREIGHT",
+                    "DAFG",
+                    "37"
+                  ],
+                  [
+                    "en",
+                    "DBGB - DBO Bahnoperator",
+                    "DBGB",
+                    "38"
+                  ],
+                  [
+                    "en",
+                    "DMLI - Diamond Logistics",
+                    "DMLI",
+                    "39"
+                  ],
+                  [
+                    "en",
+                    "DOLR - DOT-LINE TRANSPORTATION",
+                    "DOLR",
+                    "40"
+                  ],
+                  [
+                    "en",
+                    "ELOI - Ease Logistics",
+                    "ELOI",
+                    "41"
+                  ],
+                  [
+                    "en",
+                    "EGLV - Evergreen",
+                    "EGLV",
+                    "42"
+                  ],
+                  [
+                    "en",
+                    "EWCF - EMERY WORLDWIDE",
+                    "EWCF",
+                    "43"
+                  ],
+                  [
+                    "en",
+                    "EXLA - Estes Express",
+                    "EXLA",
+                    "44"
+                  ],
+                  [
+                    "en",
+                    "EXPD - Expeditors International Ocean",
+                    "EXPD",
+                    "45"
+                  ],
+                  [
+                    "en",
+                    "FDCC - FedEx Custom Critical",
+                    "FDCC",
+                    "46"
+                  ],
+                  [
+                    "en",
+                    "FDEG - FEDEX GROUND",
+                    "FDEG",
+                    "47"
+                  ],
+                  [
+                    "en",
+                    "FDE - FedEx Express (AIR)",
+                    "FDE",
+                    "48"
+                  ],
+                  [
+                    "en",
+                    "FLJF - FLT LOGISTICS LLC",
+                    "FLJF",
+                    "49"
+                  ],
+                  [
+                    "en",
+                    "FTNA - Fortune Transportation",
+                    "FTNA",
+                    "50"
+                  ],
+                  [
+                    "en",
+                    "FWFG - FIFTH WHEEL FREIGHT LLC",
+                    "FWFG",
+                    "51"
+                  ],
+                  [
+                    "en",
+                    "FXFE - FedEx LTL Freight East",
+                    "FXFE",
+                    "52"
+                  ],
+                  [
+                    "en",
+                    "FXFW - FedEx LTL Freight West (formerly VIKN - Viking)",
+                    "FXFW",
+                    "53"
+                  ],
+                  [
+                    "en",
+                    "FXNL - FedEx Freight National (formerly Watkins)",
+                    "FXNL",
+                    "54"
+                  ],
+                  [
+                    "en",
+                    "GPTC - G & P Trucking, Inc.",
+                    "GPTC",
+                    "55"
+                  ],
+                  [
+                    "en",
+                    "GBEA - GILBERT EAST CORP",
+                    "GBEA",
+                    "56"
+                  ],
+                  [
+                    "en",
+                    "GBXI - GILBERT EXPRESS",
+                    "GBXI",
+                    "57"
+                  ],
+                  [
+                    "en",
+                    "GUMA - GULICK TRUCKING, INC.",
+                    "GUMA",
+                    "58"
+                  ],
+                  [
+                    "en",
+                    "HAEI - Heartland Express",
+                    "HAEI",
+                    "59"
+                  ],
+                  [
+                    "en",
+                    "A0GO - Hier Logistic Group S. de R.L. de C.V.",
+                    "A0GO",
+                    "60"
+                  ],
+                  [
+                    "en",
+                    "HJBT - J.B. Hunt Transport Services, Inc.",
+                    "HJBT",
+                    "61"
+                  ],
+                  [
+                    "en",
+                    "HOYO - HOYER Deep Sea",
+                    "HOYO",
+                    "62"
+                  ],
+                  [
+                    "en",
+                    "HRCF - Hercules Forwarding Inc",
+                    "HRCF",
+                    "63"
+                  ],
+                  [
+                    "en",
+                    "HUBT - Hub Group",
+                    "HUBT",
+                    "64"
+                  ],
+                  [
+                    "en",
+                    "IEXA - Intelcom Express",
+                    "IEXA",
+                    "65"
+                  ],
+                  [
+                    "en",
+                    "IELC - Integrity Express Logistics",
+                    "IELC",
+                    "66"
+                  ],
+                  [
+                    "en",
+                    "INML - INTERMODAL SERVICES",
+                    "INML",
+                    "67"
+                  ],
+                  [
+                    "en",
+                    "ITFC - ITF LLC",
+                    "ITFC",
+                    "68"
+                  ],
+                  [
+                    "en",
+                    "HJBT - J.B. HUNT",
+                    "HJBT",
+                    "69"
+                  ],
+                  [
+                    "en",
+                    "KAEJ - KANE IS ABLE",
+                    "KAEJ",
+                    "70"
+                  ],
+                  [
+                    "en",
+                    "KHNN - KUEHNE + NAGEL",
+                    "KHNN",
+                    "71"
+                  ],
+                  [
+                    "en",
+                    "KNIG - Knight Transportation",
+                    "KNIG",
+                    "72"
+                  ],
+                  [
+                    "en",
+                    "LDYN - Logistic Dynamics, Inc.",
+                    "LDYN",
+                    "73"
+                  ],
+                  [
+                    "en",
+                    "LDYQ - LDI Trucking, Inc.",
+                    "LDYQ",
+                    "74"
+                  ],
+                  [
+                    "en",
+                    "MAEU - Maersk Line",
+                    "MAEU",
+                    "75"
+                  ],
+                  [
+                    "en",
+                    "MCPU - MCC Transport Singapore Pte Ltd.",
+                    "MCPU",
+                    "76"
+                  ],
+                  [
+                    "en",
+                    "MSCU - Mediterranean Shipping Company S.A.",
+                    "MSCU",
+                    "77"
+                  ],
+                  [
+                    "en",
+                    "MGMC - MGM TRANSPORT.",
+                    "MGMC",
+                    "78"
+                  ],
+                  [
+                    "en",
+                    "MISH - Mississippi Transporters Inc.",
+                    "MISH",
+                    "79"
+                  ],
+                  [
+                    "en",
+                    "MTEN - Marten Transport LTD.",
+                    "MTEN",
+                    "80"
+                  ],
+                  [
+                    "en",
+                    "NAFT - NATIONAL FREIGHT",
+                    "NAFT",
+                    "81"
+                  ],
+                  [
+                    "en",
+                    "NAVI - North American Van Lines, Inc.",
+                    "NAVI",
+                    "82"
+                  ],
+                  [
+                    "en",
+                    "NXPL - National Xpress Logistics",
+                    "NXPL",
+                    "83"
+                  ],
+                  [
+                    "en",
+                    "NYKS - NYK",
+                    "NYKS",
+                    "84"
+                  ],
+                  [
+                    "en",
+                    "NYKU - NYK",
+                    "NYKU",
+                    "85"
+                  ],
+                  [
+                    "en",
+                    "ODFL - OLD DOMINION FREIGHT LINE",
+                    "ODFL",
+                    "86"
+                  ],
+                  [
+                    "en",
+                    "OOLU - Orient Overseas Container Line",
+                    "OOLU",
+                    "87"
+                  ],
+                  [
+                    "en",
+                    "PAYL - PAYSTAR LOGISTICS",
+                    "PAYL",
+                    "88"
+                  ],
+                  [
+                    "en",
+                    "PENS - Peninsula Truck Lines",
+                    "PENS",
+                    "89"
+                  ],
+                  [
+                    "en",
+                    "PFLP - PACIFIC LOGISTICS CORP",
+                    "PFLP",
+                    "90"
+                  ],
+                  [
+                    "en",
+                    "PAMT - PAM Transport Inc",
+                    "PAMT",
+                    "91"
+                  ],
+                  [
+                    "en",
+                    "PSQL - PERFORMANCE LOGISTICS",
+                    "PSQL",
+                    "92"
+                  ],
+                  [
+                    "en",
+                    "PDME - PIEDMONT EXPRESS",
+                    "PDME",
+                    "93"
+                  ],
+                  [
+                    "en",
+                    "PLGQ - Precision Logistics Group",
+                    "PLGQ",
+                    "94"
+                  ],
+                  [
+                    "en",
+                    "PMKO - Prime Inc. (Tanker)",
+                    "PMKO",
+                    "95"
+                  ],
+                  [
+                    "en",
+                    "PNEP - Panalpina (Pantainer Express Line)",
+                    "PNEP",
+                    "96"
+                  ],
+                  [
+                    "en",
+                    "PRIJ - Prime Inc. (OTR)",
+                    "PRIJ",
+                    "97"
+                  ],
+                  [
+                    "en",
+                    "PRIU - Prime Inc. (Intermodal)",
+                    "PRIU",
+                    "98"
+                  ],
+                  [
+                    "en",
+                    "PRML - Prime Inc. (Logistics)",
+                    "PRML",
+                    "99"
+                  ],
+                  [
+                    "en",
+                    "PYLE - A. Duie Pyle",
+                    "PYLE",
+                    "100"
+                  ],
+                  [
+                    "en",
+                    "GMLS - R and L Carriers",
+                    "GMLS",
+                    "101"
+                  ],
+                  [
+                    "en",
+                    "RDWY - Roadway (YRC)",
+                    "RDWY",
+                    "102"
+                  ],
+                  [
+                    "en",
+                    "RGLN - Radiant Global Logistics",
+                    "RGLN",
+                    "103"
+                  ],
+                  [
+                    "en",
+                    "ROWL - Rowl Trucking",
+                    "ROWL",
+                    "104"
+                  ],
+                  [
+                    "en",
+                    "RXLI - Route Transportation & Logistics",
+                    "RXLI",
+                    "105"
+                  ],
+                  [
+                    "en",
+                    "RYOM - Royal Oil",
+                    "RYOM",
+                    "106"
+                  ],
+                  [
+                    "en",
+                    "RDSS - Rail Delivery Services, Inc.",
+                    "RDSS",
+                    "107"
+                  ],
+                  [
+                    "en",
+                    "RUSS - Russel Delivery Services, Inc.",
+                    "RUSS",
+                    "108"
+                  ],
+                  [
+                    "en",
+                    "SAFM - Safmarine",
+                    "SAFM",
+                    "109"
+                  ],
+                  [
+                    "en",
+                    "SAIA - Saia LTL Freight",
+                    "SAIA",
+                    "110"
+                  ],
+                  [
+                    "en",
+                    "SCNN - Schneider National",
+                    "SCNN",
+                    "111"
+                  ],
+                  [
+                    "en",
+                    "SDYA - Same Day Air Logistics",
+                    "SDYA",
+                    "112"
+                  ],
+                  [
+                    "en",
+                    "SNCY - Schneider National",
+                    "SNCY",
+                    "113"
+                  ],
+                  [
+                    "en",
+                    "SNLU - Schneider National",
+                    "SNLU",
+                    "114"
+                  ],
+                  [
+                    "en",
+                    "SXVE - Silver Enterprises",
+                    "SXVE",
+                    "115"
+                  ],
+                  [
+                    "en",
+                    "STVV - Stevens Transport",
+                    "STVV",
+                    "116"
+                  ],
+                  [
+                    "en",
+                    "SUDU - Hamburg Süd",
+                    "SUDU",
+                    "117"
+                  ],
+                  [
+                    "en",
+                    "SWFT - SWIFT TRANSPORTATION",
+                    "SWFT",
+                    "118"
+                  ],
+                  [
+                    "en",
+                    "TCKM - Truckers America",
+                    "TCKM",
+                    "119"
+                  ],
+                  [
+                    "en",
+                    "TEUG - TEU Global (Trade Expeditors USA, INC. DBA TEU GLOBAL)",
+                    "TEUG",
+                    "120"
+                  ],
+                  [
+                    "en",
+                    "TPNW - Triple A Logistics",
+                    "TPNW",
+                    "121"
+                  ],
+                  [
+                    "en",
+                    "TRKU - TURKON LINE INC",
+                    "TRKU",
+                    "122"
+                  ],
+                  [
+                    "en",
+                    "UDRY - USAW - USA Logistics",
+                    "UDRY",
+                    "123"
+                  ],
+                  [
+                    "en",
+                    "UPGF - UPS FREIGHT (FKA Overnite Transportation Co / OVNT)",
+                    "UPGF",
+                    "124"
+                  ],
+                  [
+                    "en",
+                    "UPSN - United Parcel Service",
+                    "UPSN",
+                    "125"
+                  ],
+                  [
+                    "en",
+                    "UPSS - United Parcel Service",
+                    "UPSS",
+                    "126"
+                  ],
+                  [
+                    "en",
+                    "UPSC - United Parcel Service",
+                    "UPSC",
+                    "127"
+                  ],
+                  [
+                    "en",
+                    "UPSZ - United Parcel Service",
+                    "UPSZ",
+                    "128"
+                  ],
+                  [
+                    "en",
+                    "USAU - U.S. Government",
+                    "USAU",
+                    "129"
+                  ],
+                  [
+                    "en",
+                    "USAX - U.S. Government",
+                    "USAX",
+                    "130"
+                  ],
+                  [
+                    "en",
+                    "UQEP - UNIQUE EXPRESS",
+                    "UQEP",
+                    "131"
+                  ],
+                  [
+                    "en",
+                    "UYSN - UNYSON",
+                    "UYSN",
+                    "132"
+                  ],
+                  [
+                    "en",
+                    "USIT - USA Truck",
+                    "USIT",
+                    "133"
+                  ],
+                  [
+                    "en",
+                    "USNW - U.S. Northwest Express or USNW Express",
+                    "USNW",
+                    "134"
+                  ],
+                  [
+                    "en",
+                    "USPS - United States Postal Service",
+                    "USPS",
+                    "135"
+                  ],
+                  [
+                    "en",
+                    "USXI - U.S. Xpress",
+                    "USXI",
+                    "136"
+                  ],
+                  [
+                    "en",
+                    "VCTS - Vocar Transportation Services, LLC.",
+                    "VCTS",
+                    "137"
+                  ],
+                  [
+                    "en",
+                    "VLOQ - VANEDGE LOGISTICS",
+                    "VLOQ",
+                    "138"
+                  ],
+                  [
+                    "en",
+                    "VSRD - Vistar Transportation Ltd.",
+                    "VSRD",
+                    "139"
+                  ],
+                  [
+                    "en",
+                    "WTAG - WTA Global Inc.",
+                    "WTAG",
+                    "140"
+                  ],
+                  [
+                    "en",
+                    "XUI - Xpress United Inc.",
+                    "XUI",
+                    "141"
+                  ],
+                  [
+                    "en",
+                    "XPOC - XPO Logistics",
+                    "XPOC",
+                    "142"
+                  ],
+                  [
+                    "en",
+                    "FICS - First International courier sys.",
+                    "FICS",
+                    "143"
+                  ],
+                  [
+                    "en",
+                    "YRCW - YRC Freight",
+                    "YRCW",
+                    "144"
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "associatedProperties": []
+    }
+  ],
+  "documentVersion": "1.0"
+}

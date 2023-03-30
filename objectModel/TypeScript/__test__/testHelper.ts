@@ -349,7 +349,7 @@ export const testHelper = {
             }
         });
 
-        if (isPresent === true) {
+        if ( isPresent === true ) {
             expect(toAssert).toBe(true);
         }
         else {

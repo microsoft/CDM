@@ -102,7 +102,7 @@ export class ProjectionDirective {
      */
     public isVirtual: boolean;
 
-    constructor(resOpt: resolveOptions, owner: CdmObjectDefinitionBase, ownerRef: CdmObjectReference = null) {
+    constructor(resOpt: resolveOptions, owner: CdmObjectDefinitionBase, ownerRef: CdmObjectReference = undefined) {
         this.resOpt = resOpt;
 
         // Owner information
@@ -114,7 +114,7 @@ export class ProjectionDirective {
 
             const _owner: CdmEntityAttributeDefinition = owner as CdmEntityAttributeDefinition;
             this.cardinality = _owner.cardinality ? _owner.cardinality : new CardinalitySettings(_owner);
-            this.isSourcePolymorphic = (_owner.isPolymorphicSource !== undefined && _owner.isPolymorphicSource !== null && _owner.isPolymorphicSource === true);
+            this.isSourcePolymorphic = (_owner.isPolymorphicSource !== undefined && _owner.isPolymorphicSource !== undefined && _owner.isPolymorphicSource === true);
         } else {
             // Entity Def pr Type Attribute
 

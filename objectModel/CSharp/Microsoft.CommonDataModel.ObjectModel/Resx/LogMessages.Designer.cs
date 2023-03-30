@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class LogMessages {
@@ -187,7 +187,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not fetch file metadata. The FetchAllFilesMetadata method of the {0} adapter may be misconfigured..
+        ///   Looks up a localized string similar to Could not fetch file metadata. The FetchAllFilesMetadata method of the &apos;{0}&apos; adapter may be misconfigured..
         /// </summary>
         internal static string ErrFetchingFileMetadataNull {
             get {
@@ -1087,6 +1087,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t find assembly &apos;{0}&apos;, please install the package, and add it as dependency of the project. Exception: {1}..
+        /// </summary>
+        internal static string ErrStorageCdmStandardsMissing {
+            get {
+                return ResourceManager.GetString("ErrStorageCdmStandardsMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Folder not found for the namespace &apos;{0}&apos;.
         /// </summary>
         internal static string ErrStorageFolderNotFound {
@@ -1713,6 +1722,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string WarnTelemetryIngestionFailed {
             get {
                 return ResourceManager.GetString("WarnTelemetryIngestionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unmounting the cdm namespace in order to use offline mode has been deprecated. The default behavior will now be using the CdmStandards package instead of the online schema store. Please remove this Unmount API call..
+        /// </summary>
+        internal static string WarnUnmountCdmNamespace {
+            get {
+                return ResourceManager.GetString("WarnUnmountCdmNamespace", resourceCulture);
             }
         }
         

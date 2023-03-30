@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +32,9 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
     private CdmCollection<CdmTraitReferenceBase> traitsToRemove;
     private Boolean argumentsContainWildcards;
     private List<String> applyTo;
+    private List<String> applyToTraits;
+    // this cache is for all the traits we might get profiles about. because once is enough
+    private TraitProfileCache profCache = new TraitProfileCache();
 
     public CdmOperationAlterTraits(final CdmCorpusContext ctx) {
         super(ctx);
@@ -70,6 +74,14 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
         this.applyTo = applyTo;
     }
 
+    public List<String> getApplyToTraits() {
+        return this.applyToTraits;
+    }
+
+    public void setApplyToTraits(final List<String> applyToTraits) {
+        this.applyToTraits = applyToTraits;
+    }
+
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
         if (resOpt == null) {
@@ -92,6 +104,10 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
 
         if (this.applyTo != null) {
             copy.setApplyTo(new ArrayList<String>(this.applyTo));
+        }
+
+        if (this.applyToTraits != null) {
+            copy.setApplyToTraits(new ArrayList<String>(this.applyToTraits));
         }
 
         copy.argumentsContainWildcards = this.argumentsContainWildcards;
@@ -184,6 +200,22 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
         // We use the top-level names because the applyTo list may contain a previous name our current resolved attributes had
         Map<String, String> topLevelSelectedAttributeNames = this.applyTo != null ? ProjectionResolutionCommonUtil.getTopList(projCtx, this.applyTo) : null;
 
+        // if set, make a hashset of trait names that need to be removed
+        Set<String> traitNamesToRemove = new HashSet<String>();
+        if (this.traitsToRemove != null) {
+            for (CdmTraitReferenceBase traitRef : this.traitsToRemove) {
+                // resolve this because it could be a traitgroup name and turn into many other traits
+                ResolvedTraitSet resolvedTraitSet = traitRef.fetchResolvedTraits(projCtx.getProjectionDirective().getResOpt());
+                resolvedTraitSet.getSet().forEach((ResolvedTrait rt) -> {traitNamesToRemove.add(rt.getTraitName());});
+            }
+        }
+
+        // if set, make a hashset from the applyToTraits for fast lookup later
+        HashSet<String> applyToTraitNames = null;
+        if (this.applyToTraits != null) {
+            applyToTraitNames = new HashSet<String>(this.applyToTraits);
+        }
+
         for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
             // Check if the current projection attribute state's resolved attribute is in the list of selected attributes
             // If this attribute is not in the list, then we are including it in the output without changes
@@ -195,29 +227,88 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
                 attrCtxNewAttrParam.setName(currentPAS.getCurrentResolvedAttribute().getResolvedName());
                 CdmAttributeContext attrCtxNewAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxNewAttrParam);
 
-                ResolvedAttribute newResAttr = null;
+                ResolvedAttribute foundNewResAttr = null;
 
                 if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof ResolvedAttributeSet) {
                     // Attribute group
                     // Create a copy of resolved attribute set
                     ResolvedAttributeSet resAttrNewCopy = ((ResolvedAttributeSet)currentPAS.getCurrentResolvedAttribute().getTarget()).copy();
-                    newResAttr = new ResolvedAttribute(projCtx.getProjectionDirective().getResOpt(), resAttrNewCopy, currentPAS.getCurrentResolvedAttribute().getResolvedName(), attrCtxNewAttr);
+                    foundNewResAttr = new ResolvedAttribute(projCtx.getProjectionDirective().getResOpt(), resAttrNewCopy, currentPAS.getCurrentResolvedAttribute().getResolvedName(), attrCtxNewAttr);
 
                     // the resolved attribute group obtained from previous projection operation may have a different set of traits comparing to the resolved attribute target.
                     // We would want to take the set of traits from the resolved attribute.
-                    newResAttr.setResolvedTraits(currentPAS.getCurrentResolvedAttribute().getResolvedTraits().deepCopy());
+                    foundNewResAttr.setResolvedTraits(currentPAS.getCurrentResolvedAttribute().getResolvedTraits().deepCopy());
                 } else if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof CdmAttribute) {
                     // Entity Attribute or Type Attribute
-                    newResAttr = createNewResolvedAttribute(projCtx, attrCtxNewAttr, currentPAS.getCurrentResolvedAttribute(), currentPAS.getCurrentResolvedAttribute().getResolvedName(), null);
+                    foundNewResAttr = createNewResolvedAttribute(projCtx, attrCtxNewAttr, currentPAS.getCurrentResolvedAttribute(), currentPAS.getCurrentResolvedAttribute().getResolvedName(), null);
                 } else {
                     Logger.error(this.getCtx(), TAG, "appendProjectionAttributeState", this.getAtCorpusPath(), CdmLogCode.ErrProjUnsupportedSource, ((CdmObject)currentPAS.getCurrentResolvedAttribute().getTarget()).getObjectType().toString(), this.getName());
                     // Add the attribute without changes
                     projOutputSet.add(currentPAS);
                     break;
                 }
+                final ResolvedAttribute newResAttr = foundNewResAttr;
 
-                newResAttr.setResolvedTraits(newResAttr.getResolvedTraits().mergeSet(this.resolvedNewTraits(projCtx, currentPAS)));
-                this.removeTraitsInNewAttribute(projCtx.getProjectionDirective().getResOpt(), newResAttr);
+                ResolvedTraitSet newTraits = this.resolvedNewTraits(projCtx, currentPAS);
+                // if the applyToTraits property was set, then these traits apply to the traits of the selected attributes, else to the attribute directly
+                if (applyToTraitNames == null) {
+                    // alter traits of atts
+                    newResAttr.setResolvedTraits(newResAttr.getResolvedTraits().mergeSet(newTraits));
+                    // remove if requested
+                    if (traitNamesToRemove != null) {
+                        traitNamesToRemove.forEach((String traitName) -> {newResAttr.getResolvedTraits().remove(projCtx.getProjectionDirective().getResOpt(), traitName);});
+                    }
+                } 
+                else {
+                    // alter traits of traits of atts
+                    // for every current resolved trait on this attribute, find the ones that match the criteria.
+                    // a match is the trait name or extended name or any classifications set on it
+                    // will need trait references for these resolved traits because metatraits are 'un resolved'
+                    List<CdmTraitReference> newTraitRefs = new ArrayList<CdmTraitReference>();
+                    for(ResolvedTrait nrt : newTraits.getSet()) {
+                        newTraitRefs.add(CdmObjectBase.resolvedTraitToTraitRef(projCtx.getProjectionDirective().getResOpt(), nrt));
+                    }
+
+                    for (ResolvedTrait rt : newResAttr.getResolvedTraits().getSet()) {
+                        // so get a hashset of the 'tokens' that classify this trait
+                        Set<String> classifiers = new HashSet<String>();
+                        // this profile lists the classifiers and all base traits
+                        TraitProfile profile = rt.fetchTraitProfile(projCtx.getProjectionDirective().getResOpt(), this.profCache, null);
+                        if (profile != null) {
+                            profile = profile.consolidate(this.profCache);
+                            // all classifications 
+                            if (profile.getClassifications() != null) {
+                                profile.getClassifications().parallelStream().map((c) -> c.getTraitName()).forEach(classifiers::add);
+                            }
+                            while (profile != null) {
+                                classifiers.add(profile.getTraitName());
+                                profile = profile.getIS_A();
+                            }
+                        }
+
+                        //is there an intersection between the set of things to look for and the set of things that describe the trait?
+                        Set<String> classifiersCheck = new HashSet<String>(classifiers);
+                        classifiersCheck.retainAll(applyToTraitNames);
+                        if (classifiersCheck.size() > 0) {
+                            // add the specified and fixed up traits to the metatraits of the resolved
+                            if (newTraitRefs != null && newTraitRefs.size() > 0) {
+                                if (rt.getMetaTraits() == null)
+                                    rt.setMetaTraits(new ArrayList<CdmTraitReferenceBase>());
+                                rt.getMetaTraits().addAll(newTraitRefs);
+                            }
+                            // remove some?
+                            if (traitNamesToRemove != null && traitNamesToRemove.size() > 0 && rt.getMetaTraits() != null) {
+                                List<CdmTraitReferenceBase> toRemove = rt.getMetaTraits().parallelStream()
+                                                                        .filter( mtr-> traitNamesToRemove.contains(mtr.fetchObjectDefinitionName()))
+                                                                        .collect(Collectors.toList());
+                                rt.getMetaTraits().removeAll(toRemove);
+                                if (rt.getMetaTraits().size() == 0) {
+                                    rt.setMetaTraits(null);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 // Create a projection attribute state for the new attribute with new applied traits by creating a copy of the current state
                 // Copy() sets the current state as the previous state for the new one
@@ -246,10 +337,12 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
         ResolvedTraitSet resolvedTraitSet = new ResolvedTraitSet(projCtx.getProjectionDirective().getResOpt());
         final String projectionOwnerName = projCtx.getProjectionDirective().getOriginalSourceAttributeName() != null ? projCtx.getProjectionDirective().getOriginalSourceAttributeName() : "";
 
-        for (CdmTraitReferenceBase traitRef : this.traitsToAdd) {
-            final ResolvedTraitSet traitRefCopy = traitRef.fetchResolvedTraits(projCtx.getProjectionDirective().getResOpt()).deepCopy();
-            this.replaceWildcardCharacters(projCtx.getProjectionDirective().getResOpt(), traitRefCopy, projectionOwnerName, currentPAS);
-            resolvedTraitSet = resolvedTraitSet.mergeSet(traitRefCopy);
+        if (this.traitsToAdd != null) {
+            for (CdmTraitReferenceBase traitRef : this.traitsToAdd) {
+                final ResolvedTraitSet traitRefCopy = traitRef.fetchResolvedTraits(projCtx.getProjectionDirective().getResOpt()).deepCopy();
+                this.replaceWildcardCharacters(projCtx.getProjectionDirective().getResOpt(), traitRefCopy, projectionOwnerName, currentPAS);
+                resolvedTraitSet = resolvedTraitSet.mergeSet(traitRefCopy);
+            }
         }
 
         return resolvedTraitSet;

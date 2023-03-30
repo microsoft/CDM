@@ -43,7 +43,7 @@ export class ProjectionResolutionCommonUtil {
         ctx: CdmCorpusContext,
         orgSrcRAS: ResolvedAttributeSet,
         isSourcePolymorphic: boolean = false,
-        polymorphicSet: Map<string, ProjectionAttributeState[]> = null
+        polymorphicSet: Map<string, ProjectionAttributeState[]> = undefined
     ): ProjectionAttributeStateSet {
         const set: ProjectionAttributeStateSet = new ProjectionAttributeStateSet(ctx);
 
@@ -93,7 +93,7 @@ export class ProjectionResolutionCommonUtil {
                     // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
                     // so steal them based on name
                     var resAttSrc = rasSource.get(resAttr.resolvedName);
-                    if (resAttSrc != null) {
+                    if (resAttSrc !== undefined) {
                         resAttr.attCtx = resAttSrc.attCtx;
                     }
 

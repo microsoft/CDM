@@ -58,7 +58,7 @@ export class EventList {
      */
     enable(): void {
         // If we are going into nested recorded functions, we should not clear previously recorded events
-        if (this.nestingLevel == 0) {
+        if (this.nestingLevel === 0) {
             this.allItems = [];
             this.isRecording = true;
             this.apiCorrelationId = Guid.create();
@@ -73,7 +73,7 @@ export class EventList {
     disable(): void {
         this.nestingLevel--;
 
-        if (this.nestingLevel == 0) {
+        if (this.nestingLevel === 0) {
             this.isRecording = false;
             this.apiCorrelationId = Guid.create();
         }

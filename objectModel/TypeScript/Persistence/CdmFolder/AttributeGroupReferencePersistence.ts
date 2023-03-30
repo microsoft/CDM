@@ -5,11 +5,13 @@ import {
     CdmAttributeGroupDefinition,
     CdmAttributeGroupReference,
     CdmCorpusContext,
-    cdmObjectType
+    cdmObjectType,
+    CdmTraitReferenceBase
 } from '../../internal';
 import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import { AttributeGroupReference } from './types';
+import * as utils from './utils';
 
 export class AttributeGroupReferencePersistence extends cdmObjectRefPersistence {
     public static fromData(ctx: CdmCorpusContext, object: string | AttributeGroupReference, entityName?: string): CdmAttributeGroupReference {
@@ -27,6 +29,15 @@ export class AttributeGroupReferencePersistence extends cdmObjectRefPersistence 
             }
         }
 
-        return ctx.corpus.MakeRef(cdmObjectType.attributeGroupRef, attributeGroup, simpleReference);
+        const attGroupReference: CdmAttributeGroupReference = ctx.corpus.MakeRef<CdmAttributeGroupReference>(cdmObjectType.attributeGroupRef, attributeGroup, simpleReference);
+
+        // now with applied traits!
+        let appliedTraits: Array<CdmTraitReferenceBase> = undefined;
+        if (typeof (object) !== 'string') {
+            appliedTraits = utils.createTraitReferenceArray(ctx, object.appliedTraits);
+        }
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(attGroupReference.appliedTraits, appliedTraits);
+
+        return attGroupReference;
     }
 }

@@ -115,7 +115,7 @@ export class ObjectValidator {
     }
 
     public static validateAttributeGroupRef(expected: AttributeExpectedValue, actual: CdmAttributeGroupReference): void {
-        if (expected.attributeGroupName !== null || expected.members !== null) {
+        if (expected.attributeGroupName !== undefined || expected.members !== undefined) {
             if (actual.explicitReference) {
                 const actualObj: CdmAttributeGroupDefinition = actual.explicitReference as CdmAttributeGroupDefinition;
                 if (expected.attributeGroupName) {

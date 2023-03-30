@@ -281,9 +281,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     docContent = docContent.Copy(new ResolveOptions(docContainer, this.Ctx.Corpus.DefaultResolutionDirectives), docContainer) as CdmDocumentDefinition;
                 }
 
-                if (folder.Documents.AllItems.Find(x => x.Id == docContent.Id) == null)
+                lock (folder.Documents.AllItems)
                 {
-                    folder.Documents.Add(docContent, docName);
+                    if (folder.Documents.AllItems.Find(x => x.Id == docContent.Id) == null)
+                    {
+                        folder.Documents.Add(docContent, docName);
+                    }
                 }
 
                 docContent._fileSystemModifiedTime = fsModifiedTime;
@@ -299,6 +302,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
         // An option will cause us to also save any linked documents.
         internal async Task<bool> SaveDocumentAsAsync(CdmDocumentDefinition doc, CopyOptions options, string newName, bool saveReferenced = false)
         {
+            // update the jsonSemanticVersion to the max(author setting, mimimum required by usage)
+            doc.DiscoverMinimumRequiredJsonSemanticVersion();
+
             // Find out if the storage adapter is able to write.
             string ns = StorageUtils.SplitNamespacePath(newName).Item1;
             if (StringUtils.IsBlankByCdmStandard(ns))

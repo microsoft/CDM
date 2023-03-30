@@ -20,4 +20,7 @@ public class Constants {
 
   @Deprecated
   public static final String FoundationsCorpusPath = "cdm:/foundations.cdm.json";
+  
+  @Deprecated
+  public static final String FoundationFoundationsCorpusPath = "cdm:/cdmfoundation/foundations.cdm.json";
 }

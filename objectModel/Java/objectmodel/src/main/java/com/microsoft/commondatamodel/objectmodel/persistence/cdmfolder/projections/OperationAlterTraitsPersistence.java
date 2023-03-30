@@ -63,6 +63,18 @@ public class OperationAlterTraitsPersistence {
             }
         }
 
+        if (obj.get("applyToTraits") != null) {
+            if (obj.get("applyToTraits").isValueNode()) {
+                alterTraitsOp.setApplyToTraits(
+                        new ArrayList<>(Collections.singletonList(obj.get("applyToTraits").asText())));
+            } else if (obj.get("applyToTraits").isArray()) {
+                alterTraitsOp.setApplyToTraits(JMapper.MAP.convertValue(obj.get("applyToTraits"), new TypeReference<ArrayList<String>>() {
+                }));
+            } else {
+                Logger.error(ctx, TAG, "fromData", alterTraitsOp.getAtCorpusPath(), CdmLogCode. ErrPersistProjUnsupportedProp, "applyToTraits", "string or list of strings");
+            }
+        }
+
         return alterTraitsOp;
     }
 
@@ -76,6 +88,7 @@ public class OperationAlterTraitsPersistence {
         obj.setTraitsToRemove(Utils.listCopyDataAsArrayNode(instance.getTraitsToRemove(), resOpt, options));
         obj.setArgumentsContainWildcards(instance.getArgumentsContainWildcards());
         obj.setApplyTo(instance.getApplyTo());
+        obj.setApplyToTraits(instance.getApplyToTraits());
 
         return obj;
     }

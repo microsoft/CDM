@@ -161,11 +161,11 @@ export class ADLSAdapter extends NetworkAdapter {
 
                 if (response.statusCode !== 200) { // Data was not flushed correctly. Delete empty file.
                     await this.deleteContentAtPath(corpusPath, url, undefined);
-                    throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath);
+                    throw new StorageAdapterException(`Could not write ADLS content at path, there was an issue at "${corpusPath}" during the flush action. Reason: ${response.reason}.`);
                 }
             } else {
                 await this.deleteContentAtPath(corpusPath, url, undefined);
-                throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath);
+                throw new StorageAdapterException(`Could not write ADLS content at path, there was an issue at "${corpusPath}" during the append action. Reason: ${response.reason}.`);
             }
         } catch (e) {
             if (e instanceof StorageAdapterException) {

@@ -21,6 +21,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public bool IsFromProperty { get; set; }
 
+        /// <summary>
+        /// Gets or sets a reference to a trait used to describe the 'verb' explaining how the trait's meaning should be applied to the 
+        /// object that holds this traitReference. This optional property can override the meaning of any defaultVerb that could be part of the 
+        /// referenced trait's definition
+        /// </summary>
+        public CdmTraitReference Verb { get; set; }
+
         internal bool ResolvedArguments;
 
         /// <summary>
@@ -58,6 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 copy.Arguments.Add(arg.Copy(resOpt) as CdmArgumentDefinition);
             }
+            copy.Verb = (CdmTraitReference)this.Verb?.Copy(resOpt);
 
             return copy;
         }
@@ -132,7 +140,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 // custom enumeration of args to force a path onto these things that just might not have a name
                 int lItem = this.Arguments.Count;
-                for (int iItem = 0; iItem < lItem; iItem++) {
+                for (int iItem = 0; iItem < lItem; iItem++)
+                {
                     CdmArgumentDefinition element = this.Arguments[iItem];
                     if (element != null)
                     {
@@ -145,6 +154,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
             }
+            if (this.Verb != null)
+            {
+                this.Verb.Owner = this;
+                if (this.Verb.Visit(pathFrom + "/verb/", preChildren, postChildren))
+                    return true;
+            }
 
             return result;
         }
@@ -153,6 +168,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             return null;
         }
+
+        internal override long GetMinimumSemanticVersion()
+        {
+            if (this.Verb != null || this.AppliedTraits != null && this.AppliedTraits.Count > 0)
+            {
+                return CdmObjectBase.SemanticVersionStringToNumber(CdmDocumentDefinition.JsonSchemaSemanticVersionTraitsOnTraits);
+            }
+            return base.GetMinimumSemanticVersion();
+        }
+
 
         internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
         {
@@ -227,6 +252,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     rtsResult.SetParameterValueFromArgument(trait, argument);
                 }
+            }
+            // if an explicit verb is set, remember this. don't resolve that verb trait, cuz that sounds nuts.
+            if (this.Verb != null)
+            {
+                rtsResult.SetExplicitVerb(trait, this.Verb);
+            }
+            // if a collection of meta traits exist, save on the resolved but don't resolve these. again, nuts
+            if (this.AppliedTraits != null && this.AppliedTraits.Count > 0)
+            {
+                rtsResult.SetMetaTraits(trait, this.AppliedTraits.AllItems);
             }
 
             // register set of possible symbols

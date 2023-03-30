@@ -35,5 +35,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Set feature flags in context.
         /// </summary>
         IDictionary<string, dynamic> FeatureFlags { set; get; }
+
+        /// <summary>
+        /// returns the current set value of a named flag or null if flag is not set.
+        /// </summary>
+        dynamic GetFeatureFlagValue(string flagName);
+
     }
 }

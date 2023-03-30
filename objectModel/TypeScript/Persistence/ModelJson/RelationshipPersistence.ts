@@ -16,13 +16,13 @@ export class RelationshipPersistence {
         }
 
         if (!entitySchemaByName.has(obj.fromAttribute.entityName)) {
-            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistRelUndefinedSourceEntity, obj.fromAttribute.entityName);
+            Logger.warning(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.WarnPersistRelUndefinedSourceEntity, obj.fromAttribute.entityName);
 
             return;
         }
 
         if (!entitySchemaByName.has(obj.toAttribute.entityName)) {
-            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistRelUndefinedTargetEntity);
+            Logger.warning(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.WarnPersistRelUndefinedTargetEntity);
 
             return;
         }

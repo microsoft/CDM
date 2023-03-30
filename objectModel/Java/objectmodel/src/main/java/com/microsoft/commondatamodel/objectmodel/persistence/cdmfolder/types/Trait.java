@@ -15,6 +15,8 @@ public class Trait {
     private Boolean modifiesAttributes;
     private Boolean ugly;
     private List<String> associatedProperties;
+    private Object defaultVerb;
+    private ArrayNode exhibitsTraits;
 
     public String getExplanation() {
         return explanation;
@@ -79,4 +81,22 @@ public class Trait {
     public void setAssociatedProperties(final List<String> associatedProperties) {
         this.associatedProperties = associatedProperties;
     }
+
+    public Object getDefaultVerb() {
+        return this.defaultVerb;
+    }
+
+    public void setDefaultVerb(final Object defaultVerb) {
+        this.defaultVerb = defaultVerb;
+    }
+
+    public ArrayNode getExhibitsTraits() {
+        return exhibitsTraits;
+    }
+
+    public void setExhibitsTraits(final ArrayNode exhibitsTraits) {
+        this.exhibitsTraits = exhibitsTraits;
+    }
+
+
 }

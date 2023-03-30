@@ -5,6 +5,7 @@ from typing import Union, Optional
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmTraitReference
+from cdm.persistence.cdmfolder import utils
 
 from .cdm_object_ref_persistence import CdmObjectRefPersistence
 from .trait_persistence import TraitPersistence
@@ -23,6 +24,8 @@ class TraitReferencePersistence(CdmObjectRefPersistence):
         optional = None  # type: Optional[bool]
         trait = None
         args = None
+        tr_verb = None
+        applied_traits = None
 
         if isinstance(data, str):
             trait = data
@@ -35,6 +38,12 @@ class TraitReferencePersistence(CdmObjectRefPersistence):
                 trait = data.traitReference
             else:
                 trait = TraitPersistence.from_data(ctx, data.traitReference)
+            
+            if data.get('verb'):
+                tr_verb = TraitReferencePersistence.from_data(ctx, data.verb)
+
+            if data.get('appliedTraits'):
+                applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
 
         trait_reference = ctx.corpus.make_ref(CdmObjectType.TRAIT_REF, trait, simple_reference)
 
@@ -43,5 +52,8 @@ class TraitReferencePersistence(CdmObjectRefPersistence):
 
         if args:
             trait_reference.arguments.extend([ArgumentPersistence.from_data(ctx, arg) for arg in args])
+
+        trait_reference.verb = tr_verb
+        utils.add_list_to_cdm_collection(trait_reference.applied_traits, applied_traits)
 
         return trait_reference
