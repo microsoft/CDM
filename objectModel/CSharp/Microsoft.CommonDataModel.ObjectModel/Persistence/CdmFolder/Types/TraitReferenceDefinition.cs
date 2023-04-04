@@ -12,5 +12,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public List<JToken> Arguments { get; set; }
         public List<JToken> AppliedTraits { get; set; }
         public bool? Optional { get; set; }
+        public dynamic Verb { get; set; }
     }
 }

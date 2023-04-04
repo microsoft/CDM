@@ -6,9 +6,11 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import java.util.ArrayList;
 
 public class TraitReferencePersistence {
   public static CdmTraitReference fromData(final CdmCorpusContext ctx, final JsonNode obj) {
@@ -20,6 +22,8 @@ public class TraitReferencePersistence {
     Boolean optional = null;
     final Object trait;
     JsonNode args = null;
+    CdmTraitReference trVerb = null;
+    ArrayList<CdmTraitReferenceBase> appliedTraits = null;
 
     if (obj.isValueNode()) {
       trait = obj;
@@ -34,6 +38,9 @@ public class TraitReferencePersistence {
       } else {
         trait = TraitPersistence.fromData(ctx, obj.get("traitReference"));
       }
+
+      trVerb = TraitReferencePersistence.fromData(ctx, obj.get("verb"));
+      appliedTraits = Utils.createTraitReferenceList(ctx, obj.get("appliedTraits"));
     }
 
     final CdmTraitReference traitReference = ctx.getCorpus().makeRef(CdmObjectType.TraitRef, trait, simpleReference);
@@ -45,6 +52,9 @@ public class TraitReferencePersistence {
     if (args != null) {
       args.forEach(a -> traitReference.getArguments().add(ArgumentPersistence.fromData(ctx, a)));
     }
+
+    traitReference.setVerb(trVerb);
+    Utils.addListToCdmCollection(traitReference.getAppliedTraits(), appliedTraits);
 
     return traitReference;
   }

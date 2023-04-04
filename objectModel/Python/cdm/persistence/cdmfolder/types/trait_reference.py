@@ -1,7 +1,10 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Union, List, Optional
+from typing import Union, List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from cdm.persistence.cdmfolder.types import TraitGroupReference
 
 from .trait import Trait
 from .argument import Argument
@@ -16,3 +19,5 @@ class TraitReference(JObject):
         self.arguments = None  # type: Optional[List[Union[str, Argument]]]
         self.appliedTraits = None  # type: Optional[List[Union[str, Trait]]]
         self.optional = None  # type: Optional[bool]
+        self.verb = None  # type: Union[str, 'TraitReference']
+        self.appliedTraits = None  # type: Optional[List[Union[str, 'TraitReference', 'TraitGroupReference']]]

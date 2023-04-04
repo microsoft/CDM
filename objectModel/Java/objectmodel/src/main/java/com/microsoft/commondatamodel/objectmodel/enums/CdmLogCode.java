@@ -98,6 +98,7 @@ public enum CdmLogCode
     ErrResolveReferenceFailure,
     ErrStorageAdapterNotFound,
     ErrStorageFolderNotFound,
+    ErrStorageCdmStandardsMissing,
     ErrStorageInvalidAdapterPath,
     ErrStorageInvalidPathFormat,
     ErrStorageMissingJsonConfig,
@@ -165,5 +166,6 @@ public enum CdmLogCode
     WarnValdnMaxOrdinalTooHigh,
     WarnValdnPrimaryKeyMissing,
     WarnValdnOrdinalStartEndOrder,
-    WarnTelemetryIngestionFailed
+    WarnTelemetryIngestionFailed,
+    WarnUnMountCdmNamespace
 }

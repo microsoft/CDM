@@ -81,7 +81,7 @@ describe('Cdm/CdmCollection/CdmEntityCollection', () => {
 
     it('TestManifestCanAddEntityDefinition', () => {
         const manifest: CdmManifestDefinition = generateManifest();
-        const entity: CdmEntityDefinition = new CdmEntityDefinition(manifest.ctx, 'entityName', null);
+        const entity: CdmEntityDefinition = new CdmEntityDefinition(manifest.ctx, 'entityName', undefined);
 
         createDocumentForEntity(manifest.ctx.corpus, entity);
 

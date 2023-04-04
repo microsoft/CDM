@@ -20,4 +20,9 @@ export class constants {
      * @internal
      */     
     public static readonly FOUNDATIONS_CORPUS_PATH: string = 'cdm:/foundations.cdm.json';
+
+    /**
+     * @internal
+     */     
+    public static readonly FOUNDATION_FOUNDATIONS_CORPUS_PATH: string = 'cdm:/cdmfoundation/foundations.cdm.json';
 }

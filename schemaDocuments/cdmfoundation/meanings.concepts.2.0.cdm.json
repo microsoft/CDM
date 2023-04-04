@@ -1,0 +1,785 @@
+{
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
+  "explanation": "Business concepts and ideas. I have avoided building a real ontology, but if I did, it would start here",
+  "imports": [
+    {
+      "corpusPath": "primitives.2.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "traitName": "means.idea",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.category",
+      "extendsTrait": "means"
+    },
+    {
+      "explanation": "a default to be used or assumed when no other quality is given",
+      "traitName": "explains.unspecified",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives the status for another concept",
+      "traitName": "explains.status",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives the current state for another concept",
+      "traitName": "explains.state",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives a preference description for another concept",
+      "traitName": "explains.preference",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives the 'type of thing' for another concept",
+      "traitName": "explains.entity",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives the importance for another concept",
+      "traitName": "explains.primacy",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives the ordering for another concept",
+      "traitName": "explains.ordering",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives a subType or specialization for another concept",
+      "traitName": "explains.subType",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives a usage or application for another concept",
+      "traitName": "explains.application",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "explaining that one concept or type indicator gives an association to another concept",
+      "traitName": "explains.association",
+      "exhibitsTraits": [
+        {
+          "traitReference": "qualification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "explanation": "a category which includes all things",
+      "traitName": "thing",
+      "defaultVerb": "classifiedAs"
+    },
+    {
+      "explanation": "a category for material things",
+      "traitName": "material",
+      "defaultVerb": "classifiedAs"
+    },
+    {
+      "explanation": "a category for conceptual things",
+      "traitName": "conceptual",
+      "defaultVerb": "classifiedAs"
+    },
+    {
+      "traitName": "thing.rawMaterial",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "thing",
+        "material"
+      ]
+    },
+    {
+      "traitName": "thing.component",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "thing",
+        "material"
+      ]
+    },
+    {
+      "traitName": "thing.finishedProduct",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "thing",
+        "material"
+      ]
+    },
+    {
+      "traitName": "thing.image",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "thing",
+        "material"
+      ]
+    },
+    {
+      "traitName": "idea.preferenceKind",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "action.prefer"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "conceptual",
+        "demographic"
+      ]
+    },
+    {
+      "traitName": "idea.preferenceKind.default",
+      "extendsTrait": {
+        "traitReference": "idea.preferenceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.default"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.preferenceKind.primary",
+      "extendsTrait": {
+        "traitReference": "idea.preferenceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.primary"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.preferenceKind.alternate",
+      "extendsTrait": {
+        "traitReference": "idea.preferenceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.alternate"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.preferenceKind.disallowed",
+      "extendsTrait": {
+        "traitReference": "idea.preferenceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.disallowed"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.preferenceKind.other",
+      "extendsTrait": {
+        "traitReference": "idea.preferenceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.other"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.preferenceKind.unknown",
+      "extendsTrait": {
+        "traitReference": "idea.preferenceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.unknown"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.preferenceKind.unspecified",
+      "extendsTrait": {
+        "traitReference": "idea.preferenceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.unspecified"
+          }
+        ]
+      }
+    },
+    {
+      "explanation": "the concept of having a reason for performing an action",
+      "traitName": "idea.purpose",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "thing",
+        "conceptual"
+      ]
+    },
+    {
+      "explanation": "the concept of having a reason for communicating",
+      "traitName": "idea.communication.purpose",
+      "extendsTrait": {
+        "traitReference": "idea.purpose",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.communicate"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.communication.purposeKind",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "idea.communication.purpose"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "conceptual",
+        "demographic"
+      ]
+    },
+    {
+      "explanation": "the concept of having a method/mechanism for performing an action",
+      "traitName": "idea.method",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "thing",
+        "conceptual"
+      ]
+    },
+    {
+      "explanation": "the concept of having a method of communicating",
+      "traitName": "idea.communication.method",
+      "extendsTrait": {
+        "traitReference": "idea.method",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.communicate"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "idea.communication.methodKind",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "idea.communication.method"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "conceptual"
+      ]
+    },
+    {
+      "traitName": "means.reference",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "means.reference.caption",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.displayText",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.documentation",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.description",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.definition",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.phonetic",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.regarding",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.URL",
+      "extendsTrait": "means.reference",
+      "explanation": "A Uniform Resource Locator. A web address."
+    },
+    {
+      "traitName": "means.reference.URL.image",
+      "extendsTrait": {
+        "traitReference": "means.reference.URL",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "thing.image"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "means.reference.URI",
+      "extendsTrait": "means.reference",
+      "explanation": "A Uniform Resource Identifier"
+    },
+    {
+      "traitName": "means.reference.language",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.language.tag",
+      "extendsTrait": "means.reference.language"
+    },
+    {
+      "traitName": "means.reference.culture",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.culture.tag",
+      "extendsTrait": "means.reference.culture"
+    },
+    {
+      "explanation": "An attribute that helps document details about an entity",
+      "purposeName": "documentation",
+      "extendsPurpose": "hasA",
+      "exhibitsTraits": [
+        "means.reference.documentation"
+      ]
+    },
+    {
+      "dataTypeName": "language",
+      "extendsDataType": "string",
+      "explanation": "a language identifier",
+      "exhibitsTraits": [
+        "means.reference.language"
+      ]
+    },
+    {
+      "dataTypeName": "languageTag",
+      "extendsDataType": "string",
+      "explanation": "a BCP 47 language tag",
+      "exhibitsTraits": [
+        "means.reference.language.tag"
+      ]
+    },
+    {
+      "dataTypeName": "cultureTag",
+      "extendsDataType": "languageTag",
+      "explanation": "a BCP 47 language tag",
+      "exhibitsTraits": [
+        "means.reference.culture.tag"
+      ]
+    },
+    {
+      "dataTypeName": "localizedDisplayText",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.reference.displayText"
+      ]
+    },
+    {
+      "dataTypeName": "localizedDisplayTextMultiple",
+      "extendsDataType": "localizedDisplayText",
+      "exhibitsTraits": [
+        "means.content.text.CSV"
+      ]
+    },
+    {
+      "dataTypeName": "url",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.reference.URL"
+      ]
+    },
+    {
+      "dataTypeName": "uri",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.reference.URI"
+      ]
+    },
+    {
+      "traitName": "has.category",
+      "explanation": "the root trait for the system of traits of hierarchical categorization",
+      "extendsTrait": "has",
+      "hasParameters": [
+        {
+          "name": "categoryName",
+          "explanation": "the name for an individual member for some classification of categories",
+          "dataType": "string",
+          "defaultValue": "all"
+        },
+        {
+          "name": "classification",
+          "explanation": "A description of the class of hierarchy members where many members share the same classification.",
+          "dataType": "string",
+          "defaultValue": "Unclassified"
+        },
+        {
+          "name": "parentCategoryName",
+          "explanation": "the name for the parent member in the classification of categories",
+          "dataType": "string",
+          "defaultValue": "all"
+        },
+        {
+          "name": "hierarchyLevel",
+          "explanation": "A default hierarchy level to consider when organizing items by this category and other categories having different hierachy levels. Top level is 1.",
+          "dataType": "integer",
+          "defaultValue": "1"
+        },
+        {
+          "name": "hierarchyName",
+          "explanation": "A hierarchy name used to group together descriptions with a shared name",
+          "dataType": "string",
+          "defaultValue": "natural"
+        }
+      ]
+    },
+    {
+      "traitName": "has.category.level1",
+      "explanation": "common explanation for level1 category items",
+      "extendsTrait": {
+        "traitReference": "has.category",
+        "arguments": [
+          {
+            "name": "hierarchyLevel",
+            "value": "1"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.level2",
+      "explanation": "common explanation for level2 category items",
+      "extendsTrait": {
+        "traitReference": "has.category",
+        "arguments": [
+          {
+            "name": "hierarchyLevel",
+            "value": "2"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.level3",
+      "explanation": "common explanation for level3 category items",
+      "extendsTrait": {
+        "traitReference": "has.category",
+        "arguments": [
+          {
+            "name": "hierarchyLevel",
+            "value": "3"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.sourceSystem",
+      "explanation": "A level1 hierarchy item explaining the source system for entities. Entities from a given source system are expected to be self-consistent on identifiers and similar data domains.",
+      "extendsTrait": {
+        "traitReference": "has.category.level1",
+        "arguments": [
+          {
+            "name": "classification",
+            "value": "sourceSystem"
+          },
+          {
+            "name": "hierarchyName",
+            "value": "entityDomain"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.subjectArea",
+      "explanation": "A level2 hierarchy item explaining the subject area entities. Subject areas can represent broad business categories such as Finance, Sales and Human Resouces",
+      "extendsTrait": {
+        "traitReference": "has.category.level2",
+        "arguments": [
+          {
+            "name": "classification",
+            "value": "subjectArea"
+          },
+          {
+            "name": "hierarchyName",
+            "value": "entityDomain"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea",
+      "explanation": "A level3 hierarchy item explaining the functional area for entities. Functional areas can divide entities by their purpose or use case such as auditing, reporting, recruiting, budgeting",
+      "extendsTrait": {
+        "traitReference": "has.category.level3",
+        "arguments": [
+          {
+            "name": "classification",
+            "value": "functionalArea"
+          },
+          {
+            "name": "hierarchyName",
+            "value": "entityDomain"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.sourceSystem.Dynamics365",
+      "explanation": "Entities from the Dynamics365 source system",
+      "extendsTrait": {
+        "traitReference": "has.category.sourceSystem",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Dynamics365"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.subjectArea.HumanResources",
+      "explanation": "Entities from Human Resources subject area",
+      "extendsTrait": {
+        "traitReference": "has.category.subjectArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "HumanResources"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.subjectArea.Commerce",
+      "explanation": "Entities from Commerce subject area",
+      "extendsTrait": {
+        "traitReference": "has.category.subjectArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Commerce"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.subjectArea.SupplyChain",
+      "explanation": "Entities from Supply Chain subject area",
+      "extendsTrait": {
+        "traitReference": "has.category.subjectArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "SupplyChain"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.subjectArea.Finance",
+      "explanation": "Entities from Finance subject area",
+      "extendsTrait": {
+        "traitReference": "has.category.subjectArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Finance"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.Recruitment",
+      "explanation": "Entities from Recruitment functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Recruitment"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.Terminations",
+      "explanation": "Entities from Terminations functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Terminations"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.Suppliers",
+      "explanation": "Entities from Suppliers functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Suppliers"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.Warehousing",
+      "explanation": "Entities from Warehousing functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Warehousing"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.GeneralLedger",
+      "explanation": "Entities from GeneralLedger functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "GeneralLedger"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.AccountsReceivable",
+      "explanation": "Entities from AccountsReceivable functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "AccountsReceivable"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.Auditing",
+      "explanation": "Entities from Auditing functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Auditing"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.Budgeting",
+      "explanation": "Entities from Budgeting functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Budgeting"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "has.category.functionalArea.Reporting",
+      "explanation": "Entities from Reporting functional area",
+      "extendsTrait": {
+        "traitReference": "has.category.functionalArea",
+        "arguments": [
+          {
+            "name": "categoryName",
+            "value": "Reporting"
+          }
+        ]
+      }
+    }
+  ],
+  "documentVersion": "2.0"
+}

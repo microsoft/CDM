@@ -75,10 +75,14 @@ export class StorageManager {
 
         // set up default adapters
         this.mount('local', new LocalAdapter(process.cwd()));
-        this.mount('cdm', new CdmStandardsAdapter());
-
         this.systemDefinedNamespaces.add('local');
-        this.systemDefinedNamespaces.add('cdm');
+
+        try {
+            this.mount('cdm', new CdmStandardsAdapter());
+            this.systemDefinedNamespaces.add('cdm');
+        } catch (e) {
+            Logger.error(this.ctx, this.TAG, 'constructor', undefined, cdmLogCode.ErrStorageCdmStandardsMissing, "cdm.objectModel.cdmstandards");
+        }
     }
 
     /**
@@ -87,7 +91,7 @@ export class StorageManager {
     public mount(namespace: string, adapter: StorageAdapterBase): void {
         return using(enterScope(StorageManager.name, this.ctx, this.mount.name), _ => {
             if (!namespace) {
-                Logger.error(this.ctx, this.TAG, this.mount.name, null, cdmLogCode.ErrStorageNullNamespace);
+                Logger.error(this.ctx, this.TAG, this.mount.name, undefined, cdmLogCode.ErrStorageNullNamespace);
                 return;
             }
 
@@ -101,7 +105,7 @@ export class StorageManager {
                 this.namespaceFolders.set(namespace, fd);
                 this.systemDefinedNamespaces.delete(namespace);
             } else {
-                Logger.error(this.ctx, this.TAG, this.mount.name, null, cdmLogCode.ErrStorageNullAdapter);
+                Logger.error(this.ctx, this.TAG, this.mount.name, undefined, cdmLogCode.ErrStorageNullAdapter);
             }
         });
     }
@@ -113,7 +117,7 @@ export class StorageManager {
      */
     public mountFromConfig(adapterConfig: string, doesReturnErrorList: boolean = false): string[] {
         if (!adapterConfig) {
-            Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, null, cdmLogCode.ErrStorageNullAdapterConfig);
+            Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, undefined, cdmLogCode.ErrStorageNullAdapterConfig);
             return undefined;
         }
 
@@ -136,7 +140,7 @@ export class StorageManager {
             if (item.namespace) {
                 nameSpace = item.namespace;
             } else {
-                Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, null, cdmLogCode.ErrStorageMissingNamespace);
+                Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, undefined, cdmLogCode.ErrStorageMissingNamespace);
                 continue;
             }
 
@@ -146,12 +150,12 @@ export class StorageManager {
             if (item.config) {
                 configs = item.config;
             } else {
-                Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, null, cdmLogCode.ErrStorageMissingJsonConfig, nameSpace);
+                Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, undefined, cdmLogCode.ErrStorageMissingJsonConfig, nameSpace);
                 continue;
             }
 
             if (!item.type) {
-                Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, null, cdmLogCode.ErrStorageMissingTypeJsonConfig, nameSpace);
+                Logger.error(this.ctx, this.TAG, this.mountFromConfig.name, undefined, cdmLogCode.ErrStorageMissingTypeJsonConfig, nameSpace);
                 continue;
             }
 
@@ -175,7 +179,7 @@ export class StorageManager {
     public unMount(nameSpace: string): boolean {
         return using(enterScope(StorageManager.name, this.ctx, this.unMount.name), _ => {
             if (!nameSpace) {
-                Logger.error(this.ctx, this.TAG, this.unMount.name, null, cdmLogCode.ErrStorageNullNamespace);
+                Logger.error(this.ctx, this.TAG, this.unMount.name, undefined, cdmLogCode.ErrStorageNullNamespace);
                 return false;
             }
 
@@ -187,11 +191,12 @@ export class StorageManager {
                 // The special case, use Resource adapter.
                 if (nameSpace === 'cdm') {
                     this.mount(nameSpace, new ResourceAdapter());
+                    Logger.warning(this.ctx, this.TAG, this.unMount.name, undefined, cdmLogCode.WarnUnMountCdmNamespace);
                 }
 
                 return true;
             } else {
-                Logger.warning(this.ctx, this.TAG, this.unMount.name, null, cdmLogCode.WarnStorageRemoveAdapterFailed, nameSpace);
+                Logger.warning(this.ctx, this.TAG, this.unMount.name, undefined, cdmLogCode.WarnStorageRemoveAdapterFailed, nameSpace);
             }
         });
     }
@@ -202,13 +207,13 @@ export class StorageManager {
      */
     public setAdapter(nameSpace: string, adapter: StorageAdapterBase): void {
         if (!nameSpace) {
-            Logger.error(this.ctx, this.TAG, this.setAdapter.name, null, cdmLogCode.ErrStorageNullNamespace);
+            Logger.error(this.ctx, this.TAG, this.setAdapter.name, undefined, cdmLogCode.ErrStorageNullNamespace);
             return;
         }
         if (adapter) {
             this.namespaceAdapters.set(nameSpace, adapter);
         } else {
-             Logger.error(this.ctx, this.TAG, this.setAdapter.name, null, cdmLogCode.ErrStorageNullAdapter);
+            Logger.error(this.ctx, this.TAG, this.setAdapter.name, undefined, cdmLogCode.ErrStorageNullAdapter);
         }
     }
 
@@ -217,14 +222,14 @@ export class StorageManager {
      */
     public fetchAdapter(namespace: string): StorageAdapterBase {
         if (!namespace) {
-            Logger.error(this.ctx, this.TAG, this.fetchAdapter.name, null, cdmLogCode.ErrStorageNullNamespace);
+            Logger.error(this.ctx, this.TAG, this.fetchAdapter.name, undefined, cdmLogCode.ErrStorageNullNamespace);
             return undefined;
         }
         if (this.namespaceFolders.has(namespace)) {
             return this.namespaceAdapters.get(namespace);
         }
 
-        Logger.error(this.ctx, this.TAG, this.fetchAdapter.name, null, cdmLogCode.ErrStorageAdapterNotFound, namespace);
+        Logger.error(this.ctx, this.TAG, this.fetchAdapter.name, undefined, cdmLogCode.ErrStorageAdapterNotFound, namespace);
         return undefined;
     }
 
@@ -234,7 +239,7 @@ export class StorageManager {
     public fetchRootFolder(namespace: string): CdmFolderDefinition {
         return using(enterScope(StorageManager.name, this.ctx, this.fetchRootFolder.name), _ => {
             if (!namespace) {
-                Logger.error(this.ctx, this.TAG, this.fetchRootFolder.name, null, cdmLogCode.ErrStorageNullNamespace);
+                Logger.error(this.ctx, this.TAG, this.fetchRootFolder.name, undefined, cdmLogCode.ErrStorageNullNamespace);
                 return undefined;
             }
 
@@ -246,7 +251,7 @@ export class StorageManager {
             }
 
             if (!folder) {
-                Logger.error(this.ctx, this.TAG, this.fetchRootFolder.name, null, cdmLogCode.ErrStorageAdapterNotFound, namespace);
+                Logger.error(this.ctx, this.TAG, this.fetchRootFolder.name, undefined, cdmLogCode.ErrStorageAdapterNotFound, namespace);
             }
 
             return folder;
@@ -274,7 +279,7 @@ export class StorageManager {
             }
 
             if (result === undefined) {
-                Logger.error(this.ctx, this.TAG, this.adapterPathToCorpusPath.name, null, cdmLogCode.ErrStorageInvalidAdapterPath, adapterPath);
+                Logger.error(this.ctx, this.TAG, this.adapterPathToCorpusPath.name, undefined, cdmLogCode.ErrStorageInvalidAdapterPath, adapterPath);
             }
 
             return result;
@@ -287,14 +292,14 @@ export class StorageManager {
     public corpusPathToAdapterPath(corpusPath: string): string {
         return using(enterScope(StorageManager.name, this.ctx, this.corpusPathToAdapterPath.name), _ => {
             if (!corpusPath) {
-                Logger.error(this.ctx, this.TAG, this.corpusPathToAdapterPath.name, null, cdmLogCode.ErrStorageNullCorpusPath);
+                Logger.error(this.ctx, this.TAG, this.corpusPathToAdapterPath.name, undefined, cdmLogCode.ErrStorageNullCorpusPath);
                 return undefined;
             }
             let result: string;
             // break the corpus path into namespace and ... path
             const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
             if (!pathTuple) {
-                Logger.error(this.ctx, this.TAG, this.corpusPathToAdapterPath.name, null, cdmLogCode.ErrStorageNullCorpusPath);
+                Logger.error(this.ctx, this.TAG, this.corpusPathToAdapterPath.name, undefined, cdmLogCode.ErrStorageNullCorpusPath);
                 return undefined;
             }
             const namespace: string = pathTuple[0] || this.defaultNamespace;
@@ -302,7 +307,7 @@ export class StorageManager {
             // get the adapter registered for this namespace
             const namespaceAdapter: StorageAdapterBase = this.fetchAdapter(namespace);
             if (namespaceAdapter === undefined) {
-                Logger.error(this.ctx, this.TAG, this.corpusPathToAdapterPath.name, null, cdmLogCode.ErrStorageNamespaceNotRegistered, namespace);
+                Logger.error(this.ctx, this.TAG, this.corpusPathToAdapterPath.name, undefined, cdmLogCode.ErrStorageNamespaceNotRegistered, namespace);
             } else {
                 // ask the storage adapter to 'adapt' this path
                 result = namespaceAdapter.createAdapterPath(pathTuple[1]);
@@ -315,7 +320,7 @@ export class StorageManager {
     public createAbsoluteCorpusPath(objectPath: string, obj?: CdmObject): string {
         return using(enterScope(StorageManager.name, this.ctx, this.createAbsoluteCorpusPath.name), _ => {
             if (!objectPath) {
-                Logger.error(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, null, cdmLogCode.ErrPathNullObjectPath);
+                Logger.error(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, undefined, cdmLogCode.ErrPathNullObjectPath);
                 return undefined;
             }
 
@@ -326,30 +331,30 @@ export class StorageManager {
 
             const pathTuple: [string, string] = StorageUtils.splitNamespacePath(objectPath);
             if (!pathTuple) {
-                Logger.error(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, null, cdmLogCode.ErrPathNullObjectPath);
+                Logger.error(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, undefined, cdmLogCode.ErrPathNullObjectPath);
                 return undefined;
             }
             const nameSpace: string = pathTuple[0];
             let newObjectPath: string = pathTuple[1];
             let finalNamespace: string;
 
-        let prefix: string;
-        let namespaceFromObj: string;
-        if (obj && (obj as CdmContainerDefinition).namespace && (obj as CdmContainerDefinition).folderPath) {
-            prefix = (obj as CdmContainerDefinition).folderPath;
-            namespaceFromObj = (obj as CdmContainerDefinition).namespace;
-        } else if (obj && obj.inDocument) {
-            prefix = obj.inDocument.folderPath;
-            namespaceFromObj = obj.inDocument.namespace;
-        }
+            let prefix: string;
+            let namespaceFromObj: string;
+            if (obj && (obj as CdmContainerDefinition).namespace && (obj as CdmContainerDefinition).folderPath) {
+                prefix = (obj as CdmContainerDefinition).folderPath;
+                namespaceFromObj = (obj as CdmContainerDefinition).namespace;
+            } else if (obj && obj.inDocument) {
+                prefix = obj.inDocument.folderPath;
+                namespaceFromObj = obj.inDocument.namespace;
+            }
 
             if (prefix && this.containsUnsupportedPathFormat(prefix)) {
                 // already called statusRpt when checking for unsupported path format.
                 return;
             }
             if (prefix && prefix.length > 0 && prefix[prefix.length - 1] !== '/') {
-                Logger.warning(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, null, cdmLogCode.WarnStorageExpectedPathPrefix, prefix);
-            
+                Logger.warning(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, undefined, cdmLogCode.WarnStorageExpectedPathPrefix, prefix);
+
                 prefix += '/';
             }
 
@@ -360,7 +365,7 @@ export class StorageManager {
                     prefix = '/';
                 }
                 if (nameSpace && nameSpace !== namespaceFromObj) {
-                    Logger.error(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, null, cdmLogCode.ErrStorageNamespaceMismatch, nameSpace);
+                    Logger.error(this.ctx, this.TAG, this.createAbsoluteCorpusPath.name, undefined, cdmLogCode.ErrStorageNamespaceMismatch, nameSpace);
                     return;
                 }
                 newObjectPath = `${prefix}${newObjectPath}`;
@@ -410,7 +415,7 @@ export class StorageManager {
             }
             const config: string = namespaceAdapterTuple[1].fetchConfig();
             if (!config) {
-                Logger.error(this.ctx, this.TAG, this.fetchConfig.name, null, cdmLogCode.ErrStorageNullAdapter);
+                Logger.error(this.ctx, this.TAG, this.fetchConfig.name, undefined, cdmLogCode.ErrStorageNullAdapter);
                 continue;
             }
 
@@ -459,7 +464,7 @@ export class StorageManager {
             return false;
         }
 
-         Logger.error(this.ctx, this.TAG, this.containsUnsupportedPathFormat.name, null, cdmLogCode.ErrStorageInvalidPathFormat, statusMessage);
+        Logger.error(this.ctx, this.TAG, this.containsUnsupportedPathFormat.name, undefined, cdmLogCode.ErrStorageInvalidPathFormat, statusMessage);
 
         return true;
     }

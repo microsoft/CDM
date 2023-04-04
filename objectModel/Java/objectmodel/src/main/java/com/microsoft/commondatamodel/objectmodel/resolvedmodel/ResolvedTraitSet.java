@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.io.IOException;
@@ -57,9 +59,11 @@ public class ResolvedTraitSet {
     if (traitSetResult.getLookupByTrait().containsKey(trait)) {
       ResolvedTrait rtOld = traitSetResult.getLookupByTrait().get(trait);
       List<Object> avOld = null;
+      List<Boolean> wasSetOld = null;
 
       if (rtOld.getParameterValues() != null) {
         avOld = rtOld.getParameterValues().getValues();
+        wasSetOld = rtOld.getParameterValues().getWasSet();
       }
 
       if (av != null && avOld != null) {
@@ -75,16 +79,35 @@ public class ResolvedTraitSet {
                 traitSetResult = traitSetResult.shallowCopyWithException(trait);
                 rtOld = traitSetResult.getLookupByTrait().get(trait);
                 avOld = rtOld.getParameterValues().getValues();
+                wasSetOld = rtOld.getParameterValues().getWasSet();
                 copyOnWrite = false;
               }
 
               avOld.set(i, ParameterValue
                   .fetchReplacementValue(resOpt, avOld.get(i), av.get(i), wasSet.get(i)));
+              wasSetOld.set(i, (wasSetOld.get(i) || wasSet.get(i)));
             }
           } catch (final Exception ex) {
             // Do something?
           }
         }
+      }
+      // is an explicit verb given with this reference?
+      if (toMerge.getExplicitVerb() != null) {
+          if (copyOnWrite) {
+              traitSetResult = traitSetResult.shallowCopyWithException(trait);
+              rtOld = traitSetResult.lookupByTrait.get(trait);
+              copyOnWrite = false;
+          }
+          rtOld.setExplicitVerb(toMerge.getExplicitVerb());
+      }
+      // are meta traits set on this newer reference?
+      if (toMerge.getMetaTraits() != null && toMerge.getMetaTraits().size() > 0) {
+          if (copyOnWrite) {
+              traitSetResult = traitSetResult.shallowCopyWithException(trait);
+              rtOld = traitSetResult.lookupByTrait.get(trait);
+          }
+          rtOld.setMetaTraits(new ArrayList<CdmTraitReferenceBase>(toMerge.getMetaTraits()));
       }
     } else {
       if (copyOnWrite) {
@@ -221,6 +244,15 @@ public class ResolvedTraitSet {
     }
 
     return collection;
+  }
+
+  public void setExplicitVerb(CdmTraitDefinition trait, CdmTraitReference verb) {
+      ResolvedTrait resTrait = this.get(trait);
+      resTrait.setExplicitVerb(verb);
+  }
+  public void setMetaTraits(CdmTraitDefinition trait, List<CdmTraitReferenceBase> metaTraits) {
+      ResolvedTrait resTrait = this.get(trait);
+      resTrait.setMetaTraits(new ArrayList<CdmTraitReferenceBase>(metaTraits));
   }
 
   public void setParameterValueFromArgument(final CdmTraitDefinition trait, final CdmArgumentDefinition arg) {

@@ -218,7 +218,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
         projection.operations.push(addArtifactAttributeOp);
 
         // Create an entity reference to hold this projection.
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create an entity attribute that contains this projection and add this to the entity.

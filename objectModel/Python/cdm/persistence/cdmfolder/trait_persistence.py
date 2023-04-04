@@ -35,6 +35,12 @@ class TraitPersistence:
         if data.get('associatedProperties'):
             trait.associated_properties = data.associatedProperties
 
+        if data.get('defaultVerb'):
+            trait.default_verb = TraitReferencePersistence.from_data(ctx, data.defaultVerb)
+
+        utils.add_list_to_cdm_collection(trait._exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('exhibitsTraits')))
+
         return trait
 
     @staticmethod
@@ -57,5 +63,8 @@ class TraitPersistence:
 
         if instance.ugly:
             result.ugly = instance.ugly
+
+        result.defaultVerb = TraitReferencePersistence.to_data(instance.default_verb, res_opt, options) if instance.default_verb else None
+        result.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
 
         return result

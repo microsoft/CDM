@@ -324,10 +324,10 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
                 
                 if response.status_code != 200: # Data was not flushed correctly. Delete empty file.
                     await self.delete_content_at_path(corpus_path, url, None)
-                    raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: ' + corpus_path)
+                    raise StorageAdapterException('Could not write ADLS content at path, there was an issue at "{0}" during the flush action. Reason: {1}.'.format(corpus_path, response.reason))
             else:
                 await self.delete_content_at_path(corpus_path, url, None)
-                raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: ' + corpus_path)
+                raise StorageAdapterException('Could not write ADLS content at path, there was an issue at "{0}" during the append action. Reason: {1}.'.format(corpus_path, response.reason))
         except StorageAdapterException as e:
             raise
         except Exception as exc:

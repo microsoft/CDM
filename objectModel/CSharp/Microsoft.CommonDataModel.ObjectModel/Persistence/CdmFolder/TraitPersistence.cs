@@ -34,6 +34,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 trait.Ugly = (bool)obj["ugly"];
             if (obj["associatedProperties"] != null)
                 trait.AssociatedProperties = obj["associatedProperties"].ToObject<List<string>>();
+
+            trait.DefaultVerb = TraitReferencePersistence.FromData(ctx, obj["defaultVerb"]);
+
+            Utils.AddListToCdmCollection(trait.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
+
             return trait;
         }
 
@@ -47,7 +52,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 HasParameters = CopyDataUtils.ListCopyData(resOpt, instance.Parameters, options),
                 Elevated = instance.Elevated == true ? (bool?)true : null,
                 Ugly = instance.Ugly == true ? (bool?)true : null,
-                AssociatedProperties = instance.AssociatedProperties
+                AssociatedProperties = instance.AssociatedProperties,
+                DefaultVerb = Utils.JsonForm(instance.DefaultVerb, resOpt, options),
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
             };
         }
     }

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.microsoft.commondatamodel</groupId>
+    <artifactId>cdm-schema-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <groupId>com.microsoft.commondatamodel</groupId>
+  <artifactId>cdmstandards</artifactId>
+
+  <properties>
+    <apache.compiler.version>3.8.1</apache.compiler.version>
+    <apache.surefire.version>2.14</apache.surefire.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>8</java.version>
+  </properties>
+
+  <name>com.microsoft.commondatamodel:cdmstandards</name>
+  <description>The Common Data Model standard schema and entities</description>
+  <url>https://github.com/Microsoft/CDM</url>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>CDM Team</name>
+      <organization>Microsoft</organization>
+      <organizationUrl>https://docs.microsoft.com/en-us/common-data-model/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/Microsoft/CDM.git</connection>
+    <developerConnection>scm:git:ssh://github.com/Microsoft/CDM.git</developerConnection>
+    <url>http://github.com/Microsoft/CDM</url>
+  </scm>
+
+  <profiles>
+    <profile>
+      <id>build-with-dependencies</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <configuration>
+          <release>${java.version}</release>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${apache.compiler.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${apache.surefire.version}</version>
+      </plugin>
+    </plugins>
+
+    <resources>
+      <resource>
+        <directory>./src/main/resources/schemaDocuments</directory>
+        <includes>
+          <include>**/cdmfoundation/**</include>
+          <include>**/extensions/**</include>
+          <include>foundations.cdm.json</include>
+          <include>meanings.cdm.json</include>
+          <include>primitives.cdm.json</include>
+          <include>schema.cdm.json</include>
+          <include>foundations.*.cdm.json</include>
+          <include>meanings.*.cdm.json</include>
+          <include>primitives.*.cdm.json</include>
+          <include>schema.*.cdm.json</include>
+        </includes>
+        <excludes>
+          <exclude>**/*.manifest.cdm.json</exclude>
+          <exclude>*.0.*.cdm.json</exclude>
+          <exclude>*.manifest.cdm.json</exclude>
+          <exclude>*.md</exclude>
+          <exclude>*.jpg</exclude>
+          <exclude>pom.xml</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
+</project>

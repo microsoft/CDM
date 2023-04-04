@@ -92,7 +92,7 @@ export class DocumentLibrary {
             }
 
             // The root document that started this indexing process is already masked for indexing, don't mark it again.
-            if (doc != rootDoc) {
+            if (doc !== rootDoc) {
                 if (this.markDocumentForIndexing(doc)) {
                     docsNotIndexed.add(doc);
                 }
@@ -129,7 +129,7 @@ export class DocumentLibrary {
                 return currentDoc;
             }
         }
-        return null;
+        return undefined;
     }
 
     /**
@@ -215,7 +215,7 @@ export class DocumentLibrary {
     /**
      * @internal
      */
-     public async loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = null): Promise<CdmContainerDefinition> {
+     public async loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = undefined): Promise<CdmContainerDefinition> {
         // If the document is already loaded and the user do not want to force a reload, return the document previously loaded.
         if (!forceReload && this.pathLookup.has(objectPath)) {
             const doc: CdmContainerDefinition = this.pathLookup.get(objectPath)[1];
@@ -239,7 +239,7 @@ export class DocumentLibrary {
     /**
      * @internal
      */
-     private async _loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = null): Promise<CdmContainerDefinition> {
+     private async _loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = undefined): Promise<CdmContainerDefinition> {
         // let bodyCode = () =>
         {
             if (!objectPath) {

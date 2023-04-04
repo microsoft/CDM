@@ -276,13 +276,13 @@ public class ModelJsonTest extends ModelJsonTestBase {
   public void testTypeAttributeIsNotDuplicated() throws IOException, InterruptedException {
     // the java string serializer can make the "$type" key duplicated if the JsonTypeInfo field is misconfigured
     //create a manifest
-    final CdmCorpusDefinition cdmCorpus1 = new CdmCorpusDefinition();
+    final CdmCorpusDefinition cdmCorpus1 = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testTypeAttributeIsNotDuplicated");
     final String testActualOutputPath = TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testTypeAttributeIsNotDuplicated");
     cdmCorpus1.getStorage().mount("adls", new LocalAdapter(testActualOutputPath));
     cdmCorpus1.getStorage().setDefaultNamespace("adls");
 
     final CdmManifestDefinition manifestAbstract = cdmCorpus1.makeObject(CdmObjectType.ManifestDef, "tempAbstract");
-    manifestAbstract.getEntities().add("TeamMembership", "cdm:/core/applicationCommon/TeamMembership.cdm.json/TeamMembership");
+    manifestAbstract.getEntities().add("TeamMembership", "local:/TeamMembership.cdm.json/TeamMembership");
     final CdmFolderDefinition localRoot = cdmCorpus1.getStorage().fetchRootFolder("adls");
     localRoot.getDocuments().add(manifestAbstract);
     final CdmManifestDefinition manifestResolved = manifestAbstract.createResolvedManifestAsync("default", "").join();

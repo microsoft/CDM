@@ -3,67 +3,34 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using System.Net.Http;
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
     using System.Threading.Tasks;
 
-    /// <summary>
-    /// An adapter pre-configured to read the standard schema files published by CDM.
-    /// </summary>
-    public class CdmStandardsAdapter : NetworkAdapter
+    public class CdmStandardsAdapter : StorageAdapterBase
     {
-        internal const string Type = "cdm-standards";
-        private const string STANDARDS_ENDPOINT = "https://cdm-schema.microsoft.com";
-
         /// <summary>
-        /// The path to be appended to the endpoint.
+        /// The resource path root (every path will have this as a start).
         /// </summary>
-        public string Root { get; set; }
+        private static string root = "Microsoft.CommonDataModel.ObjectModel.Adapter.CdmStandards.Resources";
 
-        /// <summary>
-        /// The endpoint of the standard schema store.
-        /// </summary>
-        internal string Endpoint
+        private Assembly assembly;
+
+        public CdmStandardsAdapter()
         {
-            get
+            try
             {
-                return this._endpoint;
+                this.assembly = Assembly.Load("Microsoft.CommonDataModel.ObjectModel.Adapter.CdmStandards");
             }
-            set
+            catch (Exception e)
             {
-                this._endpoint = value.EndsWith("/") ? value.Substring(0, value.Length - 1) : value;
+                throw new Exception($"Couldn't find assembly 'Microsoft.CommonDataModel.ObjectModel.Adapter.CdmStandards', please install the assembly, and add it as dependency of the project. Exception: {e.Message}.");
+
             }
         }
 
-        /// <summary>
-        /// The combinating of the standards endpoint and the root path.
-        /// </summary>
-        private string AbsolutePath { get => Endpoint + Root; }
-
-        private string _endpoint;
-
-        /// <summary>
-        /// Constructs a CdmStandardsAdapter with default parameters.
-        /// </summary>
-        public CdmStandardsAdapter() : this("/logical")
-        {
-        }
-
-        /// <summary>
-        /// Constructs a CdmStandardsAdapter.
-        /// </summary>
-        /// <param name="root"> The root path specifies either to read the standard files in logical or resolved form. </param>
-        /// <param name="endpoint"> The endpoint specifies cdm standard schema store url in different environments (internal use only). </param>
-        public CdmStandardsAdapter(string root, string endpoint = null)
-        {
-            this.Root = root;
-            this.Endpoint = endpoint ?? STANDARDS_ENDPOINT;
-            this.httpClient = new CdmHttpClient(this.Endpoint);
-        }
-
-        /// <inheritdoc />
         public override bool CanRead()
         {
             return true;
@@ -72,80 +39,42 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public override string CreateAdapterPath(string corpusPath)
         {
-            return $"{AbsolutePath}{corpusPath}";
+            if (string.IsNullOrEmpty(corpusPath))
+            {
+                return null;
+            }
+
+            return $"{root}{corpusPath}";
         }
 
         /// <inheritdoc />
         public override string CreateCorpusPath(string adapterPath)
         {
-            if (!adapterPath.StartsWith(AbsolutePath))
+            if (string.IsNullOrEmpty(adapterPath) || !adapterPath.StartsWith(root))
             {
                 return null;
             }
 
-            return adapterPath.Substring(AbsolutePath.Length);
-        }
-
-        /// <inheritdoc />
-        public override string FetchConfig()
-        {
-            var resultConfig = new JObject
-            {
-                { "type", Type }
-            };
-
-            var configObject = new JObject
-            {
-                // Construct network configs.
-                this.FetchNetworkConfig()
-            };
-
-            if (this.LocationHint != null)
-            {
-                configObject.Add("locationHint", this.LocationHint);
-            }
-
-            if (this.Root != null)
-            {
-                configObject.Add("root", this.Root);
-            }
-
-            resultConfig.Add("config", configObject);
-
-            return resultConfig.ToString();
+            return adapterPath.Substring(root.Length);
         }
 
         /// <inheritdoc />
         public override async Task<string> ReadAsync(string corpusPath)
         {
-            var httpRequest = this.SetUpCdmRequest(Root + corpusPath, null, HttpMethod.Get);
+            // Convert the corpus path to the resource path.
+            var resourcePath = this.CreateAdapterPath(corpusPath).Replace('/', '.').Replace('-', '_');
 
-            using (var cdmResponse = await base.ExecuteRequest(httpRequest))
-            {
-                return await cdmResponse.Content.ReadAsStringAsync();
-            }
-        }
+            // Get the resource stream.
+            var resourceStream = this.assembly.GetManifestResourceStream(resourcePath);
 
-        /// <inheritdoc />
-        public override void UpdateConfig(string config)
-        {
-            if (config == null)
+            if (resourceStream == null)
             {
-                return;
+                throw new Exception($"There is no resource found for {corpusPath}.");
             }
 
-            this.UpdateNetworkConfig(config);
-
-            var configJson = JsonConvert.DeserializeObject<JObject>(config);
-
-            if (configJson["locationHint"] != null)
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {
-                this.LocationHint = configJson["locationHint"].ToString();
-            }
-
-            if (configJson["root"] != null)
-            {
-                this.Root = configJson["root"].ToString();
+                return await reader.ReadToEndAsync();
             }
         }
     }

@@ -15,7 +15,8 @@ import {
     cdmLogCode,
     resolveOptions,
     CdmTraitReferenceBase,
-    StringUtils
+    StringUtils,
+    CdmObjectBase
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
@@ -87,26 +88,27 @@ export class DocumentPersistence {
         }
 
         let isResolvedDoc: boolean = false;
-        if (document.definitions.length === 1 && document.definitions.allItems[0].objectType == cdmObjectType.entityDef) {
+        if (document.definitions.length === 1 && document.definitions.allItems[0].objectType === cdmObjectType.entityDef) {
             const entity: CdmEntityDefinition = document.definitions.allItems[0] as CdmEntityDefinition;
             const resolvedTrait: CdmTraitReferenceBase = entity.exhibitsTraits.item('has.entitySchemaAbstractionLevel');
             // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
             // or the presence of the attribute context.
-            isResolvedDoc = resolvedTrait != null && (resolvedTrait as CdmTraitReference).arguments.allItems[0].value == 'resolved';
+            isResolvedDoc = resolvedTrait !== undefined && (resolvedTrait as CdmTraitReference).arguments.allItems[0].value === 'resolved';
             isResolvedDoc = isResolvedDoc || !!entity.attributeContext;
         }
 
         if (!StringUtils.isBlankByCdmStandard(object.jsonSchemaSemanticVersion)) {
+            //The minimum jsonSemanticVersion that must be loadable by a version of the ObjectModel in order for it to load this document.
             document.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
             if (DocumentPersistence.compareJsonSemanticVersion(ctx, document.jsonSchemaSemanticVersion) > 0) {
                 if (isResolvedDoc) {
-                    Logger.warning(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.WarnPersistUnsupportedJsonSemVer, CdmDocumentDefinition.currentJsonSchemaSemanticVersion, document.jsonSchemaSemanticVersion);
+                    Logger.warning(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.WarnPersistUnsupportedJsonSemVer, CdmObjectBase.jsonSchemaSemanticVersionMaximumSaveLoad, document.jsonSchemaSemanticVersion);
                 } else {
-                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistUnsupportedJsonSemVer, CdmDocumentDefinition.currentJsonSchemaSemanticVersion, document.jsonSchemaSemanticVersion);
+                    Logger.error(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.ErrPersistUnsupportedJsonSemVer, CdmObjectBase.jsonSchemaSemanticVersionMaximumSaveLoad, document.jsonSchemaSemanticVersion);
                 }
             }
         } else {
-            Logger.warning(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.WarnPersistJsonSemVerMandatory);
+            Logger.warning(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.WarnPersistJsonSemVerMandatory);
         }
 
         return document;
@@ -131,25 +133,29 @@ export class DocumentPersistence {
 
     /**
      * Compares the document version with the json semantic version supported.
-     * 1 => if documentSemanticVersion > jsonSemanticVersion
-     * 0 => if documentSemanticVersion == jsonSemanticVersion or if documentSemanticVersion is invalid
-     * -1 => if documentSemanticVersion < jsonSemanticVersion
+     * 1 => if documentSemanticVersion > JsonSemanticVersionMax
+     * 0 => if documentSemanticVersion between JsonSemanticVersionMin and JsonSemanticVersionMax or if documentSemanticVersion is invalid
+     * -1 => if documentSemanticVersion < JsonSemanticVersionMin
      */
     private static compareJsonSemanticVersion(ctx: CdmCorpusContext, documentSemanticVersion: string): number {
-        const docSemanticVersionSplit: number[] = documentSemanticVersion.split(".").map(x => Number(x));
-        const currSemanticVersionSplit: number[] = CdmDocumentDefinition.currentJsonSchemaSemanticVersion.split(".").map(x => Number(x));
 
-        if (docSemanticVersionSplit.length !== 3 || docSemanticVersionSplit.includes(NaN)) {
-            Logger.warning(ctx, this.TAG, this.compareJsonSemanticVersion.name, null, cdmLogCode.WarnPersistJsonSemVerInvalidFormat);
-            return 0;
+        let docVer = CdmObjectBase.semanticVersionStringToNumber(documentSemanticVersion);
+        if (docVer === -1) {
+            Logger.warning(ctx, this.TAG, this.compareJsonSemanticVersion.name, undefined, cdmLogCode.WarnPersistJsonSemVerInvalidFormat);
+                return 0;
         }
-
-        for (let i = 0; i < 3; ++i) {
-            if (docSemanticVersionSplit[i] !== currSemanticVersionSplit[i]) {
-                return docSemanticVersionSplit[i] < currSemanticVersionSplit[i] ? -1 : 1;
-            }
+        let minVer = CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.jsonSchemaSemanticVersionMinimumLoad);
+        let maxVer = CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.jsonSchemaSemanticVersionMaximumSaveLoad);
+        
+        if (docVer < minVer)
+        {
+            return -1;
         }
-
+        else if (docVer > maxVer)
+        {
+            return 1;
+        }
         return 0;
+
     }
 }

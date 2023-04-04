@@ -185,7 +185,7 @@ export class ResolvedAttribute {
 
     public completeContext(resOpt: resolveOptions): void {
         if (this.attCtx) {
-            if (this.attCtx.name == null) {
+            if (this.attCtx.name === undefined) {
                 this.attCtx.name = this._resolvedName;
                 this.attCtx.atCorpusPath = `${this.attCtx.parent.fetchObjectDefinition<CdmAttributeContext>(resOpt).atCorpusPath}/${this._resolvedName}`;
             }

@@ -92,7 +92,7 @@ export class LocalEntityDeclarationPersistence {
                 if (cdmPartition !== undefined) {
                     localEntityDec.dataPartitions.push(cdmPartition);
                 } else {
-                    Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonDocConversionError);
+                    Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistModelJsonDocConversionError);
                     return undefined;
                 }
             }

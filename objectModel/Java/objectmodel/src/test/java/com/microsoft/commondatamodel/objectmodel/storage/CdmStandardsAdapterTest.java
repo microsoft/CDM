@@ -3,8 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.storage;
 
-import com.microsoft.commondatamodel.objectmodel.storage.CdmStandardsAdapter;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -12,38 +10,61 @@ import org.testng.annotations.Test;
  * Tests if the CdmStandardsAdapter functions correctly.
  */
 public class CdmStandardsAdapterTest {
-    String ENDPOINT = "https://cdm-schema.microsoft.com/logical";
-    String TEST_FILE_PATH = "/foundations.cdm.json";
-
-    /**
-     * Tests if the adapter path is created correctly.
-     */
-    @Test
-    public void testCreateAdapterPath() {
-        CdmStandardsAdapter adapter = new CdmStandardsAdapter();
-        String corpusPath = TEST_FILE_PATH;
-        String adapterPath = adapter.createAdapterPath(corpusPath);
-        Assert.assertEquals(ENDPOINT + corpusPath, adapterPath);
-    }
+    String ROOT = "";
+    String EXTENSION_FILE_PATH = "/extensions/pbi.extension.cdm.json";
+    String FOUNDATIONS_FILE_PATH = "/cdmfoundation/foundations.cdm.json";
+    String INVALID_FILE_PATH = "invalidFile.cdm.json";
 
     /**
      * Tests if the corpus path is created correctly.
      */
     @Test
-    public void testCreateCorpusPath() {
+    public void testCreateCorpusPath() throws ClassNotFoundException {
         CdmStandardsAdapter adapter = new CdmStandardsAdapter();
-        String adapterPath = ENDPOINT + TEST_FILE_PATH;
-        String corpusPath = adapter.createCorpusPath(adapterPath);
-        Assert.assertEquals(TEST_FILE_PATH, corpusPath);
+        String corpusPath = adapter.createCorpusPath(EXTENSION_FILE_PATH);
+        Assert.assertEquals(corpusPath, EXTENSION_FILE_PATH);
+
+        corpusPath = adapter.createCorpusPath(FOUNDATIONS_FILE_PATH);
+        Assert.assertEquals(corpusPath, FOUNDATIONS_FILE_PATH);
+    }
+
+    /**
+     * Tests if the adapter path is created correctly.
+     */
+    @Test
+    public void testCreateAdapterPath() throws ClassNotFoundException {
+        CdmStandardsAdapter adapter = new CdmStandardsAdapter();
+        String adapterPath = adapter.createAdapterPath(EXTENSION_FILE_PATH);
+        Assert.assertEquals(adapterPath, ROOT + EXTENSION_FILE_PATH);
+
+        adapterPath = adapter.createAdapterPath(FOUNDATIONS_FILE_PATH);
+        Assert.assertEquals(adapterPath, ROOT + FOUNDATIONS_FILE_PATH);
     }
 
     /**
      * Tests if the adapter is able to read correctly.
      */
     @Test
-    public void testReadAsync() {
+    public void testReadAsync() throws Throwable {
         CdmStandardsAdapter adapter = new CdmStandardsAdapter();
-        String foundations = adapter.readAsync(TEST_FILE_PATH).join();
+        String extensions = adapter.readAsync(EXTENSION_FILE_PATH).join();
+        String foundations = adapter.readAsync(FOUNDATIONS_FILE_PATH).join();
+        Assert.assertNotNull(extensions);
         Assert.assertNotNull(foundations);
+
+        boolean errorWasThrown = false;
+        try {
+            try {
+                adapter.readAsync(INVALID_FILE_PATH).join();
+            } catch (final Exception e) {
+                throw e.getCause();
+            }
+        } catch (final StorageAdapterException e) {
+            String errorMessageString = String.format("There is no resource found for %s", INVALID_FILE_PATH);
+            Assert.assertEquals(e.getMessage().substring(0, errorMessageString.length()), errorMessageString);
+            errorWasThrown = true;
+        }
+
+        Assert.assertTrue(errorWasThrown);
     }
 }

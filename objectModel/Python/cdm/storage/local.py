@@ -114,4 +114,3 @@ class LocalAdapter(StorageAdapterBase):
             self.location_hint = config_json['locationHint']
 
         self._full_root = os.path.abspath(self.root)
-

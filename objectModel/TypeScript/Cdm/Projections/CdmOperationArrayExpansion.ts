@@ -75,11 +75,11 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
     public validate(): boolean {
         const missingFields: string[] = [];
 
-        if (this.startOrdinal === undefined || this.startOrdinal === null) {
+        if (this.startOrdinal === undefined) {
             missingFields.push('startOrdinal');
         }
 
-        if (this.endOrdinal === undefined || this.endOrdinal === null) {
+        if (this.endOrdinal === undefined) {
             missingFields.push('endOrdinal');
         }
 

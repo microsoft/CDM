@@ -57,9 +57,8 @@ public class ConfigureAdaptersTest extends SampleTestBase {
         while (true) {
             System.out.println("List of storage adapters:");
             System.out.println("  1: LocalAdapter");
-            System.out.println("  2: CdmStandardsAdapter");
-            System.out.println("  3: RemoteAdapter");
-            System.out.println("  4: ADLSAdapter");
+            System.out.println("  2: RemoteAdapter");
+            System.out.println("  3: ADLSAdapter");
             System.out.println("Pick a number to configure that storage adapter or press [enter] to exit.");
 
             // Get the user's input.
@@ -77,16 +76,12 @@ public class ConfigureAdaptersTest extends SampleTestBase {
                     case 1:
                         configureLocalAdapter();
                         break;
-                    // CDM Standards adapter.
-                    case 2:
-                        configureCdmStandardsAdapter();
-                        break;
                     // Remote adapter
-                    case 3:
+                    case 2:
                         configureRemoteAdapter();
                         break;
                     // ADLS adapter.
-                    case 4:
+                    case 3:
                         configureADLSAdapter();
                         break;
                     default:
@@ -117,54 +112,6 @@ public class ConfigureAdaptersTest extends SampleTestBase {
         // List the newly configured adapter's properties.
         System.out.println("\nLocalAdapter configured. Properties of this LocalAdapter are:");
         System.out.println("  Root: " + adapter.getRoot());
-        System.out.println();
-    }
-
-    static void configureCdmStandardsAdapter() {
-        // Default values for the optional parameters used by the CDM Standards adapter.
-        String timeout = "2000";
-        String maximumTimeout = "10000";
-        String numberOfRetries = "2";
-
-        // Ask the user if optional parameters should be configured, or if defaults should just be used.
-        if (configureOptionalParameters("CdmStandardsAdapter")) {
-            // Configure optional parameters.
-            timeout = getOptionalParameterValueFromUser(
-                    "timeout",
-                    "CdmStandardsAdapter",
-                    timeout
-                    /* this is just to show what the value should look like. */);
-            maximumTimeout = getOptionalParameterValueFromUser(
-                    "maximum timeout",
-                    "CdmStandardsAdapter",
-                    maximumTimeout);
-            numberOfRetries = getOptionalParameterValueFromUser(
-                    "number of retries",
-                    "CdmStandardsAdapter",
-                    numberOfRetries);
-        }
-
-        // Create a CDM Standards adapter with the parameter values given by the user.
-        final CdmStandardsAdapter adapter = new CdmStandardsAdapter();
-        adapter.setTimeout(Duration.ofMillis(Integer.parseInt(timeout)));
-        adapter.setMaximumTimeout(Duration.ofMillis(Integer.parseInt(maximumTimeout)));
-        adapter.setNumberOfRetries(Integer.parseInt(numberOfRetries));
-        // waitTimeCallback is another optional parameter and can also be configured here.
-
-        // List the newly configured adapter's properties.
-        System.out.println("\nCdmStandardsAdapter configured. Properties of this CdmStandardsAdapter are:");
-        System.out.println("  "
-                + ConfigureParameters.Timeout
-                + ": "
-                + adapter.getTimeout().toMillis());
-        System.out.println("  "
-                + ConfigureParameters.MaximumTimeout
-                + ": "
-                + adapter.getMaximumTimeout().toMillis());
-        System.out.println("  "
-                + ConfigureParameters.NumberOfRetries
-                + ": "
-                + adapter.getNumberOfRetries());
         System.out.println();
     }
 

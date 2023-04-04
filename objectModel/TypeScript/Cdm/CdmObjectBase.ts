@@ -4,6 +4,7 @@
 import {
     AttributeContextParameters,
     CdmAttributeContext,
+    CdmAttributeItem,
     CdmCollection,
     CdmConstantEntityDefinition,
     CdmCorpusContext,
@@ -15,7 +16,9 @@ import {
     CdmObjectReference,
     cdmObjectType,
     CdmParameterDefinition,
+    CdmTraitCollection,
     CdmTraitDefinition,
+    CdmTraitGroupReference,
     CdmTraitReference,
     copyOptions,
     isEntityAttributeDefinition,
@@ -28,13 +31,33 @@ import {
     ResolvedTraitSetBuilder,
     resolveOptions,
     SymbolSet,
+    traitProfile,
+    traitProfileCache,
     VisitCallback
 } from '../internal';
 import { PersistenceLayer } from '../Persistence';
 import { CdmJsonType } from '../Persistence/CdmFolder/types';
+import { CdmObjectDefinitionBase } from './CdmObjectDefinitionBase';
 
 export abstract class CdmObjectBase implements CdmObject {
 
+    /**
+     * The minimum json semantic versions that can be loaded by this ObjectModel version.
+     */
+    public static jsonSchemaSemanticVersionMinimumLoad = '1.0.0';
+    /**
+     * The minimum json semantic versions that can be saved by this ObjectModel version.
+     */
+    public static jsonSchemaSemanticVersionMinimumSave = '1.1.0';
+    /**
+     * The maximum json semantic versions that can be loaded and saved by this ObjectModel version.
+     */
+    public static jsonSchemaSemanticVersionMaximumSaveLoad = '1.5.0';
+
+    // known semantic versions changes
+    public static jsonSchemaSemanticVersionProjections = "1.4.0";
+    public static jsonSchemaSemanticVersionTraitsOnTraits = "1.5.0";
+    
     public inDocument: CdmDocumentDefinition;
     public ID: number;
     public objectType: cdmObjectType;
@@ -42,7 +65,7 @@ export abstract class CdmObjectBase implements CdmObject {
 
     public get atCorpusPath(): string {
         if (!this.inDocument) {
-            return `NULL:/NULL/${this.declaredPath ? this.declaredPath : ''}`;
+            return `undefined:/undefined/${this.declaredPath ? this.declaredPath : ''}`;
         } else {
             return `${this.inDocument.atCorpusPath}/${this.declaredPath ? this.declaredPath : ''}`;
         }
@@ -107,9 +130,12 @@ export abstract class CdmObjectBase implements CdmObject {
      * @internal
      */
     public static resolvedTraitToTraitRef(resOpt: resolveOptions, rt: ResolvedTrait): CdmTraitReference {
-        let traitRef: CdmTraitReference;
+        // if nothing extra needs a mention, make a simple string ref
+        let traitRef: CdmTraitReference = rt.trait.ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, rt.traitName, 
+            !((rt.parameterValues !== undefined && rt.parameterValues.length > 0) || 
+            rt.explicitVerb !== undefined || rt.metaTraits !== undefined));
+
         if (rt.parameterValues && rt.parameterValues.length) {
-            traitRef = rt.trait.ctx.corpus.MakeObject(cdmObjectType.traitRef, rt.traitName, false);
             const l: number = rt.parameterValues.length;
             if (l === 1) {
                 // just one argument, use the shortcut syntax
@@ -126,9 +152,19 @@ export abstract class CdmObjectBase implements CdmObject {
                     }
                 }
             }
-        } else {
-            traitRef = rt.trait.ctx.corpus.MakeObject(cdmObjectType.traitRef, rt.traitName, true);
+        } 
+        if (rt.explicitVerb !== undefined) {
+            traitRef.verb = rt.explicitVerb.copy(resOpt) as CdmTraitReference;
+            traitRef.verb.owner = traitRef;
         }
+
+        if (rt.metaTraits !== undefined) {
+            for (const trMeta of rt.metaTraits) {
+                let trMetaCopy = trMeta.copy(resOpt) as CdmTraitReference;
+                traitRef.appliedTraits.push(trMetaCopy);
+            }
+        }
+
         if (resOpt.saveResolutionsOnCopy) {
             // used to localize references between documents
             traitRef.explicitReference = rt.trait;
@@ -137,7 +173,7 @@ export abstract class CdmObjectBase implements CdmObject {
         // always make it a property when you can, however the dataFormat traits should be left alone
         // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.
         // so until we figure out how to move the enums away from default value, show that trait too
-        if (rt.trait.associatedProperties && !rt.trait.isDerivedFrom('is.dataFormat', resOpt) && rt.trait.traitName !== 'is.constrainedList.wellKnown') {
+        if (rt.trait.associatedProperties && rt.trait.associatedProperties.length > 0 && !rt.trait.isDerivedFrom('is.dataFormat', resOpt) && rt.trait.traitName !== 'is.constrainedList.wellKnown') {
             traitRef.isFromProperty = true;
         }
 
@@ -163,15 +199,89 @@ export abstract class CdmObjectBase implements CdmObject {
     public copyData(resOpt: resolveOptions, options?: copyOptions): CdmJsonType {
         const persistenceType: string = 'CdmFolder';
 
-        if (resOpt == null) {
+        if (resOpt === undefined) {
             resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
-        if (options == null) {
+        if (options === undefined) {
             options = new copyOptions();
         }
 
         return PersistenceLayer.toData(this, resOpt, options, persistenceType);
+    }
+
+    /// returns a list of traitProfile descriptions, one for each trait applied to or exhibited by this object.
+    /// each description of a trait is an expanded picture of a trait reference.
+    /// the goal of the profile is to make references to structured, nested, messy traits easier to understand and compare.
+    /// we do this by promoting and merging some information as far up the trait inheritance / reference chain as far as we can without 
+    /// giving up important meaning.
+    /// in general, every trait profile includes:
+    /// 1. the name of the trait
+    /// 2. a TraitProfile for any trait that this trait may 'extend', that is, a base class trait
+    /// 3. a map of argument / parameter values that have been set
+    /// 4. an applied 'verb' trait in the form of a TraitProfile
+    /// 5. an array of any "classifier" traits that have been applied
+    /// 6. and array of any other (non-classifier) traits that have been applied or exhibited by this trait
+    /// 
+    /// when 'consolidated' adjustments to these ideas happen as trait information is 'bubbled up' from base definitons. adjustments include
+    /// 1. the most recent verb trait that was defined or applied will propigate up the hierarchy for all references even those that do not specify a verb. 
+    /// This ensures the top trait profile depicts the correct verb
+    /// 2. traits that are applied or exhibited by another trait using the 'classifiedAs' verb are put into a different collection called classifiers.
+    /// 3. classifiers are accumulated and promoted from base references up to the final trait profile. this way the top profile has a complete list of classifiers 
+    /// but the 'deeper' profiles will not have the individual classifications set (to avoid an explosion of info)
+    /// 3. In a similar way, trait arguments will accumulate from base definitions and default values. 
+    /// 4. traits used as 'verbs' (defaultVerb or explicit verb) will not include classifier descriptions, this avoids huge repetition of somewhat pointless info and recursive effort
+    /// 
+
+    public fetchTraitProfiles(resOpt: resolveOptions = undefined, cache: traitProfileCache = undefined, forVerb: string = undefined): Array<traitProfile>
+    {
+        if (cache === undefined) {
+            cache = new traitProfileCache();
+        }
+
+        if (resOpt === undefined) {
+            // resolve symbols with default directive and WRTDoc from this object's point of view
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
+
+        var result = new Array<traitProfile>();
+
+        let traits: CdmTraitCollection = undefined;
+        let prof: traitProfile = undefined;
+        const objType = this.objectType;
+        if (objType === cdmObjectType.typeAttributeDef || objType === cdmObjectType.entityAttributeDef || objType === cdmObjectType.attributeGroupRef) {
+            traits = (this as unknown as CdmAttributeItem).appliedTraits;
+        } else if (objType === cdmObjectType.traitDef) {
+            prof = traitProfile.traitDefToProfile(this as unknown as CdmTraitDefinition, resOpt, false, false, cache);
+        } else if ((this as unknown as CdmObjectDefinition).exhibitsTraits !== undefined) {
+            traits = (this as unknown as CdmObjectDefinition).exhibitsTraits;
+        } else if (objType === cdmObjectType.traitRef) {
+            prof = traitProfile.traitRefToProfile(this as unknown as CdmTraitReference, resOpt, false, false, true, cache);
+        } else if (objType === cdmObjectType.traitGroupRef) {
+            prof = traitProfile.traitRefToProfile(this as unknown as CdmTraitGroupReference, resOpt, false, false, true, cache);
+        } else if ((this as unknown as CdmObjectReference).appliedTraits !== undefined) {
+            traits = (this as unknown as CdmObjectReference).appliedTraits;
+        }
+        // one of these two will happen
+        if (prof !== undefined) {
+            if (prof.verb === undefined || forVerb === undefined || prof.verb.traitName === forVerb)
+                result.push(prof);
+        }
+        if (traits !== undefined) {
+            for (const tr of traits) {
+                prof = traitProfile.traitRefToProfile(tr, resOpt, false, false, true, cache);
+                if (prof !== undefined) {
+                    if (prof.verb === undefined || forVerb === undefined || prof.verb.traitName === forVerb)
+                        result.push(prof);
+                }
+            }
+        } 
+
+        if (result.length === 0) {
+            result = undefined;
+        }
+
+        return result;
     }
 
     /**
@@ -376,7 +486,7 @@ export abstract class CdmObjectBase implements CdmObject {
                 rasbResult.ras = rasbCache.ras.copy();
 
                 // 2. deep copy the tree and map the context references. 
-                if (underCtx) // null context? means there is no tree, probably 0 attributes came out
+                if (underCtx) // undefined context? means there is no tree, probably 0 attributes came out
                 {
                     if (!underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.ras)) {
                         return undefined;
@@ -437,4 +547,63 @@ export abstract class CdmObjectBase implements CdmObject {
         }
         return val;
     }
+
+    /**
+     * converts a string in the form MM.mm.pp into a single comparable long integer
+     * limited to 3 parts where each part is 5 numeric digits or fewer
+     * returns -1 if failure
+     */
+    public static semanticVersionStringToNumber(version: string): number {
+        
+        if (version === undefined) {
+            return -1;
+        }
+
+        // must have the three parts
+        const semanticVersionSplit: string[] = version.split('.');
+        if (semanticVersionSplit.length != 3) {
+            return -1;
+        }
+
+        // accumulate the result
+        let numVer = 0;
+        for (let i = 0; i < 3; ++i) {
+            let verPart = Number.parseInt(semanticVersionSplit[i]);
+            if (Number.isNaN(verPart)) {
+                return -1;
+            }
+
+            // 6 digits?
+            if (verPart > 100000) {
+                return -1;
+            }
+
+            // shift the previous accumulation over 5 digits and add in the new part
+            numVer *= 100000;
+            numVer += verPart;
+        }
+        return numVer;
+    }
+
+    /**
+     * converts a number encoding 3 version parts into a string in the form MM.mm.pp
+     * assumes 5 digits per encoded version part
+     */
+    public static semanticVersionNumberToString(version: number): string {
+        const verPartM = Math.floor(version / (100000 * 100000));
+        version = version - (verPartM * (100000 * 100000));
+        const verPartm = Math.floor(version / 100000);
+        const verPartP = version - (verPartm * 100000);
+        return `${verPartM}.${verPartm}.${verPartP}`;
+    }
+
+    static defaultJsonSchemaSemanticVersionNumber = CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.jsonSchemaSemanticVersionMinimumSave);
+
+    /**
+     * @internal
+     */
+    getMinimumSemanticVersion(): number {
+        return CdmObjectBase.defaultJsonSchemaSemanticVersionNumber;
+    }
+
 }

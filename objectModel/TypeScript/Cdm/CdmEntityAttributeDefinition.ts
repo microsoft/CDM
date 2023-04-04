@@ -422,7 +422,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                             const tr: CdmTraitReference =
                                 this.ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, 'is.linkedEntity.array', true);
                             const t: CdmTraitDefinition = tr.fetchObjectDefinition(resOpt);
-                            const rt: ResolvedTrait = new ResolvedTrait(t, undefined, [], []);
+                            const rt: ResolvedTrait = new ResolvedTrait(t, undefined, [], [], undefined, undefined);
                             raSub.resolvedTraits = raSub.resolvedTraits.merge(rt, true);
                         }
                         const depth: number = rasb.ras.depthTraveled;

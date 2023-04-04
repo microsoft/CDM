@@ -90,6 +90,7 @@ export enum cdmLogCode {
     ErrResolveManifestFailed,
     ErrResolveReferenceFailure,
     ErrStorageAdapterNotFound,
+    ErrStorageCdmStandardsMissing,
     ErrStorageFolderNotFound,
     ErrStorageInvalidAdapterPath,
     ErrStorageInvalidPathFormat,
@@ -158,5 +159,6 @@ export enum cdmLogCode {
     WarnValdnMaxOrdinalTooHigh,
     WarnValdnPrimaryKeyMissing,
     WarnValdnOrdinalStartEndOrder,
-    WarnTelemetryIngestionFailed
+    WarnTelemetryIngestionFailed,
+    WarnUnMountCdmNamespace
 }

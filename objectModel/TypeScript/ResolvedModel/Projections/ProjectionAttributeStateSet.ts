@@ -35,7 +35,7 @@ export class ProjectionAttributeStateSet {
      */
     public add(pas: ProjectionAttributeState): void {
         if (!pas || !pas.currentResolvedAttribute || !pas.currentResolvedAttribute.resolvedName) {
-            Logger.error(this.ctx, this.TAG, this.add.name, null, cdmLogCode.ErrProjInvalidAttrState);
+            Logger.error(this.ctx, this.TAG, this.add.name, undefined, cdmLogCode.ErrProjInvalidAttrState);
         } else {
             this.states.push(pas);
         }

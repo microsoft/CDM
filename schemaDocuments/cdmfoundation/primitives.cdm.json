@@ -1,38 +1,53 @@
 {
-  "$schema": "/schema.cdm.json",
-  "jsonSchemaSemanticVersion": "1.0.0",
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
   "imports": [
+    {
+      "corpusPath": "verbs.cdm.json"
+    },
+    {
+      "corpusPath": "actions.cdm.json"
+    },
     {
       "corpusPath": "foundations.cdm.json"
     }
   ],
   "definitions": [
     {
-      "traitName": "is",
-      "explanation": "the root 'trait' from which all others derive."
+      "traitName": "options.allOf",
+      "explanation": "representing the co-occurrence of every other concept from a set of choices. When used to structure compound traits, the specific types of correlated concepts should be added as 'has' traits to this trait reference",
+      "defaultVerb": "meta"
     },
     {
-      "traitName": "does",
-      "extendsTrait": "is",
-      "explanation": "a root with a more meaningful base name for certain exhibited traits"
+      "traitName": "options.anyOf",
+      "explanation": "representing the co-occurrence of zero or more other concepts from a set of choices. When used to structure compound traits, the specific types of correlated concepts should be added as 'has' traits to this trait reference",
+      "defaultVerb": "meta"
     },
     {
-      "traitName": "means",
-      "extendsTrait": "is",
-      "explanation": "a root with a more meaningful base name for certain semantic meaning traits"
+      "traitName": "options.oneOf",
+      "explanation": "representing the occurrence of ONE other concept from a set of choices. When used to structure compound traits, the specific types of possible concepts should be added as 'has' traits to this trait reference",
+      "defaultVerb": "meta"
     },
     {
-      "traitName": "has",
-      "extendsTrait": "is",
-      "explanation": "a root for traits that describe properties of an object"
+      "traitName": "options.noneOf",
+      "explanation": "representing the specific non-allowance of other concepts from a set of choices. When used to structure compound traits, the specific types of dis allowed concepts should be added as 'has' traits to this trait reference",
+      "defaultVerb": "meta"
     },
     {
       "dataTypeName": "any",
       "explanation": "the root dataType"
     },
     {
+      "traitName": "dataFormat",
+      "explanation": "the idea of a data format, used to classify or explain other traits",
+      "defaultVerb": "classifiedAs"
+    },
+    {
       "traitName": "is.dataFormat",
-      "extendsTrait": "is",
+      "defaultVerb": "is",
+      "exhibitsTraits": [
+        "dataFormat"
+      ],
       "associatedProperties": [
         "dataFormat"
       ]
@@ -44,21 +59,25 @@
     {
       "traitName": "is.dataFormat.big",
       "explanation": "indicates an atomic but multi-unit version of a fundamental type such as a multi byte encoded character, a double precision float, a long integer.",
-      "extendsTrait": "is.dataFormat"
+      "extendsTrait": "is.dataFormat",
+      "defaultVerb": "qualifiedBy"
     },
     {
       "traitName": "is.dataFormat.small",
-      "extendsTrait": "is.dataFormat"
+      "extendsTrait": "is.dataFormat",
+      "defaultVerb": "qualifiedBy"
     },
     {
       "traitName": "is.dataFormat.signed",
       "explanation": "indicates the capability to represent values less than zero.",
-      "extendsTrait": "is.dataFormat"
+      "extendsTrait": "is.dataFormat",
+      "defaultVerb": "qualifiedBy"
     },
     {
       "traitName": "is.dataFormat.unsigned",
       "explanation": "indicates the capability to represent only values zero and greater.",
-      "extendsTrait": "is.dataFormat"
+      "extendsTrait": "is.dataFormat",
+      "defaultVerb": "qualifiedBy"
     },
     {
       "traitName": "is.dataFormat.floatingPoint",
@@ -113,7 +132,19 @@
       "exhibitsTraits": [
         "is.dataFormat.integer",
         "is.dataFormat.signed",
-        "is.dataFormat.numeric"
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.numeric",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.integer",
+              "appliedTraits": [
+                "is.dataFormat.signed"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -123,7 +154,19 @@
       "exhibitsTraits": [
         "is.dataFormat.integer",
         "is.dataFormat.unsigned",
-        "is.dataFormat.numeric"
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.numeric",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.integer",
+              "appliedTraits": [
+                "is.dataFormat.unsigned"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -131,7 +174,17 @@
       "extendsDataType": "any",
       "explanation": "Fractional numbers, assumed to correspond with a 32 bit float IEEE approximation.",
       "exhibitsTraits": [
-        "is.dataFormat.floatingPoint"
+        "is.dataFormat.floatingPoint",
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.numeric",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.floatingPoint"
+            }
+          ]
+        }
       ]
     },
     {
@@ -170,7 +223,12 @@
       "dataTypeName": "char",
       "extendsDataType": "any",
       "exhibitsTraits": [
-        "is.dataFormat.character",
+        {
+          "traitReference": "is.dataFormat.character",
+          "appliedTraits": [
+            "is.dataFormat.big"
+          ]
+        },
         "is.dataFormat.big"
       ]
     },
@@ -183,9 +241,22 @@
     },
     {
       "dataTypeName": "string",
-      "extendsDataType": "char",
       "exhibitsTraits": [
-        "is.dataFormat.array"
+        "is.dataFormat.character",
+        "is.dataFormat.big",
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.array",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.character",
+              "appliedTraits": [
+                "is.dataFormat.big"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
@@ -197,36 +268,106 @@
     },
     {
       "dataTypeName": "binary",
-      "extendsDataType": "byte",
       "exhibitsTraits": [
-        "is.dataFormat.array"
+        "is.dataFormat.byte",
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.array",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.byte"
+            }
+          ]
+        }
       ]
     },
     {
       "dataTypeName": "smallInteger",
       "extendsDataType": "integer",
       "exhibitsTraits": [
-        "is.dataFormat.small"
+        "is.dataFormat.integer",
+        "is.dataFormat.small",
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.numeric",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.integer",
+              "appliedTraits": [
+                "is.dataFormat.signed",
+                "is.dataFormat.small"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
       "dataTypeName": "bigInteger",
       "extendsDataType": "integer",
       "exhibitsTraits": [
-        "is.dataFormat.big"
+        "is.dataFormat.integer",
+        "is.dataFormat.big",
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.numeric",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.integer",
+              "appliedTraits": [
+                "is.dataFormat.signed",
+                "is.dataFormat.big"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
       "dataTypeName": "double",
       "extendsDataType": "float",
       "exhibitsTraits": [
-        "is.dataFormat.big"
+        "is.dataFormat.big",
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.numeric",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.floatingPoint",
+              "appliedTraits": [
+                "is.dataFormat.big"
+              ]
+            }
+          ]
+        }
       ]
     },
     {
       "dataTypeName": "guid",
-      "extendsDataType": "string",
       "exhibitsTraits": [
+        "is.dataFormat.character",
+        "is.dataFormat.big",
+        {
+          "verb": "is",
+          "traitReference": "is.dataFormat.array",
+          "appliedTraits": [
+            {
+              "verb": "is",
+              "traitReference": "is.dataFormat.character",
+              "appliedTraits": [
+                "is.dataFormat.big"
+              ]
+            },
+            {
+              "verb": "means",
+              "traitReference": "is.dataFormat.guid"
+            }
+          ]
+        },
         "is.dataFormat.guid"
       ]
     },
@@ -299,12 +440,133 @@
       ]
     },
     {
+      "traitName": "takes",
+      "explanation": "OBJECT [takes->TRAIT (from REFERENCE)] asserts that OBJECT is ascribed with TRAIT and the specific meaning of TRAIT can be found in the REFERENCE object. Most often used when the specific 'kind' of one attribute is described by the values from another attribute (such as phoneNumber and phoneNumberType we would say 'phoneNumber' takes its 'type' from 'phoneNumberType') ",
+      "hasParameters": [
+        {
+          "name": "from",
+          "explanation": "A path reference to the object from which the specified meaning indicator should be taken.",
+          "dataType": "string"
+        }
+      ],
+      "defaultVerb": "meta",
+      "exhibitsTraits": [
+        "fundamental",
+        "verb"
+      ]
+    },
+    {
+      "traitName": "entityType",
+      "defaultVerb": "classifiedAs",
+      "explanation": "the concept of a CDM entity. Used to classify other traits that describe concepts commonly represented by entities. the trait for 'customer' would be classified as an 'entityType'",
+      "exhibitsTraits": [
+        "fundamental"
+      ]
+    },
+    {
+      "traitName": "entityRecord",
+      "defaultVerb": "means",
+      "explanation": "the concept of an individual record of data that is an instance of an entityType",
+      "exhibitsTraits": [
+        "fundamental"
+      ]
+    },
+    {
+      "traitName": "identification",
+      "defaultVerb": "classifiedAs"
+    },
+    {
       "traitName": "means.identity",
-      "extendsTrait": "means"
+      "explanation": "some form of identifying information",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "identification"
+      ]
+    },
+    {
+      "traitName": "identity.local",
+      "explanation": "a number, name or ID used to identify something locally (within the scope of some other context)",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "identity.global",
+      "explanation": "a number, uuid or string used to identify something globally",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "identity.code",
+      "explanation": "an abbreviation or code number used to identify something locally or globally",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "identity.name",
+      "explanation": "the words by which something is known or called",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "dataTypeName": "name",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "identity.name"
+      ]
+    },
+    {
+      "traitName": "means.identity.name",
+      "extendsTrait": "identity.name",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "identity.completeName",
+      "extendsTrait": "identity.name",
+      "explanation": "the complete name of something"
+    },
+    {
+      "traitName": "identity.identityKind",
+      "explanation": "explains the type of an identity (entity id, person name, product number) (IS A kindOf[of->identification])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "means.identity"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.application"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "identification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "identity.entityId",
+      "explanation": "A value that uniquely identifies an instance (record) of some entity (IS A identity.global[has->identityKind[means->entityRecord]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "entityRecord"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "traitName": "means.identity.entityId",
-      "extendsTrait": "means.identity"
+      "extendsTrait": "identity.entityId",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
       "dataTypeName": "entityId",
@@ -316,7 +578,7 @@
     },
     {
       "traitName": "means.fileName",
-      "extendsTrait": "means"
+      "extendsTrait": "identity.name"
     },
     {
       "dataTypeName": "fileName",
@@ -352,9 +614,28 @@
       "explanation": "types for trait parameters that take objects as values"
     },
     {
+      "traitName": "identity.entityName",
+      "explanation": "a string value is the name of a CDM entity. (IS A identity.name[has->identityKind[means->entityType]])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "entityType"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "traitName": "means.entityName",
-      "extendsTrait": "means",
-      "explanation": "a string value is the name of a CDM entity."
+      "extendsTrait": "identity.entityName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
       "dataTypeName": "entityName",
@@ -365,7 +646,7 @@
           "traitReference": {
             "traitName": "means.entityName",
             "extendsTrait": "means",
-            "explanation": "[deprecated] use the standalone 'means.entityName' trait instead.",
+            "explanation": "[deprecated] use the standalone 'identity.entityName' trait instead.",
             "ugly": true
           }
         },
@@ -484,7 +765,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.3"
+              "value": "2.0"
             }
           ]
         }
@@ -499,16 +780,13 @@
       "explanation": "All attributes with this trait should be hidden from view of the entity consumer."
     },
     {
-      "traitName": "is.secret",
-      "extendsTrait": "is"
+      "traitName": "is.secret"
     },
     {
-      "traitName": "is.required",
-      "extendsTrait": "is"
+      "traitName": "is.required"
     },
     {
-      "traitName": "is.sensitive",
-      "extendsTrait": "is"
+      "traitName": "is.sensitive"
     },
     {
       "traitName": "does.elevateAttribute",
@@ -579,7 +857,6 @@
     },
     {
       "traitName": "is.addedInSupportOf",
-      "extendsTrait": "is",
       "hasParameters": [
         {
           "name": "inSupportOf",
@@ -587,10 +864,12 @@
           "direction": "both",
           "explanation": "output parameter naming the attribute that is being supported"
         }
-      ]
+      ],
+      "defaultVerb": "has"
     },
     {
       "traitName": "is.linkedEntity",
+      "defaultVerb": "has",
       "explanation": "base for traits that are used to decorate the attributes and artifacts created by the traits on the hasFlexibleRelationshipWithEntity relationship."
     },
     {
@@ -661,7 +940,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.3"
+              "value": "2.0"
             }
           ]
         }
@@ -682,7 +961,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.3"
+              "value": "2.0"
             }
           ]
         }
@@ -793,7 +1072,7 @@
     },
     {
       "traitName": "means.timestamp",
-      "extendsTrait": "means",
+      "defaultVerb": "is",
       "hasParameters": [
         {
           "name": "units",
@@ -874,7 +1153,7 @@
     },
     {
       "traitName": "means.time",
-      "extendsTrait": "means",
+      "defaultVerb": "is",
       "hasParameters": [
         {
           "name": "units",
@@ -937,5 +1216,5 @@
       }
     }
   ],
-  "documentVersion": "1.3"
+  "documentVersion": "2.0"
 }

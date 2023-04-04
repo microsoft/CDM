@@ -44,7 +44,7 @@ export class DocumentPersistence {
         );
 
         if (!entityDec) {
-            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonEntityConversionError, dataObj.name);
+            Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistModelJsonEntityConversionError, dataObj.name);
             return undefined;
         }
 

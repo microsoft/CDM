@@ -13,4 +13,5 @@ export abstract class OperationAlterTraits extends OperationBase {
     public traitsToRemove: (string | TraitReference | TraitGroupReference)[];
     public argumentsContainWildcards?: boolean;
     public applyTo: any;
+    public applyToTraits: any;
 }

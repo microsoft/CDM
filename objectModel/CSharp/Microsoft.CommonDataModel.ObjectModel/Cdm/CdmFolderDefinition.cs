@@ -170,7 +170,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // remove them from the caches since they will be back in a moment
                 if (doc.IsDirty)
                 {
-                    Logger.Warning(this.Ctx, Tag, nameof(FetchDocumentFromFolderPathAsync), this.AtCorpusPath, CdmLogCode.WarnDocChangesDiscarded , doc.Name);
+                    Logger.Warning(this.Ctx, Tag, nameof(FetchDocumentFromFolderPathAsync), this.AtCorpusPath, CdmLogCode.WarnDocChangesDiscarded, doc.Name);
                 }
                 this.Documents.Remove(docName);
             }
@@ -244,7 +244,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (first != -1)
                 {
                     childFolderName = StringUtils.Slice(remainingPath, 0, first);
-                } 
+                }
                 else
                 {
                     // the last part of the path will be considered part of the part depending on the makeFolder flag.

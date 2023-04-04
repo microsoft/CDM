@@ -6,6 +6,8 @@ import {
     CdmArgumentDefinition,
     CdmParameterDefinition,
     CdmTraitDefinition,
+    CdmTraitReference,
+    CdmTraitReferenceBase,
     ParameterCollection,
     ParameterValue,
     ResolvedTrait,
@@ -76,8 +78,10 @@ export class ResolvedTraitSet {
             if (traitSetResult.lookupByTrait.has(trait)) {
                 let rtOld: ResolvedTrait = traitSetResult.lookupByTrait.get(trait);
                 let avOld: ArgumentValue[];
+                let wasSetOld: boolean[];
                 if (rtOld.parameterValues) {
                     avOld = rtOld.parameterValues.values;
+                    wasSetOld = rtOld.parameterValues.wasSet;
                 }
                 if (av && avOld) {
                     // the new values take precedence
@@ -88,12 +92,31 @@ export class ResolvedTraitSet {
                                 traitSetResult = traitSetResult.shallowCopyWithException(trait);
                                 rtOld = traitSetResult.lookupByTrait.get(trait);
                                 avOld = rtOld.parameterValues.values;
+                                wasSetOld = rtOld.parameterValues.wasSet;
                                 copyOnWrite = false;
                             }
 
                             avOld[i] = ParameterValue.fetchReplacementValue(this.resOpt, avOld[i], av[i], wasSet[i]);
+                            wasSetOld[i] = (wasSetOld[i] || wasSet[i]);
                         }
                     }
+                }
+                // is an explicit verb given with this reference?
+                if (toMerge.explicitVerb !== undefined) {
+                    if (copyOnWrite) {
+                        traitSetResult = traitSetResult.shallowCopyWithException(trait);
+                        rtOld = traitSetResult.lookupByTrait.get(trait);
+                        copyOnWrite = false;
+                    }
+                    rtOld.explicitVerb = toMerge.explicitVerb;
+                }
+                // are meta traits set on this newer reference?
+                if (toMerge.metaTraits !== undefined && toMerge.metaTraits.length > 0) {
+                    if (copyOnWrite) {
+                        traitSetResult = traitSetResult.shallowCopyWithException(trait);
+                        rtOld = traitSetResult.lookupByTrait.get(trait);
+                    }
+                    rtOld.metaTraits = toMerge.metaTraits.slice(0);
                 }
             } else {
                 if (copyOnWrite) {
@@ -163,7 +186,7 @@ export class ResolvedTraitSet {
 
     public remove(resOpt: resolveOptions, traitName: string): boolean {
         const rt: ResolvedTrait = this.find(resOpt, traitName);
-        if (rt != null) {
+        if (rt !== undefined) {
             this.lookupByTrait.delete(rt.trait);
             const index:number = this.set.indexOf(rt);
             if (index > -1) {
@@ -245,6 +268,15 @@ export class ResolvedTraitSet {
             return collection;
         }
         // return p.measure(bodyCode);
+    }
+
+    public setExplicitVerb(trait: CdmTraitDefinition, verb: CdmTraitReference): void {
+        let resTrait: ResolvedTrait = this.get(trait);
+        resTrait.explicitVerb = verb;
+    }
+    public setMetaTraits(trait: CdmTraitDefinition, metaTraits: Array<CdmTraitReferenceBase>): void {
+        let resTrait: ResolvedTrait = this.get(trait);
+        resTrait.metaTraits = metaTraits.slice(0);
     }
 
     public setParameterValueFromArgument(trait: CdmTraitDefinition, arg: CdmArgumentDefinition): void {

@@ -23,7 +23,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             relationship.FromEntityAttribute = dataObj.FromEntityAttribute;
             relationship.ToEntity = dataObj.ToEntity;
             relationship.ToEntityAttribute = dataObj.ToEntityAttribute;
-            Utils.AddListToCdmCollection(relationship.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, dataObj.ExhibitsTraits));  
+            Utils.AddListToCdmCollection(relationship.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, dataObj.ExhibitsTraits));
 
             return relationship;
         }

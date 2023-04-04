@@ -4,7 +4,6 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
-    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
@@ -12,12 +11,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using static Microsoft.CommonDataModel.ObjectModel.Utilities.Network.ICdmHttpClient;
 
     /// <summary>
     /// CDM Http Client is an HTTP client which implements retry logic to execute retries 
     /// in the case of failed requests.
     /// </summary>
-    public class CdmHttpClient : IDisposable
+    public class CdmHttpClient : ICdmHttpClient, IDisposable
     {
         private static readonly string Tag = nameof(CdmHttpClient);
         /// <summary>

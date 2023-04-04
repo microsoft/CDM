@@ -43,8 +43,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 ResolvedTrait rtOld = traitSetResult.LookupByTrait[trait];
                 List<dynamic> avOld = null;
+                List<bool> wasSetOld = null;
                 if (rtOld.ParameterValues != null)
+                {
                     avOld = rtOld.ParameterValues.Values;
+                    wasSetOld = rtOld.ParameterValues.WasSet;
+                }
                 if (av != null && avOld != null)
                 {
                     // the new values take precedence
@@ -63,9 +67,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                                     traitSetResult = traitSetResult.ShallowCopyWithException(trait);
                                     rtOld = traitSetResult.LookupByTrait[trait];
                                     avOld = rtOld.ParameterValues.Values;
+                                    wasSetOld = rtOld.ParameterValues.WasSet;
                                     copyOnWrite = false;
                                 }
                                 avOld[i] = ParameterValue.FetchReplacementValue(this.ResOpt, avOld[i], av[i], wasSet[i]);
+                                wasSetOld[i] = (wasSetOld[i] || wasSet[i]);
                             }
                         }
                         catch
@@ -73,6 +79,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 
                         }
                     }
+                }
+                // is an explicit verb given with this reference?
+                if (toMerge.ExplicitVerb != null)
+                {
+                    if (copyOnWrite)
+                    {
+                        traitSetResult = traitSetResult.ShallowCopyWithException(trait);
+                        rtOld = traitSetResult.LookupByTrait[trait];
+                        copyOnWrite = false;
+                    }
+                    rtOld.ExplicitVerb = toMerge.ExplicitVerb;
+                }
+                // are meta traits set on this newer reference?
+                if (toMerge.MetaTraits != null && toMerge.MetaTraits.Count > 0)
+                {
+                    if (copyOnWrite)
+                    {
+                        traitSetResult = traitSetResult.ShallowCopyWithException(trait);
+                        rtOld = traitSetResult.LookupByTrait[trait];
+                    }
+                    rtOld.MetaTraits = new List<CdmTraitReferenceBase>(toMerge.MetaTraits);
                 }
             }
             else
@@ -226,6 +253,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             return collection;
         }
 
+        public void SetExplicitVerb(CdmTraitDefinition trait, CdmTraitReference verb)
+        {
+            ResolvedTrait resTrait = this.Get(trait);
+            resTrait.ExplicitVerb = verb;
+        }
+        public void SetMetaTraits(CdmTraitDefinition trait, List<CdmTraitReferenceBase> metaTraits)
+        {
+            ResolvedTrait resTrait = this.Get(trait);
+            resTrait.MetaTraits = new List<CdmTraitReferenceBase>(metaTraits);
+        }
         public void SetParameterValueFromArgument(CdmTraitDefinition trait, CdmArgumentDefinition arg)
         {
             ResolvedTrait resTrait = this.Get(trait);

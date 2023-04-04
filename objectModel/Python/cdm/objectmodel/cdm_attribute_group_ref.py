@@ -8,9 +8,12 @@ from cdm.utilities import ResolveOptions
 
 from .cdm_attribute_item import CdmAttributeItem
 from .cdm_object_ref import CdmObjectReference
+from cdm.resolvedmodel import ResolvedAttributeSetBuilder, ResolvedTraitSetBuilder
 
 if TYPE_CHECKING:
     from cdm.utilities import VisitCallback
+    from cdm.objectmodel import CdmAttributeContext, CdmAttributeGroupDefinition
+    from cdm.resolvedmodel import  ResolvedEntityReferenceSet 
 
 
 class CdmAttributeGroupReference(CdmObjectReference, CdmAttributeItem):
@@ -42,3 +45,20 @@ class CdmAttributeGroupReference(CdmObjectReference, CdmAttributeItem):
 
     def _visit_ref(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         return False
+
+    def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext']) -> 'ResolvedAttributeSetBuilder':
+
+        # use the base implementation to get the attributes first
+        rasb = super()._construct_resolved_attributes(res_opt, under) # type: ResolvedAttributeSetBuilder
+
+        # traits applied to an attribute group mean the traits are applied to the attributes from that group.
+        if self.applied_traits and len(self.applied_traits) > 0 and rasb._resolved_attribute_set.size > 0:
+            # get the resolved form of these applied traits
+            rtsbApplied = ResolvedTraitSetBuilder()
+            for trait in self.applied_traits:
+                rtsbApplied.merge_traits(trait._fetch_resolved_traits(res_opt))
+            # push down to the atts
+            rasb._resolved_attribute_set.apply_traits(rtsbApplied.resolved_trait_set)
+
+        return rasb
+

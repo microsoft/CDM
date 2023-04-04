@@ -35,8 +35,8 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
         this.name = name;
         this.objectType = cdmObjectType.e2eRelationshipDef;
 
-        this.lastFileModifiedTime = null;
-        this.lastFileModifiedOldTime = null;
+        this.lastFileModifiedTime = undefined;
+        this.lastFileModifiedOldTime = undefined;
         this.elevatedTraitCorpusPath = new Map<CdmTraitReference, string>();
     }
 
@@ -138,7 +138,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     public resetLastFileModifiedOldTime(): void {
-        this.setLastFileModifiedOldTime(null);
+        this.setLastFileModifiedOldTime(undefined);
     }
 
     public createCacheKey(): string {

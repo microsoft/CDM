@@ -1,7 +1,10 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Union, List
+from typing import Union, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from cdm.persistence.cdmfolder.types import TraitGroupReference, TraitReference
 
 from .parameter import Parameter
 from cdm.utilities import JObject
@@ -19,3 +22,5 @@ class Trait(JObject):
         self.modifiesAttributes = False  # type: bool
         self.ugly = False  # type: bool
         self.associatedProperties = None  # type: List[str]
+        self.defaultVerb = None  # type: Union[str, 'TraitReference']
+        self.exhibitsTraits = None  # type: List[Union[str, 'TraitReference', 'TraitGroupReference']]

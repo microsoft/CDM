@@ -103,12 +103,12 @@ export class CdmHttpRequest {
      */
     public stripSasSig() : string {
         const sigStartIndex : number = this.requestedUrl.indexOf('sig=');
-        if (sigStartIndex == -1) {
+        if (sigStartIndex === -1) {
             return this.requestedUrl;
         }
 
         var sigEndIndex : number = this.requestedUrl.indexOf('&', sigStartIndex + 1);
-        sigEndIndex = sigEndIndex == -1 ? this.requestedUrl.length : sigEndIndex;
+        sigEndIndex = sigEndIndex === -1 ? this.requestedUrl.length : sigEndIndex;
         return this.requestedUrl.substring(0, sigStartIndex + 4) + 'REMOVED' + this.requestedUrl.substring(sigEndIndex);
     }
 }

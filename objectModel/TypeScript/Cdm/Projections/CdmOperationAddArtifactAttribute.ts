@@ -113,7 +113,7 @@ export class CdmOperationAddArtifactAttribute extends CdmOperationBase {
      * @internal
      */
     public appendProjectionAttributeState(projCtx: ProjectionContext, projOutputSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
-        if (this.insertAtTop != true) {
+        if (this.insertAtTop !== true) {
             this.addAllPreviousAttributeStates(projCtx, projOutputSet);
             this.addNewArtifactAttributeState(projCtx, projOutputSet, attrCtx);
         } else {

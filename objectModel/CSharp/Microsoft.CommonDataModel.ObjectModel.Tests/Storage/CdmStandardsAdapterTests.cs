@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
     using System.Threading.Tasks;
     using Assert = VisualStudio.TestTools.UnitTesting.Assert;
 
@@ -14,53 +15,73 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     [TestClass]
     public class CdmStandardsAdapterTests
     {
-        const string ENDPOINT = "https://cdm-schema.microsoft.com/logical";
-        const string ALT_ENDPOINT = "https://cdm-schema.microsoft.cn";
-        const string EXPECTED_ALT_ENDPOINT = "https://cdm-schema.microsoft.cn/logical";
-        const string TEST_FILE_PATH = "/foundations.cdm.json";
+        private const string ROOT = "Microsoft.CommonDataModel.ObjectModel.Adapter.CdmStandards.Resources";
+
+        private const string ExtensionsFile = "/extensions/pbi.extension.cdm.json";
+
+        private const string FoundationsFile = "/cdmfoundation/foundations.cdm.json";
+
+        private const string InvalidFile = "invalidFile";
 
         /// <summary>
-        /// Tests if the adapter path is created correctly.
-        /// </summary>
-        [TestMethod]
-        public void TestCreateAdapterPath()
-        {
-            var adapter = new CdmStandardsAdapter();
-            var corpusPath = TEST_FILE_PATH;
-            var adapterPath = adapter.CreateAdapterPath(corpusPath);
-            Assert.AreEqual($"{ENDPOINT}{corpusPath}", adapterPath);
-
-            adapter.Endpoint = ALT_ENDPOINT;
-            adapterPath = adapter.CreateAdapterPath(corpusPath);
-            Assert.AreEqual($"{EXPECTED_ALT_ENDPOINT}{corpusPath}", adapterPath);
-        }
-
-        /// <summary>
-        /// Tests if the corpus path is created correctly.
+        /// Tests if the calls to CreateCorpusPath return the expected corpus path.
         /// </summary>
         [TestMethod]
         public void TestCreateCorpusPath()
         {
             var adapter = new CdmStandardsAdapter();
-            var adapterPath = $"{ENDPOINT}{TEST_FILE_PATH}";
-            var corpusPath = adapter.CreateCorpusPath(adapterPath);
-            Assert.AreEqual(TEST_FILE_PATH, corpusPath);
 
-            adapter.Endpoint = ALT_ENDPOINT;
-            adapterPath = $"{EXPECTED_ALT_ENDPOINT}{TEST_FILE_PATH}";
-            corpusPath = adapter.CreateCorpusPath(adapterPath);
-            Assert.AreEqual(TEST_FILE_PATH, corpusPath);
+            var path = adapter.CreateCorpusPath($"{ROOT}{ExtensionsFile}");
+            Assert.AreEqual(ExtensionsFile, path);
+
+            path = adapter.CreateCorpusPath($"{ROOT}{FoundationsFile}");
+            Assert.AreEqual(FoundationsFile, path);
+
+            // invalid paths
+            path = adapter.CreateCorpusPath(InvalidFile);
+            Assert.IsNull(path);
         }
 
         /// <summary>
-        /// Tests if the adapter is able to read correctly.
+        /// Tests if the calls to CreateAdapterPath return the expected adapter path.
+        /// </summary>
+        [TestMethod]
+        public void TestCreateAdapterPath()
+        {
+            var adapter = new CdmStandardsAdapter();
+
+            var path = adapter.CreateAdapterPath(ExtensionsFile);
+            Assert.AreEqual($"{ROOT}{ExtensionsFile}", path);
+
+            path = adapter.CreateAdapterPath(FoundationsFile);
+            Assert.AreEqual($"{ROOT}{FoundationsFile}", path);
+        }
+
+        /// <summary>
+        /// Tests if the files from the resource adapter can be read correclty.
         /// </summary>
         [TestMethod]
         public async Task TestReadAsync()
         {
             var adapter = new CdmStandardsAdapter();
-            var foundations = await adapter.ReadAsync(TEST_FILE_PATH);
-            Assert.IsNotNull(foundations);
+
+            Assert.IsNotNull(await adapter.ReadAsync(ExtensionsFile));
+            Assert.IsNotNull(await adapter.ReadAsync(FoundationsFile));
+
+            bool errorWasThrown = false;
+            try
+            {
+                await adapter.ReadAsync(InvalidFile);
+            }
+            catch (Exception e)
+            {
+                string message = $"There is no resource found for {InvalidFile}.";
+                Assert.AreEqual(message, e.Message);
+                errorWasThrown = true;
+            }
+
+            Assert.IsTrue(errorWasThrown);
         }
     }
 }
+

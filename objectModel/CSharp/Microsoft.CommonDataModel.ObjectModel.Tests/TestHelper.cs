@@ -348,7 +348,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
         }
 
-        public static bool CompareObjectsContent(object expected, object actual, bool logError = false, bool ignoreNullValues = false)
+        public static bool CompareObjectsContent(object expected, object actual, bool logError = false, bool ignoreExtraValuesInActual = false)
         {
             if (expected == actual)
             {
@@ -390,7 +390,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine($"Strings did not match. Expected = {expectedString} , Actual = {actualString}");
+                    if (logError)
+                    {
+                        Console.WriteLine($"Strings did not match. Expected = {expectedString} , Actual = {actualString}");
+                    }
                     return false;
                 }
             }
@@ -400,7 +403,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
             if (expected is JValue expectedValue && actual is JValue actualValue)
             {
-                return CompareObjectsContent(expectedValue.Value, actualValue.Value, logError, ignoreNullValues);
+                return CompareObjectsContent(expectedValue.Value, actualValue.Value, logError, ignoreExtraValuesInActual);
             }
             if (expected is JArray expectedArray && actual is JArray actualArray)
             {
@@ -413,7 +416,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                     bool found = false;
                     for (int indexInActual = actualList.Count() - 1; indexInActual >= 0; indexInActual--)
                     {
-                        if (CompareObjectsContent(expectedList[indexInExpected], actualList[indexInActual], logError, ignoreNullValues))
+                        if (CompareObjectsContent(expectedList[indexInExpected], actualList[indexInActual], logError, ignoreExtraValuesInActual))
                         {
                             expectedList.RemoveRange(indexInExpected, 1);
                             actualList.RemoveRange(indexInActual, 1);
@@ -459,7 +462,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 bool foundProperty;
                 foreach (JProperty property in expectedObject.Properties())
                 {
-                    foundProperty = CompareObjectsContent(expectedObject[property.Name], actualObject[property.Name], logError, ignoreNullValues);
+                    foundProperty = CompareObjectsContent(expectedObject[property.Name], actualObject[property.Name], logError, ignoreExtraValuesInActual);
                     if (!foundProperty)
                     {
                         if (logError)
@@ -471,21 +474,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                     }
                 }
 
-                foreach (JProperty property in actualObject.Properties())
+                if (!ignoreExtraValuesInActual)
                 {
-                    // if expectedOutput[proprety.Name] is not null, equality with actualObject[...] was checked in previous for.
-                    if (ignoreNullValues && actualObject[property.Name] is JValue && ((JValue)actualObject[property.Name]).Value == null)
+                    foreach (JProperty property in actualObject.Properties())
                     {
-                        continue;
-                    }
-                    else if (actualObject[property.Name] != null && expectedObject[property.Name] == null)
-                    {
-                        if (logError)
+                        // if expectedOutput[proprety.Name] is not null, equality with actualObject[...] was checked in previous for.
+                        if (actualObject[property.Name] is JValue && ((JValue)actualObject[property.Name]).Value == null)
                         {
-                            Console.WriteLine($"Value does not match for property {property.Name}");
+                            continue;
                         }
+                        else if (actualObject[property.Name] != null && expectedObject[property.Name] == null)
+                        {
+                            if (logError)
+                            {
+                                Console.WriteLine($"Value does not match for property {property.Name}");
+                            }
 
-                        return false;
+                            return false;
+                        }
                     }
                 }
 

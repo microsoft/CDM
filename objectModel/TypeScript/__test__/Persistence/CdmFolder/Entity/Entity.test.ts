@@ -93,9 +93,9 @@ describe('Persistence.CdmFolder.Entity', () => {
             cdmStatusLevel.warning);
 
         // Load entity with shallowValidation = true.
-        await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity', null, true);
+        await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity', undefined, true);
         // Load resolved entity with shallowValidation = true.
-        await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/ResolvedEntity.cdm.json/ResolvedEntity', null, true);
+        await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/ResolvedEntity.cdm.json/ResolvedEntity', undefined, true);
     });
 
     /**

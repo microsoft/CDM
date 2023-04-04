@@ -10,6 +10,7 @@ public class TraitReferenceDefinition {
     private ArrayNode arguments;
     private ArrayNode appliedTraits;
     private Boolean optional;
+    private Object verb;
 
     public Object getTraitReference() {
         return traitReference;
@@ -42,4 +43,13 @@ public class TraitReferenceDefinition {
     public void setOptional(Boolean optional) {
         this.optional = optional;
     }
+
+    public Object getVerb() {
+        return this.verb;
+    }
+
+    public void setVerb(final Object verb) {
+        this.verb = verb;
+    }
+
 }

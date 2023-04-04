@@ -58,7 +58,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.setInDocument(this);
     this.setObjectType(CdmObjectType.DocumentDef);
     this.name = name;
-    this.jsonSchemaSemanticVersion = getCurrentJsonSchemaSemanticVersion();
+    this.jsonSchemaSemanticVersion = getJsonSchemaSemanticVersionMinimumSave();
     this.documentVersion = null;
     this.needsIndexing = true;
     this.isDirty = true;
@@ -134,13 +134,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.namespace = namespace;
   }
 
-  /**
-   * The maximum json semantic version supported by this ObjectModel version.
-   */
-  public static String getCurrentJsonSchemaSemanticVersion() {
-    return "1.4.0";
-  }
-
   @Deprecated
   boolean isImportsIndexed() {
     return importsIndexed;
@@ -212,6 +205,29 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   public void setDocumentVersion(final String documentVersion) {
     this.documentVersion = documentVersion;
   }
+
+  /**
+   * finds the highest required semantic version in the document and set it
+   */
+  @Deprecated // not, but need to be internal
+  public void discoverMinimumRequiredJsonSemanticVersion() {
+    // ohyesicantoomutateafinalcapturedlocalinjava
+    long[] maxVersion = {CdmObjectBase.semanticVersionStringToNumber(this.getJsonSchemaSemanticVersion())}; // may return -1, that is fine
+
+    this.visit("", null, (obj, objPath) -> {
+      CdmObjectBase objectBase = (CdmObjectBase) obj;
+      // the object knows if semantics are being used that need a certain version
+      long objVersion = objectBase.getMinimumSemanticVersion();
+      if (objVersion > maxVersion[0]) {
+        maxVersion[0] = objVersion;
+      }
+
+      return false;
+    });
+  
+    this.setJsonSchemaSemanticVersion(CdmObjectBase.semanticVersionNumberToString(maxVersion[0]));
+  }
+
 
   /**
    * Clear all document's internal caches and update the declared path of every object contained by this document.

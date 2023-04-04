@@ -97,6 +97,8 @@ export {
     applierContext,
     AttributeContextParameters,
     copyOptions,
+    CdmFileMetadata,
+    fileStatusCheckOptions,
     ICdmProfiler,
     identifierRef,
     refCounted,

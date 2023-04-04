@@ -174,7 +174,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     projOutputSet.add(newPAS);
                 } else {
-                    Logger.warning(this.ctx, this.TAG, this.appendProjectionAttributeState.name, null, cdmLogCode.WarnProjRenameAttrNotSupported);
+                    Logger.warning(this.ctx, this.TAG, this.appendProjectionAttributeState.name, undefined, cdmLogCode.WarnProjRenameAttrNotSupported);
                     // Add the attribute without changes
                     projOutputSet.add(currentPAS);
                 }
@@ -197,7 +197,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
      */
     getNewAttributeName(projectionOwnerName: string, currentPAS: ProjectionAttributeState): string {
         if (!this.renameFormat) {
-            Logger.error(this.ctx, this.TAG, this.getNewAttributeName.name, null, cdmLogCode.ErrProjRenameFormatIsNotSet);
+            Logger.error(this.ctx, this.TAG, this.getNewAttributeName.name, undefined, cdmLogCode.ErrProjRenameFormatIsNotSet);
         }
 
         return CdmOperationBase.replaceWildcardCharacters(this.renameFormat, projectionOwnerName, currentPAS)

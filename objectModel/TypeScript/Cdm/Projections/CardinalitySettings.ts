@@ -92,7 +92,7 @@ export class CardinalitySettings {
             return number;
         } else {
             // defaults to min:max DefaultMinimum:DefaultMaximum in the invalid values
-            Logger.error(this.ctx, this.TAG, this.getNumber.name, null, cdmLogCode.ErrProjStringError, value, defaultValue);
+            Logger.error(this.ctx, this.TAG, this.getNumber.name, undefined, cdmLogCode.ErrProjStringError, value, defaultValue);
 
             return defaultValue;
         }

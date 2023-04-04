@@ -35,6 +35,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         ParameterCollection AllParameters { get; set; }
 
+        /// <summary>
+        /// Gets or sets the default verb that should be assumed for uses of this trait when no verb property
+        /// is given in the trait reference. Note that the verb property is itself a trait reference because
+        /// verbs are described using traits. 
+        /// </summary>
+        public CdmTraitReference DefaultVerb { get; set; }
+
+
         private bool HasSetFlags;
 
         /// <summary>
@@ -108,6 +116,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.Elevated = this.Elevated;
             copy.Ugly = this.Ugly;
             copy.AssociatedProperties = this.AssociatedProperties != null ? new List<String>(this.AssociatedProperties) : null;
+            copy.DefaultVerb = (CdmTraitReference)this.DefaultVerb?.Copy(resOpt);
 
             this.CopyDef(resOpt, copy);
             return copy;
@@ -130,7 +139,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ParameterCollection prior = null;
             if (this.ExtendsTrait != null)
             {
-                prior = this.ExtendsTrait.FetchObjectDefinition<CdmTraitDefinition>(resOpt).FetchAllParameters(resOpt);
+                var extDef = this.ExtendsTrait.FetchObjectDefinition<CdmTraitDefinition>(resOpt);
+                if (extDef == null)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(FetchAllParameters), this.AtCorpusPath, CdmLogCode.ErrResolveReferenceFailure, this.AtCorpusPath, "ExtendsTrait");
+                    return null;
+                }
+                prior = extDef.FetchAllParameters(resOpt);
             }
             this.AllParameters = new ParameterCollection(prior);
             if (this.Parameters != null)
@@ -190,9 +205,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.Parameters != null)
                 if (this.Parameters.VisitList(path + "/hasParameters/", preChildren, postChildren))
                     return true;
+
+            if (this.DefaultVerb != null)
+            {
+                this.DefaultVerb.Owner = this;
+                if (this.DefaultVerb.Visit(path + "/defaultVerb/", preChildren, postChildren))
+                    return true;
+            }
+
+            if (this.VisitDef(path, preChildren, postChildren))
+                return true;
+
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
+        }
+
+        internal override long GetMinimumSemanticVersion()
+        {
+            if (this.DefaultVerb != null || this.ExhibitsTraits != null && this.ExhibitsTraits.Count > 0)
+            {
+                return CdmObjectBase.SemanticVersionStringToNumber(CdmDocumentDefinition.JsonSchemaSemanticVersionTraitsOnTraits);
+            }
+            return base.GetMinimumSemanticVersion();
         }
 
         internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
@@ -278,29 +313,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 this.HasSetFlags = true;
                 ParameterCollection parameterCollection = this.FetchAllParameters(resOpt);
-                List<dynamic> argumentValues = new List<dynamic>();
-                List<bool> wasSet = new List<bool>();
-                this.ThisIsKnownToHaveParameters = parameterCollection.Sequence.Count > 0;
-                for (int i = 0; i < parameterCollection.Sequence.Count; i++)
+                // a null probably means a failure to resolve a symbol, for compat just ignore this trait in the set. an error will fire
+                if (parameterCollection != null)
                 {
-                    // either use the default value or (higher precidence) the value taken from the base reference
-                    dynamic value = parameterCollection.Sequence[i].DefaultValue;
-                    if (baseValues != null && i < baseValues.Count)
+                    List<dynamic> argumentValues = new List<dynamic>();
+                    List<bool> wasSet = new List<bool>();
+                    this.ThisIsKnownToHaveParameters = parameterCollection.Sequence.Count > 0;
+                    for (int i = 0; i < parameterCollection.Sequence.Count; i++)
                     {
-                        dynamic baseValue = baseValues[i];
-                        if (baseValue != null)
+                        // either use the default value or (higher precidence) the value taken from the base reference
+                        dynamic value = parameterCollection.Sequence[i].DefaultValue;
+                        if (baseValues != null && i < baseValues.Count)
                         {
-                            value = baseValue;
+                            dynamic baseValue = baseValues[i];
+                            if (baseValue != null)
+                            {
+                                value = baseValue;
+                            }
                         }
+                        argumentValues.Add(value);
+                        wasSet.Add(false);
                     }
-                    argumentValues.Add(value);
-                    wasSet.Add(false);
-                }
 
-                // save it
-                ResolvedTrait resTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet);
-                rtsResult = new ResolvedTraitSet(resOpt);
-                rtsResult.Merge(resTrait, false);
+                    // save it
+                    ResolvedTrait resTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet, null, null);
+                    rtsResult = new ResolvedTraitSet(resOpt);
+                    rtsResult.Merge(resTrait, false);
+                }
 
                 // register set of possible symbols
                 ctx.Corpus.RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt), kind, resOpt.SymbolRefSet);

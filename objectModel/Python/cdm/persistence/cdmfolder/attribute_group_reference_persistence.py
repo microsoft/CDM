@@ -7,10 +7,10 @@ from cdm.enums import CdmObjectType
 
 from .attribute_group_persistence import AttributeGroupPersistence
 from .cdm_object_ref_persistence import CdmObjectRefPersistence
+from cdm.persistence.cdmfolder import utils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmAttributeGroupReference
-
     from .types import AttributeGroupReference
 
 
@@ -32,4 +32,13 @@ class AttributeGroupReferencePersistence(CdmObjectRefPersistence):
             else:
                 attribute_group = AttributeGroupPersistence.from_data(ctx, data.attributeGroupReference, entity_name)
 
-        return ctx.corpus.make_ref(CdmObjectType.ATTRIBUTE_GROUP_REF, attribute_group, simple_reference)
+        att_group_reference = ctx.corpus.make_ref(CdmObjectType.ATTRIBUTE_GROUP_REF, attribute_group, simple_reference) # type : CdmAttributeGroupReference
+
+        # now with applied traits!
+        applied_traits = None # type : List[CdmTraitReferenceBase]
+        if not isinstance(data, str):
+            applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
+        utils.add_list_to_cdm_collection(att_group_reference.applied_traits, applied_traits)
+
+        return att_group_reference
+

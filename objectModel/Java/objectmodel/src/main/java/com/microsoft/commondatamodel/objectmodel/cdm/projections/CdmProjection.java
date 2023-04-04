@@ -112,6 +112,12 @@ public class CdmProjection extends CdmObjectDefinitionBase {
         return copy;
     }
 
+    @Override
+    public long getMinimumSemanticVersion()
+    {
+        return CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.getJsonSchemaSemanticVersionProjections());
+    }
+  
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
@@ -283,6 +289,11 @@ public class CdmProjection extends CdmObjectDefinitionBase {
 
         if (this.source != null) {
             CdmObjectDefinition source = this.source.fetchObjectDefinition(projDirective.getResOpt());
+            if (source == null) {
+                Logger.error(this.getCtx(), TAG, "constructProjectionContext", this.getAtCorpusPath(), CdmLogCode.ErrProjFailedToResolve);
+                return null;
+            }
+
             if (source.getObjectType() == CdmObjectType.ProjectionDef) {
                 // A Projection
 
@@ -418,7 +429,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
         }
 
         for (ProjectionAttributeState pas : projCtx.getCurrentAttributeStateSet().getStates()) {
-            resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute());
+            resolvedAttributeSet = resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute());
         }
 
         return resolvedAttributeSet;

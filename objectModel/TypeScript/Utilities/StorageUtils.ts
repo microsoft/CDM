@@ -14,7 +14,7 @@ export class StorageUtils {
      * Splits the object path into the namespace and path.
      */
     public static splitNamespacePath(objectPath: string): [string, string] {
-        if (objectPath === undefined || objectPath === null) {
+        if (objectPath === undefined) {
             return undefined;
         }
         let namespace: string = '';

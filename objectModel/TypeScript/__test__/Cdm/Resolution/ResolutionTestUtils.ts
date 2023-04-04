@@ -29,7 +29,7 @@ export const resolutionTestUtils = {
      * @param testName The name of the test. It is used to decide the path of input / output files.
      * @param manifestName The name of the manifest to be used.
      */
-     async resolveSaveDebuggingFileAndAssert(testsSubPath: string, testName: string, manifestName: string, doesWriteDebuggingFiles?: boolean): Promise<void> {
+     async resolveSaveDebuggingFileAndAssert(testsSubPath: string, testName: string, manifestName: string, doesWriteDebuggingFiles: boolean = true): Promise<void> {
         const result: string = (await resolutionTestUtils.resolveEnvironment(testsSubPath, testName, manifestName));
         const outputFileName: string = `${manifestName}.txt`;
         if (doesWriteDebuggingFiles) {
@@ -50,8 +50,7 @@ export const resolutionTestUtils = {
      */
     async resolveEnvironment(testsSubPath: string, testName: string, manifestName: string): Promise<string> {
         const inputFileName: string = `local:/${manifestName}.manifest.cdm.json`;
-        const cdmCorpus: CdmCorpusDefinition = testHelper.createCorpusForTest(testsSubPath, testName);
-
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubPath, testName);
         const manifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(inputFileName);
         const directives: AttributeResolutionDirectiveSet =
             new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
@@ -95,7 +94,7 @@ export const resolutionTestUtils = {
                     corpusPath = cdmCorpus.storage.createAbsoluteCorpusPath(ent.entityPath, currentFile);
                     const resOpt: resolveOptions = new resolveOptions();
                     resOpt.importsLoadStrategy = importsLoadStrategy.load;
-                    const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
+                    const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath, undefined, resOpt);
                     resOpt.wrtDoc = newEnt.inDocument;
                     resOpt.directives = directives;
                     const resEnt: ResolvedEntity = new ResolvedEntity(resOpt, newEnt);

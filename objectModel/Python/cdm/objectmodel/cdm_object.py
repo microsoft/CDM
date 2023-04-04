@@ -1,21 +1,37 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+import math
 import abc
 from threading import Lock
-from typing import cast, Dict, Iterable, Optional, TYPE_CHECKING
+from typing import List, cast, Dict, Iterable, Optional, TYPE_CHECKING
+from cdm.resolvedmodel import TraitProfile, TraitProfileCache
 
 from cdm.enums import CdmObjectType
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityAttributeDefinition
-    from cdm.resolvedmodel import ResolvedTraitSet, ResolvedTraitSetBuilder
-    from cdm.utilities import AttributeContextParameters, ResolveOptions
+    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityAttributeDefinition, \
+            CdmAttributeContext, CdmObjectDefinition, CdmObjectReference, CdmTraitCollection, \
+            CdmTraitDefinition, CdmTraitGroupReference, CdmTraitReference
+    from cdm.resolvedmodel import ResolvedAttributeSet, ResolvedAttributeSetBuilder, ResolvedTrait, \
+        ResolvedTraitSet, ResolvedTraitSetBuilder, TraitProfile, TraitProfileCache
+    from cdm.utilities import AttributeContextParameters, ResolveOptions,VisitCallback
 
 
 class CdmObject(abc.ABC):
     _next_id_counter = 0
     _next_id_lock = Lock()
+
+    # The minimum json semantic versions that can be loaded by this ObjectModel version.
+    json_schema_semantic_version_minimum_load = '1.0.0'
+    # The minimum json semantic versions that can be saved by this ObjectModel version.
+    json_schema_semantic_version_minimum_save = '1.1.0'
+    # The maximum json semantic versions that can be loaded and saved by this ObjectModel version.
+    json_schema_semantic_version_maximum_save_load = '1.5.0'
+
+    # known semantic versions changes
+    json_schema_semantic_version_projections = "1.4.0"
+    json_schema_semantic_version_traits_on_traits = "1.5.0"
 
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         # The object ID.
@@ -83,6 +99,70 @@ class CdmObject(abc.ABC):
     @abc.abstractmethod
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         raise NotImplementedError()
+
+
+    # returns a list of TraitProfile descriptions, one for each trait applied to or exhibited by this object.
+    # each description of a trait is an expanded picture of a trait reference.
+    # the goal of the profile is to make references to structured, nested, messy traits easier to understand and compare.
+    # we do this by promoting and merging some information as far up the trait inheritance / reference chain as far as we can without 
+    # giving up important meaning.
+    # in general, every trait profile includes:
+    # 1. the name of the trait
+    # 2. a TraitProfile for any trait that this trait may 'extend', that is, a base class trait
+    # 3. a map of argument / parameter values that have been set
+    # 4. an applied 'verb' trait in the form of a TraitProfile
+    # 5. an array of any "classifier" traits that have been applied
+    # 6. and array of any other (non-classifier) traits that have been applied or exhibited by this trait
+    # 
+    # adjustments to these ideas happen as trait information is 'bubbled up' from base definitons. adjustments include
+    # 1. the most recent verb trait that was defined or applied will propigate up the hierarchy for all references even those that do not specify a verb. 
+    # This ensures the top trait profile depicts the correct verb
+    # 2. traits that are applied or exhibited by another trait using the 'classifiedAs' verb are put into a different collection called classifiers.
+    # 3. classifiers are accumulated and promoted from base references up to the final trait profile. this way the top profile has a complete list of classifiers 
+    # but the 'deeper' profiles will not have the individual classifications set (to avoid an explosion of info)
+    # 3. In a similar way, trait arguments will accumulate from base definitions and default values. 
+    # 4. traits used as 'verbs' (defaultVerb or explicit verb) will not include classifier descriptions, this avoids huge repetition of somewhat pointless info and recursive effort
+    def fetch_trait_profiles(self, res_opt: Optional['ResolveOptions'] = None, cache:  Optional['TraitProfileCache'] = None, forVerb: Optional[str] = None)-> List['TraitProfile']:
+        from cdm.objectmodel import CdmAttributeItem, CdmObjectDefinition, CdmObjectReference, CdmTraitReference, CdmTraitDefinition, CdmTraitGroupReference
+
+        if not cache:
+            cache = TraitProfileCache()
+
+        if not res_opt:
+            # resolve symbols with default directive and WRTDoc from this object's point of view
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
+
+        result = [] # type: List['TraitProfile']
+        traits = None #type: CdmTraitCollection
+        prof = None # type: TraitProfile
+        if isinstance(self, CdmAttributeItem):
+            traits = cast(CdmAttributeItem, self).applied_traits
+        elif isinstance(self, CdmTraitDefinition):
+            prof = TraitProfile._trait_def_to_profile(cast(CdmTraitDefinition, self), res_opt, False, False, cache)
+        elif isinstance(self, CdmObjectDefinition):
+            traits = cast(CdmObjectDefinition, self).exhibits_traits
+        elif isinstance(self, CdmTraitReference):
+            prof = TraitProfile._trait_ref_to_profile(cast(CdmTraitReference, self), res_opt, False, False, True, cache)
+        elif isinstance(self, CdmTraitGroupReference):
+            prof = TraitProfile._trait_ref_to_profile(cast(CdmTraitGroupReference, self), res_opt, False, False, True, cache)
+        elif isinstance(self, CdmObjectReference):
+            traits = cast(CdmObjectReference, self).applied_traits
+        
+        #one of these two will happen
+        if prof:
+            if (not prof.verb) or (not forVerb) or prof.verb.trait_name == forVerb:
+                result.append(prof)
+        if traits:
+            for tr in traits:
+                prof = TraitProfile._trait_ref_to_profile(tr, res_opt, False, False, True, cache)
+                if prof:
+                    if (not prof.verb) or (not forVerb) or prof.verb.trait_name == forVerb:
+                        result.append(prof)
+
+        if len(result) == 0:
+            result = None
+
+        return result
 
     # Internal
 
@@ -165,7 +245,7 @@ class CdmObject(abc.ABC):
                         # if we just got attributes for an entity, take the time now to clean up this cached tree and prune out
                         # things that don't help explain where the final set of attributes came from
                         if under_ctx:
-                            scopes_for_attributes = set()  # type: Set[CdmAttributeContext]
+                            scopes_for_attributes = set()  # type: set[CdmAttributeContext]
                             under_ctx._collect_context_from_atts(rasb_cache._resolved_attribute_set, scopes_for_attributes)  # the context node for every final attribute
                             if not under_ctx._prune_to_scope(scopes_for_attributes):
                                 return None
@@ -311,8 +391,9 @@ class CdmObject(abc.ABC):
     @staticmethod
     def _resolved_trait_to_trait_ref(res_opt: 'ResolveOptions', rt: 'ResolvedTrait') -> 'CdmTraitReference':
         trait_ref = None  # type: CdmTraitReference
+        # if nothing extra needs a mention, make a simple string ref
+        trait_ref = rt.trait.ctx.corpus.make_object(CdmObjectType.TRAIT_REF, rt.trait_name, not ((rt.parameter_values and rt.parameter_values.length > 0) or rt.explicit_verb or rt.meta_traits))
         if rt.parameter_values:
-            trait_ref = rt.trait.ctx.corpus.make_object(CdmObjectType.TRAIT_REF, rt.trait_name, False)
             l = rt.parameter_values.length
             if l == 1:
                 # just one argument, use the shortcut syntax.
@@ -325,8 +406,15 @@ class CdmObject(abc.ABC):
                     val = CdmObject._protect_parameter_values(res_opt, rt.parameter_values.values[idx])
                     if val is not None:
                         trait_ref.arguments.append(param.name, val)
-        else:
-            trait_ref = rt.trait.ctx.corpus.make_object(CdmObjectType.TRAIT_REF, rt.trait_name, True)
+
+        if rt.explicit_verb:
+            trait_ref.verb = rt.explicit_verb.copy(res_opt)
+            trait_ref.verb.owner = trait_ref
+
+        if rt.meta_traits:
+            for trMeta in rt.meta_traits:
+                trMetaCopy = trMeta.copy(res_opt)
+                trait_ref.applied_traits.append(trMetaCopy)
 
         if res_opt._save_resolutions_on_copy:
             # used to localize references between documents.
@@ -353,3 +441,53 @@ class CdmObject(abc.ABC):
                     result = True
                     break
         return result
+
+    @staticmethod
+    def semantic_version_string_to_number(version: str) -> int:
+        # converts a string in the form MM.mm.pp into a single comparable long integer
+        #limited to 3 parts where each part is 5 numeric digits or fewer
+        # returns -1 if failure
+        
+        if not version:
+            return -1
+        
+        # must have the three parts
+        semantic_version_split = version.split('.')
+        if len(semantic_version_split) != 3:
+            return -1
+        
+        # accumulate the result
+        num_ver = 0
+        for i in range(3):
+            ver_part = 0
+            try:
+                ver_part = int(semantic_version_split[i])
+            except ValueError:
+                return -1
+        
+            # 6 digits?
+            if ver_part > 100000:
+                return -1
+        
+            # shift the previous accumulation over 5 digits and add in the new part
+            num_ver *= 100000
+            num_ver += ver_part
+        return num_ver
+
+    @staticmethod
+    def semantic_version_number_to_string(version: int) -> str:
+        # converts a number encoding 3 version parts into a string in the form MM.mm.pp
+        # assumes 5 digits per encoded version part
+        verPartM = math.floor(version / (100000 * 100000))
+        version = version - (verPartM * (100000 * 100000))
+        verPartm = math.floor(version / 100000)
+        verPartP = version - (verPartm * 100000)
+        return str(verPartM) + '.' + str(verPartm) + '.' + str(verPartP) 
+
+        
+    def _get_minimum_semantic_version(self) -> int:
+        return CdmObject.default_json_schema_semantic_version_number
+
+CdmObject.default_json_schema_semantic_version_number = CdmObject.semantic_version_string_to_number(CdmObject.json_schema_semantic_version_minimum_save)
+
+

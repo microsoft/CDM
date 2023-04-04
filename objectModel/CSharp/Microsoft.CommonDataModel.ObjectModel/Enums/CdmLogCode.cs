@@ -106,7 +106,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrProjSourceError,
         ErrProjStringError,
         ErrProjUnsupportedAttrGroups,
-        ErrProjUnsupportedSource, 
+        ErrProjUnsupportedSource,
         ErrRelMaxResolvedAttrReached,
         ErrResolutionFailure,
         ErrResolveEntityFailure,
@@ -116,6 +116,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrResolveManifestFailed,
         ErrResolveReferenceFailure,
         ErrStorageAdapterNotFound,
+        ErrStorageCdmStandardsMissing,
         ErrStorageFolderNotFound,
         ErrStorageInvalidAdapterPath,
         ErrStorageInvalidPathFormat,
@@ -148,12 +149,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrValdnInvalidExpression,
         ErrValdnMissingDoc,
         ErrValdnMissingLanguageTag,
-        WarnPartitionGlobAndRegexPresent,
         WarnDeprecatedResolutionGuidance,
         WarnDocChangesDiscarded,
         WarnDocImportNotLoaded,
         WarnPartitionFileFetchFailed,
         WarnLinkEntIdentArgsNotSupported,
+        WarnPartitionGlobAndRegexPresent,
         WarnPartitionInvalidArguments,
         WarnPersistCustomExtNotSupported,
         WarnPersistPartitionLocMissing,
@@ -165,7 +166,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         WarnPersistRelUndefinedSourceEntity,
         WarnPersistRelUndefinedTargetEntity,
         WarnPersistSymsEntityMissing,
-        WarnPersistSymsEntitySkipped, 
+        WarnPersistSymsEntitySkipped,
         WarnPersistSymsProjNotExist,
         WarnPersistUnsupportedJsonSemVer,
         WarnPersistEntityMissing,
@@ -187,6 +188,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         WarnValdnMaxOrdinalTooHigh,
         WarnValdnPrimaryKeyMissing,
         WarnValdnOrdinalStartEndOrder,
-        WarnTelemetryIngestionFailed
+        WarnTelemetryIngestionFailed,
+        WarnUnMountCdmNamespace
     }
 }

@@ -540,7 +540,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
             final CdmTraitReference tr = this.getCtx().getCorpus()
                     .makeObject(CdmObjectType.TraitRef, "is.linkedEntity.array", true);
             final CdmTraitDefinition t = tr.fetchObjectDefinition(resOpt);
-            final ResolvedTrait rt = new ResolvedTrait(t, null, new ArrayList<>(), new ArrayList<>());
+            final ResolvedTrait rt = new ResolvedTrait(t, null, new ArrayList<>(), new ArrayList<>(), null, null);
             raSub.setResolvedTraits(raSub.getResolvedTraits().merge(rt, true));
           }
           int depth = rasb.getResolvedAttributeSet().getDepthTraveled();

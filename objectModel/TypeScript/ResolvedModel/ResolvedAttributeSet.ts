@@ -105,7 +105,7 @@ export class ResolvedAttributeSet extends refCounted {
     public merge(toMerge: ResolvedAttribute): ResolvedAttributeSet {
         // let bodyCode = () =>
         {
-            let rasResult: ResolvedAttributeSet;
+            let rasResult: ResolvedAttributeSet = this;
             if (toMerge) {
                 // if there is already a resolve attribute present, remove it before adding the new attribute
                 if (this.resolvedName2resolvedAttribute.has(toMerge.resolvedName)) {
@@ -167,6 +167,9 @@ export class ResolvedAttributeSet extends refCounted {
                 this.baseTrait2Attributes = undefined;
             }
 
+            if (rasResult === undefined) {
+                rasResult = undefined;
+            }
             return rasResult;
         }
         // return p.measure(bodyCode);

@@ -237,7 +237,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
         projection.operations.push(alterTraitsOp_2);        
 
         // Create an entity reference to hold this projection.
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create an entity attribute that contains this projection and add this to the entity.
@@ -410,7 +410,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
         const resolvedEntityWithNormalized: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ 'normalized' ]);
 
         // Original set of attributes: ["name", "age", "address[means.TraitG4(scale:15)]" , "phoneNumber", "email"]
-        // Condition met, alter traits on ["address", + { "means.TraitG4, "arguments": ["8", null] }]
+        // Condition met, alter traits on ["address", + { "means.TraitG4, "arguments": ["8", undefined] }]
         expect((resolvedEntityWithNormalized.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('address');
         const traitG4_2: CdmTraitReference = resolvedEntityWithNormalized.attributes.allItems[2].appliedTraits.item('means.TraitG4') as CdmTraitReference;

@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
@@ -37,9 +38,13 @@ public class DocumentPersistence {
   public static final String[] formats = { CdmConstants.CDM_EXTENSION };
 
   /**
-   * The maximum json semantic version supported by this ObjectModel version.
+   * The maximum json semantic version supported by this ObjectModel version
    */
-  public static final String jsonSemanticVersion = CdmDocumentDefinition.getCurrentJsonSchemaSemanticVersion();
+  public static final String jsonSemanticVersionMax = CdmObjectBase.getJsonSchemaSemanticVersionMaximumSaveLoad();
+  /**
+   * The minimum json semantic version supported by this ObjectModel version
+   */
+  public static final String jsonSemanticVersionMin = CdmObjectBase.getJsonSchemaSemanticVersionMinimumSave();
 
   public static CdmDocumentDefinition fromObject(final CdmCorpusContext ctx, final String name, final String nameSpace,
                                                final String path, final DocumentContent obj) {
@@ -96,12 +101,12 @@ public class DocumentPersistence {
     if (!StringUtils.isBlankByCdmStandard(obj.getJsonSchemaSemanticVersion())) {
       doc.setJsonSchemaSemanticVersion(obj.getJsonSchemaSemanticVersion());
       if (compareJsonSemanticVersion(ctx, doc.getJsonSchemaSemanticVersion()) > 0) {
-          String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersion + " at maximum.";
+          String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersionMax + " at maximum.";
           message += " Trying to load a document with version " + doc.getJsonSchemaSemanticVersion() + ".";
           if (isResolvedDoc) {
-            Logger.warning(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistUnsupportedJsonSemVer, jsonSemanticVersion, doc.getJsonSchemaSemanticVersion());
+            Logger.warning(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistUnsupportedJsonSemVer, jsonSemanticVersionMax, doc.getJsonSchemaSemanticVersion());
           } else {
-            Logger.error(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.ErrPersistUnsupportedJsonSemVer, jsonSemanticVersion, doc.getJsonSchemaSemanticVersion());
+            Logger.error(ctx, TAG, "fromObject", doc.getAtCorpusPath(), CdmLogCode.ErrPersistUnsupportedJsonSemVer, jsonSemanticVersionMax, doc.getJsonSchemaSemanticVersion());
           }
       }
     } else {
@@ -136,31 +141,29 @@ public class DocumentPersistence {
 
   /**
    * Compares the document version with the json semantic version supported.
-   * 1 => if documentSemanticVersion > jsonSemanticVersion
-   * 0 => if documentSemanticVersion == jsonSemanticVersion or if documentSemanticVersion is invalid
-   * -1 => if documentSemanticVersion < jsonSemanticVersion
+   * 1 => if documentSemanticVersion > jsonSemanticVersionMax
+   * 0 => if documentSemanticVersion between jsonSemanticVersionMin and jsonSemanticVersionMax or if documentSemanticVersion is invalid
+   * -1 => if documentSemanticVersion < jsonSemanticVersionMin
    */
   private static int compareJsonSemanticVersion(CdmCorpusContext ctx, String documentSemanticVersion) {
-      String[] docSemanticVersionSplit = documentSemanticVersion.split("\\.");
-      String[] currSemanticVersionSplit = jsonSemanticVersion.split("\\.");
-
-      if (docSemanticVersionSplit.length != 3) {
+     
+      long docVer = CdmObjectBase.semanticVersionStringToNumber(documentSemanticVersion);
+      if (docVer == -1){
         Logger.warning(ctx, TAG, "compareJsonSemanticVersion", null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
         return 0;
       }
 
-      for (int i = 0; i < 3; ++i) {
-          if (!docSemanticVersionSplit[i].equals(currSemanticVersionSplit[i])) {
-              try {
-                int version = Integer.parseInt(docSemanticVersionSplit[i]);
-                return  version < Integer.parseInt(currSemanticVersionSplit[i]) ? -1 : 1;
-              } catch (NumberFormatException e) {
-                Logger.warning(ctx, TAG, "compareJsonSemanticVersion", null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
-                return 0;
-              }
-          }
-      }
+      long minVer = CdmObjectBase.semanticVersionStringToNumber(jsonSemanticVersionMin);
+      long maxVer = CdmObjectBase.semanticVersionStringToNumber(jsonSemanticVersionMax);
 
+      if (docVer < minVer)
+      {
+          return -1;
+      }
+      else if (docVer > maxVer)
+      {
+          return 1;
+      }
       return 0;
   }
 }

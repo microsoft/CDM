@@ -162,7 +162,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         const sourceEntity = projCtx.projectionDirective.originalSourceAttributeName;
 
         if (!sourceEntity) {
-            Logger.warning(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, null, cdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);
+            Logger.warning(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, undefined, cdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);
         }
 
         if (pasList) {
@@ -181,7 +181,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
             projOutputSet.add(newProjAttrStateFK);
         } else {
             // Log error & return projOutputSet without any change
-            Logger.error(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, null, cdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
+            Logger.error(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, undefined, cdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
         }
 
         return projOutputSet;

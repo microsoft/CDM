@@ -159,12 +159,12 @@ export class ManifestPersistence {
                     const referenceEntity: ReferenceEntity = element as ReferenceEntity;
                     const entityLocation: string = referenceModels.get(referenceEntity.modelId);
                     if (!entityLocation) {
-                        Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistModelJsonModelIdNotFound);
+                        Logger.error(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.ErrPersistModelJsonModelIdNotFound);
                         return;
                     }
                     entity = await ModelJson.ReferencedEntityDeclarationPersistence.fromData(ctx, referenceEntity, entityLocation);
                 } else {
-                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistModelJsonEntityParsingError);
+                    Logger.error(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.ErrPersistModelJsonEntityParsingError);
                     return;
                 }
 
@@ -172,7 +172,7 @@ export class ManifestPersistence {
                     manifest.entities.push(entity);
                     entitySchemaByName.set(entity.entityName, entity.entityPath);
                 } else {
-                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistModelJsonEntityParsingError);
+                    Logger.error(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.ErrPersistModelJsonEntityParsingError);
                 }
             }
         }
@@ -185,7 +185,7 @@ export class ManifestPersistence {
                 if (cdmRelationship !== undefined) {
                     manifest.relationships.push(cdmRelationship);
                 } else {
-                    Logger.warning(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.WarnPersistModelJsonRelReadFailed);
+                    Logger.warning(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.WarnPersistModelJsonRelReadFailed);
                     return undefined;
                 }
             }

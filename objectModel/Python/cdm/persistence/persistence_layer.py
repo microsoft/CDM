@@ -12,7 +12,7 @@ from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmObject
+    from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmObject 
     from cdm.storage import StorageAdapterBase
     from cdm.utilities import CopyOptions, JObject
 
@@ -251,6 +251,9 @@ class PersistenceLayer:
         if saved with the same name, then consider this document 'clean' from changes. if saved with a back compat model or
         to a different name, then the source object is still 'dirty'
         an option will cause us to also save any linked documents."""
+
+        # update the jsonSemanticVersion to the max(author setting, mimimum required by usage)
+        doc._discover_minimum_required_json_semantic_version()
 
         # find out if the storage adapter is able to write.
         namespace = StorageUtils.split_namespace_path(new_name)[0]

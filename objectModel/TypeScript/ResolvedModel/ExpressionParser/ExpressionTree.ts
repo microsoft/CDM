@@ -233,24 +233,24 @@ export class ExpressionTree {
         } else {
             switch (ExpressionTree.textToTokenHash.get(top.value)) {
                 case PredefinedTokenEnum.AND:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn && rightReturn;
+                    return (leftReturn === undefined || rightReturn === undefined) ? false : leftReturn && rightReturn;
                 case PredefinedTokenEnum.NOT:
-                    return (rightReturn === undefined || rightReturn == null) ? false : !rightReturn;
+                    return (rightReturn === undefined) ? false : !rightReturn;
                 case PredefinedTokenEnum.OR:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn || rightReturn;
+                    return (leftReturn === undefined|| rightReturn === undefined) ? false : leftReturn || rightReturn;
 
                 case PredefinedTokenEnum.GT:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn > rightReturn;
+                    return (leftReturn === undefined || rightReturn === undefined) ? false : leftReturn > rightReturn;
                 case PredefinedTokenEnum.LT:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn < rightReturn;
+                    return (leftReturn === undefined || rightReturn === undefined) ? false : leftReturn < rightReturn;
                 case PredefinedTokenEnum.GE:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn >= rightReturn;
+                    return (leftReturn === undefined || rightReturn === undefined) ? false : leftReturn >= rightReturn;
                 case PredefinedTokenEnum.LE:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn <= rightReturn;
+                    return (leftReturn === undefined || rightReturn === undefined) ? false : leftReturn <= rightReturn;
                 case PredefinedTokenEnum.EQ:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn === rightReturn;
+                    return (leftReturn === undefined || rightReturn === undefined) ? false : leftReturn === rightReturn;
                 case PredefinedTokenEnum.NE:
-                    return (leftReturn === undefined || leftReturn === null || rightReturn === undefined || rightReturn == null) ? false : leftReturn !== rightReturn;
+                    return (leftReturn === undefined || rightReturn === undefined) ? false : leftReturn !== rightReturn;
 
                 case PredefinedTokenEnum.TRUE:
                     return true;

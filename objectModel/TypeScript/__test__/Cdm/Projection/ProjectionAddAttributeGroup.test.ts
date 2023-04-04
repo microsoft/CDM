@@ -176,7 +176,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         projection.operations.push(addAttGroupOp);
 
         // Create an entity reference to hold this projection.
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create an entity attribute that contains this projection and add this to the entity.
@@ -276,7 +276,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         projection.operations.push(addAttGroupOp);
 
         // Create an entity reference to hold this projection
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Create an entity attribute that contains this projection and add this to the entity
@@ -285,7 +285,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         entity.attributes.push(entityAttribute);
 
         // Resolve the entity.
-        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, null, localRoot);
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, undefined, localRoot);
 
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ['id', 'name', 'value', 'date']
@@ -322,14 +322,14 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         projection.operations.push(addAttGroupOp);
 
         // Create an entity reference to hold this projection
-        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, null);
+        const projectionEntityRef: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
         projectionEntityRef.explicitReference = projection;
 
         // Set the entity's ExtendEntity to be the projection
         entity.extendsEntity = projectionEntityRef;
 
         // Resolve the entity
-        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, null, localRoot);
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entity.entityName}.cdm.json`, undefined, localRoot);
 
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ['id', 'name', 'value', 'date']

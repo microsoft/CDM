@@ -8,11 +8,12 @@ from cdm.enums import CdmObjectType
 from .cdm_argument_collection import CdmArgumentCollection
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_object_ref import CdmObjectReference
-from cdm.objectmodel import CdmTraitReferenceBase
+from cdm.objectmodel import CdmTraitReferenceBase, CdmObject
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmTraitDefinition
+    from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmTraitDefinition, CdmAttributeContext 
     from cdm.utilities import ResolveOptions, VisitCallback
+    from cdm.resolvedmodel import ResolvedAttributeSetBuilder, ResolvedTrait, ResolvedTraitSet, ResolvedTraitSetBuilder
 
 
 class CdmTraitReference(CdmTraitReferenceBase):
@@ -21,6 +22,11 @@ class CdmTraitReference(CdmTraitReferenceBase):
 
         # true if the trait was generated from a property and false it was directly loaded.
         self.is_from_property = False
+
+        # Gets or sets a reference to a trait used to describe the 'verb' explaining how the trait's meaning should be applied to the 
+        # object that holds this traitReference. This optional property can override the meaning of any defaultVerb that could be part of the 
+        # referenced trait's definition
+        self.verb = None # type: Optional[CdmTraitReference]
 
         # Internal
         self._resolved_arguments = False
@@ -56,6 +62,9 @@ class CdmTraitReference(CdmTraitReferenceBase):
         for arg in self.arguments:
             copy.arguments.append(arg.copy(res_opt))
 
+        if self.verb:
+            copy.verb = self.verb.copy(res_opt)
+
         return copy
 
     def _visit_ref(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
@@ -70,7 +79,17 @@ class CdmTraitReference(CdmTraitReferenceBase):
                     if element.visit(argPath, pre_children, post_children):
                         result = True
                         break
+        if self.verb:
+            self.verb.owner = self
+            if self.verb.visit('{}/verb/'.format(path_from), pre_children, post_children):
+                return True
+
         return result
+
+    def _get_minimum_semantic_version(self) -> int:
+        if self.verb or self.applied_traits and len(self.applied_traits) > 0:
+            return CdmObject.semantic_version_string_to_number(CdmObject.json_schema_semantic_version_traits_on_traits)
+        return super()._get_minimum_semantic_version()
 
     def fetch_argument_value(self, name: str) -> 'CdmArgumentValue':
         if not self.arguments:
@@ -144,6 +163,14 @@ class CdmTraitReference(CdmTraitReferenceBase):
             for argument in self.arguments:
                 rts_result.set_parameter_value_from_argument(trait, argument)
 
+        # if an explicit verb is set, remember this. don't resolve that verb trait, cuz that sounds nuts.
+        if self.verb:
+            rts_result.set_explicit_verb(trait, self.verb)
+
+        #if a collection of meta traits exist, save on the resolved but don't resolve these. again, nuts
+        if self.applied_traits:
+            rts_result.set_meta_traits(trait, self.applied_traits)
+
         # register set of possible symbols
         ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
 
@@ -157,7 +184,7 @@ class CdmTraitReference(CdmTraitReferenceBase):
         final_args = {}  # type: Dict[str, Any]
         # get resolved traits does all the work, just clean up the answers
         rts = self._fetch_resolved_traits(res_opt)  # type: ResolvedTraitSet
-        if rts is None or len(rts) != 1:
+        if rts is None or rts.size != 1:
             # well didn't get the traits. maybe imports are missing or maybe things are just not defined yet.
             # this function will try to fake up some answers then from the arguments that are set on this reference only
             if self.arguments:

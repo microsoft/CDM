@@ -15,5 +15,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public List<JToken> TraitsToRemove { get; set; }
         public bool? ArgumentsContainWildcards { get; set; }
         public dynamic ApplyTo { get; set; }
+        public dynamic ApplyToTraits { get; set; }
     }
 }

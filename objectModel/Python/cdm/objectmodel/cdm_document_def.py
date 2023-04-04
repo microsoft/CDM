@@ -1,6 +1,5 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
-
 from datetime import datetime
 from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 import warnings
@@ -16,17 +15,15 @@ from .cdm_import_collection import CdmImportCollection
 from .cdm_object_simple import CdmObjectSimple
 from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
 from ._import_priorities import ImportPriorities
+from .cdm_object import CdmObject
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmImport, CdmFolderDefinition, CdmObject, \
+    from cdm.objectmodel import CdmCorpusContext, CdmImport, CdmFolderDefinition, \
     CdmObjectDefinition, CdmCorpusDefinition
     from cdm.utilities import VisitCallback
 
 
 class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
-    # The maximum json semantic version supported by this ObjectModel version.
-    current_json_schema_semantic_version = '1.4.0'
-
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
@@ -40,8 +37,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # the document schema.
         self.schema = None  # type: Optional[str]
 
-        # the document json schema semantic version.
-        self.json_schema_semantic_version = self.current_json_schema_semantic_version  # type: str
+        # the document json schema semantic version. This is the default minimum version we will save, it may be set higher by a designer or during a save when making use of higher version features
+        self.json_schema_semantic_version = CdmObject.json_schema_semantic_version_minimum_save # type: str
 
         # the document version.
         self.document_version = None  # type: Optional[str]
@@ -110,6 +107,22 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.DOCUMENT_DEF
+
+    def _discover_minimum_required_json_semantic_version(self):
+        """finds the highest required semantic version in the document and set it"""
+        # may return -1, that is fine            
+        max_version = CdmObject.semantic_version_string_to_number(self.json_schema_semantic_version); 
+
+        def callback(obj: 'CdmObject', obj_path: str) -> bool:
+            nonlocal max_version
+            obj_version = obj._get_minimum_semantic_version()
+            if obj_version > max_version:
+                max_version = obj_version
+            return False
+        self.visit('', callback, None)
+
+        self.json_schema_semantic_version = CdmObject.semantic_version_number_to_string(max_version)
+        return
 
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext']) -> 'ResolvedAttributeSetBuilder':
         return None
@@ -764,3 +777,4 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             return None
 
         return _internal_import_path_to_doc(self, '')
+

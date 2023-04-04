@@ -52,6 +52,7 @@ export * from './ResolvedModel/ResolvedEntityReferenceSide';
 export * from './ResolvedModel/ResolvedEntityReference';
 export * from './ResolvedModel/ResolvedEntity';
 export * from './ResolvedModel/ResolvedEntityReferenceSet';
+export * from './ResolvedModel/traitProfile';
 export * from './Utilities/traitToPropertyMap';
 export * from './Cdm/CdmObject';
 export * from './Cdm/CdmObjectBase';

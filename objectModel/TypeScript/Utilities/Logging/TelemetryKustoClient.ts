@@ -189,7 +189,7 @@ export class TelemetryKustoClient implements TelemetryClient {
         // Check if the Kusto config and the concurrent queue has been initialized
         if (this.config == null || this.requestQueue == null) {
             const message: string = "The telemetry client has not been initialized";
-            Logger.warning(this.ctx, TelemetryKustoClient.name, "enable", null, cdmLogCode.WarnTelemetryIngestionFailed, message);
+            Logger.warning(this.ctx, TelemetryKustoClient.name, "enable", undefined, cdmLogCode.WarnTelemetryIngestionFailed, message);
             return;
         }
 
@@ -265,7 +265,7 @@ export class TelemetryKustoClient implements TelemetryClient {
             try {
                 await this.postKustoQuery(query);
             } catch (e) {
-                Logger.warning(this.ctx, TelemetryKustoClient.name, this.ingestIntoTable.name, null, cdmLogCode.WarnTelemetryIngestionFailed, e);
+                Logger.warning(this.ctx, TelemetryKustoClient.name, this.ingestIntoTable.name, undefined, cdmLogCode.WarnTelemetryIngestionFailed, e);
             }
         }
     }

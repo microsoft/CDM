@@ -79,7 +79,7 @@ export function addArrayToCdmCollection<T extends CdmObject>(cdmCollection: CdmC
  * Creates a CDM object from a JSON object
  */
 export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): ArgumentValue {
-    if (object === undefined || object === null) {
+    if (object === undefined) {
         return undefined;
     }
     if (typeof object === 'string') {

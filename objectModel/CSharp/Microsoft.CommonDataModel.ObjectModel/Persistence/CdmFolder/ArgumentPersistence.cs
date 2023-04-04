@@ -40,7 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 {
                     val = (string)instance.Value;
                 }
-                else if(instance.Value is CdmObject) 
+                else if (instance.Value is CdmObject)
                 {
                     val = ((CdmObject)instance.Value).CopyData(resOpt, options);
                 }
@@ -53,7 +53,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             if (StringUtils.IsBlankByCdmStandard(instance.Name))
                 return val;
 
-            return new Argument {
+            return new Argument
+            {
                 Explanation = instance.Explanation,
                 Name = instance.Name,
                 Value = JToken.FromObject(val, JsonSerializationUtil.JsonSerializer)

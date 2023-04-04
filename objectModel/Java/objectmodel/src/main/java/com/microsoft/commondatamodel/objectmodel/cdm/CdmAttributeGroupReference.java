@@ -4,7 +4,9 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -86,6 +88,22 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
     return CdmObjectBase.copyData(this, resOpt, options, CdmAttributeGroupReference.class);
   }
 
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under) {
+    // use the base implementation to get the attributes first
+    ResolvedAttributeSetBuilder rasb = super.constructResolvedAttributes(resOpt, under);
+    // traits applied to an attribute group mean the traits are applied to the attributes from that group.
+    if (this.getAppliedTraits() != null && this.getAppliedTraits().size() > 0 && rasb.getResolvedAttributeSet().size() > 0) {
+      // get the resolved form of these applied traits
+      ResolvedTraitSetBuilder rtsbApplied = new ResolvedTraitSetBuilder();
+      for (CdmTraitReferenceBase trait : this.getAppliedTraits()) {
+        rtsbApplied.mergeTraits(trait.fetchResolvedTraits(resOpt));
+      }
+      // push down to the atts
+      rasb.getResolvedAttributeSet().applyTraits(rtsbApplied.getResolvedTraitSet());
+    }
+
+    return rasb;
+  }
   
   /**
    * * @deprecated for internal use only.

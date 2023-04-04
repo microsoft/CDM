@@ -3,7 +3,7 @@
 
 import asyncio
 from datetime import datetime, timezone
-from typing import cast, Iterable, Optional, Union, TYPE_CHECKING
+from typing import List, cast, Dict, Iterable, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle, ImportsLoadStrategy, PartitionFileStatusCheckType, \
     CdmIncrementalPartitionType

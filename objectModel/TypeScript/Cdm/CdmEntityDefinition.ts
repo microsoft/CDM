@@ -381,7 +381,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         .fetchResolvedAttributes(resOpt, acpExtEnt));
 
                     if (!resOpt.checkAttributeCount(rasb.ras.resolvedAttributeCount)) {
-                        Logger.error(this.ctx, this.TAG, this.constructResolvedAttributes.name, null, cdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
+                        Logger.error(this.ctx, this.TAG, this.constructResolvedAttributes.name, undefined, cdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
                         return undefined;
                     }
 
@@ -441,7 +441,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     rasb.mergeAttributes(attRas);
 
                     if (!resOpt.checkAttributeCount(rasb.ras.resolvedAttributeCount)) {
-                        Logger.error(this.ctx, this.TAG, this.constructResolvedAttributes.name, null, cdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
+                        Logger.error(this.ctx, this.TAG, this.constructResolvedAttributes.name, undefined, cdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
                         return undefined;
                     }
                 }
@@ -573,18 +573,18 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
 
                 // if the wrtDoc needs to be indexed (like it was just modified) then do that first
                 if (!resOpt.wrtDoc) {
-                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrDocWrtDocNotfound);
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, undefined, cdmLogCode.ErrDocWrtDocNotfound);
                     return undefined;
                 }
 
                 if (!newEntName || newEntName === '') {
-                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrResolveNewEntityNameNotSet);
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, undefined, cdmLogCode.ErrResolveNewEntityNameNotSet);
                     return undefined;
                 }
 
                 // if the wrtDoc needs to be indexed (like it was just modified) then do that first
                 if (!await resOpt.wrtDoc.indexIfNeeded(resOpt, true)) {
-                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrIndexFailed);
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, undefined, cdmLogCode.ErrIndexFailed);
                     return undefined;
                 }
 
@@ -599,7 +599,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 const targetAtCorpusPath: string =
                     `${this.ctx.corpus.storage.createAbsoluteCorpusPath(folder.atCorpusPath, folder)}${fileName}`;
                 if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
-                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, undefined, cdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
                     return undefined;
                 }
 
@@ -669,8 +669,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 origDoc = this.ctx.corpus.storage.createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.imports.push(origDoc, 'resolvedFrom');
 
+                // if the source document imports foundations, then the resolved one should do the same
                 if (this.inDocument.imports.item(constants.FOUNDATIONS_CORPUS_PATH) !== undefined) {
                     docRes.imports.push(constants.FOUNDATIONS_CORPUS_PATH);
+                }
+                if (this.inDocument.imports.item(constants.FOUNDATION_FOUNDATIONS_CORPUS_PATH) !== undefined) {
+                    docRes.imports.push(constants.FOUNDATION_FOUNDATIONS_CORPUS_PATH);
                 }
 
                 docRes.documentVersion = this.inDocument.documentVersion;
@@ -1052,7 +1056,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 resOptNew.localizeReferencesFor = docRes;
                 resOptNew.wrtDoc = docRes;
                 if (!await docRes.refreshAsync(resOptNew)) {
-                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrIndexFailed);
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, undefined, cdmLogCode.ErrIndexFailed);
                     return undefined;
                 }
                 // get a fresh ref

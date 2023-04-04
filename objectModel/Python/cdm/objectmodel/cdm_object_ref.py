@@ -13,9 +13,9 @@ from .cdm_object import CdmObject
 from .cdm_trait_collection import CdmTraitCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmObjectDefinition
-    from cdm.resolvedmodel import ResolvedTraitSet
-    from cdm.utilities import ResolveOptions
+    from cdm.objectmodel import CdmCorpusContext, CdmObjectDefinition, CdmAttributeContext
+    from cdm.resolvedmodel import ResolvedTraitSet, ResolvedAttributeSetBuilder, ResolvedTraitSetBuilder
+    from cdm.utilities import ResolveOptions, VisitCallback
 
 
 RES_ATT_TOKEN = '/(resolvedAttributes)/'

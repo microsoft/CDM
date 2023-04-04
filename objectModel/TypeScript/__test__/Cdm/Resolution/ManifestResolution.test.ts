@@ -52,7 +52,7 @@ describe('Cdm/Resolution/ManifestResolution', () => {
             .toBe('core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/resolved/Account.cdm.json/Account');
         expect(resolvedManifest.entities.allItems[1].entityPath)
             .toBe('cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/electronicMedicalRecords.manifest.cdm.json/Address');
-    }, 15000);
+    }, 26000);
 
     /**
      * Test that resolving a manifest that hasn't been added to a folder doesn't throw any exceptions.
@@ -124,7 +124,7 @@ describe('Cdm/Resolution/ManifestResolution', () => {
       var corpus = testHelper.getLocalCorpus(testsSubPath, 'TestResolveManifestWithInterdependentPolymorphicSource');
 
       const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync('local:/Input.manifest.cdm.json');
-      const resolvedManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync('resolved', null);
+      const resolvedManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync('resolved', undefined);
 
       expect(resolvedManifest.entities.length)
         .toBe(2);

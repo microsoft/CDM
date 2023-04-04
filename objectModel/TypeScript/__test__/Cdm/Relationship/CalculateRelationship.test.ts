@@ -278,7 +278,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         bldr += `  ToEntity: ${relationship.toEntity}` + endOfLine;
         bldr += `  ToEntityAttribute: ${relationship.toEntityAttribute}` + endOfLine;
 
-        if (relationship.exhibitsTraits != null && relationship.exhibitsTraits.length != 0) {
+        if (relationship.exhibitsTraits != undefined && relationship.exhibitsTraits.length != 0) {
             bldr += '  ExhibitsTraits:' + endOfLine;
             var orderedAppliedTraits = relationship.exhibitsTraits.allItems.sort((a, b) => a.namedReference?.localeCompare(b.namedReference));
             orderedAppliedTraits.forEach((trait: CdmTraitReferenceBase) => {

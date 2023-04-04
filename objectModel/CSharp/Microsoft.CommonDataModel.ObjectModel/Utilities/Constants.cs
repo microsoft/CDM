@@ -11,5 +11,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         static internal readonly string IncrementalPatternParameterName = "incrementPartitionPatternName";
 
         static internal readonly string FoundationsCorpusPath = "cdm:/foundations.cdm.json";
+        static internal readonly string FoundationFoundationsCorpusPath = "cdm:/cdmfoundation/foundations.cdm.json";
     }
 }

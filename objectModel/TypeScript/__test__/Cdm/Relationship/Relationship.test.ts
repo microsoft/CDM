@@ -397,7 +397,7 @@ describe('Cdm/Relationship/Relationship', () => {
             fromEnt.attributes.removeAt(0);
             await reloadFromEntity();
             // fetch again to reset the cache
-            await corpus.fetchObjectAsync<CdmEntityDefinition>(tempToEntityPath, null, false, true);
+            await corpus.fetchObjectAsync<CdmEntityDefinition>(tempToEntityPath, undefined, false, true);
 
             await corpus.calculateEntityGraphAsync(manifestNoToEnt);
             await manifestNoToEnt.populateManifestRelationshipsAsync();

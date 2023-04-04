@@ -108,7 +108,7 @@ export class ParameterValue {
                     var resOptShape = new resolveOptions(entDefShape.inDocument);
                     var resAttsShape = entDefShape.fetchResolvedAttributes(resOptShape);
                     if (resAttsShape) {
-                        pkAtt = resAttsShape.set.findIndex((ra) => ra.resolvedTraits.find(resOptShape, 'is.identifiedBy') != null);
+                        pkAtt = resAttsShape.set.findIndex((ra) => ra.resolvedTraits.find(resOptShape, 'is.identifiedBy') !== undefined);
                     }
                 }
 
@@ -185,7 +185,7 @@ export class ParameterValue {
                                 for (let c: number = 0; c < rowData.length; c++) {
                                     const tvalue: string = rowData[c];
                                     let colAtt = shapeAtts.set[c];
-                                    if (colAtt != undefined) {
+                                    if (colAtt !== undefined) {
                                         row[colAtt.resolvedName] = tvalue;
                                     }
                                 }

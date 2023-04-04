@@ -32,7 +32,7 @@ export class OperationRenameAttributesPersistence {
         } else if (Array.isArray(object.applyTo)) {
             renameAttributesOp.applyTo = object.applyTo;
         } else if (object.applyTo !== undefined) {
-            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjUnsupportedProp);
+            Logger.error(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.ErrPersistProjUnsupportedProp);
         }
 
         return renameAttributesOp;

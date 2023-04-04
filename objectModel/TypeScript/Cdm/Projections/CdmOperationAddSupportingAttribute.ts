@@ -150,7 +150,7 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
         // and apply the trait 'is.virtual.attribute' to it
         const addTrait: string[] = ['is.virtual.attribute'];
         const newResAttr: ResolvedAttribute =
-            CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxSupportingAttr, this.supportingAttribute, null, addTrait);
+            CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxSupportingAttr, this.supportingAttribute, undefined, addTrait);
 
         // Create a new projection attribute state for the new supporting attribute and add it to the output set
         // There is no previous state for the newly created supporting attribute

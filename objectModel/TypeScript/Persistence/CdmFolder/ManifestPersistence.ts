@@ -155,7 +155,7 @@ export class ManifestPersistence {
                         } else if (entityObj.type === entityDeclarationDefinitionType.referencedEntity) {
                             entity = ReferencedEntityDeclarationPersistence.fromData(ctx, fullPath, entityObj);
                         } else {
-                            Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistEntityDeclarationMissing, entityObj.entityName);
+                            Logger.error(ctx, this.TAG, this.fromObject.name, undefined, cdmLogCode.ErrPersistEntityDeclarationMissing, entityObj.entityName);
                         }
                     } else {
                         // We see old structure of entity declaration, check for entity schema/declaration.

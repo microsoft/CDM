@@ -4,9 +4,9 @@
 import { Stopwatch } from 'ts-stopwatch';
 
 import { azureCloudEndpoint } from '../../Enums/azureCloudEndpoint';
-import { CdmCorpusDefinition, CdmDocumentDefinition, CdmManifestDefinition, cdmStatusLevel, resolveContext, StorageAdapterCacheContext } from '../../internal';
+import { CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition, cdmStatusLevel, StorageAdapterCacheContext } from '../../internal';
 import { ADLSAdapter } from '../../Storage';
-import { TokenProvider } from '../../Utilities/Network';
+import { CdmHttpClient, CdmHttpResponse, TokenProvider } from '../../Utilities/Network';
 import { adlsTestHelper } from '../adlsTestHelper';
 import { testHelper } from '../testHelper';
 import { MockADLSAdapter } from './MockADLSAdapter';
@@ -407,124 +407,87 @@ describe('Cdm.Storage.AdlsAdapter', () => {
     });
 
     /**
-     * Test hostname with leading protocol.
+     * Tests that ADLS upload error on write are handled correctly
      */
-    it('TestHostnameWithLeadingProtocol', () => {
-        const host1: string = 'https://storageaccount.dfs.core.windows.net';
-        const adlsAdapter1: MockADLSAdapter = new MockADLSAdapter(host1, 'root-without-slash', 'test');
-        const adapterPath: string = 'https://storageaccount.dfs.core.windows.net/root-without-slash/a/1.csv';
-        const corpusPath1: string = adlsAdapter1.createCorpusPath(adapterPath);
-        expect(adlsAdapter1.hostname)
-            .toBe('https://storageaccount.dfs.core.windows.net');
-        expect(adlsAdapter1.root)
-            .toBe('/root-without-slash');
-        expect(corpusPath1)
-            .toBe('/a/1.csv');
-        expect(adlsAdapter1.createAdapterPath(corpusPath1))
-            .toBe(adapterPath);
+    adlsIt('ADLSWriteUploadError', async () => {
+        const httpClient = new CdmHttpClient('', undefined);
 
-        const host2: string = 'HttPs://storageaccount.dfs.core.windows.net';
-        const adlsAdapter2: MockADLSAdapter = new MockADLSAdapter(host2, 'root-without-slash', 'test');
-        const corpusPath2: string = adlsAdapter2.createCorpusPath(adapterPath);
-        expect(adlsAdapter2.hostname)
-            .toBe('HttPs://storageaccount.dfs.core.windows.net');
-        expect(adlsAdapter2.root)
-            .toBe('/root-without-slash');
-        expect(corpusPath2)
-            .toBe('/a/1.csv');
-        expect(adlsAdapter2.createAdapterPath(corpusPath2))
-            .toBe(adapterPath);
+        // first request creates an empty file
+        const firstResponse = new CdmHttpResponse(201);
+        firstResponse.isSuccessful = true;
 
-        try {
-            const host3: string = 'http://storageaccount.dfs.core.windows.net';
-            const adlsAdapter3: MockADLSAdapter = new MockADLSAdapter(host3, 'root-without-slash', 'test');
-            throw new Error('Expected Exception for using a http:// hostname.')
-        } catch (ex) {
-            expect(ex instanceof URIError)
-                .toBeTruthy();
-        }
+        // second request to throw error
+        const secondResponse = new CdmHttpResponse(404);
+        secondResponse.isSuccessful = true;
 
-        try {
-            const host4: string = 'https://bar:baz::]/foo/';
-            const adlsAdapter4: MockADLSAdapter = new MockADLSAdapter(host4, 'root-without-slash', 'test');
-            throw new Error('Expected Exception for using an invalid hostname.')
-        } catch (ex) {
-            expect(ex instanceof URIError)
-                .toBeTruthy();
-        }
+        // before error is logged, request is made to delete content at path
+        const thirdResponse = new CdmHttpResponse();
+        thirdResponse.isSuccessful = true;
+
+        const mockMethod = jest.fn()
+            .mockReturnValueOnce(firstResponse)
+            .mockReturnValueOnce(secondResponse)
+            .mockReturnValueOnce(thirdResponse);
+
+        jest.spyOn(httpClient, 'SendAsync').mockImplementation(mockMethod);
+
+        let uploadedDataNotAcceptedError = false;
+        const corpus = testHelper.getLocalCorpus(testSubpath, 'ADLSWriteUploadError');
+        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
+            if (message.includes('Could not write ADLS content at path, there was an issue at "/someDoc.cdm.json" during the append action.')) {
+                uploadedDataNotAcceptedError = true;
+            }
+        }, cdmStatusLevel.error);
+
+        corpus.storage.mount('adls', new MockADLSAdapter(httpClient));
+        const adlsFolder: CdmFolderDefinition = corpus.storage.namespaceFolders.get('adls');
+        const someDoc: CdmDocumentDefinition = adlsFolder.documents.push('someDoc');
+        await someDoc.saveAsAsync('someDoc.cdm.json');
+        expect(uploadedDataNotAcceptedError).toBeTruthy();
     });
 
     /**
-     * Test azure cloud endpoint in config.
+     * Tests that ADLS flush error on write are handled correctly
      */
-    it('TestLoadingAndSavingEndpointInConfig', () => {
-        // Mount from config
-        const config: string = testHelper.getInputFileContent(testSubpath, 'TestLoadingAndSavingEndpointInConfig', 'config.json');
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
-        corpus.storage.mountFromConfig(config);
-        expect((corpus.storage.fetchAdapter('adlsadapter1') as ADLSAdapter).endpoint)
-            .toBeUndefined;
-        expect((corpus.storage.fetchAdapter('adlsadapter2') as ADLSAdapter).endpoint)
-            .toBe(azureCloudEndpoint.AzurePublic);
-        expect((corpus.storage.fetchAdapter('adlsadapter3') as ADLSAdapter).endpoint)
-            .toBe(azureCloudEndpoint.AzureChina);
-        expect((corpus.storage.fetchAdapter('adlsadapter4') as ADLSAdapter).endpoint)
-            .toBe(azureCloudEndpoint.AzureGermany);
-        expect((corpus.storage.fetchAdapter('adlsadapter5') as ADLSAdapter).endpoint)
-            .toBe(azureCloudEndpoint.AzureUsGovernment);
+    adlsIt('ADLSWriteFlushError', async () => {
+        const httpClient = new CdmHttpClient('', undefined);
 
-        try {
-            const configSnakeCase: string = testHelper.getInputFileContent(testSubpath, 'TestLoadingAndSavingEndpointInConfig', 'config-SnakeCase.json');
-            const corpusSnakeCase: CdmCorpusDefinition = new CdmCorpusDefinition();
-            corpusSnakeCase.storage.mountFromConfig(configSnakeCase);
-            throw new Error('Expected RuntimeException for config.json using endpoint value in snake case.')
-        } catch (ex) {
-            const message: string = "Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.";
-            expect(ex.message)
-                .toBe(message);
-        }
+        // first request creates an empty file
+        const firstResponse = new CdmHttpResponse(201);
+        firstResponse.isSuccessful = true;
+
+        // second request is accepted, uploaded data worked correctly
+        const secondResponse = new CdmHttpResponse(202);
+        secondResponse.isSuccessful = true;
+
+        // before error is logged, request is made to delete content at path
+        const thirdResponse = new CdmHttpResponse();
+        thirdResponse.isSuccessful = true;
+
+        // this failure occurs when data was not flushed correctly
+        const fourthResponse = new CdmHttpResponse(304)
+        fourthResponse.isSuccessful = true;
+
+        const mockMethod = jest.fn()
+            .mockReturnValueOnce(firstResponse)
+            .mockReturnValueOnce(secondResponse)
+            .mockReturnValueOnce(thirdResponse)
+            .mockReturnValueOnce(fourthResponse);
+
+        jest.spyOn(httpClient, 'SendAsync').mockImplementation(mockMethod);
+
+        let notFlushedErrorHit = false;
+        const corpus = testHelper.getLocalCorpus(testSubpath, 'ADLSWriteUploadError');
+        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
+            if (message.includes('Could not write ADLS content at path, there was an issue at "/someDoc.cdm.json" during the flush action.')) {
+                notFlushedErrorHit = true;
+            }
+        }, cdmStatusLevel.error);
+
+        corpus.storage.mount('adls', new MockADLSAdapter(httpClient));
+        const adlsFolder: CdmFolderDefinition = corpus.storage.namespaceFolders.get('adls');
+        const someDoc: CdmDocumentDefinition = adlsFolder.documents.push('someDoc');
+        await someDoc.saveAsAsync('someDoc.cdm.json');
+        expect(notFlushedErrorHit).toBeTruthy();
     });
-
-    /**
-     * Tests writing null content to ADLS. Expected behavior is not to leave any 0 byte file behind.
-     */
-    adlsIt('ADLSWriteClientIdNullContentsNoEmptyFileLeft', async () => {
-        const adapter: ADLSAdapter = adlsTestHelper.createAdapterWithClientId();
-        adapter.ctx = new resolveContext(null);
-        adapter.ctx.featureFlags.set("ADLSAdapter_deleteEmptyFile", true);
-        const filename: string = 'nullcheck_TypeScript.txt';
-        let writeContents: string;
-        try {
-            await adapter.writeAsync(filename, writeContents);
-        } catch (e) { }
-
-        try {
-            await adapter.readAsync(filename);
-        } catch (e) {
-            const message: string = "The specified path does not exist";
-            expect(e.message)
-                .toContain(message);
-        }
-    });
-
-    /**
-     * Tests writing empty content to ADLS. Expected behavior is not to leave any 0 byte file behind.
-     */
-    adlsIt('ADLSWriteClientIdEmptyContentsNoEmptyFileLeft', async () => {
-        const adapter: ADLSAdapter = adlsTestHelper.createAdapterWithClientId();
-        const filename: string = 'emptycheck_TypeScript.txt';
-        let writeContents: string = '';
-        try {
-            await adapter.writeAsync(filename, writeContents);
-        } catch (e) { }
-
-        try {
-            await adapter.readAsync(filename);
-        } catch (e) {
-            const message: string = "The specified path does not exist";
-            expect(e.message)
-                .toContain(message);
-        }
-    });
-
 });

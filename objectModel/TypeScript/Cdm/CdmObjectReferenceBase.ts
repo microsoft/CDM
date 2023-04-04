@@ -326,7 +326,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
             if (!await wrtDoc.indexIfNeeded(resOpt, true)) {
                 Logger.error(this.ctx, this.TAG, this.fetchObjectDefinitionAsync.name, wrtDoc.atCorpusPath, cdmLogCode.ErrIndexFailed);
-                return null;
+                return undefined;
             }
 
             let def: T = this.fetchResolvedReference(resOpt) as unknown as T;

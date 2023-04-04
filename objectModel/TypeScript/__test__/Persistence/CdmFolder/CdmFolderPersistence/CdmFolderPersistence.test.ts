@@ -16,7 +16,7 @@ describe('Persistence.CdmFolder.CdmFolderPersistence', () => {
 
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder("local");
         const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>(`default${CdmConstants.manifestExtension}`, folder);
-        const actualData = ManifestPersistence.toData(manifest, null, null);
+        const actualData = ManifestPersistence.toData(manifest, undefined, undefined);
 
         manifest.entities.allItems.forEach(async entity => {
             await corpus.fetchObjectAsync<CdmEntityDefinition>(entity.entityPath, manifest);

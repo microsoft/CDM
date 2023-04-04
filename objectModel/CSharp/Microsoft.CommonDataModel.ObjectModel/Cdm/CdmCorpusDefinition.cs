@@ -1707,7 +1707,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             FromEntity = this.Storage.CreateAbsoluteCorpusPath(fromEntity, unResolvedEntity),
                             FromEntityAttribute = fromAtts[i].FetchObjectDefinitionName(),
-                            ToEntity = this.Storage.CreateAbsoluteCorpusPath(tuple.Item1, unResolvedEntity),
+                            ToEntity = this.Storage.CreateAbsoluteCorpusPath(tuple.Item1, resEntity),
                             ToEntityAttribute = tuple.Item2
                         };
 
@@ -1890,7 +1890,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 var namespacePath = referencedEntity != null ? referencedEntity.VirtualLocation : currObject.AtCorpusPath;
                 // Remove namespace from path
-                Tuple <string, string> pathTuple = StorageUtils.SplitNamespacePath(namespacePath);
+                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(namespacePath);
                 if (pathTuple == null)
                 {
                     Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);

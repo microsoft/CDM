@@ -1,0 +1,2305 @@
+{
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
+  "explanation": "Business concepts and ideas",
+  "imports": [
+    {
+      "corpusPath": "primitives.2.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "traitName": "businessProcess",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.individual",
+      "explanation": "a person in the context of business processes (IS A person[means->businessProcess])",
+      "defaultVerb": "means",
+      "extendsTrait": {
+        "traitReference": "person",
+        "appliedTraits": [
+          {
+            "traitReference": "businessProcess",
+            "verb": "means"
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.party",
+      "explanation": "a contact or organization that acts as a party in a business process (IS A oneOf[contact, organization])",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.oneOf",
+          "appliedTraits": [
+            {
+              "verb": "contains",
+              "traitReference": "commerce.individual"
+            },
+            {
+              "verb": "contains",
+              "traitReference": "organization.entity"
+            }
+          ]
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.partyKind",
+      "explanation": "a type indicator for kinds of parties",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "commerce.party"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.entity"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.partyKind.individual",
+      "explanation": "indicates a individual party",
+      "extendsTrait": {
+        "traitReference": "commerce.partyKind",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.individual",
+            "verb": "means"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.partyKind.organization",
+      "explanation": "indicates a organizational party",
+      "extendsTrait": {
+        "traitReference": "commerce.partyKind",
+        "appliedTraits": [
+          {
+            "traitReference": "organization.entity",
+            "verb": "means"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.partyNameSimple",
+      "explanation": "The identifying name for a contact or organization that acts as a party in a business process",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.partyName",
+      "explanation": "The identifying name for a contact or organization that acts as a party in a business process",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.oneOf",
+          "appliedTraits": [
+            {
+              "traitReference": "person.fullName",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "identity.organizationName",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.contact",
+      "explanation": "an individual acting as a point of contact (IS A commerce.contact)",
+      "extendsTrait": {
+        "traitReference": "commerce.individual"
+      }
+    },
+    {
+      "traitName": "commerce.contactKind",
+      "explanation": "a type indicator for the type or primacy of a contact. IS A (kindOf[of->contact])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.contact",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.primacy"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.contactKind.primary",
+      "explanation": "means a contact kind which indicates the primary or main contact. IS A (contactKind[means->primary])",
+      "extendsTrait": {
+        "traitReference": "commerce.contactKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.primary"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.item",
+      "explanation": "a product, part, component, material that is purchased, sold, transported, consumed.",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemKind",
+      "explanation": "a type indicator for fundamental kinds of an item such as raw material, finished goods, component part. IS A (kindOf[of->item])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.item",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemKind.rawMaterial",
+      "explanation": "means the specific itemKind indicating raw materials. IS A (itemKind[means->rawMaterial])",
+      "extendsTrait": {
+        "traitReference": "commerce.itemKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "thing.rawMaterial"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.itemKind.component",
+      "explanation": "means the specific itemKind indicating a component or intermediate step. IS A (itemKind[means->component])",
+      "extendsTrait": {
+        "traitReference": "commerce.itemKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "thing.component"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.itemKind.finishedProduct",
+      "explanation": "means the specific itemKind indicating finished products. IS A (itemKind[means->finishedProduct])",
+      "extendsTrait": {
+        "traitReference": "commerce.itemKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "thing.finishedProduct"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.service",
+      "explanation": "a subscription, unit of work or other value added service that is offered, sold, used",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.product",
+      "explanation": "an item and/or service (IS A oneOf[item, service])",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.oneOf",
+          "appliedTraits": [
+            {
+              "traitReference": "commerce.item",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "commerce.service",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.productName",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.order",
+      "explanation": "a summary document, often with associated details, that represents a transaction, request, process",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.orderKind",
+      "explanation": "a type indicator for kinds of orders. like sales, purchase, shipping. IS A (kindOf[of->order])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.order",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.application"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.detailLine",
+      "explanation": "detail lines that represent the parts of a complete order, transaction, process",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.detailLineKind",
+      "explanation": "a type indicator for kinds of detail lines. like salesOrder, purchaseOrder. IS A (kindOf[of->detailLine])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.detailLine",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.application"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.customer",
+      "extendsTrait": {
+        "traitReference": "commerce.party",
+        "appliedTraits": [
+          {
+            "traitReference": "action.purchase",
+            "appliedTraits": [
+              "commerce.product"
+            ]
+          }
+        ]
+      },
+      "explanation": "a party in the role of customer who purchase or uses products"
+    },
+    {
+      "traitName": "commerce.individualCustomer",
+      "extendsTrait": {
+        "traitReference": "commerce.customer",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.partyKind.individual",
+            "verb": "has"
+          }
+        ]
+      },
+      "explanation": "a party in the role of customer who purchase or uses products"
+    },
+    {
+      "traitName": "commerce.retail",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.store",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.retailCustomer",
+      "extendsTrait": {
+        "traitReference": "commerce.individualCustomer",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.retail",
+            "verb": "qualifiedBy"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.transaction",
+      "extendsTrait": {
+        "traitReference": "commerce.order",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.retail",
+            "verb": "qualifiedBy"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.transactionLine",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.retail",
+            "verb": "qualifiedBy"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.transactionLineItemKind",
+      "defaultVerb": "means",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "commerce.detailLine"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.transactionLineItemStartTimestamp",
+      "extendsTrait": {
+        "traitReference": "means.measurement.date.start",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.transactionLine",
+            "verb": "qualifiedBy"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.transactionLineItemEndTimestamp",
+      "extendsTrait": {
+        "traitReference": "measurement.date.completed",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.transactionLine",
+            "verb": "qualifiedBy"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.transactionReceivedTimestamp",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.supplier",
+      "extendsTrait": {
+        "traitReference": "commerce.party",
+        "appliedTraits": [
+          {
+            "traitReference": "action.sell",
+            "appliedTraits": [
+              "commerce.product"
+            ]
+          }
+        ]
+      },
+      "explanation": "a party in the role of supplier who manufactures or sells products",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.facility",
+      "extendsTrait": "location.building",
+      "explanation": "a building or structure with a known location such as factory, warehouse, office",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.facilityName",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.facility"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "a name for a facility (IS A name[has->kind[means->facility])",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.facilityKind",
+      "explanation": "a type indicator for kinds of facilities. like factory, plant, warehouse. IS A (kindOf[of->facility])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.facility",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.application"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.inventory",
+      "explanation": "items on hand",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.pointOfSale",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.billOfMaterials",
+      "explanation": "explanation of component parts",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.cost",
+      "explanation": "monetary value spent to acquire",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.price",
+      "explanation": "monetary value charged to provide",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.priceAssociation",
+      "explanation": "an event with which a specific price is associated",
+      "extendsTrait": {
+        "traitReference": "action.trigger",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "commerce.price"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.priceAssociationKind",
+      "explanation": "a type indicator for kinds of a price associations: shipDates, orderDates, etc.",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.priceAssociation",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.association"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "commerce.itemInteraction",
+      "explanation": "an interaction involving a product, service, material",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "commerce.item",
+          "verb": "of"
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemInteractionKind",
+      "explanation": "a type indicator for kinds of item interactions. like sales, purchase, shipping. IS A (kindOf[of->itemInteraction])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.itemInteraction",
+            "verb": "of"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemSales",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "traitReference": "action.sell",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "sales of items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemSalesKind",
+      "explanation": "a type indicator for kinds of item sales. like promotional sales. IS A (kindOf[of->sales])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.itemSales",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemPurchase",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.purchase"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "purchase of items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemCommitment",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.commit"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "an encumbrance or commitment to purchase or sell or act at a future date",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemFulfillment",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.fulfill"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "fulfillment of items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemTransportation",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.transport"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "transportation of items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemTransportationKind",
+      "explanation": "a type indicator for kinds of Item Transportation, AKA shipping method.",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.itemTransportation",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.application"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.shipmentIntegrity",
+      "explanation": "the difficult to name property of a shipment that explains when a partial shipment is allowed or happening versus a total shipment",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.shipmentIntegrityKind",
+      "explanation": "a type indicator for options of shipmentIntegrity. partial or total",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "commerce.shipmentIntegrity",
+            "verb": "of"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.shipmentIntegrityKind.partial",
+      "explanation": "indicates a partial shipment is requested, allowed or happening",
+      "extendsTrait": {
+        "traitReference": "commerce.shipmentIntegrityKind",
+        "appliedTraits": [
+          {
+            "traitReference": "qualification.partial",
+            "verb": "means"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.shipmentIntegrityKind.total",
+      "explanation": "indicates a complete or total shipment is requested, allowed or happening",
+      "extendsTrait": {
+        "traitReference": "commerce.shipmentIntegrityKind",
+        "appliedTraits": [
+          {
+            "traitReference": "qualification.total",
+            "verb": "means"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "commerce.itemAllocation",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.allocate"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "allocation of items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemDemand",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.demand"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "demand for items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemProduction",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.make"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "production of items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemStorage",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.store"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "storage of items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemPicking",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "traitReference": "action.pick",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "picking items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemPacking",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "traitReference": "action.pack",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "packing items",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemInventory",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.inventory"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "holding items in inventory",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemPointOfSale",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "action.sell"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemBillOfMaterials",
+      "extendsTrait": {
+        "traitReference": "commerce.itemInteraction",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.billOfMaterials"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "describe the components of an item",
+      "defaultVerb": "means",
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemStorageFacility",
+      "explanation": "IS A (facility[means->itemStorage])",
+      "extendsTrait": {
+        "traitReference": "commerce.facility",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.facilityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemStorage"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemProductionFacility",
+      "explanation": "IS A (facility[means->itemProduction])",
+      "extendsTrait": {
+        "traitReference": "commerce.facility",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.facilityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemProduction"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.customerAndItem",
+      "explanation": "a correlation that contains[customer, item]",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.allOf",
+          "appliedTraits": [
+            {
+              "traitReference": "commerce.customer",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "commerce.item",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.customerItemAllocation",
+      "explanation": "IS A correlation[customer, item], has->interactionKind[means->allocation]",
+      "extendsTrait": {
+        "traitReference": "commerce.customerAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemAllocation"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.supplierAndItem",
+      "explanation": "a correlation that contains[supplier, item]",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.allOf",
+          "appliedTraits": [
+            {
+              "traitReference": "commerce.supplier",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "commerce.item",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.supplierItemAllocation",
+      "explanation": "IS A correlation[supplier, item], has->interactionKind[means->allocation]",
+      "extendsTrait": {
+        "traitReference": "commerce.supplierAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemAllocation"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.customerItemInventory",
+      "explanation": "IS A correlation[customer, item], has->interactionKind[means->inventory]",
+      "extendsTrait": {
+        "traitReference": "commerce.customerAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemInventory"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.supplierItemInventory",
+      "explanation": "IS A correlation[supplier, item], has->interactionKind[means->inventory]",
+      "extendsTrait": {
+        "traitReference": "commerce.supplierAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemInventory"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemStorageFacilityAndItem",
+      "explanation": "a correlation that contains[itemStorageFacility, item]",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.allOf",
+          "appliedTraits": [
+            {
+              "traitReference": "commerce.itemStorageFacility",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "commerce.item",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemStorageFacilityItemInventory",
+      "explanation": "IS A correlation[itemStorageFacility, item], has->interactionKind[means->inventory]",
+      "extendsTrait": {
+        "traitReference": "commerce.itemStorageFacilityAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemInventory"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemProductionFacilityAndItem",
+      "explanation": "a correlation that contains[itemProductionFacility, item]",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.allOf",
+          "appliedTraits": [
+            {
+              "traitReference": "commerce.itemProductionFacility",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "commerce.item",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemProductionFacilityItemInventory",
+      "explanation": "IS A correlation[itemProductionFacility, item], has->interactionKind[means->inventory]",
+      "extendsTrait": {
+        "traitReference": "commerce.itemProductionFacilityAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemInventory"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.customerItemDemand",
+      "explanation": "IS A correlation[customer, item], has->interactionKind[means->demand]",
+      "extendsTrait": {
+        "traitReference": "commerce.customerAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemDemand"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemStorageFacilityItemDemand",
+      "explanation": "IS A correlation[itemStorageFacility, item], has->interactionKind[means->demand]",
+      "extendsTrait": {
+        "traitReference": "commerce.itemStorageFacilityAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemDemand"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemProductionFacilityItemDemand",
+      "explanation": "IS A correlation[itemProductionFacility, item], has->interactionKind[means->demand]",
+      "extendsTrait": {
+        "traitReference": "commerce.itemProductionFacilityAndItem",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.itemInteractionKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemDemand"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemSalesOrder",
+      "explanation": "IS A order of correlation[customer, product] has->orderKind[means->sales]",
+      "extendsTrait": {
+        "traitReference": "commerce.order",
+        "appliedTraits": [
+          "commerce.customerAndItem",
+          {
+            "verb": "has",
+            "traitReference": "commerce.orderKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemSales",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemSalesOrderDetailLine",
+      "explanation": "IS A detailLine[of->salesOrder]",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.detailLineKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemSalesOrder",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemSalesOrderDetailLineId",
+      "explanation": "an identifier for line items of a sales order that are unique only within the scope of a itemSalesOrderId",
+      "extendsTrait": {
+        "traitReference": "identity.local",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemSalesOrderDetailLine"
+              }
+            ]
+          },
+          {
+            "verb": "of",
+            "traitReference": "identity.entityId",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemSalesOrder",
+                "verb": "of"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemSalesOrderDetailLineCommitmentId",
+      "explanation": "an identifier for commitment sub-line items of a sales order detail that are unique only within the scope of a itemSalesOrderDetailLineId within the scope of a itemSalesOrderId",
+      "extendsTrait": {
+        "traitReference": "identity.local",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemCommitment"
+              }
+            ]
+          },
+          {
+            "verb": "of",
+            "traitReference": "commerce.itemSalesOrderDetailLineId"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemPurchaseOrder",
+      "explanation": "IS A order of correlation[supplier, product] has->orderKind[means->purchase]",
+      "extendsTrait": {
+        "traitReference": "commerce.order",
+        "appliedTraits": [
+          "commerce.supplierAndItem",
+          {
+            "verb": "has",
+            "traitReference": "commerce.orderKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemPurchase",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "commerce.itemPurchaseOrderDetailLine",
+      "explanation": "IS A detailLine[of->purchaseOrder]",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.detailLineKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemPurchaseOrder",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemPurchaseOrderDetailLineId",
+      "explanation": "an identifier for line items of a purchase order that are unique only within the scope of a itemPurchaseOrderId",
+      "extendsTrait": {
+        "traitReference": "identity.local",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemPurchaseOrderDetailLine"
+              }
+            ]
+          },
+          {
+            "verb": "of",
+            "traitReference": "identity.entityId",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemPurchaseOrder",
+                "verb": "of"
+              }
+            ]
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemPurchaseOrderDetailLineCommitmentId",
+      "explanation": "an identifier for commitment sub-line items of a purchase order detail that are unique only within the scope of a itemPurchaseOrderDetailLineId within the scope of a itemPurchaseOrderId",
+      "extendsTrait": {
+        "traitReference": "identity.local",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemCommitment"
+              }
+            ]
+          },
+          {
+            "verb": "of",
+            "traitReference": "commerce.itemPurchaseOrderDetailLineId"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemFulfillmentOrder",
+      "explanation": "IS A order[has->orderKind[means->itemFulfillment]]",
+      "extendsTrait": {
+        "traitReference": "commerce.order",
+        "appliedTraits": [
+          "commerce.itemStorageFacilityAndItem",
+          {
+            "verb": "has",
+            "traitReference": "commerce.orderKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemFulfillment"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.outboundItemFulfillmentOrder",
+      "explanation": "IS A itemFulfillmentOrder[qualifiedBy->outbound]",
+      "extendsTrait": "commerce.itemFulfillmentOrder",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.outbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.inboundItemFulfillmentOrder",
+      "explanation": "IS A itemFulfillmentOrder[qualifiedBy->inbound]",
+      "extendsTrait": "commerce.itemFulfillmentOrder",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.inbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemFulfillmentOrderDetailLine",
+      "explanation": "IS A detailLine[of->purchaseOrder]",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.detailLineKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemFulfillmentOrder",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.outboundItemFulfillmentOrderDetailLine",
+      "explanation": "IS A itemFulfillmentOrderDetailLine[qualifiedBy->outbound]",
+      "extendsTrait": "commerce.itemFulfillmentOrderDetailLine",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.outbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.inboundItemFulfillmentOrderDetailLine",
+      "explanation": "IS A itemFulfillmentOrderDetailLine[qualifiedBy->inbound]",
+      "extendsTrait": "commerce.itemFulfillmentOrderDetailLine",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.inbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemTransportationOrder",
+      "explanation": "IS A order[has->orderKind[means->itemTransportation]]",
+      "extendsTrait": {
+        "traitReference": "commerce.order",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.orderKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemTransportation"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.outboundItemTransportationOrder",
+      "explanation": "IS A itemTransportationOrder[qualifiedBy->outbound]",
+      "extendsTrait": "commerce.itemTransportationOrder",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.outbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.inboundItemTransportationOrder",
+      "explanation": "IS A itemTransportationOrder[qualifiedBy->inbound]",
+      "extendsTrait": "commerce.itemTransportationOrder",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.inbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemTransportationOrderDetailLine",
+      "explanation": "IS A detailLine[of->itemTransportationOrder]",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.detailLineKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemTransportationOrder",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.outboundItemTransportationOrderDetailLine",
+      "explanation": "IS A itemTransportationOrderDetailLine[qualifiedBy->outbound]",
+      "extendsTrait": "commerce.itemTransportationOrderDetailLine",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.outbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.inboundItemTransportationOrderDetailLine",
+      "explanation": "IS A itemTransportationOrderDetailLine[qualifiedBy->inbound]",
+      "extendsTrait": "commerce.itemTransportationOrderDetailLine",
+      "exhibitsTraits": [
+        {
+          "verb": "qualifiedBy",
+          "traitReference": "qualification.inbound"
+        }
+      ]
+    },
+    {
+      "traitName": "commerce.itemProductionOrder",
+      "explanation": "IS A order[has->orderKind[means->itemProduction]]",
+      "extendsTrait": {
+        "traitReference": "commerce.order",
+        "appliedTraits": [
+          "commerce.itemProductionFacilityAndItem",
+          {
+            "verb": "has",
+            "traitReference": "commerce.orderKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "commerce.itemProduction"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.itemProductionOrderDetailLine",
+      "explanation": "IS A detailLine[of->itemProductionOrder]",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.detailLineKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.itemProductionOrder",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "commerce.customerCommunicationPreference",
+      "explanation": "The combination of customer, communication method, communication purpose and customer preference for this combination. (IS A allOf[customer, method, purpose, preference])",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.allOf",
+          "appliedTraits": [
+            {
+              "verb": "contains",
+              "traitReference": "commerce.customer"
+            },
+            {
+              "verb": "contains",
+              "traitReference": "idea.communication.purpose"
+            },
+            {
+              "verb": "contains",
+              "traitReference": "idea.communication.method"
+            },
+            {
+              "verb": "contains",
+              "traitReference": "action.prefer"
+            }
+          ]
+        },
+        {
+          "verb": "classifiedAs",
+          "traitReference": "businessProcess"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "means.idea.account",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.accountLeads",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.activityParty",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.activityPointer",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.annotation",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.appointment",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.brand",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.businessUnit",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.campaign",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.campaignActivity",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.campaignItem",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.campaignResponse",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.channel",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.characteristic",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.company",
+      "extendsTrait": "means.idea.organization"
+    },
+    {
+      "traitName": "means.idea.competitor",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.competitorAddress",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.competitorProduct",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.connection",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.connectionRole",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "commerce.contract",
+      "explanation": "a legal agreement between parties",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "means.idea.contract",
+      "extendsTrait": "commerce.contract",
+      "explanation": "redefined exisitng trait to extend from trait with new name convention"
+    },
+    {
+      "traitName": "commerce.contractDetailLine",
+      "explanation": "IS A (detailLine[of->contract])",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.detailLineKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.contract",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "means.idea.contractDetail",
+      "extendsTrait": "commerce.contractDetailLine",
+      "explanation": "redefined exisitng trait to extend from trait with new name convention"
+    },
+    {
+      "traitName": "means.idea.customer",
+      "extendsTrait": "commerce.customer",
+      "explanation": "redefined exisitng trait to extend from trait with new name convention"
+    },
+    {
+      "traitName": "means.idea.customerAddress",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.customerRelationship",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.discount",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.discountType",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.email",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.employer",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.entitlement",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.equipment",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.fax",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.feedback",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.goal",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.incident",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "commerce.invoice",
+      "explanation": "a description of products or serices purchased and a request for payment",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        },
+        "entityType"
+      ]
+    },
+    {
+      "traitName": "means.idea.invoice",
+      "extendsTrait": "commerce.invoice",
+      "explanation": "redefined exisitng trait to extend from trait with new name convention"
+    },
+    {
+      "traitName": "commerce.invoiceDetailLine",
+      "explanation": "IS A (detailLine[of->invoice])",
+      "extendsTrait": {
+        "traitReference": "commerce.detailLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "commerce.detailLineKind",
+            "appliedTraits": [
+              {
+                "traitReference": "commerce.invoice",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "means.idea.invoiceDetail",
+      "extendsTrait": "commerce.invoiceDetailLine",
+      "explanation": "redefined exisitng trait to extend from trait with new name convention"
+    },
+    {
+      "traitName": "means.idea.KbArticle",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.knowledgeArticle",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.lead",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.leadAddress",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.letter",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.metric",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.opportunity",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.organization",
+      "extendsTrait": "organization.entity"
+    },
+    {
+      "traitName": "means.idea.organization.unit",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.owner",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.person",
+      "extendsTrait": "person"
+    },
+    {
+      "traitName": "means.idea.person.contact",
+      "extendsTrait": "commerce.contact"
+    },
+    {
+      "traitName": "means.idea.person.employee",
+      "extendsTrait": "means.idea.person"
+    },
+    {
+      "traitName": "means.idea.person.representative",
+      "extendsTrait": "means.idea.person"
+    },
+    {
+      "traitName": "means.idea.phoneCall",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.place",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.position",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.priceLevel",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.product",
+      "extendsTrait": "commerce.product",
+      "explanation": "redefined exisitng trait to extend from trait with new name convention"
+    },
+    {
+      "traitName": "means.idea.productGroup",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.project",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.promotion",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.quote",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.ratingModel",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.resource",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.resourceGroup",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.salesLiterature",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.salesOrder",
+      "extendsTrait": "commerce.itemSalesOrder",
+      "explanation": "redefined exisitng trait to extend from trait with new name convention"
+    },
+    {
+      "traitName": "means.idea.scenario",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.schedule",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.service",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.service ",
+      "extendsTrait": "means.idea.service",
+      "explanation": "deprecated. extra space at the end was an error."
+    },
+    {
+      "traitName": "means.idea.serviceAppointment",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.site",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.SLA",
+      "extendsTrait": "means.idea",
+      "explanation": "A Service Level Agreement"
+    },
+    {
+      "traitName": "means.idea.socialActivity",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.socialProfile",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.systemUser",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.task",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.team",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.territory",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.UoM",
+      "extendsTrait": "means.idea"
+    },
+    {
+      "traitName": "means.idea.utility",
+      "extendsTrait": "means.idea"
+    }
+  ],
+  "documentVersion": "1.0"
+}

@@ -77,7 +77,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             JToken expectedObj = JToken.Parse(expected);
             JToken actualObj = IgnoreProperties(JToken.Parse(actual));
 
-            return TestHelper.CompareObjectsContent(expectedObj, actualObj, ignoreNullValues: true);
+            return TestHelper.CompareObjectsContent(expectedObj, actualObj, ignoreExtraValuesInActual: true);
         }
 
         private static JToken IgnoreProperties(JToken obj)

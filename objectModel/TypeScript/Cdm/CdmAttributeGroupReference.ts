@@ -2,13 +2,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    CdmAttributeContext,
     CdmAttributeGroupDefinition,
     CdmAttributeItem,
     CdmCorpusContext,
     CdmObject,
     CdmObjectReferenceBase,
     cdmObjectType,
+    ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
+    ResolvedTraitSetBuilder,
     resolveOptions,
     VisitCallback
 } from '../internal';
@@ -66,6 +69,27 @@ export class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
         }
         // return p.measure(bodyCode);
     }
+
+    /**
+     * @internal
+     */
+    public constructResolvedAttributes(resOpt: resolveOptions, under: CdmAttributeContext = undefined): ResolvedAttributeSetBuilder {
+        // use the base implementation to get the attributes first
+        const rasb:ResolvedAttributeSetBuilder = super.constructResolvedAttributes(resOpt, under);
+        // traits applied to an attribute group mean the traits are applied to the attributes from that group.
+        if (this.appliedTraits !== undefined && this.appliedTraits.length > 0 && rasb.ras.resolvedAttributeCount > 0) {
+            // get the resolved form of these applied traits
+            const rtsbApplied: ResolvedTraitSetBuilder = new ResolvedTraitSetBuilder();
+            for (const trait of this.appliedTraits) {
+                rtsbApplied.mergeTraits(trait.fetchResolvedTraits(resOpt));
+            }
+            // push down to the atts
+            rasb.ras.applyTraits(rtsbApplied.rts);
+        }
+
+        return rasb;
+    }
+
 
     /**
      * @deprecated

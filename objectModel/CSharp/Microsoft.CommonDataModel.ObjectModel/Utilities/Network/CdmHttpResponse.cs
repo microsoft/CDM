@@ -75,7 +75,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
             if (!IsDisposed)
             {
                 IsDisposed = true;
-                this.Content.Dispose();
+                if (this.Content != null)
+                {
+                    this.Content.Dispose();
+                }
             }
         }
     }

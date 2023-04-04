@@ -78,7 +78,7 @@ describe('Cdm/CdmCorpusDefinition', () => {
         // load with deferred imports.
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.lazyLoad;
-        await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
+        await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', undefined, resOpt);
     });
 
     /**
@@ -97,8 +97,8 @@ describe('Cdm/CdmCorpusDefinition', () => {
         resOpt.importsLoadStrategy = importsLoadStrategy.lazyLoad;
 
         // load entB which is imported by entA document.
-        var docB = await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/entB.cdm.json', null, resOpt);
-        var entA = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/entA.cdm.json/entA', null, resOpt);
+        var docB = await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/entB.cdm.json', undefined, resOpt);
+        var entA = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/entA.cdm.json/entA', undefined, resOpt);
 
         expect(entA.inDocument.importPriorities)
             .toBeUndefined();
@@ -138,7 +138,7 @@ describe('Cdm/CdmCorpusDefinition', () => {
         let resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
-        expect(errorCount)
+        expect(errorCount) 
             .toEqual(1);
 
         errorCount = 0;
@@ -156,7 +156,7 @@ describe('Cdm/CdmCorpusDefinition', () => {
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
         resOpt.shallowValidation = true;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
-        expect(errorCount)
+        expect(errorCount) 
             .toEqual(1);
     });
 

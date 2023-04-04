@@ -1,0 +1,666 @@
+{
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
+  "explanation": "Identity of persons, objects, organizations",
+  "imports": [
+    {
+      "corpusPath": "primitives.2.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "traitName": "identity.organizationName",
+      "explanation": "a complete identifying name for an organization (IS A completeName [has->identityKind[means->organization]])",
+      "extendsTrait": {
+        "traitReference": "identity.completeName",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "organization.entity"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "identity.DUNSNumber",
+      "explanation": "The Data Universal Numbering System, abbreviated as DUNS, is a proprietary system developed and managed by Dun & Bradstreet that assigns a unique numeric identifier, referred to as a 'DUNS number' to a single business entity.",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "organization.entity"
+              },
+              {
+                "verb": "qualifiedBy",
+                "traitReference": "organization.DunAndBradstreet"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "identity.LexisNexisId",
+      "explanation": "LexID is a unique identifier to resolve, match and manage information for more than 276 million U.S. consumer identities",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "organization.entity"
+              },
+              {
+                "verb": "qualifiedBy",
+                "traitReference": "organization.LexisNexis"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "identity.ExperianId",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "organization.entity"
+              },
+              {
+                "verb": "qualifiedBy",
+                "traitReference": "organization.Experian"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "businessProcess",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "identity.nationalGovernmentId",
+      "explanation": "an identification number issued by a national government for an individual or organization",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "organization.nationalGovernment"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "means.identity.company.name",
+      "extendsTrait": "identity.organizationName"
+    },
+    {
+      "traitName": "means.identity.barCode",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.brand",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.governmentID",
+      "extendsTrait": "identity.nationalGovernmentId"
+    },
+    {
+      "traitName": "means.identity.rowNumber",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.scd.originalIdentity",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.scd.surogateIdentity",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.service",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "identity.serviceKind",
+      "explanation": "a type indicator for the kind of service identity. IS A (kindOf[of->means.identity.service])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "means.identity.service",
+            "verb": "of"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "identification",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "communication.email",
+      "explanation": "the concept of email as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.telephone",
+      "explanation": "the concept of telephone as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.messaging",
+      "explanation": "the concept of sms messaging as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.facebook",
+      "explanation": "the concept of facebook as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.twitter",
+      "explanation": "the concept of twitter as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.instagram",
+      "explanation": "the concept of instagram as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.tikTok",
+      "explanation": "the concept of tikTok as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.linkedIn",
+      "explanation": "the concept of linkedIn as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "communication.whatsApp",
+      "explanation": "the concept of whatsApp as a communication mechanism",
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.email",
+      "explanation": "means a service kind which indicates an email address as an identity.  IS A (serviceKind[means->email])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.email"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.telephone",
+      "explanation": "means a service kind which indicates an telephone number as an identity.  IS A (serviceKind[means->telephone])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.telephone"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.messaging",
+      "explanation": "means a service kind which indicates a sms messaging capable device number as an identity.  IS A (serviceKind[means->messaging])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.messaging"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.facebook",
+      "explanation": "means a service kind which indicates a facebook account as an identity.  IS A (serviceKind[means->facebook])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.facebook"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.twitter",
+      "explanation": "means a service kind which indicates a twitter account as an identity.  IS A (serviceKind[means->twitter])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.twitter"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.instagram",
+      "explanation": "means a service kind which indicates an instagram account as an identity.  IS A (serviceKind[means->instagram])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.instagram"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.tikTok",
+      "explanation": "means a service kind which indicates a tikTok account as an identity.  IS A (serviceKind[means->tikTok])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.tikTok"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.linkedIn",
+      "explanation": "means a service kind which indicates a linkedIn account as an identity.  IS A (serviceKind[means->linkedIn])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.linkedIn"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.serviceKind.whatsApp",
+      "explanation": "means a service kind which indicates a whatsApp account as an identity.  IS A (serviceKind[means->whatsApp])",
+      "extendsTrait": {
+        "traitReference": "identity.serviceKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "communication.whatsApp"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "identity.emailAddress",
+      "explanation": "means an emailAddress  IS A (identity.global[has->identityKind[means->serviceKind[means->email]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.email"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.telephoneNumber",
+      "explanation": "means a telephone number  IS A (identity.global[has->identityKind[means->serviceKind[means->telephone]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.telephone"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.messagingNumber",
+      "explanation": "means a sms messaging number  IS A (identity.global[has->identityKind[means->serviceKind[means->messaging]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.messaging"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.facebookAccountId",
+      "explanation": "means a facebook account Id  IS A (identity.global[has->identityKind[means->serviceKind[means->facebook]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.facebook"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.twitterAccountId",
+      "explanation": "means a twitter account Id  IS A (identity.global[has->identityKind[means->serviceKind[means->twitter]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.twitter"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.instagramAccountId",
+      "explanation": "means an instagram account Id  IS A (identity.global[has->identityKind[means->serviceKind[means->instagram]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.instagram"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.tikTokAccountId",
+      "explanation": "means a tikTok account Id  IS A (identity.global[has->identityKind[means->serviceKind[means->tikTok]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.tikTok"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.linkedInAccountId",
+      "explanation": "means an linkedIn account Id  IS A (identity.global[has->identityKind[means->serviceKind[means->linkedIn]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.linkedIn"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "identity.whatsAppAccountId",
+      "explanation": "means a whatsApp account Id  IS A (identity.global[has->identityKind[means->serviceKind[means->whatsApp]]])",
+      "extendsTrait": {
+        "traitReference": "identity.global",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "identity.serviceKind.whatsApp"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "means.identity.service.email",
+      "explanation": "redefined older trait to new structured one",
+      "extendsTrait": "identity.emailAddress"
+    },
+    {
+      "traitName": "means.identity.service.facebook",
+      "explanation": "redefined older trait to new structured one",
+      "extendsTrait": "identity.facebookAccountId"
+    },
+    {
+      "traitName": "means.identity.service.phone",
+      "explanation": "redefined older trait to new structured one",
+      "extendsTrait": "identity.telephoneNumber"
+    },
+    {
+      "traitName": "means.identity.service.phone.cell",
+      "explanation": "redefined older trait to new structured one",
+      "extendsTrait": "identity.telephoneNumber"
+    },
+    {
+      "traitName": "means.identity.service.phone.fax",
+      "explanation": "redefined older trait to new structured one",
+      "extendsTrait": "identity.telephoneNumber"
+    },
+    {
+      "traitName": "means.identity.service.twitter",
+      "explanation": "redefined older trait to new structured one",
+      "extendsTrait": "identity.twitterAccountId"
+    },
+    {
+      "traitName": "means.identity.SKU",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.tickerSymbol",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.title",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "traitName": "means.identity.IP4Address",
+      "extendsTrait": "means.identity",
+      "explanation": "Internet Protocol V4 Address"
+    },
+    {
+      "traitName": "means.identity.IP6Address",
+      "extendsTrait": "means.identity",
+      "explanation": "Internet Protocol V6 Address"
+    },
+    {
+      "dataTypeName": "governmentId",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.governmentID"
+      ]
+    },
+    {
+      "dataTypeName": "companyName",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.company.name"
+      ]
+    },
+    {
+      "dataTypeName": "email",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.service.email"
+      ]
+    },
+    {
+      "dataTypeName": "phone",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.service.phone"
+      ]
+    },
+    {
+      "dataTypeName": "phoneCell",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.service.phone.cell"
+      ]
+    },
+    {
+      "dataTypeName": "phoneFax",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.service.phone.fax"
+      ]
+    },
+    {
+      "dataTypeName": "tickerSymbol",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.identity.tickerSymbol"
+      ]
+    },
+    {
+      "explanation": "contains a userId",
+      "traitName": "means.userId"
+    },
+    {
+      "explanation": "The identifier of a system user",
+      "dataTypeName": "userId",
+      "extendsDataType": "entityId",
+      "exhibitsTraits": [
+        "means.userId"
+      ]
+    },
+    {
+      "dataTypeName": "IP4Address",
+      "extendsDataType": "string",
+      "explanation": "Internet Protocol V4 Address of the form DDD.DDD.DDD.DDD",
+      "exhibitsTraits": [
+        "means.identity.IP4Address"
+      ]
+    },
+    {
+      "dataTypeName": "IP6Address",
+      "extendsDataType": "string",
+      "explanation": "Internet Protocol V6 Address of the form  XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX",
+      "exhibitsTraits": [
+        "means.identity.IP6Address"
+      ]
+    }
+  ],
+  "documentVersion": "2.0"
+}

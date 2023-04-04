@@ -17,6 +17,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmOperationAlterTraits : CdmOperationBase
     {
         private static readonly string Tag = nameof(CdmOperationAlterTraits);
+        // this cache is for all the traits we might get profiles about. because once is enough
+        private TraitProfileCache profCache = new TraitProfileCache();
 
         public CdmCollection<CdmTraitReferenceBase> TraitsToAdd { get; set; }
 
@@ -25,6 +27,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public bool? ArgumentsContainWildcards { get; set; }
 
         public List<string> ApplyTo { get; set; }
+        public List<string> ApplyToTraits { get; set; }
 
         public CdmOperationAlterTraits(CdmCorpusContext ctx) : base(ctx)
         {
@@ -61,6 +64,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.ApplyTo != null)
             {
                 copy.ApplyTo = new List<string>(this.ApplyTo);
+            }
+            if (this.ApplyToTraits != null)
+            {
+                copy.ApplyToTraits = new List<string>(this.ApplyToTraits);
             }
 
             copy.ArgumentsContainWildcards = this.ArgumentsContainWildcards;
@@ -150,6 +157,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // We use the top-level names because the applyTo list may contain a previous name our current resolved attributes had
             Dictionary<string, string> topLevelSelectedAttributeNames = this.ApplyTo != null ? ProjectionResolutionCommonUtil.GetTopList(projCtx, this.ApplyTo) : null;
 
+            // if set, make a hashset of trait names that need to be removed
+            HashSet<string> traitNamesToRemove = new HashSet<string>();
+            if (this.TraitsToRemove != null)
+            {
+                foreach (var traitRef in this.TraitsToRemove)
+                {
+                    // resolve this because it could be a traitgroup name and turn into many other traits
+                    ResolvedTraitSet resolvedTraitSet = traitRef.FetchResolvedTraits(projCtx.ProjectionDirective.ResOpt);
+                    resolvedTraitSet.Set.ForEach(rt => traitNamesToRemove.Add(rt.TraitName));
+                }
+            }
+
+            // if set, make a hashset from the applyToTraits for fast lookup later
+            HashSet<string> applyToTraitNames = null;
+            if (this.ApplyToTraits != null)
+                applyToTraitNames = new HashSet<string>(this.ApplyToTraits);
+
             foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
             {
                 // Check if the current projection attribute state's resolved attribute is in the list of selected attributes
@@ -191,8 +215,71 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         break;
                     }
 
-                    newResAttr.ResolvedTraits = newResAttr.ResolvedTraits.MergeSet(this.ResolvedNewTraits(projCtx, currentPAS));
-                    this.RemoveTraitsInNewAttribute(projCtx.ProjectionDirective.ResOpt, newResAttr);
+                    var newTraits = this.ResolvedNewTraits(projCtx, currentPAS);
+                    // if the applyToTraits property was set, then these traits apply to the traits of the selected attributes, else to the attribute directly
+                    if (applyToTraitNames == null)
+                    {
+                        // alter traits of atts
+                        newResAttr.ResolvedTraits = newResAttr.ResolvedTraits.MergeSet(newTraits);
+                        // remove if requested
+                        if (traitNamesToRemove != null)
+                        {
+                            traitNamesToRemove.ToList().ForEach(traitName => newResAttr.ResolvedTraits.Remove(projCtx.ProjectionDirective.ResOpt, traitName));
+                        }
+                    } 
+                    else
+                    {
+                        // alter traits of traits of atts
+                        // for every current resolved trait on this attribute, find the ones that match the criteria.
+                        // a match is the trait name or extended name or any classifications set on it
+                        // will need trait references for these resolved traits because metatraits are 'un resolved'
+                        var newTraitRefs = new List<CdmTraitReference>();
+                        foreach(var nrt in newTraits.Set)
+                        {
+                            newTraitRefs.Add(CdmObjectBase.ResolvedTraitToTraitRef(projCtx.ProjectionDirective.ResOpt, nrt));
+                        }
+
+                        foreach (var rt in newResAttr.ResolvedTraits.Set)
+                        {
+                            // so get a hashset of the 'tokens' that classify this trait
+                            var classifiers = new HashSet<string>();
+                            // this profile lists the classifiers and all base traits
+                            var profile = rt.FetchTraitProfile(projCtx.ProjectionDirective.ResOpt, this.profCache, null);
+                            if (profile != null)
+                            {
+                                profile = profile.Consolidate(this.profCache);
+                                // all classifications 
+                                if (profile.Classifications != null)
+                                {
+                                    classifiers.UnionWith(profile.Classifications.Select(c => c.TraitName));
+                                }
+                                while (profile != null)
+                                {
+                                    classifiers.Add(profile.TraitName);
+                                    profile = profile.IS_A;
+                                }
+                            }
+
+                            // is there an intersection between the set of things to look for and the set of things that describe the trait?
+                            if (classifiers.Intersect(applyToTraitNames).Count() > 0)
+                            {
+                                // add the specified and fixed up traits to the metatraits of the resolved
+                                if (newTraitRefs != null && newTraitRefs.Count > 0)
+                                {
+                                    if (rt.MetaTraits == null)
+                                        rt.MetaTraits = new List<CdmTraitReferenceBase>();
+                                    rt.MetaTraits.AddRange(newTraitRefs);
+                                }
+                                // remove some?
+                                if (traitNamesToRemove != null && traitNamesToRemove.Count > 0 && rt.MetaTraits != null)
+                                {
+                                    rt.MetaTraits.RemoveAll((mtr) => traitNamesToRemove.Contains(mtr.FetchObjectDefinitionName()));
+                                    if (rt.MetaTraits.Count == 0)
+                                        rt.MetaTraits = null;
+                                }
+                            }
+                        }
+                    }
 
                     // Create a projection attribute state for the new attribute with new applied traits by creating a copy of the current state
                     // Copy() sets the current state as the previous state for the new one
@@ -224,11 +311,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ResolvedTraitSet resolvedTraitSet = new ResolvedTraitSet(projCtx.ProjectionDirective.ResOpt);
             string projectionOwnerName = projCtx.ProjectionDirective.OriginalSourceAttributeName ?? "";
 
-            foreach (var traitRef in this.TraitsToAdd)
+            if (this.TraitsToAdd != null)
             {
-                var traitRefCopy = traitRef.FetchResolvedTraits(projCtx.ProjectionDirective.ResOpt).DeepCopy();
-                ReplaceWildcardCharacters(projCtx.ProjectionDirective.ResOpt, traitRefCopy, projectionOwnerName, currentPAS);
-                resolvedTraitSet = resolvedTraitSet.MergeSet(traitRefCopy);
+                foreach (var traitRef in this.TraitsToAdd)
+                {
+                    var traitRefCopy = traitRef.FetchResolvedTraits(projCtx.ProjectionDirective.ResOpt).DeepCopy();
+                    ReplaceWildcardCharacters(projCtx.ProjectionDirective.ResOpt, traitRefCopy, projectionOwnerName, currentPAS);
+                    resolvedTraitSet = resolvedTraitSet.MergeSet(traitRefCopy);
+                }
             }
 
             return resolvedTraitSet;

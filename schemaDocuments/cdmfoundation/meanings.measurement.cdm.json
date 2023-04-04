@@ -1,6 +1,6 @@
 {
-  "$schema": "/schema.cdm.json",
-  "jsonSchemaSemanticVersion": "1.0.0",
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
   "explanation": "Measurement of quantities",
   "imports": [
     {
@@ -9,209 +9,718 @@
   ],
   "definitions": [
     {
-      "traitName": "means.measurement",
-      "extendsTrait": "means"
+      "traitName": "measurement",
+      "defaultVerb": "classifiedAs",
+      "explanation": "use to classify objects or other traits"
     },
     {
-      "traitName": "means.measurement.dimension",
+      "traitName": "dimension",
+      "defaultVerb": "means",
+      "explanation": "the concept of a measurable dimension",
+      "exhibitsTraits": [
+        "measurement"
+      ]
+    },
+    {
+      "traitName": "dimension.time",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'time' used to describe other concepts such as the measurement of 'time'"
+    },
+    {
+      "traitName": "dimension.distance",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'distance' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.volume",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'volume' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.mass",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'mass' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.electricCurrent",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'electic current' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.temperature",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'thermodynamic temperature' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.amount",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'amount of substance' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.luminousIntensity",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'luminous intensity' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.frequency",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'frequency' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.angle",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'geometric angle' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.force",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'force' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.pressure",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'pressure or stress' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.energy",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'energy, work, heat' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.power",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'power, radiant flex' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.electricCharge",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'electric charge, quantity of electricity' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.electromotiveForce",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'volatage, EMF, electrical potential difference' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.capacitance",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'electical capacitance' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.resistance",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'electrical resistance, impedance, reactance' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "dimension.dataRate",
+      "extendsTrait": "dimension",
+      "explanation": "the concept of 'data rate' used to describe other concepts such as the measurement or units representing this idea"
+    },
+    {
+      "traitName": "measurement.dimensionKind",
+      "explanation": "a type indicator for kind of a dimension, AKA capacitance, time, distance.",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "dimension",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "measurement"
+      ]
+    },
+    {
+      "traitName": "means.measurement",
+      "extendsTrait": "measurement",
+      "defaultVerb": "means",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension",
       "explanation": "measurement of some physical dimension",
-      "extendsTrait": "means.measurement",
+      "defaultVerb": "means",
       "hasParameters": [
         {
           "name": "dimension",
           "explanation": "the name of the physical dimension being measured",
           "dataType": "string"
         }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "measurement",
+          "verb": "classifiedAs"
+        }
       ]
     },
     {
-      "traitName": "means.measurement.dimension.time",
-      "explanation": "measurement of time",
-      "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
-        "arguments": [
-          "time"
-        ]
-      }
+      "traitName": "means.measurement.dimension",
+      "extendsTrait": "measurement.dimension",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
-      "traitName": "means.measurement.dimension.length",
-      "explanation": "measurement of length",
+      "traitName": "measurement.dimension.time",
+      "explanation": "measurement of time",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "length"
+          "time"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.time",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "means.measurement.dimension.time",
+      "extendsTrait": "measurement.dimension.time",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.distance",
+      "explanation": "measurement of distance",
+      "extendsTrait": {
+        "traitReference": "measurement.dimension",
+        "arguments": [
+          "distance"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.distance",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "measurement.dimension.distance.length",
+      "extendsTrait": "measurement.dimension.distance",
+      "explanation": "length as a special perspective on distance."
+    },
+    {
+      "traitName": "measurement.dimension.distance.width",
+      "extendsTrait": "measurement.dimension.distance",
+      "explanation": "width as a special perspective on distance."
+    },
+    {
+      "traitName": "measurement.dimension.distance.height",
+      "extendsTrait": "measurement.dimension.distance",
+      "explanation": "height as a special perspective on distance."
+    },
+    {
+      "traitName": "measurement.dimension.volume",
+      "explanation": "measurement of volume",
+      "extendsTrait": {
+        "traitReference": "measurement.dimension",
+        "arguments": [
+          "volume"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.volume",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
+    },
+    {
+      "traitName": "measurement.dimension.mass",
+      "explanation": "measurement of mass",
+      "extendsTrait": {
+        "traitReference": "measurement.dimension",
+        "arguments": [
+          "mass"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.mass",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.mass",
-      "explanation": "measurement of mass",
+      "extendsTrait": "measurement.dimension.mass",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.electricCurrent",
+      "explanation": "measurement of electic current",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "mass"
+          "electricCurrent"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.electricCurrent",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.electricCurrent",
-      "explanation": "measurement of electic current",
+      "extendsTrait": "measurement.dimension.electricCurrent",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.temperature",
+      "explanation": "measurement of thermodynamic temperature",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "electricCurrent"
+          "temperature"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.temperature",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.temperature",
-      "explanation": "measurement of thermodynamic temperature",
+      "extendsTrait": "measurement.dimension.temperature",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.amount",
+      "explanation": "measurement of amount of substance",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "temperature"
+          "amount"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.amount",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.amount",
-      "explanation": "measurement of amount of substance",
+      "extendsTrait": "measurement.dimension.amount",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.luminousIntensity",
+      "explanation": "measurement of electic current",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "amount"
+          "luminousIntensity"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.luminousIntensity",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.luminousIntensity",
-      "explanation": "measurement of electic current",
+      "extendsTrait": "measurement.dimension.luminousIntensity",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.frequency",
+      "explanation": "measurement of frequency",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "luminousIntensity"
+          "frequency"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.frequency",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.frequency",
-      "explanation": "measurement of frequency",
+      "extendsTrait": "measurement.dimension.frequency",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.angle",
+      "explanation": "measurement of geometric angle",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "frequency"
+          "angle"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.angle",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.angle",
-      "explanation": "measurement of geometric angle",
+      "extendsTrait": "measurement.dimension.angle",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.force",
+      "explanation": "measurement of force",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "angle"
+          "force"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.force",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.force",
-      "explanation": "measurement of force",
+      "extendsTrait": "measurement.dimension.force",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.pressure",
+      "explanation": "measurement of pressure or stress",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "force"
+          "pressure"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.pressure",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.pressure",
-      "explanation": "measurement of pressure or stress",
+      "extendsTrait": "measurement.dimension.pressure",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.energy",
+      "explanation": "measurement of energy, work, heat",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "pressure"
+          "energy"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.energy",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.energy",
-      "explanation": "measurement of energy, work, heat",
+      "extendsTrait": "measurement.dimension.energy",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.power",
+      "explanation": "measurement of power, radiant flex",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "energy"
+          "power"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.power",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.power",
-      "explanation": "measurement of power, radiant flex",
+      "extendsTrait": "measurement.dimension.power",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.electricCharge",
+      "explanation": "measurement of electric charge, quantity of electricity",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "power"
+          "electricCharge"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.electricCharge",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.electricCharge",
-      "explanation": "measurement of electric charge, quantity of electricity",
+      "extendsTrait": "measurement.dimension.electricCharge",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.electromotiveForce",
+      "explanation": "measurement of volatage, EMF, electrical potential difference",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "electricCharge"
+          "electromotiveForce"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.electromotiveForce",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.electromotiveForce",
-      "explanation": "measurement of volatage, EMF, electrical potential difference",
+      "extendsTrait": "measurement.dimension.electromotiveForce",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.capacitance",
+      "explanation": "measurement of electical capacitance",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "electromotiveForce"
+          "capacitance"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.capacitance",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.capacitance",
-      "explanation": "measurement of electical capacitance",
+      "extendsTrait": "measurement.dimension.capacitance",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.resistance",
+      "explanation": "measurement of electrical resistance, impedance, reactance",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "capacitance"
+          "resistance"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.resistance",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.resistance",
-      "explanation": "measurement of electrical resistance, impedance, reactance",
+      "extendsTrait": "measurement.dimension.resistance",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "measurement.dimension.dataRate",
+      "explanation": "measurement of data rate",
       "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
+        "traitReference": "measurement.dimension",
         "arguments": [
-          "resistance"
+          "dataRate"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.dataRate",
+                "verb": "means"
+              }
+            ]
+          }
         ]
-      }
+      },
+      "exhibitsTraits": []
     },
     {
       "traitName": "means.measurement.dimension.dataRate",
-      "explanation": "measurement of data rate",
-      "extendsTrait": {
-        "traitReference": "means.measurement.dimension",
-        "arguments": [
-          "dataRate"
-        ]
-      }
+      "extendsTrait": "measurement.dimension.dataRate",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
-      "traitName": "has.measurement.fundamentalComponent",
-      "explanation": "description of one fundamental component of a derived unit",
-      "extendsTrait": "means.measurement",
+      "traitName": "measurement.unit",
+      "explanation": "description of 'units' (expressed with 'symbol') used to measure some quantity along a 'dimension'",
+      "defaultVerb": "has",
+      "exhibitsTraits": [
+        {
+          "traitReference": "measurement",
+          "verb": "classifiedAs"
+        },
+        {
+          "traitReference": "measurement.dimension",
+          "verb": "of"
+        }
+      ],
       "hasParameters": [
         {
-          "name": "fundamentalUnit",
-          "explanation": "the name of the fundamental unit that is a component of some derived unit.",
+          "name": "unit",
+          "explanation": "the name of the unit",
           "dataType": "string"
         },
         {
@@ -223,7 +732,35 @@
           "name": "dimension",
           "explanation": "dimension being measured",
           "dataType": "string"
-        },
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unitKind",
+      "explanation": "a type indicator for kinds of a measurement units, AKA grams, seconds, dollars.",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unit",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.subType"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "measurement"
+      ]
+    },
+    {
+      "traitName": "has.measurement.fundamentalComponent",
+      "explanation": "description of one fundamental component of a derived unit",
+      "extendsTrait": "measurement.unit",
+      "hasParameters": [
         {
           "name": "fundamentalExponent",
           "explanation": "the exponent, positive, negative, fractional (for inverse) that the component contributes to the base derived unit.",
@@ -246,12 +783,12 @@
     },
     {
       "traitName": "has.measurement.fundamentalComponent.second",
-      "explanation": "a fundamental component expressing time in seconds",
+      "explanation": "the fundamental component of time in seconds",
       "extendsTrait": {
         "traitReference": "has.measurement.fundamentalComponent",
         "arguments": [
           {
-            "name": "fundamentalUnit",
+            "name": "unit",
             "value": "second"
           },
           {
@@ -262,38 +799,62 @@
             "name": "symbol",
             "value": "s"
           }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.time",
+                "verb": "means"
+              }
+            ]
+          }
         ]
       }
     },
     {
       "traitName": "has.measurement.fundamentalComponent.meter",
-      "explanation": "a fundamental component expressing length in meters",
+      "explanation": "the fundamental component of distance in meters",
       "extendsTrait": {
         "traitReference": "has.measurement.fundamentalComponent",
         "arguments": [
           {
-            "name": "fundamentalUnit",
+            "name": "unit",
             "value": "meter"
           },
           {
             "name": "dimension",
-            "value": "length"
+            "value": "distance"
           },
           {
             "name": "symbol",
             "value": "m"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.distance",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "has.measurement.fundamentalComponent.kilogram",
-      "explanation": "a fundamental component expressing mass in kilogram",
+      "explanation": "the fundamental component of mass in kilogram",
       "extendsTrait": {
         "traitReference": "has.measurement.fundamentalComponent",
         "arguments": [
           {
-            "name": "fundamentalUnit",
+            "name": "unit",
             "value": "kilogram"
           },
           {
@@ -304,17 +865,29 @@
             "name": "symbol",
             "value": "kg"
           }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.mass",
+                "verb": "means"
+              }
+            ]
+          }
         ]
       }
     },
     {
       "traitName": "has.measurement.fundamentalComponent.ampere",
-      "explanation": "a fundamental component expressing electric current in amperes",
+      "explanation": "the fundamental component of electric current in amperes",
       "extendsTrait": {
         "traitReference": "has.measurement.fundamentalComponent",
         "arguments": [
           {
-            "name": "fundamentalUnit",
+            "name": "unit",
             "value": "ampere"
           },
           {
@@ -325,17 +898,29 @@
             "name": "symbol",
             "value": "A"
           }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.electricCurrent",
+                "verb": "means"
+              }
+            ]
+          }
         ]
       }
     },
     {
       "traitName": "has.measurement.fundamentalComponent.kelvin",
-      "explanation": "a fundamental component expressing thermodynamic temperature in degrees kelvin",
+      "explanation": "the fundamental component of thermodynamic temperature in degrees kelvin",
       "extendsTrait": {
         "traitReference": "has.measurement.fundamentalComponent",
         "arguments": [
           {
-            "name": "fundamentalUnit",
+            "name": "unit",
             "value": "kelvin"
           },
           {
@@ -346,17 +931,29 @@
             "name": "symbol",
             "value": "K"
           }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.temperature",
+                "verb": "means"
+              }
+            ]
+          }
         ]
       }
     },
     {
       "traitName": "has.measurement.fundamentalComponent.mole",
-      "explanation": "a fundamental component expressing amount in moles",
+      "explanation": "the fundamental component of amount in moles",
       "extendsTrait": {
         "traitReference": "has.measurement.fundamentalComponent",
         "arguments": [
           {
-            "name": "fundamentalUnit",
+            "name": "unit",
             "value": "mole"
           },
           {
@@ -367,17 +964,29 @@
             "name": "symbol",
             "value": "mol"
           }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.amount",
+                "verb": "means"
+              }
+            ]
+          }
         ]
       }
     },
     {
       "traitName": "has.measurement.fundamentalComponent.candela",
-      "explanation": "a fundamental component expressing luminous intensity in candelas",
+      "explanation": "the fundamental component of luminous intensity in candelas",
       "extendsTrait": {
         "traitReference": "has.measurement.fundamentalComponent",
         "arguments": [
           {
-            "name": "fundamentalUnit",
+            "name": "unit",
             "value": "candela"
           },
           {
@@ -387,6 +996,18 @@
           {
             "name": "symbol",
             "value": "cd"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.luminousIntensity",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
@@ -394,449 +1015,1394 @@
     {
       "traitName": "means.measurement.units.si",
       "explanation": "measurments in international system of units",
-      "extendsTrait": "means",
-      "hasParameters": [
-        {
-          "name": "unit",
-          "explanation": "unit of measurement",
-          "dataType": "string"
-        },
-        {
-          "name": "dimension",
-          "explanation": "dimension being measured",
-          "dataType": "string"
-        },
-        {
-          "name": "symbol",
-          "explanation": "the common symbolic representation of the unit",
-          "dataType": "string"
-        }
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        "measurement"
       ]
     },
     {
-      "traitName": "means.measurement.units.si.second",
-      "explanation": "measurement of time in seconds",
+      "traitName": "measurement.unit.time",
+      "explanation": "a unit of measurement for the time dimension",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "time"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.time",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "means.measurement.units.si.second",
+      "explanation": "si unit of measurement for time in seconds",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.time",
         "arguments": [
           {
             "name": "unit",
             "value": "second"
           },
           {
-            "name": "dimension",
-            "value": "time"
-          },
-          {
             "name": "symbol",
             "value": "s"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.time.second",
+      "explanation": "a measurement for duration of time in units of si seconds",
+      "extendsTrait": "measurement.dimension.time",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.second",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.distance",
+      "explanation": "a unit of measurement for the dimension distance",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "distance"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.distance",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.meter",
-      "explanation": "measurement of length in meters",
+      "explanation": "si unit of measurement for distance in meters",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.distance",
         "arguments": [
           {
             "name": "unit",
             "value": "meter"
           },
           {
+            "name": "symbol",
+            "value": "m"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.distance.meter",
+      "explanation": "a measurement for distance in units of si meters",
+      "extendsTrait": "measurement.dimension.distance",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.meter",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.volume",
+      "explanation": "a unit of measurement for the dimension volume",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
             "name": "dimension",
-            "value": "length"
+            "value": "volume"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.volume",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "means.measurement.units.si.liter",
+      "explanation": "si unit of measurement for volume in liters",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.volume",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "liter"
           },
           {
             "name": "symbol",
-            "value": "m"
+            "value": "L"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.volume.liter",
+      "explanation": "a measurement for volume in units of si liter",
+      "extendsTrait": "measurement.dimension.volume",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.liter",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalScale",
+              "value": ".001"
+            },
+            {
+              "name": "fundamentalExponent",
+              "value": "3"
+            }
+          ],
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.mass",
+      "explanation": "a unit of measurement for the dimension mass",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "mass"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.mass",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.kilogram",
-      "explanation": "measurement of mass in kilogram",
+      "explanation": "si unit of measurement for mass in kilogram",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.mass",
         "arguments": [
           {
             "name": "unit",
             "value": "kilogram"
           },
           {
-            "name": "dimension",
-            "value": "mass"
-          },
-          {
             "name": "symbol",
             "value": "kg"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.mass.kilogram",
+      "explanation": "a measurement for mass in units of si kilogram",
+      "extendsTrait": "measurement.dimension.mass",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.kilogram",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.kilogram",
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.electricCurrent",
+      "explanation": "a unit of measurement for the dimension electricCurrent",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "electricCurrent"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.electricCurrent",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.ampere",
-      "explanation": "measurement of electric current in amperes",
+      "explanation": "si unit of measurement for electric current in amperes",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.electricCurrent",
         "arguments": [
           {
             "name": "unit",
             "value": "ampere"
           },
           {
-            "name": "dimension",
-            "value": "electricCurrent"
-          },
-          {
             "name": "symbol",
             "value": "A"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.electricCurrent.ampere",
+      "explanation": "a measurement for electric current in units of si amperes",
+      "extendsTrait": "measurement.dimension.electricCurrent",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.ampere",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.ampere",
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.temperature",
+      "explanation": "a unit of measurement for the dimension temperature",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "temperature"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.temperature",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.kelvin",
-      "explanation": "measurement of thermodynamic temperature in degrees kelvin",
+      "explanation": "si unit of measurement for thermodynamic temperature in degrees kelvin",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.temperature",
         "arguments": [
           {
             "name": "unit",
             "value": "kelvin"
           },
           {
-            "name": "dimension",
-            "value": "temperature"
-          },
-          {
             "name": "symbol",
             "value": "K"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.temperature.kelvin",
+      "explanation": "a measurement for thermodynamic temperature in degrees units of si kelvin",
+      "extendsTrait": "measurement.dimension.temperature",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.kelvin",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.kelvin",
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.amount",
+      "explanation": "a unit of measurement for the dimension amount",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "amount"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.amount",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.mole",
-      "explanation": "measurement of amount in moles",
+      "explanation": "si unit of measurement for amount in moles",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.amount",
         "arguments": [
           {
             "name": "unit",
             "value": "mole"
           },
           {
-            "name": "dimension",
-            "value": "amount"
-          },
-          {
             "name": "symbol",
             "value": "mol"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.amount.mole",
+      "explanation": "a measurement for amount in units of si moles",
+      "extendsTrait": "measurement.dimension.amount",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.mole",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.mole",
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.luminousIntensity",
+      "explanation": "a unit of measurement for the dimension luminousIntensity",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "luminousIntensity"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.luminousIntensity",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.candela",
-      "explanation": "measurement of luminous intensity in candelas",
+      "explanation": "si unit of measurement for luminous intensity in candelas",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.luminousIntensity",
         "arguments": [
           {
             "name": "unit",
             "value": "candela"
           },
           {
-            "name": "dimension",
-            "value": "luminousIntensity"
-          },
-          {
             "name": "symbol",
             "value": "cd"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.luminousIntensity.candela",
+      "explanation": "a measurement for luminous intensity in units of si candelas",
+      "extendsTrait": "measurement.dimension.luminousIntensity",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.candela",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.candela",
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.frequency",
+      "explanation": "a unit of measurement for the dimension frequency",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "frequency"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.frequency",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.hertz",
-      "explanation": "measurement of frequency in hertz",
+      "explanation": "si unit of measurement for frequency in hertz",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.frequency",
         "arguments": [
           {
             "name": "unit",
             "value": "hertz"
           },
           {
-            "name": "dimension",
-            "value": "frequency"
-          },
-          {
             "name": "symbol",
             "value": "Hz"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.frequency.hertz",
+      "explanation": "a measurement for frequency in units of si hertz",
+      "extendsTrait": "measurement.dimension.frequency",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.hertz",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.angle",
+      "explanation": "a unit of measurement for the dimension angle",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "angle"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.angle",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.radian",
-      "explanation": "measurement of angle in radians",
+      "explanation": "si unit of measurement for angle in radians",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.angle",
         "arguments": [
           {
             "name": "unit",
             "value": "radian"
           },
           {
-            "name": "dimension",
-            "value": "angle"
-          },
-          {
             "name": "symbol",
             "value": "rad"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.angle.radian",
+      "explanation": "a measurement for angle in radians",
+      "extendsTrait": "measurement.dimension.angle",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.radian",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent",
+          "arguments": [
+            {
+              "name": "unit",
+              "value": "radian"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.force",
+      "explanation": "a unit of measurement for the dimension force",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "force"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.force",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.newton",
-      "explanation": "measurement of force or weight in newtons",
+      "explanation": "si unit of measurement for force or weight in newtons",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.force",
         "arguments": [
           {
             "name": "unit",
             "value": "newton"
           },
           {
-            "name": "dimension",
-            "value": "force"
-          },
-          {
             "name": "symbol",
             "value": "N"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.force.newton",
+      "explanation": "a measurement for force or weight in newtons",
+      "extendsTrait": "measurement.dimension.force",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.newton",
+          "verb": "has"
+        },
+        "has.measurement.fundamentalComponent.kilogram",
+        "has.measurement.fundamentalComponent.meter",
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.pressure",
+      "explanation": "a unit of measurement for the dimension pressure",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "pressure"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.pressure",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.pascal",
-      "explanation": "measurement of pressure or stress in pascals",
+      "explanation": "si unit of measurement for pressure or stress in pascals",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.pressure",
         "arguments": [
           {
             "name": "unit",
             "value": "pascal"
           },
           {
-            "name": "dimension",
-            "value": "pressure"
-          },
-          {
             "name": "symbol",
             "value": "Pa"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.pressure.pascal",
+      "explanation": "a measurement for pressure or stress in pascals",
+      "extendsTrait": "measurement.dimension.pressure",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.pascal",
+          "verb": "has"
+        },
+        "has.measurement.fundamentalComponent.kilogram",
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-1"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.energy",
+      "explanation": "a unit of measurement for the dimension energy",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "energy"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.energy",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.joule",
-      "explanation": "measurement of energy, work or heat in joules",
+      "explanation": "si unit of measurement for energy, work or heat in joules",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.energy",
         "arguments": [
           {
             "name": "unit",
             "value": "joule"
           },
           {
-            "name": "dimension",
-            "value": "energy"
-          },
-          {
             "name": "symbol",
             "value": "J"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.energy.joule",
+      "explanation": "a measurement for energy, work or heat in joules",
+      "extendsTrait": "measurement.dimension.energy",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.joule",
+          "verb": "has"
+        },
+        "has.measurement.fundamentalComponent.kilogram",
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.power",
+      "explanation": "a unit of measurement for the dimension power",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "power"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.power",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.watt",
-      "explanation": "measurement of power or radiant flux in watts",
+      "explanation": "si unit of measurement for power or radiant flux in watts",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.power",
         "arguments": [
           {
             "name": "unit",
             "value": "watt"
           },
           {
-            "name": "dimension",
-            "value": "power"
-          },
-          {
             "name": "symbol",
             "value": "W"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.power.watt",
+      "explanation": "a measurement for power or radiant flux in watts",
+      "extendsTrait": "measurement.dimension.power",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.watt",
+          "verb": "has"
+        },
+        "has.measurement.fundamentalComponent.kilogram",
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.electricCharge",
+      "explanation": "a unit of measurement for the dimension electricCharge",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "electricCharge"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.electricCharge",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.coulomb",
-      "explanation": "measurement of electric charge or amount of electricity in coulombs",
+      "explanation": "si unit of measurement for electric charge or amount of electricity in coulombs",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.electricCharge",
         "arguments": [
           {
             "name": "unit",
             "value": "coulomb"
           },
           {
-            "name": "dimension",
-            "value": "electricCharge"
-          },
-          {
             "name": "symbol",
             "value": "C"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.electricCharge.coulomb",
+      "explanation": "a measurement for electric charge or amount of electricity in coulombs",
+      "extendsTrait": "measurement.dimension.electricCharge",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.coulomb",
+          "verb": "has"
+        },
+        "has.measurement.fundamentalComponent.second",
+        "has.measurement.fundamentalComponent.ampere"
+      ]
+    },
+    {
+      "traitName": "measurement.unit.electromotiveForce",
+      "explanation": "a unit of measurement for the dimension electromotiveForce",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "electromotiveForce"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.electromotiveForce",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.volt",
-      "explanation": "measurement of voltage, EMF, electrical potantial difference in volts",
+      "explanation": "si unit of measurement for voltage, EMF, electrical potantial difference in volts",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.electromotiveForce",
         "arguments": [
           {
             "name": "unit",
             "value": "volt"
           },
           {
-            "name": "dimension",
-            "value": "electromotiveForce"
-          },
-          {
             "name": "symbol",
             "value": "V"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.electromotiveForce.volt",
+      "explanation": "a measurement for electromotiveForce",
+      "extendsTrait": "measurement.dimension.electromotiveForce",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.volt",
+          "verb": "has"
+        },
+        "has.measurement.fundamentalComponent.kilogram",
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-3"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.ampere",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.capacitance",
+      "explanation": "a unit of measurement for the dimension capacitance",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "capacitance"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.capacitance",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.farad",
-      "explanation": "measurement of electric capacitance in farads",
+      "explanation": "si unit of measurement for electric capacitance in farads",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.capacitance",
         "arguments": [
           {
             "name": "unit",
             "value": "farad"
           },
           {
-            "name": "dimension",
-            "value": "capacitance"
-          },
-          {
             "name": "symbol",
             "value": "F"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.capacitance.farad",
+      "explanation": "a measurement for electric capacitance in farads",
+      "extendsTrait": "measurement.dimension.capacitance",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.farad",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.kilogram",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-1"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-2"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "4"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.ampere",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.resistance",
+      "explanation": "a unit of measurement for the dimension resistance",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "resistance"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.resistance",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.ohm",
-      "explanation": "measurement of electrical resistance, impedance, reactance in ohms",
+      "explanation": "si unit of measurement for electrical resistance, impedance, reactance in ohms",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.resistance",
         "arguments": [
           {
             "name": "unit",
             "value": "ohm"
           },
           {
-            "name": "dimension",
-            "value": "resistance"
-          },
-          {
             "name": "symbol",
             "value": "Ω"
           }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
         ]
       }
     },
     {
+      "traitName": "measurement.dimension.resistance.ohm",
+      "explanation": "a measurement for electrical resistance, impedance, reactance in ohms",
+      "extendsTrait": "measurement.dimension.resistance",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.ohm",
+          "verb": "has"
+        },
+        "has.measurement.fundamentalComponent.kilogram",
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-3"
+            }
+          ]
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.ampere",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-2"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "traitName": "means.measurement.units.si.celsius",
-      "explanation": "measurement of temperature in degrees celsius",
+      "explanation": "si unit of measurement for temperature in degrees celsius",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.temperature",
         "arguments": [
           {
             "name": "unit",
             "value": "celsius"
           },
           {
-            "name": "dimension",
-            "value": "temperature"
-          },
-          {
             "name": "symbol",
             "value": "C"
           }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
         ]
       }
     },
     {
+      "traitName": "measurement.dimension.temperature.celsius",
+      "explanation": "a measurement for temperature in degrees celsius",
+      "extendsTrait": "measurement.dimension.temperature",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.celsius",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.kelvin",
+          "arguments": [
+            {
+              "name": "fundamentalOffset",
+              "value": "273.15"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "traitName": "means.measurement.units.si.gram",
-      "explanation": "measurement of mass in grams",
+      "explanation": "si unit of measurement for mass in grams",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.mass",
         "arguments": [
           {
             "name": "unit",
             "value": "gram"
           },
           {
-            "name": "dimension",
-            "value": "mass"
-          },
-          {
             "name": "symbol",
             "value": "g"
+          }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.mass.gram",
+      "explanation": "a measurement for mass in grams",
+      "extendsTrait": "measurement.dimension.mass",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.gram",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.kilogram",
+          "arguments": [
+            {
+              "name": "fundamentalScale",
+              "value": ".001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "measurement.unit.dataRate",
+      "explanation": "a unit of measurement for the dimension dataRate",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "dataRate"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.dataRate",
+                "verb": "means"
+              }
+            ]
           }
         ]
       }
     },
     {
       "traitName": "means.measurement.units.si.bitPerSecond",
-      "explanation": "measurement of data rate in bits per second",
+      "explanation": "si unit of measurement for data rate in bits per second",
       "extendsTrait": {
-        "traitReference": "means.measurement.units.si",
+        "traitReference": "measurement.unit.dataRate",
         "arguments": [
           {
             "name": "unit",
             "value": "bitPerSecond"
           },
           {
-            "name": "dimension",
-            "value": "dataRate"
-          },
-          {
             "name": "symbol",
             "value": "bps"
           }
+        ],
+        "appliedTraits": [
+          "means.measurement.units.si"
         ]
       }
+    },
+    {
+      "traitName": "measurement.dimension.dataRate.bitPerSecond",
+      "explanation": "a measurement for data rate in bits per units of si second",
+      "extendsTrait": "measurement.dimension.dataRate",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.measurement.units.si.bitPerSecond",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.second",
+          "arguments": [
+            {
+              "name": "fundamentalExponent",
+              "value": "-1"
+            }
+          ]
+        }
+      ]
     },
     {
       "traitName": "means.measurement.prefix",
       "extendsTrait": "means.measurement",
       "explanation": "unit prefixes denoting a factor of one thousandth",
+      "defaultVerb": "has",
+      "exhibitsTraits": [
+        "measurement"
+      ],
       "hasParameters": [
         {
           "name": "scaleExponent",
@@ -942,349 +2508,148 @@
       }
     },
     {
-      "dataTypeName": "second",
-      "explanation": "unit of measure for time in seconds",
-      "extendsDataType": "double",
-      "exhibitsTraits": [
-        "means.measurement.dimension.time",
-        "means.measurement.units.si.second",
-        "has.measurement.fundamentalComponent.second",
-        "means.measurement.duration.seconds"
-      ]
-    },
-    {
       "dataTypeName": "meter",
-      "explanation": "unit of measure for length in meters",
+      "explanation": "a double float measure for distance in meters",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.length",
-        "means.measurement.units.si.meter",
-        "has.measurement.fundamentalComponent.meter"
+        "measurement.dimension.distance.meter"
       ]
     },
     {
       "dataTypeName": "kilogram",
-      "explanation": "unit of measure for mass in kilogram",
+      "explanation": "a double float measure for mass in kilogram",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.mass",
-        "means.measurement.units.si.kilogram",
-        "has.measurement.fundamentalComponent.kilogram"
+        "measurement.dimension.mass.kilogram"
       ]
     },
     {
       "dataTypeName": "ampere",
-      "explanation": "unit of measure for electric current in amperes",
+      "explanation": "a double float measure for electric current in amperes",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.electricCurrent",
-        "means.measurement.units.si.ampere",
-        "has.measurement.fundamentalComponent.ampere"
+        "measurement.dimension.electricCurrent.ampere"
       ]
     },
     {
       "dataTypeName": "kelvin",
-      "explanation": "unit of measure for thermodynamic temperature in degrees kelvin",
+      "explanation": "a double float measure for thermodynamic temperature in degrees kelvin",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.temperature",
-        "means.measurement.units.si.kelvin",
-        "has.measurement.fundamentalComponent.kelvin"
+        "measurement.dimension.temperature.kelvin"
       ]
     },
     {
       "dataTypeName": "mole",
-      "explanation": "unit of measure for amount in moles",
+      "explanation": "a double float measure for amount in moles",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.amount",
-        "means.measurement.units.si.mole",
-        "has.measurement.fundamentalComponent.mole"
+        "measurement.dimension.amount.mole"
       ]
     },
     {
       "dataTypeName": "candela",
-      "explanation": "unit of measure for luminous intensity in candelas",
+      "explanation": "a double float measure for luminous intensity in candelas",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.luminousIntensity",
-        "means.measurement.units.si.candela",
-        "has.measurement.fundamentalComponent.candela"
+        "measurement.dimension.luminousIntensity.candela"
       ]
     },
     {
       "dataTypeName": "hertz",
-      "explanation": "unit of measure for frequency in hertz",
+      "explanation": "a double float measure for frequency in hertz",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.frequency",
-        "means.measurement.units.si.hertz",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-1"
-            }
-          ]
-        }
+        "measurement.dimension.frequency.hertz"
       ]
     },
     {
       "dataTypeName": "radian",
-      "explanation": "unit of measure for angle in radians",
+      "explanation": "a double float measure for angle in radians",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.angle",
-        "means.measurement.units.si.radian",
-        {
-          "traitReference": "has.measurement.fundamentalComponent",
-          "arguments": [
-            {
-              "name": "fundamentalUnit",
-              "value": "radian"
-            }
-          ]
-        }
+        "measurement.dimension.angle.radian"
       ]
     },
     {
       "dataTypeName": "newton",
-      "explanation": "unit of measure for force or weight in newtons",
+      "explanation": "a double float measure for force or weight in newtons",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.force",
-        "means.measurement.units.si.newton",
-        "has.measurement.fundamentalComponent.kilogram",
-        "has.measurement.fundamentalComponent.meter",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-2"
-            }
-          ]
-        }
+        "measurement.dimension.force.newton"
       ]
     },
     {
       "dataTypeName": "pascal",
-      "explanation": "unit of measure for pressure or stress in pascals",
+      "explanation": "a double float measure for pressure or stress in pascals",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.pressure",
-        "means.measurement.units.si.pascal",
-        "has.measurement.fundamentalComponent.kilogram",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.meter",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-1"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-2"
-            }
-          ]
-        }
+        "measurement.dimension.pressure.pascal"
       ]
     },
     {
       "dataTypeName": "joule",
-      "explanation": "unit of measure for energy, work or heat in joules",
+      "explanation": "a double float measure for energy, work or heat in joules",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.energy",
-        "means.measurement.units.si.joule",
-        "has.measurement.fundamentalComponent.kilogram",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.meter",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "2"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-2"
-            }
-          ]
-        }
+        "measurement.dimension.energy.joule"
       ]
     },
     {
       "dataTypeName": "watt",
-      "explanation": "unit of measure for power or radiant flux in watts",
+      "explanation": "a double float measure for power or radiant flux in watts",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.power",
-        "means.measurement.units.si.watt",
-        "has.measurement.fundamentalComponent.kilogram",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.meter",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "2"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-3"
-            }
-          ]
-        }
+        "measurement.dimension.power.watt"
       ]
     },
     {
       "dataTypeName": "coulomb",
-      "explanation": "unit of measure for electric charge or amount of electricity in coulombs",
+      "explanation": "a double float measure for electric charge or amount of electricity in coulombs",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.electricCharge",
-        "means.measurement.units.si.coulomb",
-        "has.measurement.fundamentalComponent.second",
-        "has.measurement.fundamentalComponent.ampere"
+        "measurement.dimension.electricCharge.coulomb"
       ]
     },
     {
       "dataTypeName": "volt",
-      "explanation": "unit of measure for voltage, EMF, electrical potantial difference in volts",
+      "explanation": "a double float measure for voltage, EMF, electrical potantial difference in volts",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.electromotiveForce",
-        "means.measurement.units.si.volt",
-        "has.measurement.fundamentalComponent.kilogram",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.meter",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "2"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-3"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.ampere",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-1"
-            }
-          ]
-        }
+        "measurement.dimension.electromotiveForce.volt"
       ]
     },
     {
       "dataTypeName": "farad",
-      "explanation": "unit of measure for electric capacitance in farads",
+      "explanation": "a double float measure for electric capacitance in farads",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.capacitance",
-        "means.measurement.units.si.farad",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.kilogram",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-1"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.meter",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-2"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "4"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.ampere",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "2"
-            }
-          ]
-        }
+        "measurement.dimension.capacitance.farad"
       ]
     },
     {
       "dataTypeName": "ohm",
-      "explanation": "unit of measure for electrical resistance, impedance, reactance in ohms",
+      "explanation": "a double float measure for electrical resistance, impedance, reactance in ohms",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.resistance",
-        "means.measurement.units.si.ohm",
-        "has.measurement.fundamentalComponent.kilogram",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.meter",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "2"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.second",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-3"
-            }
-          ]
-        },
-        {
-          "traitReference": "has.measurement.fundamentalComponent.ampere",
-          "arguments": [
-            {
-              "name": "fundamentalExponent",
-              "value": "-2"
-            }
-          ]
-        }
+        "measurement.dimension.resistance.ohm"
+      ]
+    },
+    {
+      "traitName": "means.measurement.duration.seconds",
+      "extendsTrait": "measurement.dimension.time.second"
+    },
+    {
+      "dataTypeName": "second",
+      "explanation": "a double float measure for time in si seconds",
+      "extendsDataType": "double",
+      "exhibitsTraits": [
+        "means.measurement.duration.seconds"
       ]
     },
     {
       "dataTypeName": "microSecond",
-      "explanation": "unit of measure for time in 10E-6 seconds",
+      "explanation": "measure for time in 10E-6 seconds",
       "extendsDataType": "second",
       "exhibitsTraits": [
         "means.measurement.prefix.micro"
@@ -1292,19 +2657,48 @@
     },
     {
       "dataTypeName": "milliSecond",
-      "explanation": "unit of measure for time in 10E-3 seconds",
+      "explanation": "measure for time in 10E-3 seconds",
       "extendsDataType": "second",
       "exhibitsTraits": [
+        {
+          "verb": "means",
+          "traitReference": "means.measurement.duration.seconds",
+          "appliedTraits": [
+            {
+              "verb": "has",
+              "traitReference": "means.measurement.prefix.milli"
+            }
+          ]
+        },
         "means.measurement.prefix.milli"
       ]
     },
     {
-      "dataTypeName": "minute",
-      "explanation": "unit of measure for time in 60 second interval",
-      "extendsDataType": "integer",
+      "traitName": "measurement.unit.time.minute",
+      "explanation": "A 60 second measurement unit for duration of time",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.time",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "minute"
+          },
+          {
+            "name": "symbol",
+            "value": "m"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.time.minute",
+      "explanation": "a measurement for duration of time in units of minutes",
+      "extendsTrait": "measurement.dimension.time",
       "exhibitsTraits": [
-        "means.measurement.dimension.time",
-        "means.measurement.duration.minutes",
+        {
+          "traitReference": "measurement.unit.time.minute",
+          "verb": "has"
+        },
         {
           "traitReference": "has.measurement.fundamentalComponent.second",
           "arguments": [
@@ -1312,17 +2706,49 @@
               "name": "fundamentalScale",
               "value": "60"
             }
-          ]
+          ],
+          "verb": "has"
         }
       ]
     },
     {
-      "dataTypeName": "hour",
-      "explanation": "unit of measure for time in 3600 second interval",
+      "traitName": "means.measurement.duration.minutes",
+      "extendsTrait": "measurement.dimension.time.minute"
+    },
+    {
+      "dataTypeName": "minute",
+      "explanation": "an integer measure for time in 60 second intervals",
       "extendsDataType": "integer",
       "exhibitsTraits": [
-        "means.measurement.dimension.time",
-        "means.measurement.duration.hours",
+        "means.measurement.duration.minutes"
+      ]
+    },
+    {
+      "traitName": "measurement.unit.time.hour",
+      "explanation": "A 3600 second measurement unit for duration of time",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.time",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "hour"
+          },
+          {
+            "name": "symbol",
+            "value": "h"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.time.hour",
+      "explanation": "a measurement for duration of time in units of hours",
+      "extendsTrait": "measurement.dimension.time",
+      "exhibitsTraits": [
+        {
+          "traitReference": "measurement.unit.time.hour",
+          "verb": "has"
+        },
         {
           "traitReference": "has.measurement.fundamentalComponent.second",
           "arguments": [
@@ -1330,17 +2756,49 @@
               "name": "fundamentalScale",
               "value": "3600"
             }
-          ]
+          ],
+          "verb": "has"
         }
       ]
     },
     {
-      "dataTypeName": "day",
-      "explanation": "unit of measure for time in 'one earth rotation' interval",
+      "traitName": "means.measurement.duration.hours",
+      "extendsTrait": "measurement.dimension.time.hour"
+    },
+    {
+      "dataTypeName": "hour",
+      "explanation": "an integer measure for time in 3600 second intervals",
       "extendsDataType": "integer",
       "exhibitsTraits": [
-        "means.measurement.dimension.time",
-        "means.measurement.duration.days",
+        "means.measurement.duration.hours"
+      ]
+    },
+    {
+      "traitName": "measurement.unit.time.day",
+      "explanation": "A solar day, here on earth as a measurement unit for duration of time",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.time",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "day"
+          },
+          {
+            "name": "symbol",
+            "value": "D"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.time.day",
+      "explanation": "a measurement for duration of time in units of days",
+      "extendsTrait": "measurement.dimension.time",
+      "exhibitsTraits": [
+        {
+          "traitReference": "measurement.unit.time.day",
+          "verb": "has"
+        },
         {
           "traitReference": "has.measurement.fundamentalComponent.second",
           "arguments": [
@@ -1348,17 +2806,49 @@
               "name": "fundamentalScale",
               "value": "86400"
             }
-          ]
+          ],
+          "verb": "has"
         }
       ]
     },
     {
-      "dataTypeName": "year",
-      "explanation": "unit of measure for time in 'one solar orbit' interval",
+      "traitName": "means.measurement.duration.days",
+      "extendsTrait": "measurement.dimension.time.day"
+    },
+    {
+      "dataTypeName": "day",
+      "explanation": "an integer measure for time in 'one earth rotation' interval",
       "extendsDataType": "integer",
       "exhibitsTraits": [
-        "means.measurement.dimension.time",
-        "means.measurement.duration.years",
+        "means.measurement.duration.days"
+      ]
+    },
+    {
+      "traitName": "measurement.unit.time.year",
+      "explanation": "'one solar orbit', here on earth as a measurement unit for duration of time",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.time",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "year"
+          },
+          {
+            "name": "symbol",
+            "value": "Y"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.dimension.time.year",
+      "explanation": "a measurement for duration of time in units of years",
+      "extendsTrait": "measurement.dimension.time",
+      "exhibitsTraits": [
+        {
+          "traitReference": "measurement.unit.time.year",
+          "verb": "has"
+        },
         {
           "traitReference": "has.measurement.fundamentalComponent.second",
           "arguments": [
@@ -1366,13 +2856,26 @@
               "name": "fundamentalScale",
               "value": "31556952"
             }
-          ]
+          ],
+          "verb": "has"
         }
       ]
     },
     {
+      "traitName": "means.measurement.duration.years",
+      "extendsTrait": "measurement.dimension.time.year"
+    },
+    {
+      "dataTypeName": "year",
+      "explanation": "an integer measure for time in  'one solar orbit' interval",
+      "extendsDataType": "integer",
+      "exhibitsTraits": [
+        "means.measurement.duration.years"
+      ]
+    },
+    {
       "dataTypeName": "millimeter",
-      "explanation": "unit of measure for length in 10E-3 meters",
+      "explanation": "unit of measure for distance in 10E-3 meters",
       "extendsDataType": "meter",
       "exhibitsTraits": [
         "means.measurement.prefix.milli"
@@ -1380,7 +2883,7 @@
     },
     {
       "dataTypeName": "centimeter",
-      "explanation": "unit of measure for length in 10E-2 meters",
+      "explanation": "unit of measure for distance in 10E-2 meters",
       "extendsDataType": "meter",
       "exhibitsTraits": [
         "means.measurement.prefix.centi"
@@ -1388,7 +2891,7 @@
     },
     {
       "dataTypeName": "kilometer",
-      "explanation": "unit of measure for length in 10E3 meters",
+      "explanation": "unit of measure for distance in 10E3 meters",
       "extendsDataType": "meter",
       "exhibitsTraits": [
         "means.measurement.prefix.kilo"
@@ -1399,17 +2902,7 @@
       "explanation": "unit of measure for mass in grams",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.mass",
-        "means.measurement.units.si.gram",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.kilogram",
-          "arguments": [
-            {
-              "name": "fundamentalScale",
-              "value": ".001"
-            }
-          ]
-        }
+        "measurement.dimension.mass.gram"
       ]
     },
     {
@@ -1441,17 +2934,7 @@
       "explanation": "unit of measure for temperature in degrees celsius",
       "extendsDataType": "double",
       "exhibitsTraits": [
-        "means.measurement.dimension.temperature",
-        "means.measurement.units.si.celsius",
-        {
-          "traitReference": "has.measurement.fundamentalComponent.kelvin",
-          "arguments": [
-            {
-              "name": "fundamentalOffset",
-              "value": "273.15"
-            }
-          ]
-        }
+        "measurement.dimension.temperature.celsius"
       ]
     },
     {
@@ -1479,21 +2962,45 @@
       ]
     },
     {
-      "traitName": "means.measurement.units.degree",
-      "extendsTrait": "means.measurement"
+      "traitName": "measurement.unit.angle.degree",
+      "explanation": "a unit of measurement for angles in 1/360th of rotation",
+      "defaultVerb": "has",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.angle",
+        "arguments": [
+          {
+            "name": "symbol",
+            "value": "°"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.angle",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "dataTypeName": "degree",
-      "explanation": "unit of measure for angles in degrees, 1/360 rotation",
-      "extendsDataType": "double",
+      "traitName": "measurement.dimension.angle.degree",
+      "explanation": "a measurement for angles in degrees, 1/360 rotation",
+      "extendsTrait": "measurement.dimension.angle",
       "exhibitsTraits": [
-        "means.measurement.dimension.angle",
-        "means.measurement.units.degree",
+        {
+          "traitReference": "measurement.unit.angle.degree",
+          "verb": "has"
+        },
         {
           "traitReference": "has.measurement.fundamentalComponent",
           "arguments": [
             {
-              "name": "fundamentalUnit",
+              "name": "unit",
               "value": "radian"
             },
             {
@@ -1502,6 +3009,18 @@
             }
           ]
         }
+      ]
+    },
+    {
+      "traitName": "means.measurement.units.degree",
+      "extendsTrait": "measurement.dimension.angle.degree"
+    },
+    {
+      "dataTypeName": "degree",
+      "explanation": "unit of measure for angles in degrees, 1/360 rotation",
+      "extendsDataType": "double",
+      "exhibitsTraits": [
+        "means.measurement.units.degree"
       ]
     },
     {
@@ -1617,52 +3136,223 @@
       ]
     },
     {
-      "traitName": "means.measurement.age",
-      "extendsTrait": "means.measurement"
+      "traitName": "dimension.monetaryValue",
+      "explanation": "the concept of 'monetary value' used to describe other concepts such as the measurement or units representing this idea",
+      "extendsTrait": "dimension"
     },
     {
-      "traitName": "means.measurement.code",
-      "extendsTrait": "means.measurement"
+      "traitName": "measurement.dimension.monetaryValue",
+      "explanation": "measurement of monetary value",
+      "extendsTrait": {
+        "traitReference": "measurement.dimension",
+        "arguments": [
+          "monetaryValue"
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.dimensionKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "dimension.monetaryValue",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.color",
-      "extendsTrait": "means.measurement"
+      "traitName": "measurement.unit.monetaryValue",
+      "explanation": "a unit of measurement for monetary value aka currency represented by an ISO 4217 currency code",
+      "defaultVerb": "has",
+      "extendsTrait": {
+        "traitReference": "measurement.unit",
+        "arguments": [
+          {
+            "name": "dimension",
+            "value": "monetaryValue"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.monetaryValue",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.density",
-      "extendsTrait": "means.measurement"
+      "traitName": "measurement.unit.monetaryValue.USD",
+      "explanation": "US Dollars",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.monetaryValue",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "USD"
+          },
+          {
+            "name": "symbol",
+            "value": "$"
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.distance",
-      "extendsTrait": "means.measurement.dimension.length"
+      "traitName": "measurement.unit.monetaryValue.EUR",
+      "explanation": "Euro",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.monetaryValue",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "EUR"
+          },
+          {
+            "name": "symbol",
+            "value": "€"
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.distance.inches",
-      "extendsTrait": "means.measurement.distance"
+      "traitName": "measurement.unit.monetaryValue.CAD",
+      "explanation": "Canadian Dollars",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.monetaryValue",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "CAD"
+          },
+          {
+            "name": "symbol",
+            "value": "$"
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.distance.cm",
-      "extendsTrait": "means.measurement.distance"
+      "traitName": "measurement.unit.monetaryValue.GBP",
+      "explanation": "Pound Sterling",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.monetaryValue",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "GBP"
+          },
+          {
+            "name": "symbol",
+            "value": "£"
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.sequence",
-      "extendsTrait": "means.measurement"
+      "traitName": "measurement.unit.monetaryValue.JPY",
+      "explanation": "Japanese Yen",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.monetaryValue",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "JPY"
+          },
+          {
+            "name": "symbol",
+            "value": "¥"
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.temperature",
-      "extendsTrait": "means.measurement.dimension.temperature"
+      "traitName": "measurement.unit.monetaryValue.CNY",
+      "explanation": "Chinese Yuan",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.monetaryValue",
+        "arguments": [
+          {
+            "name": "unit",
+            "value": "CNY"
+          },
+          {
+            "name": "symbol",
+            "value": "CN¥"
+          }
+        ]
+      }
     },
     {
-      "traitName": "means.measurement.version",
-      "extendsTrait": "means.measurement"
+      "traitName": "means.measurement.currencyCode",
+      "extendsTrait": "measurement.unit.monetaryValue",
+      "defaultVerb": "means",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
-      "traitName": "means.measurement.weight",
-      "extendsTrait": "means.measurement.dimension.force"
+      "dataTypeName": "currencyCode",
+      "extendsDataType": "string",
+      "explanation": "value is a ISO 4217 currency code",
+      "exhibitsTraits": [
+        "means.measurement.currencyCode"
+      ]
+    },
+    {
+      "traitName": "is.inCurrency",
+      "explanation": "the data represents an amount of the specified currency",
+      "hasParameters": [
+        {
+          "name": "code",
+          "dataType": "currencyCode",
+          "required": true,
+          "explanation": "ISO 4217 currency code"
+        }
+      ]
     },
     {
       "traitName": "means.measurement.currency",
-      "extendsTrait": "means.measurement"
+      "extendsTrait": "measurement.dimension.monetaryValue",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "dataTypeName": "currency",
+      "explanation": "An amount of currency, money in units specified elsewhere.",
+      "extendsDataType": {
+        "dataTypeReference": "decimal",
+        "appliedTraits": [
+          {
+            "traitReference": "is.dataFormat.numeric.shaped",
+            "arguments": [
+              {
+                "name": "precision",
+                "value": "19"
+              },
+              {
+                "name": "scale",
+                "value": "4"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        "means.measurement.currency"
+      ]
+    },
+    {
+      "dataTypeName": "baseCurrency",
+      "extendsDataType": "currency",
+      "explanation": "value is expressed in the base currency units for the system",
+      "exhibitsTraits": [
+        "means.measurement.currency"
+      ]
     },
     {
       "traitName": "means.measurement.currency.cost",
@@ -1693,32 +3383,191 @@
       "extendsTrait": "means.measurement.currency"
     },
     {
-      "traitName": "means.measurement.time",
+      "traitName": "means.measurement.age",
       "extendsTrait": "means.measurement"
+    },
+    {
+      "traitName": "means.measurement.code",
+      "extendsTrait": "means.measurement"
+    },
+    {
+      "traitName": "means.measurement.color",
+      "extendsTrait": "means.measurement"
+    },
+    {
+      "traitName": "means.measurement.density",
+      "extendsTrait": "means.measurement"
+    },
+    {
+      "traitName": "means.measurement.distance",
+      "extendsTrait": "measurement.dimension.distance"
+    },
+    {
+      "traitName": "measurement.unit.distance.inch",
+      "explanation": "a unit of measurement for distance in inches",
+      "defaultVerb": "has",
+      "extendsTrait": {
+        "traitReference": "measurement.unit.distance",
+        "arguments": [
+          {
+            "name": "symbol",
+            "value": "in"
+          }
+        ],
+        "appliedTraits": [
+          {
+            "traitReference": "measurement.unitKind",
+            "verb": "has",
+            "appliedTraits": [
+              {
+                "traitReference": "measurement.dimension.distance",
+                "verb": "means"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "means.measurement.distance.inches",
+      "explanation": "a measurement for distance in units of inches",
+      "extendsTrait": "measurement.dimension.distance",
+      "exhibitsTraits": [
+        {
+          "traitReference": "measurement.unit.distance.inch",
+          "verb": "has"
+        },
+        {
+          "traitReference": "has.measurement.fundamentalComponent.meter",
+          "arguments": [
+            {
+              "name": "fundamentalScale",
+              "value": "0.0254"
+            }
+          ],
+          "verb": "has"
+        }
+      ]
+    },
+    {
+      "traitName": "means.measurement.distance.cm",
+      "explanation": "a measurement for distance in units of centemeters",
+      "extendsTrait": "measurement.dimension.distance.meter",
+      "exhibitsTraits": [
+        "means.measurement.prefix.centi"
+      ]
+    },
+    {
+      "traitName": "means.measurement.sequence",
+      "extendsTrait": "means.measurement"
+    },
+    {
+      "traitName": "means.measurement.temperature",
+      "extendsTrait": "means.measurement.dimension.temperature"
+    },
+    {
+      "traitName": "means.measurement.version",
+      "extendsTrait": "means.measurement"
+    },
+    {
+      "traitName": "means.measurement.weight",
+      "extendsTrait": "means.measurement.dimension.force"
+    },
+    {
+      "traitName": "measurement.timeOfDay",
+      "extendsTrait": "measurement.dimension.time.second"
+    },
+    {
+      "traitName": "means.measurement.time",
+      "extendsTrait": "measurement.timeOfDay"
+    },
+    {
+      "traitName": "measurement.dayOfEra",
+      "extendsTrait": "measurement.dimension.time.day"
     },
     {
       "traitName": "means.measurement.date",
-      "extendsTrait": "means.measurement"
+      "extendsTrait": "measurement.dayOfEra"
+    },
+    {
+      "traitName": "measurement.date.effective",
+      "extendsTrait": {
+        "traitReference": "measurement.dayOfEra",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.effective"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.date.completed",
+      "extendsTrait": {
+        "traitReference": "measurement.dayOfEra",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.complete"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.measurement.date.completion",
-      "extendsTrait": "means.measurement.date"
+      "extendsTrait": "measurement.date.completed"
+    },
+    {
+      "traitName": "measurement.date.created",
+      "extendsTrait": {
+        "traitReference": "measurement.dayOfEra",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.create"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.measurement.date.creation",
-      "extendsTrait": "means.measurement.date"
+      "extendsTrait": "measurement.date.created"
     },
     {
       "traitName": "means.measurement.date.end",
-      "extendsTrait": "means.measurement.date"
+      "extendsTrait": "measurement.date.completed"
     },
     {
       "traitName": "means.measurement.date.end.scd",
-      "extendsTrait": "means.measurement.date"
+      "extendsTrait": {
+        "traitReference": "means.measurement.date",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.complete"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "qualification.effective"
+          }
+        ]
+      }
+    },
+    {
+      "traitName": "measurement.date.modified",
+      "extendsTrait": {
+        "traitReference": "measurement.dayOfEra",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.modify"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.measurement.date.modify",
-      "extendsTrait": "means.measurement.date"
+      "extendsTrait": "measurement.date.modified"
     },
     {
       "traitName": "means.measurement.date.occurrence",
@@ -1730,11 +3579,31 @@
     },
     {
       "traitName": "means.measurement.date.start",
-      "extendsTrait": "means.measurement.date"
+      "extendsTrait": {
+        "traitReference": "means.measurement.date",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.start"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.measurement.date.start.scd",
-      "extendsTrait": "means.measurement.date"
+      "extendsTrait": {
+        "traitReference": "means.measurement.date",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "action.start"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "qualification.effective"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.measurement.date.target",
@@ -1745,27 +3614,11 @@
       "extendsTrait": "means.measurement"
     },
     {
-      "traitName": "means.measurement.duration.seconds",
-      "extendsTrait": "means.measurement.duration"
-    },
-    {
-      "traitName": "means.measurement.duration.minutes",
-      "extendsTrait": "means.measurement.duration"
-    },
-    {
-      "traitName": "means.measurement.duration.hours",
-      "extendsTrait": "means.measurement.duration"
-    },
-    {
-      "traitName": "means.measurement.duration.days",
+      "traitName": "means.measurement.duration.weeks",
       "extendsTrait": "means.measurement.duration"
     },
     {
       "traitName": "means.measurement.duration.months",
-      "extendsTrait": "means.measurement.duration"
-    },
-    {
-      "traitName": "means.measurement.duration.weeks",
       "extendsTrait": "means.measurement.duration"
     },
     {
@@ -1774,10 +3627,6 @@
     },
     {
       "traitName": "means.measurement.duration.trimesters",
-      "extendsTrait": "means.measurement.duration"
-    },
-    {
-      "traitName": "means.measurement.duration.years",
       "extendsTrait": "means.measurement.duration"
     },
     {
@@ -1822,15 +3671,15 @@
     },
     {
       "traitName": "means.measurement.size",
-      "extendsTrait": "means.measurement"
+      "extendsTrait": "measurement.dimension.distance"
     },
     {
       "traitName": "means.measurement.size.depth",
-      "extendsTrait": "means.measurement.size"
+      "extendsTrait": "measurement.dimension.distance.width"
     },
     {
       "traitName": "means.measurement.size.height",
-      "extendsTrait": "means.measurement.size"
+      "extendsTrait": "measurement.dimension.distance.height"
     },
     {
       "traitName": "means.measurement.size.volume",
@@ -1838,66 +3687,7 @@
     },
     {
       "traitName": "means.measurement.size.width",
-      "extendsTrait": "means.measurement.size"
-    },
-    {
-      "traitName": "means.measurement.currencyCode",
-      "extendsTrait": "means.measurement",
-      "explanation": "indicates this value represents an ISO 4217 currency code"
-    },
-    {
-      "dataTypeName": "currencyCode",
-      "extendsDataType": "string",
-      "explanation": "value is a ISO 4217 currency code",
-      "exhibitsTraits": [
-        "means.measurement.currencyCode"
-      ]
-    },
-    {
-      "traitName": "is.inCurrency",
-      "extendsTrait": "is",
-      "explanation": "the data represents an amount of the specified currency",
-      "hasParameters": [
-        {
-          "name": "code",
-          "dataType": "currencyCode",
-          "required": true,
-          "explanation": "ISO 4217 currency code"
-        }
-      ]
-    },
-    {
-      "dataTypeName": "currency",
-      "explanation": "An amount of currency, money in units specified elsewhere.",
-      "extendsDataType": {
-        "dataTypeReference": "decimal",
-        "appliedTraits": [
-          {
-            "traitReference": "is.dataFormat.numeric.shaped",
-            "arguments": [
-              {
-                "name": "precision",
-                "value": "19"
-              },
-              {
-                "name": "scale",
-                "value": "4"
-              }
-            ]
-          }
-        ]
-      },
-      "exhibitsTraits": [
-        "means.measurement.currency"
-      ]
-    },
-    {
-      "dataTypeName": "baseCurrency",
-      "extendsDataType": "currency",
-      "explanation": "value is expressed in the base currency units for the system",
-      "exhibitsTraits": [
-        "means.measurement.currency"
-      ]
+      "extendsTrait": "measurement.dimension.distance.width"
     },
     {
       "dataTypeName": "colorName",
@@ -1923,11 +3713,32 @@
       ]
     },
     {
-      "dataTypeName": "dateTime",
-      "extendsDataType": "date",
+      "traitName": "measurement.date_time",
+      "explanation": "a composition of date and time parts",
+      "defaultVerb": "means",
       "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.allOf",
+          "appliedTraits": [
+            {
+              "verb": "contains",
+              "traitReference": "means.measurement.date"
+            },
+            {
+              "verb": "contains",
+              "traitReference": "means.measurement.time"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dataTypeName": "dateTime",
+      "exhibitsTraits": [
+        "is.dataFormat.date",
         "is.dataFormat.time",
-        "means.measurement.time"
+        "measurement.date_time"
       ]
     },
     {
@@ -1998,5 +3809,5 @@
       ]
     }
   ],
-  "documentVersion": "1.0"
+  "documentVersion": "2.0"
 }

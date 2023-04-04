@@ -1,25 +1,25 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Optional, TYPE_CHECKING, cast
+from typing import List, Optional, TYPE_CHECKING, cast
 
 
 from cdm.enums import CdmLogCode
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmOperationType
-from cdm.objectmodel import CdmAttributeContext, CdmAttribute, CdmCollection
+from cdm.objectmodel import CdmAttributeContext, CdmAttribute, CdmCollection 
 from cdm.resolvedmodel import ResolvedAttributeSet, ResolvedAttribute, ResolvedTraitSet, ParameterValueSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
+from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
+from cdm.resolvedmodel import TraitProfileCache
 from cdm.utilities import AttributeContextParameters, logger
 
 from .cdm_operation_base import CdmOperationBase
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitReferenceBase
-    from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
+    from cdm.objectmodel import CdmCorpusContext, CdmTraitReferenceBase, CdmTraitReference 
     from cdm.resolvedmodel.projections.projection_context import ProjectionContext
     from cdm.utilities import VisitCallback, ResolveOptions
-
 
 class CdmOperationAlterTraits(CdmOperationBase):
     """Class to handle AlterTraits operations"""
@@ -28,10 +28,14 @@ class CdmOperationAlterTraits(CdmOperationBase):
         super().__init__(ctx)
 
         self._TAG = CdmOperationAlterTraits.__name__
+        # this cache is for all the traits we might get profiles about. because once is enough
+        self.prof_cache = TraitProfileCache() # type: TraitProfileCache
+
         self.traits_to_add = None  # type: CdmCollection[CdmTraitReferenceBase]
         self.traits_to_remove = None  # type: CdmCollection[CdmTraitReferenceBase]
         self.arguments_contain_wildcards = None  # type: Optional[bool]
         self.apply_to = None  # type: List[str]
+        self.apply_to_traits = None  # type: List[str]
         self.type = CdmOperationType.ALTER_TRAITS  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationAlterTraits'] = None) -> 'CdmOperationAlterTraits':
@@ -50,6 +54,9 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
         if self.apply_to is not None:
             copy.apply_to = self.apply_to.copy()
+
+        if self.apply_to_traits is not None:
+            copy.apply_to_traits = self.apply_to_traits.copy()
 
         copy.arguments_contain_wildcards = self.arguments_contain_wildcards
 
@@ -97,6 +104,7 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
     def _append_projection_attribute_state(self, proj_ctx: 'ProjectionContext', proj_output_set: 'ProjectionAttributeStateSet',
                                            attr_ctx: 'CdmAttributeContext') -> 'ProjectionAttributeStateSet':
+        from cdm.objectmodel import CdmObject                                           
         # Create a new attribute context for the operation
         attr_ctx_op_alter_traits_param = AttributeContextParameters()
         attr_ctx_op_alter_traits_param._under = attr_ctx
@@ -107,7 +115,22 @@ class CdmOperationAlterTraits(CdmOperationBase):
         # Get the top-level attribute names of the selected attributes to apply
         # We use the top-level names because the applyTo list may contain a previous name our current resolved attributes had
         top_level_selected_attribute_names = ProjectionResolutionCommonUtil._get_top_list(
-            proj_ctx, self.apply_to) if self.apply_to is not None else None  # type: Dict[str, str]
+            proj_ctx, self.apply_to) if self.apply_to is not None else None  # type: dict[str, str]
+
+        # if set, make a hashset of trait names that need to be removed
+        trait_names_to_remove = set() # type: set[str]
+        if (self.traits_to_remove is not None):
+            for trait_ref in self.traits_to_remove:
+                # resolve self because it could be a traitgroup name and turn into many other traits
+                tr = trait_ref # type: CdmTraitReferenceBase
+                resolved_trait_set = tr._fetch_resolved_traits(proj_ctx._projection_directive._res_opt) # type: ResolvedTraitSet
+                for rt in resolved_trait_set.rt_set:
+                    trait_names_to_remove.add(rt.trait_name)
+
+        # if set, make a hashset from the applyToTraits for fast lookup later
+        apply_to_trait_names = None # type: set[str]
+        if (self.apply_to_traits is not None):
+            apply_to_trait_names = set(self.apply_to_traits)
 
         # Iterate through all the PAS in the PASSet generated from the projection source's resolved attributes
         for current_PAS in proj_ctx._current_attribute_state_set._states:
@@ -146,8 +169,51 @@ class CdmOperationAlterTraits(CdmOperationBase):
                     proj_output_set._add(current_PAS)
                     break
 
-                new_res_attr.resolved_traits = new_res_attr.resolved_traits.merge_set(self._resolved_new_traits(proj_ctx, current_PAS))
-                self._remove_traits_in_new_attribute(proj_ctx._projection_directive._res_opt, new_res_attr)
+                new_traits = self._resolved_new_traits(proj_ctx, current_PAS) # type: ResolvedTraitSet
+                # if the applyToTraits property was set, then these traits apply to the traits of the selected attributes, else to the attribute directly
+                if apply_to_trait_names is None:
+                    # alter traits of atts
+                    new_res_attr.resolved_traits = new_res_attr.resolved_traits.merge_set(new_traits)
+                    # remove if requested
+                    if trait_names_to_remove is not None:
+                        for trait_name in trait_names_to_remove:
+                            new_res_attr.resolved_traits.remove(proj_ctx._projection_directive._res_opt, trait_name)
+                else:
+                    # alter traits of traits of atts
+                    # for every current resolved trait on this attribute, find the ones that match the criteria.
+                    # a match is the trait name or extended name or any classifications set on it
+                    # will need trait references for these resolved traits because metatraits are 'un resolved'
+                    new_trait_refs = [] # type: List[CdmTraitReference]
+                    for nrt in new_traits.rt_set:
+                        new_trait_refs.append(CdmObject._resolved_trait_to_trait_ref(proj_ctx._projection_directive._res_opt, nrt))
+
+                    for rt in new_res_attr.resolved_traits.rt_set:
+                        # so get a hashset of the 'tokens' that classify this trait
+                        classifiers = set() # type: set[str]
+                        # this profile lists the classifiers and all base traits
+                        profile = rt.fetch_trait_profile(proj_ctx._projection_directive._res_opt, self.prof_cache, None)
+                        if profile is not None:
+                            profile = profile.consolidate(self.prof_cache)
+                            # all classifications 
+                            if profile.classifications is not None:
+                                for c in profile.classifications:
+                                    classifiers.add(c.trait_name)
+                            while profile is not None:
+                                classifiers.add(profile.trait_name)
+                                profile = profile.IS_A
+
+                        # is there an intersection between the set of things to look for and the set of things that describe the trait?
+                        if len(classifiers.intersection(apply_to_trait_names)) > 0:
+                            # add the specified and fixed up traits to the metatraits of the resolved
+                            if new_trait_refs is not None and len(new_trait_refs) > 0:
+                                if rt.meta_traits is None:
+                                    rt.meta_traits = [] # type List[CdmTraitReferenceBase]
+                                rt.meta_traits.extend(new_trait_refs)
+                            # remove some?
+                            if trait_names_to_remove is not None and len(trait_names_to_remove) > 0 and rt.meta_traits is not None:
+                                rt.meta_traits = [keep for keep in rt.meta_traits if keep not in trait_names_to_remove]
+                                if len(rt.meta_traits) == 0:
+                                    rt.meta_traits = None
 
                 # Create a projection attribute state for the new attribute with new applied traits by creating a copy of the current state
                 # Copy() sets the current state as the previous state for the new one
@@ -168,10 +234,11 @@ class CdmOperationAlterTraits(CdmOperationBase):
         resolved_trait_set = ResolvedTraitSet(proj_ctx._projection_directive._res_opt)
         projection_owner_name = proj_ctx._projection_directive._original_source_attribute_name if proj_ctx._projection_directive._original_source_attribute_name is not None else ''
 
-        for trait_ref in self.traits_to_add:
-            trait_ref_copy = trait_ref._fetch_resolved_traits(proj_ctx._projection_directive._res_opt).deep_copy()
-            self._replace_wildcard_characters(proj_ctx._projection_directive._res_opt, trait_ref_copy, projection_owner_name, current_PAS)
-            resolved_trait_set = resolved_trait_set.merge_set(trait_ref_copy)
+        if self.traits_to_add is not None:
+            for trait_ref in self.traits_to_add:
+                trait_ref_copy = trait_ref._fetch_resolved_traits(proj_ctx._projection_directive._res_opt).deep_copy()
+                self._replace_wildcard_characters(proj_ctx._projection_directive._res_opt, trait_ref_copy, projection_owner_name, current_PAS)
+                resolved_trait_set = resolved_trait_set.merge_set(trait_ref_copy)
 
         return resolved_trait_set
 

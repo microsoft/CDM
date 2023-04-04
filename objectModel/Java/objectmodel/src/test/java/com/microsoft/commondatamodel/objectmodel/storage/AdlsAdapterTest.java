@@ -12,12 +12,16 @@ import com.microsoft.commondatamodel.objectmodel.AdlsTestHelper;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase.CacheContext;
+import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.MockAdlsAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient;
+import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -26,9 +30,14 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.CompletionException;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -46,8 +55,8 @@ public class AdlsAdapterTest {
   }
 
   private static void runWriteReadTest(AdlsAdapter adapter) {
-    String filename = 
-      "WriteReadTest/" + System.getenv("USERNAME") + "_" + System.getenv("COMPUTERNAME") + "_Java.txt";
+    String filename =
+            "WriteReadTest/" + System.getenv("USERNAME") + "_" + System.getenv("COMPUTERNAME") + "_Java.txt";
     String writeContents = OffsetDateTime.now() + "\n" + filename;
     adapter.writeAsync(filename, writeContents).join();
     String readContents = adapter.readAsync(filename).join();
@@ -56,9 +65,9 @@ public class AdlsAdapterTest {
 
   private static void runCheckFileTimeTest(AdlsAdapter adapter) {
     OffsetDateTime offset1 =
-        adapter.computeLastModifiedTimeAsync("/FileTimeTest/CheckFileTime.txt").join();
+            adapter.computeLastModifiedTimeAsync("/FileTimeTest/CheckFileTime.txt").join();
     OffsetDateTime offset2 =
-        adapter.computeLastModifiedTimeAsync("FileTimeTest/CheckFileTime.txt").join();
+            adapter.computeLastModifiedTimeAsync("FileTimeTest/CheckFileTime.txt").join();
 
     assertNotNull(offset1);
     assertNotNull(offset2);
@@ -76,7 +85,7 @@ public class AdlsAdapterTest {
 
       // expect 100 files to be enumerated
       assertTrue(files1.size() == 100 && files2.size() == 100 && files3.size() == 100
-          && files4.size() == 100);
+              && files4.size() == 100);
 
       // these calls should be fast due to cache
       final long startTime = System.currentTimeMillis();
@@ -87,19 +96,16 @@ public class AdlsAdapterTest {
       final long stopTime = System.currentTimeMillis();
 
       assertTrue(stopTime - startTime < 100, "Cached file modified times");
-    } 
-    finally {
+    } finally {
       context.dispose();
     }
   }
 
-  private static void runSpecialCharactersTest(AdlsAdapter adapter)
-  {
+  private static void runSpecialCharactersTest(AdlsAdapter adapter) {
     CdmCorpusDefinition corpus = new CdmCorpusDefinition();
     corpus.getStorage().mount("adls", adapter);
     corpus.getStorage().setDefaultNamespace("adls");
-    try
-    {
+    try {
       CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("default.manifest.cdm.json").join();
       manifest.fileStatusCheckAsync().join();
 
@@ -112,8 +118,7 @@ public class AdlsAdapterTest {
       assertEquals(
               "TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv",
               manifest.getEntities().get(0).getDataPartitions().get(1).getLocation());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       Assert.fail(e.getMessage());
     }
   }
@@ -168,8 +173,7 @@ public class AdlsAdapterTest {
   }
 
   @Test
-  public void adlsSpecialCharactersTest()
-  {
+  public void adlsSpecialCharactersTest() {
     AdlsTestHelper.checkADLSEnvironment();
     runSpecialCharactersTest(AdlsTestHelper.createAdapterWithClientId("PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:"));
   }
@@ -190,7 +194,8 @@ public class AdlsAdapterTest {
       if (message.contains("Response for request ")) {
         count.getAndIncrement();
       }
-    }, CdmStatusLevel.Progress);;
+    }, CdmStatusLevel.Progress);
+    ;
 
     corpus.<CdmDocumentDefinition>fetchObjectAsync("adls:/inexistentFile.cdm.json").join();
 
@@ -286,7 +291,7 @@ public class AdlsAdapterTest {
     // Check that an adapter path is correctly created from a corpus path with colons
     final String corpusPathWithColons = "namespace:/a/path:with:colons/some-file.json";
     Assert.assertEquals(adlsAdapter.createAdapterPath(corpusPathWithColons),
-        "https://storageaccount.dfs.core.windows.net/fs/a/path%3Awith%3Acolons/some-file.json");
+            "https://storageaccount.dfs.core.windows.net/fs/a/path%3Awith%3Acolons/some-file.json");
     Assert.assertEquals(adlsAdapter.createCorpusPath("https://storageaccount.dfs.core.windows.net/fs/a/path%3Awith%3Acolons/some-file.json"),
             "/a/path:with:colons/some-file.json");
     Assert.assertEquals(adlsAdapter.createCorpusPath("https://storageaccount.dfs.core.windows.net/fs/a/path%3awith%3acolons/some-file.json"),
@@ -311,13 +316,13 @@ public class AdlsAdapterTest {
     assertEquals(adlsAdapter.createCorpusPath(adapterPath6), "/a/6.csv");
     assertNull(adlsAdapter.createCorpusPath(adapterPath7));
   }
-  
+
   @Test
   public void fetchConfigAndUpdateConfig() {
     final AdlsAdapter adlsAdapter = new AdlsAdapter(
-          "fake.dfs.core.windows.net",
-          "fakeRoot",
-          new FakeTokenProvider()
+            "fake.dfs.core.windows.net",
+            "fakeRoot",
+            new FakeTokenProvider()
     );
 
     try {
@@ -367,8 +372,8 @@ public class AdlsAdapterTest {
   }
 
   /**
-  * Initialize Hostname and Root.
-  */
+   * Initialize Hostname and Root.
+   */
   @Test
   public void testInitializeHostnameAndRoot() {
     String host1 = "storageaccount.dfs.core.windows.net";
@@ -383,7 +388,7 @@ public class AdlsAdapterTest {
 
     AdlsAdapter adlsAdapter1WithFolders = new AdlsAdapter(host1, "root-without-slash/folder1/folder2", "");
     assertEquals(adlsAdapter1WithFolders.getRoot(), "/root-without-slash/folder1/folder2");
-            
+
     String adapterPath2 = "https://storageaccount.dfs.core.windows.net/root-without-slash/folder1/folder2/a/1.csv";
     String corpusPath2 = adlsAdapter1WithFolders.createCorpusPath(adapterPath2);
     assertEquals(corpusPath2, "/a/1.csv");
@@ -409,11 +414,11 @@ public class AdlsAdapterTest {
       String config = TestHelper.getInputFileContent(testSubpath, "TestInitializeHostnameAndRoot", "config.json");
       CdmCorpusDefinition corpus = new CdmCorpusDefinition();
       corpus.getStorage().mountFromConfig(config);
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter1")).getRoot(), "/root-without-slash");
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter2")).getRoot(), "/root-without-slash/folder1/folder2");
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter3")).getRoot(), "/root-starts-with-slash/folder1/folder2");
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter4")).getRoot(), "/root-ends-with-slash/folder1/folder2");
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter5")).getRoot(), "/root-with-slashes/folder1/folder2");
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter1")).getRoot(), "/root-without-slash");
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter2")).getRoot(), "/root-without-slash/folder1/folder2");
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter3")).getRoot(), "/root-starts-with-slash/folder1/folder2");
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter4")).getRoot(), "/root-ends-with-slash/folder1/folder2");
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter5")).getRoot(), "/root-with-slashes/folder1/folder2");
     } catch (Exception e) {
       Assert.fail(e.getMessage());
     }
@@ -470,11 +475,11 @@ public class AdlsAdapterTest {
       String config = TestHelper.getInputFileContent(testSubpath, "TestLoadingAndSavingEndpointInConfig", "config.json");
       CdmCorpusDefinition corpus = new CdmCorpusDefinition();
       corpus.getStorage().mountFromConfig(config);
-      assertNull(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter1")).getEndpoint());
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter2")).getEndpoint(), AzureCloudEndpoint.AzurePublic);
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter3")).getEndpoint(), AzureCloudEndpoint.AzureChina);
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter4")).getEndpoint(), AzureCloudEndpoint.AzureGermany);
-      assertEquals(((AdlsAdapter)corpus.getStorage().fetchAdapter("adlsadapter5")).getEndpoint(), AzureCloudEndpoint.AzureUsGovernment);
+      assertNull(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter1")).getEndpoint());
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter2")).getEndpoint(), AzureCloudEndpoint.AzurePublic);
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter3")).getEndpoint(), AzureCloudEndpoint.AzureChina);
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter4")).getEndpoint(), AzureCloudEndpoint.AzureGermany);
+      assertEquals(((AdlsAdapter) corpus.getStorage().fetchAdapter("adlsadapter5")).getEndpoint(), AzureCloudEndpoint.AzureUsGovernment);
 
       try {
         String configSnakeCase = TestHelper.getInputFileContent(testSubpath, "TestLoadingAndSavingEndpointInConfig", "config-SnakeCase.json");
@@ -500,7 +505,7 @@ public class AdlsAdapterTest {
     AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithClientId();
     adlsAdapter.setCtx(new ResolveContext(null));
     adlsAdapter.getCtx().setFeatureFlags(Collections.singletonMap("ADLSAdapter_deleteEmptyFile", true));
-    
+
     String filename = "nullcheck_Java.txt";
     String writeContents = null;
     try {
@@ -523,12 +528,13 @@ public class AdlsAdapterTest {
   public void adlsWriteClientIdEmptyContentsNoEmptyFileLeft() {
     AdlsTestHelper.checkADLSEnvironment();
     AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithClientId();
-    
+
     String filename = "emptycheck_Java.txt";
     String writeContents = "";
     try {
       adlsAdapter.writeAsync(filename, writeContents).join();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
 
     try {
       adlsAdapter.readAsync(filename).join();
@@ -546,14 +552,15 @@ public class AdlsAdapterTest {
     AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithClientId();
     adlsAdapter.setCtx(new ResolveContext(null));
     adlsAdapter.getCtx().setFeatureFlags(Collections.singletonMap("ADLSAdapter_deleteEmptyFile", true));
-    
+
     String filename = "largefilecheck_Java.txt";
     char[] chars = new char[100000000];
     String writeContents = new String(chars);
 
     try {
       adlsAdapter.writeAsync(filename, writeContents).join();
-    } catch (Exception e) {}
+    } catch (Exception e) {
+    }
 
     try {
       adlsAdapter.readAsync(filename).join();
@@ -562,4 +569,84 @@ public class AdlsAdapterTest {
     }
   }
 
+  /**
+   * Tests that ADLS upload error on write are handled correctly
+   */
+  @Test
+  public void adlsWriteUploadError() throws InterruptedException {
+    AdlsTestHelper.checkADLSEnvironment();
+    // first request creates an empty file
+    CdmHttpResponse firstResponse = new CdmHttpResponse(201);
+    firstResponse.setSuccessful(true);
+
+    // second request to throw error
+    CdmHttpResponse secondResponse = new CdmHttpResponse(404);
+    secondResponse.setSuccessful(true);
+
+    // before error is logged, request is made to delete content at path
+    CdmHttpResponse thirdResponse = new CdmHttpResponse();
+    thirdResponse.setSuccessful(true);
+
+    CdmHttpClient mockHttpClient = mock(CdmHttpClient.class);
+    when(mockHttpClient.sendAsync(any(), any(), any()))
+            .thenReturn(CompletableFuture.completedFuture(firstResponse))
+            .thenReturn(CompletableFuture.completedFuture(secondResponse))
+            .thenReturn(CompletableFuture.completedFuture(thirdResponse));
+
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testSubpath, "adlsWriteUploadError");
+    final AtomicBoolean uploadedDataNotAcceptedError = new AtomicBoolean(false);
+    corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      if (message.contains("Could not write ADLS content at path, there was an issue at \"/someDoc.cdm.json\" during the append action.")) {
+        uploadedDataNotAcceptedError.set(true);
+      }
+    }, CdmStatusLevel.Error);
+    corpus.getStorage().mount("adls", new MockAdlsAdapter(mockHttpClient));
+    CdmFolderDefinition adlsFolder = corpus.getStorage().getNamespaceFolders().get("adls");
+    CdmDocumentDefinition someDoc = adlsFolder.getDocuments().add("someDoc");
+    someDoc.saveAsAsync("someDoc.cdm.json").join();
+    assertTrue(uploadedDataNotAcceptedError.get());
+  }
+
+  /**
+   * Tests that ADLS flush error on write are handled correctly
+   */
+  @Test
+  public void adlsWriteFlushError() throws InterruptedException {
+    AdlsTestHelper.checkADLSEnvironment();
+    // first request creates an empty file
+    CdmHttpResponse firstResponse = new CdmHttpResponse(201);
+    firstResponse.setSuccessful(true);
+
+    // second request is accepted, uploaded data worked correctly
+    CdmHttpResponse secondResponse = new CdmHttpResponse(202);
+    secondResponse.setSuccessful(true);
+
+    // before error is logged, request is made to delete content at path
+    CdmHttpResponse thirdResponse = new CdmHttpResponse();
+    thirdResponse.setSuccessful(true);
+
+    // this failure occurs when data was not flushed correctly
+    CdmHttpResponse fourthResponse = new CdmHttpResponse(304);
+    fourthResponse.setSuccessful(true);
+
+    CdmHttpClient mockHttpClient = mock(CdmHttpClient.class);
+    when(mockHttpClient.sendAsync(any(), any(), any()))
+            .thenReturn(CompletableFuture.completedFuture(firstResponse))
+            .thenReturn(CompletableFuture.completedFuture(secondResponse))
+            .thenReturn(CompletableFuture.completedFuture(thirdResponse))
+            .thenReturn(CompletableFuture.completedFuture(fourthResponse));
+
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testSubpath, "adlsWriteFlushError");
+    final AtomicBoolean noFlushErrorHit = new AtomicBoolean(false);
+    corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      if (message.contains("Could not write ADLS content at path, there was an issue at \"/someDoc.cdm.json\" during the flush action.")) {
+        noFlushErrorHit.set(true);
+      }
+    }, CdmStatusLevel.Error);
+    corpus.getStorage().mount("adls", new MockAdlsAdapter(mockHttpClient));
+    CdmFolderDefinition adlsFolder = corpus.getStorage().getNamespaceFolders().get("adls");
+    CdmDocumentDefinition someDoc = adlsFolder.getDocuments().add("someDoc");
+    someDoc.saveAsAsync("someDoc.cdm.json").join();
+    assertTrue(noFlushErrorHit.get());
+  }
 }

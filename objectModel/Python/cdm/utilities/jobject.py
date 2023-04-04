@@ -99,6 +99,19 @@ class JObject(OrderedDict):
                     else:
                         new_list.append(item)
                 state[renamed_key] = new_list
+            elif isinstance(value, dict):
+                new_dict = dict()
+                for itemKey in value:
+                    item = value[itemKey]
+                    if isinstance(item, JObject):
+                        item.json_ignore(self.__json_ignored)
+                        item.json_rename(self.__json_renamed)
+                        item.json_sort(self.__json_sorted)
+                        new_dict[itemKey]=(item.__getstate__())
+                    else:
+                        if item:
+                            new_dict[itemKey] = item
+                state[renamed_key] = new_dict
             else:
                 state[renamed_key] = value
 

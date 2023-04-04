@@ -31,7 +31,7 @@ describe('Cdm/ImportsTest', () => {
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingImport.cdm.json', null, resOpt);
+        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingImport.cdm.json', undefined, resOpt);
         expect(doc)
             .not
             .toBeUndefined();
@@ -53,7 +53,7 @@ describe('Cdm/ImportsTest', () => {
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingNestedImport.cdm.json', null, resOpt);
+        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingNestedImport.cdm.json', undefined, resOpt);
         expect(doc)
             .not
             .toBeUndefined();
@@ -78,7 +78,7 @@ describe('Cdm/ImportsTest', () => {
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/multipleImports.cdm.json', null, resOpt);
+        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/multipleImports.cdm.json', undefined, resOpt);
         expect(doc)
             .not
             .toBeUndefined();
@@ -111,7 +111,7 @@ describe('Cdm/ImportsTest', () => {
         // Load a manifest that is trying to import from 'cdm' namespace.
         // The manifest does't exist since the import couldn't get resolved,
         // so the error message will be logged and the null value will be propagated back to a user.
-        expect(await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('erp.missingImportManifest.cdm', null, null))
+        expect(await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('erp.missingImportManifest.cdm', undefined, undefined))
             .toBeUndefined();
     });
 
@@ -123,7 +123,7 @@ describe('Cdm/ImportsTest', () => {
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
+        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', undefined, resOpt);
         expect(mainDoc)
             .not
             .toBeUndefined();
@@ -156,7 +156,7 @@ describe('Cdm/ImportsTest', () => {
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
+        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', undefined, resOpt);
         expect(mainDoc)
             .not
             .toBeUndefined();
@@ -187,7 +187,7 @@ describe('Cdm/ImportsTest', () => {
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         // load the first doc
-        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
+        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', undefined, resOpt);
         expect(mainDoc)
             .not
             .toBeUndefined();
@@ -200,7 +200,7 @@ describe('Cdm/ImportsTest', () => {
 
         // now load the second doc, which uses the same import
         // the import should not be loaded again, it should be the same object
-        const secondDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('secondEntity.cdm.json', null, resOpt);
+        const secondDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('secondEntity.cdm.json', undefined, resOpt);
         expect(secondDoc)
             .not
             .toBeUndefined();

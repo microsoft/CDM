@@ -22,10 +22,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal ImportPriorities ImportPriorities;
         internal bool NeedsIndexing;
         internal bool IsDirty = true;
-        /// <summary>
-        /// The maximum json semantic version supported by this ObjectModel version.
-        /// </summary>
-        public static readonly string CurrentJsonSchemaSemanticVersion = "1.4.0";
 
         [Obsolete("Only for internal use")]
         public string FolderPath { get; set; }
@@ -55,7 +51,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.InDocument = this;
             this.ObjectType = CdmObjectType.DocumentDef;
             this.Name = name;
-            this.JsonSchemaSemanticVersion = CurrentJsonSchemaSemanticVersion;
+            // this is the default minimum version we will save, it may be set higher by a designer or during a save when making use of higher version features
+            this.JsonSchemaSemanticVersion = CdmObjectBase.JsonSchemaSemanticVersionMinimumSave;
             this.DocumentVersion = null;
             this.NeedsIndexing = true;
             this.IsDirty = true;
@@ -102,6 +99,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string DocumentVersion { get; set; }
 
         /// <summary>
+        /// finds the highest required semantic version in the document and set it
+        /// </summary>
+        internal void DiscoverMinimumRequiredJsonSemanticVersion()
+        {
+            long maxVersion = CdmObjectBase.SemanticVersionStringToNumber(this.JsonSchemaSemanticVersion); // may return -1, that is fine
+
+            this.Visit("", new VisitCallback
+            {
+                Invoke = (obj, objPath) =>
+                {
+                    CdmObjectBase objectBase = obj as CdmObjectBase;
+                    // the object knows if semantics are being used that need a certain version
+                    long objVersion = objectBase.GetMinimumSemanticVersion();
+                    if (objVersion > maxVersion)
+                    {
+                        maxVersion = objVersion;
+                    }
+                    return false;
+                }
+            }, null);
+
+            this.JsonSchemaSemanticVersion = CdmObjectBase.SemanticVersionNumberToString(maxVersion);
+        }
+
+        /// <summary>
         /// Validates all the objects in this document.
         /// </summary>
         /// <param name="objects"></param>
@@ -109,7 +131,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void CheckIntegrity()
         {
             var errorCount = 0;
-            
+
             foreach (var obj in this.InternalObjects)
             {
                 if (!obj.Validate())
@@ -162,7 +184,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void DeclareObjectDefinitions()
         {
             string corpusPathRoot = this.FolderPath + this.Name;
-            
+
             foreach (var obj in this.InternalObjects)
             {
                 // I can't think of a better time than now to make sure any recently changed or added things have an in doc
@@ -234,7 +256,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="importsLoaded"></param>
         internal void FinishIndexing(bool importsLoaded)
         {
-            Logger.Debug(this.Ctx, Tag, nameof(FinishIndexing), this.AtCorpusPath, $"index finish: { this.AtCorpusPath}");
+            Logger.Debug(this.Ctx, Tag, nameof(FinishIndexing), this.AtCorpusPath, $"index finish: {this.AtCorpusPath}");
 
             bool wasIndexedPreviously = this.DeclarationsIndexed;
 

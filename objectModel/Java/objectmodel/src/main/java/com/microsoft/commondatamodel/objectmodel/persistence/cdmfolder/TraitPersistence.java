@@ -39,6 +39,10 @@ public class TraitPersistence {
       trait.setAssociatedProperties(JMapper.MAP.convertValue(obj.get("associatedProperties"), new TypeReference<List<String>>() {
       }));
     }
+
+    trait.setDefaultVerb(TraitReferencePersistence.fromData(ctx, obj.get("defaultVerb")));
+    Utils.addListToCdmCollection(trait.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.get("exhibitsTraits")));
+
     return trait;
   }
 
@@ -52,6 +56,8 @@ public class TraitPersistence {
     trait.setElevated(instance.getElevated() != null && instance.getElevated() ? true : null);
     trait.setUgly(instance.getUgly() != null && instance.getUgly() ? true : null);
     trait.setAssociatedProperties(instance.getAssociatedProperties());
+    trait.setDefaultVerb(Utils.jsonForm(instance.getDefaultVerb(), resOpt, options));
+    trait.setExhibitsTraits(Utils.listCopyDataAsArrayNode(instance.getExhibitsTraits(), resOpt, options));
     return trait;
   }
 }

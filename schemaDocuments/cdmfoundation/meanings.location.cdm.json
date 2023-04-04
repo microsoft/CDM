@@ -1,6 +1,6 @@
 {
-  "$schema": "/schema.cdm.json",
-  "jsonSchemaSemanticVersion": "1.0.0",
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
   "imports": [
     {
       "corpusPath": "primitives.cdm.json"
@@ -8,92 +8,834 @@
   ],
   "definitions": [
     {
+      "traitName": "location",
+      "defaultVerb": "classifiedAs"
+    },
+    {
       "traitName": "means.location",
-      "extendsTrait": "means"
+      "extendsTrait": "location",
+      "defaultVerb": "means",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.address",
+      "defaultVerb": "means",
+      "explanation": "the concept of a mailing address with details to locate a specific place",
+      "exhibitsTraits": [
+        {
+          "traitReference": "entityType",
+          "verb": "classifiedAs"
+        },
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.address",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.address",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.addressKind",
+      "explanation": "a type indicator for the kind or primacy of an address. IS A (kindOf[of->address])",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "traitReference": "location.address",
+            "verb": "of"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.primacy"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.addressKind.primary",
+      "explanation": "means an address kind which indicates the primary or main address. IS A (addressKind[means->primary])",
+      "extendsTrait": {
+        "traitReference": "location.addressKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.primary"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "location.POBox",
+      "explanation": "A Post Office Box number",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.building",
+      "explanation": "the concept of a physical structure such as home, office, facility at a fixed location",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.buildingName",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.building"
+              }
+            ]
+          }
+        ]
+      },
+      "explanation": "the name of a building. (IS A name [of->building])",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.address.building",
-      "extendsTrait": "means.location.address"
+      "extendsTrait": "location.buildingName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.floor",
+      "explanation": "the concept of a floor within a building perhaps as part of an address",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.address.floor",
-      "extendsTrait": "means.location.address"
+      "extendsTrait": "location.floor",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.buildingNumber",
+      "explanation": "the number of a building or lot along a street. (IS A number [of->building])",
+      "extendsTrait": {
+        "traitReference": "identity.local",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.building"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.address.house",
-      "extendsTrait": "means.location.address"
+      "extendsTrait": "location.buildingNumber",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.room",
+      "explanation": "the concept of a room within a building as part of an address",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.address.room",
-      "extendsTrait": "means.location.address"
+      "extendsTrait": "location.room",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.street",
+      "explanation": "the concept of a road, avenue, lane, place, way, boulevard",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.streetName",
+      "explanation": "the name of a street as part of an address. (IS A name [of->street])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.street"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.address.street",
-      "extendsTrait": "means.location.address"
+      "extendsTrait": "location.streetName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.addressLine",
+      "explanation": "an address line specifying a part of a location within the scope of a city/postal code. contains->(anyOf[buildingName, floor, buildingNumber, room, streetName])",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "contains",
+          "traitReference": "options.anyOf",
+          "appliedTraits": [
+            {
+              "traitReference": "location.POBox",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "location.buildingName",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "location.floor",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "location.buildingNumber",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "location.room",
+              "verb": "contains"
+            },
+            {
+              "traitReference": "location.streetName",
+              "verb": "contains"
+            }
+          ]
+        },
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.addressLineKind",
+      "extendsTrait": {
+        "traitReference": "kindOf",
+        "appliedTraits": [
+          {
+            "verb": "of",
+            "traitReference": "location.addressLine"
+          },
+          {
+            "verb": "qualifiedBy",
+            "traitReference": "explains.ordering"
+          }
+        ]
+      },
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "verb": "classifiedAs",
+          "traitReference": "location"
+        }
+      ]
+    },
+    {
+      "traitName": "location.addressLineKind.1",
+      "extendsTrait": {
+        "traitReference": "location.addressLineKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.first"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "location.addressLineKind.2",
+      "extendsTrait": {
+        "traitReference": "location.addressLineKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.second"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "location.addressLineKind.3",
+      "extendsTrait": {
+        "traitReference": "location.addressLineKind",
+        "appliedTraits": [
+          {
+            "verb": "means",
+            "traitReference": "qualification.third"
+          }
+        ]
+      },
+      "defaultVerb": "means"
+    },
+    {
+      "traitName": "location.addressLine1",
+      "extendsTrait": {
+        "traitReference": "location.addressLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "location.addressLineKind.1"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.location.address.street.line1",
-      "extendsTrait": "means.location.address.street"
+      "extendsTrait": "location.addressLine1",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.addressLine2",
+      "extendsTrait": {
+        "traitReference": "location.addressLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "location.addressLineKind.2"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.location.address.street.line2",
-      "extendsTrait": "means.location.address.street"
+      "extendsTrait": "location.addressLine2",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.addressLine3",
+      "extendsTrait": {
+        "traitReference": "location.addressLine",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "location.addressLineKind.3"
+          }
+        ]
+      }
     },
     {
       "traitName": "means.location.address.street.line3",
-      "extendsTrait": "means.location.address.street"
+      "extendsTrait": "location.addressLine3",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.city",
+      "explanation": "the concept of a city, town",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.cityName",
+      "explanation": "the name of a city or town as used in an address. (IS A name [of->city])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.city"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.city",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.cityName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.continent",
+      "explanation": "the concept of a continent",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.continentName",
+      "explanation": "the name of a continent as used in an address. (IS A name [of->continent])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.continent"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.continent",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.continentName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.country",
+      "explanation": "the concept of a country",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.countryName",
+      "explanation": "the name of a country (IS A name [of->country])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.country"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.countryCode",
+      "explanation": "the common abbreviation of country name as used in an address. (IS A code [of->country])",
+      "extendsTrait": {
+        "traitReference": "identity.code",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.country"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.country",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.countryCode",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.county",
+      "explanation": "the concept of a county or other state/province division",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.countyName",
+      "explanation": "the name of a county or other state/province division (IS A name [of->county])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.county"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.county",
-      "extendsTrait": "means.location.address"
+      "extendsTrait": "location.countyName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.latitude",
+      "explanation": "measurement of north to south position on the globe in degrees from 90 (north pole) to -90",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.latitude",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.latitude",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.longitude",
+      "explanation": "measurement of west to east position on the globe in degrees from -180 (date line) to 180",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.longitude",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.longitude",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
       "traitName": "means.location.point",
       "extendsTrait": "means.location"
     },
     {
-      "traitName": "means.location.postalCode",
-      "extendsTrait": "means.location"
+      "traitName": "location.postalCode",
+      "extendsTrait": "identity.code",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
-      "traitName": "means.location.province",
-      "extendsTrait": "means.location"
+      "traitName": "means.location.postalCode",
+      "extendsTrait": "location.postalCode",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.region",
+      "explanation": "a recognized geographic region",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.regionName",
+      "explanation": "the name of a region as used in an address. (IS A name [of->region])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.region"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.regionCode",
+      "explanation": "the ISO code of a region as used in an address. (IS A name [of->region])",
+      "extendsTrait": {
+        "traitReference": "identity.code",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.region"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.region",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.regionName",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.district",
+      "explanation": "a recognized geographic district within a city or other region",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.districtName",
+      "explanation": "the name of a district as used in an address. (IS A name [of->district])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.district"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.stateOrProvince",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.stateOrProvinceName",
+      "explanation": "the name of a state or province (IS A name [of->stateOrProvince])",
+      "extendsTrait": {
+        "traitReference": "identity.name",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.stateOrProvince"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.stateOrProvinceCode",
+      "explanation": "the common abbreviation of state or province name as used in an address. (IS A code [of->stateOrProvince])",
+      "extendsTrait": {
+        "traitReference": "identity.code",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.stateOrProvince"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "means.location.province",
+      "extendsTrait": "location.stateOrProvinceCode",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
     },
     {
       "traitName": "means.location.stateOrProvince",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.stateOrProvinceCode",
+      "explanation": "redefined older name convention of same concept (see the extended trait)"
+    },
+    {
+      "traitName": "location.timeZone",
+      "explanation": "the concept of timeZone",
+      "defaultVerb": "means",
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
+    },
+    {
+      "traitName": "location.timeZoneCode",
+      "explanation": "common abbreviation for the name of a timezone (IS A code [of->timeZone])",
+      "extendsTrait": {
+        "traitReference": "identity.code",
+        "appliedTraits": [
+          {
+            "verb": "has",
+            "traitReference": "identity.identityKind",
+            "appliedTraits": [
+              {
+                "verb": "means",
+                "traitReference": "location.timeZone"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        {
+          "traitReference": "location",
+          "verb": "classifiedAs"
+        }
+      ]
     },
     {
       "traitName": "means.location.timezone",
-      "extendsTrait": "means.location"
+      "extendsTrait": "location.timeZoneCode"
     },
     {
       "traitName": "means.location.geo",
@@ -151,7 +893,7 @@
       "dataTypeName": "addressLine",
       "extendsDataType": "string",
       "exhibitsTraits": [
-        "means.location.address"
+        "location.addressLine"
       ]
     },
     {
@@ -212,7 +954,6 @@
     },
     {
       "traitName": "is.inTimeZone",
-      "extendsTrait": "is",
       "explanation": "the associated data is assumed to be in the specified time zone",
       "hasParameters": [
         {
@@ -256,5 +997,5 @@
       "explanation": "the associated data is assumed to be in the specified time zone. timeZoneName value is a Time Zone Database standard time zone name. see https://www.iana.org/time-zones"
     }
   ],
-  "documentVersion": "1.0"
+  "documentVersion": "2.0"
 }

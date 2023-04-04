@@ -65,7 +65,7 @@ export class DataPartitionPersistence {
                     argValue = entries[0][1];
                 }
                 if (!argName || !argValue) {
-                    Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPartitionInvalidArguments, dataObj.location.toString());
+                    Logger.warning(ctx, this.TAG, this.fromData.name, undefined, cdmLogCode.WarnPartitionInvalidArguments, dataObj.location.toString());
                 }
 
                 if (newPartition.arguments.has(argName)) {

@@ -21,12 +21,22 @@ import {
     resolveOptions,
     SymbolSet,
     VisitCallback,
-    CdmTraitReferenceBase
+    CdmTraitReferenceBase,
+    CdmDocumentDefinition,
+    CdmObjectBase
 } from '../internal';
 
 export class CdmTraitReference extends CdmTraitReferenceBase {
     public arguments: CdmArgumentCollection;
     public isFromProperty: boolean;
+
+    /// <summary>
+    /// Gets or sets a reference to a trait used to describe the 'verb' explaining how the trait's meaning should be applied to the 
+    /// object that holds this traitReference. This optional property can override the meaning of any defaultVerb that could be part of the 
+    /// referenced trait's definition
+    /// </summary>
+    public verb: CdmTraitReference;
+
     /**
      * @internal
      */
@@ -71,6 +81,7 @@ export class CdmTraitReference extends CdmTraitReferenceBase {
                 }
                 copy.resolvedArguments = this.resolvedArguments;
             }
+            copy.verb = this.verb?.copy(resOpt) as CdmTraitReference;
 
             return copy;
         }
@@ -96,6 +107,13 @@ export class CdmTraitReference extends CdmTraitReferenceBase {
                             break;
                         }
                     }
+                }
+            }
+
+            if (this.verb !== undefined) {
+                this.verb.owner = this;
+                if (this.verb.visit(pathFrom + '/verb/', preChildren, postChildren)) {
+                    return true;
                 }
             }
 
@@ -154,6 +172,17 @@ export class CdmTraitReference extends CdmTraitReferenceBase {
             return undefined;
         }
         // return p.measure(bodyCode);
+    }
+
+    /**
+     * @internal
+     */
+    public getMinimumSemanticVersion() : number
+    {
+        if (this.verb !== undefined || this.appliedTraits !== undefined && this.appliedTraits.length > 0) {
+            return CdmObjectBase.semanticVersionStringToNumber(CdmObjectBase.jsonSchemaSemanticVersionTraitsOnTraits);
+        }
+        return super.getMinimumSemanticVersion();
     }
 
     /**
@@ -227,6 +256,15 @@ export class CdmTraitReference extends CdmTraitReferenceBase {
                 for (const argument of this.arguments) {
                     rtsResult.setParameterValueFromArgument(trait, argument);
                 }
+            }
+
+            // if an explicit verb is set, remember this. don't resolve that verb trait, cuz that sounds nuts.
+            if (this.verb !== undefined) {
+                rtsResult.setExplicitVerb(trait, this.verb);
+            }
+            // if a collection of meta traits exist, save on the resolved but don't resolve these. again, nuts
+            if (this.appliedTraits !== undefined && this.appliedTraits.length > 0) {
+                rtsResult.setMetaTraits(trait, this.appliedTraits.allItems);
             }
 
             // register set of possible symbols

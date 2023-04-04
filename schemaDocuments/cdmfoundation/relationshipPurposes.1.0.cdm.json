@@ -1,0 +1,1397 @@
+{
+  "$schema": "../schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.5.0",
+  "imports": [
+    {
+      "corpusPath": "foundations.3.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "traitName": "relationship",
+      "defaultVerb": "classifiedAs",
+      "exhibitsTraits": [
+        "fundamental"
+      ]
+    },
+    {
+      "traitName": "relationship.references",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.referencedBy",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.references",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "References"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.references",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.references"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.references",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.references"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.references",
+      "exhibitsTraits": [
+        "relationship.references",
+        "verbPhrase.references",
+        "verbPhrase.inverse.referencedBy"
+      ]
+    },
+    {
+      "traitName": "relationship.referencedBy",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.references",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.referencedBy",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Referenced By"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.referencedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.referencedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.referencedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.referencedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.referencedBy",
+      "exhibitsTraits": [
+        "relationship.referencedBy",
+        "verbPhrase.referencedBy",
+        "verbPhrase.inverse.references"
+      ]
+    },
+    {
+      "traitName": "relationship.contains",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.containedWithin",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.contains",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Contains"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.contains",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.contains"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.contains",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.contains"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.contains",
+      "exhibitsTraits": [
+        "relationship.contains",
+        "verbPhrase.contains",
+        "verbPhrase.inverse.containedWithin"
+      ]
+    },
+    {
+      "traitName": "relationship.containedWithin",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.contains",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.containedWithin",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Contained Within"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.containedWithin",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.containedWithin"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.containedWithin",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.containedWithin"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.containedWithin",
+      "exhibitsTraits": [
+        "relationship.containedWithin",
+        "verbPhrase.containedWithin",
+        "verbPhrase.inverse.contains"
+      ]
+    },
+    {
+      "traitName": "relationship.places",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.placedBy",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.places",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Places"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.places",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.places"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.places",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.places"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.places",
+      "exhibitsTraits": [
+        "relationship.places",
+        "verbPhrase.places",
+        "verbPhrase.inverse.placedBy"
+      ]
+    },
+    {
+      "traitName": "relationship.placedBy",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.places",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.placedBy",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Placed By"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.placedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.placedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.placedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.placedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.placedBy",
+      "exhibitsTraits": [
+        "relationship.placedBy",
+        "verbPhrase.placedBy",
+        "verbPhrase.inverse.places"
+      ]
+    },
+    {
+      "traitName": "relationship.gives",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.takes",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.gives",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Gives"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.gives",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.gives"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.gives",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.gives"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.gives",
+      "exhibitsTraits": [
+        "relationship.gives",
+        "verbPhrase.gives",
+        "verbPhrase.inverse.takes"
+      ]
+    },
+    {
+      "traitName": "relationship.takes",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.gives",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.takes",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Takes"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.takes",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.takes"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.takes",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.takes"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.takes",
+      "exhibitsTraits": [
+        "relationship.takes",
+        "verbPhrase.takes",
+        "verbPhrase.inverse.gives"
+      ]
+    },
+    {
+      "traitName": "relationship.owns",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.ownedBy",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.owns",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Owns"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.owns",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.owns"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.owns",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.owns"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.owns",
+      "exhibitsTraits": [
+        "relationship.owns",
+        "verbPhrase.owns",
+        "verbPhrase.inverse.ownedBy"
+      ]
+    },
+    {
+      "traitName": "relationship.ownedBy",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.owns",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.ownedBy",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Owned By"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.ownedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.ownedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.ownedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.ownedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.ownedBy",
+      "exhibitsTraits": [
+        "relationship.ownedBy",
+        "verbPhrase.ownedBy",
+        "verbPhrase.inverse.owns"
+      ]
+    },
+    {
+      "traitName": "relationship.uses",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.usedBy",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.uses",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Uses"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.uses",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.uses"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.uses",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.uses"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.uses",
+      "exhibitsTraits": [
+        "relationship.uses",
+        "verbPhrase.uses",
+        "verbPhrase.inverse.usedBy"
+      ]
+    },
+    {
+      "traitName": "relationship.usedBy",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.uses",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.usedBy",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Used By"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.usedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.usedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.usedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.usedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.usedBy",
+      "exhibitsTraits": [
+        "relationship.usedBy",
+        "verbPhrase.usedBy",
+        "verbPhrase.inverse.uses"
+      ]
+    },
+    {
+      "traitName": "relationship.goesTo",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.comesFrom",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.goesTo",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Goes To"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.goesTo",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.goesTo"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.goesTo",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.goesTo"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.goesTo",
+      "exhibitsTraits": [
+        "relationship.goesTo",
+        "verbPhrase.goesTo",
+        "verbPhrase.inverse.comesFrom"
+      ]
+    },
+    {
+      "traitName": "relationship.comesFrom",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.goesTo",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.comesFrom",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Comes From"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.comesFrom",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.comesFrom"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.comesFrom",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.comesFrom"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.comesFrom",
+      "exhibitsTraits": [
+        "relationship.comesFrom",
+        "verbPhrase.comesFrom",
+        "verbPhrase.inverse.goesTo"
+      ]
+    },
+    {
+      "traitName": "relationship.produces",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.producedBy",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.produces",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Produces"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.produces",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.produces"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.produces",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.produces"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.produces",
+      "exhibitsTraits": [
+        "relationship.produces",
+        "verbPhrase.produces",
+        "verbPhrase.inverse.producedBy"
+      ]
+    },
+    {
+      "traitName": "relationship.producedBy",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.produces",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.producedBy",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Produced By"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.producedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.producedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.producedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.producedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.producedBy",
+      "exhibitsTraits": [
+        "relationship.producedBy",
+        "verbPhrase.producedBy",
+        "verbPhrase.inverse.produces"
+      ]
+    },
+    {
+      "traitName": "relationship.has",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.belongsTo",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.has",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Has"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.has",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.has"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.has",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.has"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.has",
+      "exhibitsTraits": [
+        "relationship.has",
+        "verbPhrase.has",
+        "verbPhrase.inverse.belongsTo"
+      ]
+    },
+    {
+      "traitName": "relationship.belongsTo",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.has",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.belongsTo",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Belongs To"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.belongsTo",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.belongsTo"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.belongsTo",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.belongsTo"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.belongsTo",
+      "exhibitsTraits": [
+        "relationship.belongsTo",
+        "verbPhrase.belongsTo",
+        "verbPhrase.inverse.has"
+      ]
+    },
+    {
+      "traitName": "relationship.employs",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.employedBy",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.employs",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Employs"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.employs",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.employs"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.employs",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.employs"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.employs",
+      "exhibitsTraits": [
+        "relationship.employs",
+        "verbPhrase.employs",
+        "verbPhrase.inverse.employedBy"
+      ]
+    },
+    {
+      "traitName": "relationship.employedBy",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.employs",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.employedBy",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Employed By"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.employedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.employedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.employedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.employedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.employedBy",
+      "exhibitsTraits": [
+        "relationship.employedBy",
+        "verbPhrase.employedBy",
+        "verbPhrase.inverse.employs"
+      ]
+    },
+    {
+      "traitName": "relationship.fulfills",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.fulfilledWith",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.fulfills",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Fulfills"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.fulfills",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.fulfills"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.fulfills",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.fulfills"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.fulfills",
+      "exhibitsTraits": [
+        "relationship.fulfills",
+        "verbPhrase.fulfills",
+        "verbPhrase.inverse.fulfilledWith"
+      ]
+    },
+    {
+      "traitName": "relationship.fulfilledWith",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.fulfills",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.fulfilledWith",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Fulfilled With"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.fulfilledWith",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.fulfilledWith"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.fulfilledWith",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.fulfilledWith"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.fulfilledWith",
+      "exhibitsTraits": [
+        "relationship.fulfilledWith",
+        "verbPhrase.fulfilledWith",
+        "verbPhrase.inverse.fulfills"
+      ]
+    },
+    {
+      "traitName": "relationship.transports",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.transportedBy",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.transports",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Transports"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.transports",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.transports"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.transports",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.transports"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.transports",
+      "exhibitsTraits": [
+        "relationship.transports",
+        "verbPhrase.transports",
+        "verbPhrase.inverse.transportedBy"
+      ]
+    },
+    {
+      "traitName": "relationship.transportedBy",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.transports",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.transportedBy",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Transported By"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.transportedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.transportedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.transportedBy",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.transportedBy"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.transportedBy",
+      "exhibitsTraits": [
+        "relationship.transportedBy",
+        "verbPhrase.transportedBy",
+        "verbPhrase.inverse.transports"
+      ]
+    },
+    {
+      "traitName": "relationship.includes",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.partOf",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.includes",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Includes"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.includes",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.includes"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.includes",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.includes"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.includes",
+      "exhibitsTraits": [
+        "relationship.includes",
+        "verbPhrase.includes",
+        "verbPhrase.inverse.partOf"
+      ]
+    },
+    {
+      "traitName": "relationship.partOf",
+      "defaultVerb": "does",
+      "exhibitsTraits": [
+        "relationship",
+        {
+          "traitReference": "relationship.includes",
+          "verb": "inverseMeans"
+        }
+      ]
+    },
+    {
+      "constantEntityName": "localized.partOf",
+      "entityShape": "localizedTable",
+      "constantValues": [
+        [
+          "en",
+          "Part Of"
+        ]
+      ]
+    },
+    {
+      "traitName": "verbPhrase.partOf",
+      "extendsTrait": {
+        "traitReference": "means.relationship.verbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.partOf"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "traitName": "verbPhrase.inverse.partOf",
+      "extendsTrait": {
+        "traitReference": "means.relationship.inverseVerbPhrase",
+        "arguments": [
+          {
+            "entityReference": "localized.partOf"
+          }
+        ]
+      },
+      "defaultVerb": "has"
+    },
+    {
+      "purposeName": "explains.partOf",
+      "exhibitsTraits": [
+        "relationship.partOf",
+        "verbPhrase.partOf",
+        "verbPhrase.inverse.includes"
+      ]
+    }
+  ],
+  "documentVersion": "1.0"
+}

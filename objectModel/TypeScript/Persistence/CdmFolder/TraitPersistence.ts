@@ -6,6 +6,8 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmTraitDefinition,
+    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -13,8 +15,11 @@ import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     Parameter,
     Trait,
+    TraitGroupReference,
     TraitReference
 } from './types';
+
+import * as utils from './utils';
 
 export class TraitPersistence {
     public static fromData(ctx: CdmCorpusContext, object: Trait): CdmTraitDefinition {
@@ -45,6 +50,11 @@ export class TraitPersistence {
         if (object.associatedProperties) {
             trait.associatedProperties = object.associatedProperties;
         }
+        if (object.defaultVerb) {
+            trait.defaultVerb = CdmFolder.TraitReferencePersistence.fromData(ctx, object.defaultVerb);
+        }
+
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(trait.exhibitsTraits, utils.createTraitReferenceArray(ctx, object.exhibitsTraits));
 
         return trait;
     }
@@ -70,6 +80,11 @@ export class TraitPersistence {
         if (instance.ugly !== undefined) {
             result.ugly = instance.ugly;
         }
+
+        if (instance.defaultVerb !== undefined) {
+            result.defaultVerb =  instance.defaultVerb.copyData(resOpt, options)  as (string | TraitReference);
+        }
+        result.exhibitsTraits = copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options);
 
         return result;
     }

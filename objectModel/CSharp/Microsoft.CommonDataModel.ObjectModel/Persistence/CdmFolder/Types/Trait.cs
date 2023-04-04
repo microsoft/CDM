@@ -16,5 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public bool? ModifiesAttributes { get; set; }
         public bool? Ugly { get; set; }
         public List<string> AssociatedProperties { get; set; }
+        public dynamic DefaultVerb { get; set; }
+        public List<JToken> ExhibitsTraits { get; set; }
     }
 }

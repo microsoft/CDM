@@ -3,9 +3,13 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.List;
+
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.TraitProfile;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.TraitProfileCache;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -251,6 +255,35 @@ public interface CdmObject {
    * @return CDM Object reference
    */
   CdmObjectReference createSimpleReference(ResolveOptions resOpt);
+
+  /**
+   * returns a list of TraitProfile descriptions, one for each trait applied to or exhibited by this object.
+   * each description of a trait is an expanded picture of a trait reference.
+   * the goal of the profile is to make references to structured, nested, messy traits easier to understand and compare.
+   * we do this by promoting and merging some information as far up the trait inheritance / reference chain as far as we can without 
+   * giving up important meaning.
+   * in general, every trait profile includes:
+   * 1. the name of the trait
+   * 2. a TraitProfile for any trait that this trait may 'extend', that is, a base class trait
+   * 3. a map of argument / parameter values that have been set
+   * 4. an applied 'verb' trait in the form of a TraitProfile
+   * 5. an array of any "classifier" traits that have been applied
+   * 6. and array of any other (non-classifier) traits that have been applied or exhibited by this trait
+   * 
+   * Adjustments to these ideas happen as trait information is 'bubbled up' from base definitons. adjustments include
+   * 1. the most recent verb trait that was defined or applied will propigate up the hierarchy for all references even those that do not specify a verb. 
+   * This ensures the top trait profile depicts the correct verb
+   * 2. traits that are applied or exhibited by another trait using the 'classifiedAs' verb are put into a different collection called classifiers.
+   * 3. classifiers are accumulated and promoted from base references up to the final trait profile. this way the top profile has a complete list of classifiers 
+   * but the 'deeper' profiles will not have the individual classifications set (to avoid an explosion of info)
+   * 3. In a similar way, trait arguments will accumulate from base definitions and default values.
+   * 4. traits used as 'verbs' (defaultVerb or explicit verb) will not include classifier descriptions, this avoids huge repetition of somewhat pointless info and recursive effort
+   * @param resOpt The resolve options.
+   * @param cache if specified, profiles for trait definitions will be pulled from and placed into the give cache. helps with runtime, size and persistance performace.
+   * @param resOpt if specified, only traits that are applied directly or implicitly with the given verb name will be included.
+   * @return List<TraitProfile>
+   */
+  List<TraitProfile> fetchTraitProfiles(ResolveOptions resOpt, TraitProfileCache cache, String forVerb);
 
   /**
    *

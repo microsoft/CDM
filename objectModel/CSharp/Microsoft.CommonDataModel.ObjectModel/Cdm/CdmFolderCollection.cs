@@ -69,7 +69,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        internal CdmFolderDefinition GetOrCreate(string name) {
+        internal CdmFolderDefinition GetOrCreate(string name)
+        {
             lock (this.AllItems)
             {
                 CdmFolderDefinition result = null;
