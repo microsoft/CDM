@@ -5,7 +5,6 @@ from collections import OrderedDict
 import importlib
 import json
 import os
-import sys
 from typing import List, Optional, Set, TYPE_CHECKING
 
 from cdm.storage import CdmStandardsAdapter, LocalAdapter, ResourceAdapter, StorageAdapterBase
@@ -44,10 +43,10 @@ class StorageManager:
         self.mount('local', LocalAdapter(root=os.getcwd()))
         self._system_defined_namespaces.add('local')
 
-        if 'commondatamodel_objectmodel_cdmstandards' in sys.modules:
+        try:
             self.mount('cdm', CdmStandardsAdapter())
             self._system_defined_namespaces.add('cdm')
-        else:
+        except Exception as e:
             logger.error(self._ctx, self._TAG, 'StorageManager', None, CdmLogCode.ERR_STORAGE_CDM_STANDARDS_MISSING, 'commondatamodel_objectmodel_cdmstandards')
 
     @property

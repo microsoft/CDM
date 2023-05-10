@@ -4,11 +4,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+import * as browserReadFile from './browserFileReader';
 
 let readFile;
 const root: string = `${__dirname}/schemaDocuments`;
 
-if (fs.readFile) {
+const isInBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+
+if (isInBrowser) {
+    readFile = browserReadFile.readFile;
+} else {
     readFile = util.promisify(fs.readFile);
 }
 
@@ -26,9 +31,13 @@ const createCorpusPath = (adapterPath: string): string => {
     }
 };
 
+const getRoot = (): string => {
+    return root;
+};
+
 const readAsync = async (filePath: string): Promise<string> => {
     const adapterPath: string = createAdapterPath(filePath);
     return readFile(adapterPath, 'utf-8') as string;
 };
 
-export { createCorpusPath, createAdapterPath, readAsync };
+export { createCorpusPath, createAdapterPath, getRoot, readAsync };

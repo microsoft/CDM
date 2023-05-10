@@ -1,36 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { StorageAdapterBase } from './StorageAdapterBase';
-
-var cdmstandards;
+import { CdmCustomPackageAdapter } from './CdmCustomPackageAdapter';
 
 /**
  * An adapter pre-configured to read the standard schema files published by CDM.
  */
-export class CdmStandardsAdapter extends StorageAdapterBase {
+export class CdmStandardsAdapter extends CdmCustomPackageAdapter {
     constructor() {
-        super();
-        try {
-            cdmstandards = require('cdm.objectmodel.cdmstandards');
-        } catch (e) {
-            throw new Error('Couldn\'t find package \'cdm.objectmodel.cdmstandards\', please install the package, and add it as dependency of the project.');
+        if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+            // for webpack, we need to explicitly state imports, can't require using a variable
+            super(require('cdm.objectmodel.cdmstandards'));
+        } else {
+            super('cdm.objectmodel.cdmstandards');
         }
-    }
-
-    public canRead(): boolean {
-        return true;
-    }
-
-    public async readAsync(corpusPath: string): Promise<string> {
-        return cdmstandards.readAsync(corpusPath);
-    }
-
-    public createAdapterPath(corpusPath: string): string {
-        return cdmstandards.createAdapterPath(corpusPath);
-    }
-
-    public createCorpusPath(adapterPath: string): string {
-        return cdmstandards.createCorpusPath(adapterPath);
     }
 }
