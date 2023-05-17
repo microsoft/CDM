@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using Microsoft.CommonDataModel.ObjectModel.Storage;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
+
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
-    using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using System;
-    using System.Threading.Tasks;
-    using Assert = VisualStudio.TestTools.UnitTesting.Assert;
-
     /// <summary>
-    /// Tests if the CdmStandardsAdapter functions correctly.
+    /// Tests if the CdmCustomPackageAdapter functions correctly.
     /// </summary>
     [TestClass]
-    public class CdmStandardsAdapterTests
+    public class CdmCustomPackageAdapterTests
     {
         private const string ROOT = "Microsoft.CommonDataModel.ObjectModel.Adapter.CdmStandards.Resources";
 
@@ -24,10 +24,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         private const string InvalidFile = "invalidFile";
 
         /// <summary>
+        /// Tests if the adapter handles correctly if the package cannot be found
+        /// </summary>
+        [TestMethod]
+        public void TestPackageNotFound()
+        {
+            bool errorCalled = false;
+            try
+            {
+                new CdmCustomPackageAdapter("someInvalidPackage");
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e.Message.StartsWith("Couldn't find assembly 'someInvalidPackage'"));
+                errorCalled = true;
+            }
+
+            Assert.IsTrue(errorCalled);
+        }
+        
+        /// <summary>
         /// Tests if the calls to CreateCorpusPath return the expected corpus path.
         /// </summary>
         [TestMethod]
-        public void TestCreateCorpusPath()
+        public void TestCdmStandardsCreateCorpusPath()
         {
             var adapter = new CdmStandardsAdapter();
 
@@ -46,7 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         /// Tests if the calls to CreateAdapterPath return the expected adapter path.
         /// </summary>
         [TestMethod]
-        public void TestCreateAdapterPath()
+        public void TestCdmStandardsCreateAdapterPath()
         {
             var adapter = new CdmStandardsAdapter();
 
@@ -58,10 +78,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         }
 
         /// <summary>
-        /// Tests if the files from the resource adapter can be read correclty.
+        /// Tests if the files from the resource adapter can be read correctly.
         /// </summary>
         [TestMethod]
-        public async Task TestReadAsync()
+        public async Task TestCdmStandardsReadAsync()
         {
             var adapter = new CdmStandardsAdapter();
 
@@ -82,6 +102,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             Assert.IsTrue(errorWasThrown);
         }
+        
+        /// <summary>
+        /// Tests if the CdmCustomPackageAdapter works when assembly is passed in the constructor.
+        /// </summary>
+        [TestMethod]
+        public async Task TestCustomPackageInConstructor()
+        {
+            var cdmStandardsPackage = Assembly.Load("Microsoft.CommonDataModel.ObjectModel.Adapter.CdmStandards");
+            var adapter = new CdmCustomPackageAdapter(cdmStandardsPackage);
+
+            Assert.IsNotNull(await adapter.ReadAsync(FoundationsFile));
+        }
     }
 }
-

@@ -77,12 +77,12 @@ class CopyResourcesCommand(distutils.cmd.Command):
 
 setuptools.setup(
     name='commondatamodel-objectmodel',
-    version='1.7.1',
+    version='1.7.2',
     author='Microsoft',
     description='Common Data Model Object Model library for Python',
     url='https://github.com/microsoft/CDM/tree/master/objectModel/Python',
     install_requires=requirements,
-    packages=setuptools.find_packages(exclude=['commondatamodel_objectmodel_cdmstandards']),
+    packages=setuptools.find_packages(exclude=['cdmstandards']),
     package_data={
         PACKAGE_NAME:[
             os.path.join(LOG_MESSAGES_FOLDER_NAME, '*'),

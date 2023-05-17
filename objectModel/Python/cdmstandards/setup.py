@@ -9,7 +9,8 @@ setuptools.setup(
     author='Microsoft',
     description='The Common Data Model standard schema and entities',
     url='https://github.com/microsoft/CDM/tree/master/objectModel/Python',
-    packages=['schema_documents'],
+    package_data={'': ['schema_documents/*', 'schema_documents/**/*']},
+    packages=['commondatamodel_objectmodel_cdmstandards'],
     include_package_data=True,
     classifiers=[
         'Programming Language :: Python :: 3.5',

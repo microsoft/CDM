@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from .adls import ADLSAdapter
+from .cdm_custom_package import CdmCustomPackageAdapter
 from .cdm_standards import CdmStandardsAdapter
 from .github import GithubAdapter
 from .base import StorageAdapterBase
@@ -13,6 +14,7 @@ from .syms import SymsAdapter
 
 __all__ = [
     'ADLSAdapter',
+    'CdmCustomPackageAdapter',
     'CdmStandardsAdapter',
     'GithubAdapter',
     'StorageAdapterBase',
