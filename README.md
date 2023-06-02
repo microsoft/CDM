@@ -1,5 +1,7 @@
 # Common Data Model Official Packages
 
+## COUCOU LES COPAINS!
+
 | [![NuGet](https://img.shields.io/nuget/v/Microsoft.CommonDataModel.ObjectModel.svg?style=flat-square&label=nuget&colorB=00b200)](https://www.nuget.org/profiles/CommonDataModel/) | [![Maven Central](https://img.shields.io/maven-central/v/com.microsoft.commondatamodel/objectmodel.svg?style=flat-square&label=maven-central&colorB=00b200)](https://search.maven.org/artifact/com.microsoft.commondatamodel/objectmodel) | [![PyPI](https://img.shields.io/pypi/v/commondatamodel-objectmodel.svg?style=flat-square&label=pypi&colorB=00b200)](https://pypi.org/project/commondatamodel-objectmodel/) | [![npm](https://img.shields.io/npm/v/cdm.objectmodel.svg?style=flat-square&label=npm&colorB=00b200)](https://www.npmjs.com/package/cdm.objectmodel) |
 ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
 
