@@ -197,6 +197,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         return self._import_priorities.copy()
 
     def get_name(self) -> str:
+        warnings.warn('Property deprecated.', DeprecationWarning)
         return self.name
 
     def _fetch_object_from_document_path(self, object_path: str, res_opt: ResolveOptions) -> 'CdmObject':

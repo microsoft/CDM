@@ -115,7 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             await manifestFromModelJson.SaveAsAsync(newManifestFromModelJsonName, true);
             // Verify that model.json persistence was called by comparing the saved document to the original model.json.
             serializedManifest = allDocs[$"/{newManifestFromModelJsonName}"];
-            expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.Name);
+            expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, $"{manifestFromModelJson.ManifestName}{PersistenceLayer.ManifestExtension}");
             TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
         }
 
@@ -146,7 +146,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             await manifestFromModelJson.SaveAsAsync(newManifestFromModelJsonName, true);
             // Verify that model.json persistence was called by comparing the saved document to the original model.json.
             var serializedManifest = allDocs[$"/sub-folder/{newManifestFromModelJsonName}"];
-            var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.Name);
+            var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, $"{manifestFromModelJson.ManifestName}{PersistenceLayer.ManifestExtension}");
             TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
         }
 

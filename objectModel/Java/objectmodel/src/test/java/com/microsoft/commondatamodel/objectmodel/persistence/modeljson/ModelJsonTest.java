@@ -378,6 +378,20 @@ public class ModelJsonTest extends ModelJsonTestBase {
     TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, true);
   }
 
+  /**
+   * Test resulting manifest file is only added once and manifest name is correctly named
+   */
+  @Test
+  public void testNameOnModelLoad() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestNameOnModelLoad");
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("model.json").join();
+    final CdmFolderDefinition folder = corpus.getStorage().fetchRootFolder("local");
+
+    // folder should contain one manifest, one entity file, and an extensions file
+    Assert.assertEquals(folder.getDocuments().size(), 3);
+    Assert.assertEquals(manifest.getName(), "model.json");
+  }
+
   private void handleOutput(
       final String testName,
       final String outputFileName,

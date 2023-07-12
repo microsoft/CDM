@@ -33,7 +33,7 @@ class LocalEntityDeclarationPersistence:
         document_folder.documents.append(entity_doc)
 
         # Entity schema path is the path to the doc containing the entity definition.
-        local_entity_dec.entity_path = ctx.corpus.storage.create_relative_corpus_path('{}/{}'.format(entity_doc.at_corpus_path, data.name), manifest)
+        local_entity_dec.entity_path = ctx.corpus.storage.create_relative_corpus_path('{}/{}'.format(entity_doc.at_corpus_path, data.name), document_folder)
 
         local_entity_dec.explanation = data.get('description')
 

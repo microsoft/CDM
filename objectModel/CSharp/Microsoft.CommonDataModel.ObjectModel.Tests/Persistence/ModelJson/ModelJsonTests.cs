@@ -372,6 +372,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
         }
 
         /// <summary>
+        /// Test resulting manifest file is only added once and manifest name is correctly named
+        /// </summary>
+        [Test]
+        public async Task TestNameOnModelLoad()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestNameOnModelLoad");
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("model.json");
+            var folder = corpus.Storage.FetchRootFolder("local");
+
+            // folder should contain one manifest, one entity file, and an extensions file
+            Assert.AreEqual(folder.Documents.Count, 3);
+            Assert.AreEqual(manifest.GetName(), "model.json");
+        }
+
+        /// <summary>
         /// Handles the obtained output.
         /// If needed, writes the output to a test debugging file.
         /// It reads expected output and compares it to the actual output.
