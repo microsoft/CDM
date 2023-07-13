@@ -63,9 +63,6 @@ public class ManifestPersistence {
     final CdmManifestDefinition manifest = ctx.getCorpus().makeObject(CdmObjectType.ManifestDef, obj.getName());
     manifest.setVirtualLocation(folder.getFolderPath() + PersistenceLayer.modelJsonExtension);
 
-    // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
-    folder.getDocuments().add(manifest);
-
     if (obj.getImports() != null) {
       obj.getImports()
           .forEach(

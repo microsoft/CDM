@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -203,7 +204,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
                 TestHelper.AssertSameObjectWasSerialized(expectedOutputDocument, serializedDocument);
             }
 
-            var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, nameof(TestModelJsonExtensibilityManifestDocs), manifest.Name);
+            var expectedOutputManifest = TestHelper.GetExpectedOutputFileContent(testsSubpath, nameof(TestModelJsonExtensibilityManifestDocs), $"{manifest.ManifestName}{PersistenceLayer.ManifestExtension}");
             TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
         }
 

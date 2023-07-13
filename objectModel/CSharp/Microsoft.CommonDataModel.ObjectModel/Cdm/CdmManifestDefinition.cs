@@ -67,10 +67,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         internal string VirtualLocation { get; set; }
 
+        [Obsolete]
         /// <inheritdoc />
         public string GetName()
         {
-            return this.ManifestName;
+            return this.Name;
         }
 
         internal string GetObjectPath()

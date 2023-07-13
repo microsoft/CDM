@@ -30,7 +30,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             documentFolder.Documents.Add(entityDoc);
 
             // Entity schema path is the path to the doc containing the entity definition.
-            localEntity.EntityPath = ctx.Corpus.Storage.CreateRelativeCorpusPath($"{entityDoc.AtCorpusPath}/{obj.Name}", manifest);
+            localEntity.EntityPath = ctx.Corpus.Storage.CreateRelativeCorpusPath($"{entityDoc.AtCorpusPath}/{obj.Name}", documentFolder);
             localEntity.Explanation = obj.Description;
             localEntity.LastChildFileModifiedTime = obj.LastChildFileModifiedTime;
             localEntity.LastFileModifiedTime = obj.LastFileModifiedTime;

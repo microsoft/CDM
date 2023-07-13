@@ -51,7 +51,7 @@ public class LocalEntityDeclarationPersistence {
                   .getStorage()
                   .createRelativeCorpusPath(
                       entityDoc.getAtCorpusPath() + "/" + obj.getName(),
-                      manifest));
+                      documentFolder));
           localEntity.setVirtualLocation(documentFolder.getFolderPath() + PersistenceLayer.modelJsonExtension);
           localEntity.setExplanation(obj.getDescription());
           localEntity.setLastChildFileModifiedTime(obj.getLastChildFileModifiedTime());

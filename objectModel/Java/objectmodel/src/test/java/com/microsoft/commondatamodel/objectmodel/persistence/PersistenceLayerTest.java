@@ -83,7 +83,7 @@ public class PersistenceLayerTest {
     manifestFromModelJson.saveAsAsync(newManifestFromModelJsonName, true).get();
     // Verify that model.json persistence was called by comparing the saved document to the original model.json.
     serializedManifest = allDocs.get("/" + newManifestFromModelJsonName);
-    expectedOutputManifest = TestHelper.getExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.getName());
+    expectedOutputManifest = TestHelper.getExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.getManifestName() + PersistenceLayer.manifestExtension);
     TestHelper.assertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
   }
 

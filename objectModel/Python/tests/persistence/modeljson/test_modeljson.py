@@ -230,6 +230,17 @@ class ModelJsonTest(unittest.TestCase):
         self.assertEqual(0, len(manifest.entities))
         TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PERSIST_MODEL_JSON_REF_ENTITY_INVALID_LOCATION, True, self)
 
+    @async_test
+    async def test_name_on_model_load(self):
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_name_on_model_load')
+        manifest = await corpus.fetch_object_async('model.json')
+        folder = corpus.storage.fetch_root_folder('local')
+
+        # folder should contain one manifest, one entity file, and an extensions file
+        self.assertEqual(3, len(folder.documents))
+
+        self.assertEqual('model.json', manifest.get_name())
+
     def _validate_output(self, test_name: str, output_file_name: str, actual_output: 'JObject',
                          does_write_test_debugging_files: Optional[bool] = False,
                          is_language_specific: Optional[bool] = False):

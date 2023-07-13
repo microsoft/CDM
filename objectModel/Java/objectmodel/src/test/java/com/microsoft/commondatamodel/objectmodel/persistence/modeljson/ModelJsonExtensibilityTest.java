@@ -10,6 +10,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DocumentContent;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.AttributeReference;
@@ -212,7 +213,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
     final String expectedOutputManifest = TestHelper.getExpectedOutputFileContent(
         TESTS_SUBPATH,
         "testModelJsonExtensibilityManifestDocs",
-        manifest.getName());
+        manifest.getManifestName() + PersistenceLayer.manifestExtension);
     TestHelper.assertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
   }
 

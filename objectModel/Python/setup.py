@@ -77,7 +77,7 @@ class CopyResourcesCommand(distutils.cmd.Command):
 
 setuptools.setup(
     name='commondatamodel-objectmodel',
-    version='1.7.2',
+    version='1.7.3',
     author='Microsoft',
     description='Common Data Model Object Model library for Python',
     url='https://github.com/microsoft/CDM/tree/master/objectModel/Python',
