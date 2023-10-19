@@ -107,6 +107,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrProjStringError,
         ErrProjUnsupportedAttrGroups,
         ErrProjUnsupportedSource,
+        ErrRegexTimeout,
+        ErrRegexTimeoutOutOfRange,
         ErrRelMaxResolvedAttrReached,
         ErrResolutionFailure,
         ErrResolveEntityFailure,

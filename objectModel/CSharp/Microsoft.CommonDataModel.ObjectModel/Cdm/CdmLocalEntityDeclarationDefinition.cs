@@ -216,6 +216,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null)
         {
+            await FileStatusCheckAsyncInternal(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions);
+        }
+
+        internal async Task<bool> FileStatusCheckAsyncInternal(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null)
+        {
             using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
             {
                 string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
@@ -236,7 +241,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         else
                         {
-                            await pattern.FileStatusCheckAsync(fileStatusCheckOptions);
+                            bool shouldContinue = await pattern.FileStatusCheckAsyncInternal(fileStatusCheckOptions);
+
+                            if (!shouldContinue)
+                            {
+                                return false;
+                            }
                         }
                     }
 
@@ -276,6 +286,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
 
                 await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+
+                return true;
             }
         }
 

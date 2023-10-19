@@ -1006,6 +1006,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The regex calculation timed out..
+        /// </summary>
+        internal static string ErrRegexTimeout {
+            get {
+                return ResourceManager.GetString("ErrRegexTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regex timeout &apos;{0}&apos; is not valid. Reason &apos;{1}&apos;.
+        /// </summary>
+        internal static string ErrRegexTimeoutOutOfRange {
+            get {
+                return ResourceManager.GetString("ErrRegexTimeoutOutOfRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maximum number of resolved attributes reached for the entity: {0}..
         /// </summary>
         internal static string ErrRelMaxResolvedAttrReached {

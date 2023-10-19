@@ -561,9 +561,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             await entity.FileStatusCheckAsync();
                         }
-                        else if (entity is CdmLocalEntityDeclarationDefinition)
+                        else if (entity is CdmLocalEntityDeclarationDefinition localEntity)
                         {
-                            await (entity as CdmLocalEntityDeclarationDefinition).FileStatusCheckAsync(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions);
+                            bool shouldContinue = await localEntity.FileStatusCheckAsyncInternal(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions);
+
+                            if (!shouldContinue)
+                            {
+                                return;
+                            }
                         }
                     }
 

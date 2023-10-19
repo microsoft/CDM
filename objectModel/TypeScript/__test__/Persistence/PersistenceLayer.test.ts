@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    CdmConstants,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
     CdmEntityDefinition,
@@ -114,7 +115,7 @@ describe('Persistence.PersistenceLayerTest', () => {
         await manifestFromModelJson.saveAsAsync(newManifestFromModelJsonName, true);
         // Verify that model.json persistence was called by comparing the saved document to the original model.json.
         serializedManifest = allDocs.get(`/${newManifestFromModelJsonName}`);
-        expectedOutputManifest = testHelper.getExpectedOutputFileContent(testsSubpath, testName, manifestFromModelJson.name);
+        expectedOutputManifest = testHelper.getExpectedOutputFileContent(testsSubpath, testName, `${manifestFromModelJson.manifestName}${CdmConstants.manifestExtension}`);
         testHelper.assertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
     });
 

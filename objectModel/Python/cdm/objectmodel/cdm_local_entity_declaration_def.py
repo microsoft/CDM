@@ -101,6 +101,12 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         'CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE, file_status_check_options: Optional[FileStatusCheckOptions] = False) -> None:
         """Check the modified time for this object and any children."""
 
+        await self._file_status_check_async_internal(partition_file_status_check_type, incremental_type, file_status_check_options)
+
+    async def _file_status_check_async_internal(self, partition_file_status_check_type: Optional[
+        'PartitionFileStatusCheckType'] = PartitionFileStatusCheckType.FULL, incremental_type: Optional[
+        'CdmIncrementalPartitionType'] = CdmIncrementalPartitionType.NONE, file_status_check_options: Optional[FileStatusCheckOptions] = False) -> bool:
+
         context = self.ctx.corpus.storage.fetch_adapter(self.in_document._namespace).create_file_query_cache_context()
         try:
             full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
@@ -120,7 +126,9 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                                      Constants._INCREMENTAL_TRAIT_NAME,
                                      CdmLocalEntityDeclarationDefinition.data_partition_patterns.fget.__name__)
                     else:
-                        await pattern.file_status_check_async(file_status_check_options)
+                        should_continue = await pattern._file_status_check_async_internal(file_status_check_options)
+                        if not should_continue:
+                            return False
 
                 for partition in self.data_partitions:
                     if partition.is_incremental:
@@ -148,6 +156,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             await self.report_most_recent_time_async(self.last_file_modified_time)
         finally:
             context.dispose()
+        return True
 
     def _should_call_file_status_check(self, incremental_type: 'CdmIncrementalPartitionType', is_pattern: bool,
                                        pattern_or_partition_obj: 'CdmObjectDefinition') -> bool:

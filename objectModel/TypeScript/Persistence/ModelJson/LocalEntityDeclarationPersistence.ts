@@ -49,7 +49,7 @@ export class LocalEntityDeclarationPersistence {
         documentFolder.documents.push(entityDoc);
 
         // Entity schema path is the path to the doc containing the entity definition.
-        localEntityDec.entityPath = ctx.corpus.storage.createRelativeCorpusPath(`${entityDoc.atCorpusPath}/${dataObj.name}`, manifest);
+        localEntityDec.entityPath = ctx.corpus.storage.createRelativeCorpusPath(`${entityDoc.atCorpusPath}/${dataObj.name}`, documentFolder);
 
         localEntityDec.explanation = dataObj.description;
 

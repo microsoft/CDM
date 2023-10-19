@@ -476,7 +476,11 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                     if (isReferencedEntityDeclarationDefinition(entity)) {
                         await entity.fileStatusCheckAsync();
                     } else if (isLocalEntityDeclarationDefinition(entity)) {
-                        await entity.fileStatusCheckAsync(partitionCheckType, incrementalType, fileStatusCheckOptions);
+                        const shouldContinue: boolean = await entity.fileStatusCheckAsyncInternal(partitionCheckType, incrementalType, fileStatusCheckOptions);
+
+                        if (!shouldContinue) {
+                            return;
+                        }
                     }
                 }
 

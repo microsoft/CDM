@@ -81,6 +81,7 @@ export enum cdmLogCode {
     ErrProjStringError,
     ErrProjUnsupportedAttrGroups,
     ErrProjUnsupportedSource,
+    ErrRegexTimeout,
     ErrRelMaxResolvedAttrReached,
     ErrResolutionFailure,
     ErrResolveEntityFailure,

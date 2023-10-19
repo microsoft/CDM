@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition } from '../../../internal';
+import { CdmConstants, CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import { DocumentPersistence as cdmDocument } from '../../../Persistence/CdmFolder/DocumentPersistence';
 import { DocumentContent } from '../../../Persistence/CdmFolder/types';
@@ -99,7 +99,7 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
         }
 
         const expectedOutput: string =
-            testHelper.getExpectedOutputFileContent(testsSubpath, 'TestModelJsonExtensibilityManifestDocs', manifest.name);
+            testHelper.getExpectedOutputFileContent(testsSubpath, 'TestModelJsonExtensibilityManifestDocs', `${manifest.manifestName}${CdmConstants.manifestExtension}`);
 
         testHelper.assertSameObjectWasSerialized(expectedOutput, serializedManifest);
     });

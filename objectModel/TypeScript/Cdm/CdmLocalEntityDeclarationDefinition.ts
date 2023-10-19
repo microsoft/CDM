@@ -236,6 +236,17 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None,
         fileStatusCheckOptions: fileStatusCheckOptions = undefined
     ): Promise<void> {
+        await this.fileStatusCheckAsyncInternal(partitionCheckType, incrementalType, fileStatusCheckOptions);
+    }
+
+    /**
+     * @internal
+     */
+    public async fileStatusCheckAsyncInternal(
+        partitionCheckType: partitionFileStatusCheckType = partitionFileStatusCheckType.Full,
+        incrementalType: cdmIncrementalPartitionType = cdmIncrementalPartitionType.None,
+        fileStatusCheckOptions: fileStatusCheckOptions = undefined
+    ): Promise<boolean> {
 
         let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
         let cacheContext: StorageAdapterCacheContext = (adapter !== undefined) ? adapter.createFileQueryCacheContext() : undefined;
@@ -252,7 +263,11 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
                         Logger.error(pattern.ctx, this.TAG, this.fileStatusCheckAsync.name, pattern.atCorpusPath, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
                             CdmDataPartitionPatternDefinition.name, pattern.fetchObjectDefinitionName(), constants.INCREMENTAL_TRAIT_NAME, 'dataPartitionPatterns');
                     } else {
-                        await pattern.fileStatusCheckAsync(fileStatusCheckOptions);
+                        const shouldContinue: boolean = await pattern.fileStatusCheckAsyncInternal(fileStatusCheckOptions);
+
+                        if (!shouldContinue) {
+                            return false;
+                        }
                     }
                 }
 
@@ -290,6 +305,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
                 cacheContext.dispose()
             }
         }
+
+        return true;
     }
 
     /**

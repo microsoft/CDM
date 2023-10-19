@@ -50,9 +50,6 @@ export class ManifestPersistence {
         const manifest: CdmManifestDefinition = ctx.corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, obj.name);
         manifest.virtualLocation = folder.folderPath + CdmConstants.modelJsonExtension;
 
-        // We need to set up folder path and namespace of a manifest to be able to retrieve that object.
-        folder.documents.push(manifest);
-
         if (obj['cdm:imports']) {
             obj['cdm:imports'].forEach((impElement: object) => {
                 const importObj: CdmImport = CdmFolder.ImportPersistence.fromData(ctx, impElement as Import);

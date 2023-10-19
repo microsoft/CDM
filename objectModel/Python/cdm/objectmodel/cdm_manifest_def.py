@@ -284,7 +284,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                         if isinstance(entity, CdmReferencedEntityDeclarationDefinition):
                             await entity.file_status_check_async()
                         elif isinstance(entity, CdmLocalEntityDeclarationDefinition):
-                            await cast(CdmLocalEntityDeclarationDefinition, entity).file_status_check_async(partition_file_status_check_type, incremental_type, file_status_check_options)
+                            should_continue = await cast(CdmLocalEntityDeclarationDefinition, entity)._file_status_check_async_internal(partition_file_status_check_type, incremental_type, file_status_check_options)
+
+                            if not should_continue:
+                                return
 
                     for sub_manifest in self.sub_manifests:
                         await sub_manifest.file_status_check_async()

@@ -6,5 +6,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
     public class FileStatusCheckOptions
     {
         public bool IncludeDataPartitionSize { get; set; }
+
+        public double? RegexTimeoutSeconds { get; set; }
     }
 }

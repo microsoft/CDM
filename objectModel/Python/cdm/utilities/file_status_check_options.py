@@ -7,3 +7,5 @@ from typing import Optional
 class FileStatusCheckOptions:
     def __init__(self) -> None:
         self.include_data_partition_size = None  # type: Optional[bool]
+
+        self.regex_timeout_seconds = None  # type: Optional[float]
