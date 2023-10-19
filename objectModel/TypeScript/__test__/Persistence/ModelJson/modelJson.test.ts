@@ -406,6 +406,23 @@ describe('Persistence.ModelJson.ModelJson', () => {
     });
 
     /**
+     * Test resulting manifest file is only added once and manifest name is correctly named
+     */
+    it('TestNameOnModelLoad', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestNameOnModelLoad');
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('model.json');
+
+        const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
+
+        // folder should contain one manifest, one entity file, and an extensions file
+        expect(folder.documents.length)
+            .toBe(3);
+
+        expect(manifest.getName())
+            .toBe(modelJsonExtension);
+    });
+
+    /**
      * Handles the obtained output.
      * If needed, writes the output to a test debugging file.
      * It reads expected output and compares it to the actual output.

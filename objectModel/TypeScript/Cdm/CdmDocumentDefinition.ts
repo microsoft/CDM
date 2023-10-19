@@ -614,6 +614,9 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @deprecated Access 'name' member directly.
+     */
     public getName(): string {
         // let bodyCode = () =>
         {

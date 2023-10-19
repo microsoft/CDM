@@ -6,9 +6,8 @@ from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 import regex
 
-from cdm.enums import CdmLogCode, PartitionFileStatusCheckType, CdmIncrementalPartitionType
-from cdm.enums import CdmObjectType
-from cdm.utilities import logger, ResolveOptions, StorageUtils, TraitToPropertyMap
+from cdm.enums import CdmLogCode, CdmObjectType
+from cdm.utilities import FileStatusCheckOptions, logger, ResolveOptions, StorageUtils, TraitToPropertyMap
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
@@ -19,6 +18,7 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
     from cdm.utilities import VisitCallback
 
+regex_timeout = 1
 
 class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
@@ -94,6 +94,9 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
         return copy
 
     async def file_status_check_async(self, file_status_check_options = None) -> None:
+        await self._file_status_check_async_internal(file_status_check_options)
+
+    async def _file_status_check_async_internal(self, file_status_check_options: Optional[FileStatusCheckOptions] = None) -> None:
         """Check the modified time for this object and any children."""
         with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
             namespace = None
@@ -108,7 +111,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                 path_tuple = StorageUtils.split_namespace_path(root_corpus)
                 if not path_tuple:
                     logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH)
-                    return
+                    return True
 
                 namespace = path_tuple[0]
                 adapter = self.ctx.corpus.storage.fetch_adapter(namespace)
@@ -129,7 +132,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             if file_info_list is None:
                 logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path,
                 CdmLogCode.ERR_FETCHING_FILE_METADATA_NULL, namespace)
-                return
+                return True
 
             if namespace is not None:
                 # remove root of the search from the beginning of all paths so anything in the root is not found by regex.
@@ -167,8 +170,20 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                 incremental_partition_location_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(incremental_partition.location, self.in_document)
                                 incremental_partition_path_hash_set.add(incremental_partition_location_full_path)
 
+                        if file_status_check_options is not None and 'regex_timeout_seconds' in file_status_check_options:
+                            configured_regex_timeout = file_status_check_options['regex_timeout_seconds']
+                        else:
+                            configured_regex_timeout = regex_timeout
+
                         for file_name,partition_metadata in cleaned_file_list.items():
-                            m = reg.fullmatch(file_name)
+                            try:
+                                m = reg.fullmatch(file_name, timeout=configured_regex_timeout)
+                            except TimeoutError as e:
+                                logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_REGEX_TIMEOUT)
+
+                                # do not continue processing the manifest/entity/partition pattern if timeout
+                                return False
+
                             if m:
                                 # create a map of arguments out of capture groups.
                                 args = defaultdict(list)  # type: Dict[str, List[str]]
@@ -193,10 +208,10 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                 path_tuple = StorageUtils.split_namespace_path(full_path)
                                 if not path_tuple:
                                     logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH)
-                                    return
+                                    return True
                                 
                                 exhibits_traits = self.exhibits_traits
-                                if file_status_check_options is not None and file_status_check_options['include_data_partition_size'] and partition_metadata is not None and partition_metadata['file_size_bytes'] is not None:
+                                if file_status_check_options is not None and 'include_data_partition_size' in file_status_check_options and partition_metadata is not None and 'file_size_bytes' in partition_metadata is not None:
                                     exhibits_traits = CdmTraitCollection(self.ctx, self)
                                     for trait in self.exhibits_traits:
                                         exhibits_traits.append(trait)
@@ -213,6 +228,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                                     local_ent_dec_def_owner._create_partition_from_pattern(
                                         location_corpus_path, exhibits_traits, args, self.specialized_schema, last_modified_time)
                                     data_partition_path_set.add(full_path)
+            return True
 
 
     def glob_pattern_to_regex(self, pattern: str) -> str:

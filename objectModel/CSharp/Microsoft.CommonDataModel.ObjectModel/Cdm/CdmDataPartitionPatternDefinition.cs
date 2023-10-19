@@ -20,6 +20,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     {
         private static readonly string Tag = nameof(CdmDataPartitionPatternDefinition);
 
+        /// <summary>
+        /// Regex timeout value
+        /// </summary>
+        private static TimeSpan DefaultRegexTimeoutValue = TimeSpan.FromSeconds(1);
+
         private TraitToPropertyMap TraitToPropertyMap { get; }
 
         /// <summary>
@@ -183,6 +188,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync(FileStatusCheckOptions fileStatusCheckOptions)
         {
+            await this.FileStatusCheckAsyncInternal(fileStatusCheckOptions);
+        }
+
+        internal async Task<bool> FileStatusCheckAsyncInternal(FileStatusCheckOptions fileStatusCheckOptions)
+        {
             using (Logger.EnterScope(nameof(CdmDataPartitionPatternDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
                 string nameSpace = null;
@@ -204,7 +214,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (pathTuple == null)
                     {
                         Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);
-                        return;
+                        return true;
                     }
 
                     nameSpace = pathTuple.Item1;
@@ -213,7 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (adapter == null)
                     {
                         Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrDocAdapterNotFound, this.InDocument.Name);
-                        return;
+                        return true;
                     }
 
                     // get a list of all corpusPaths under the root
@@ -230,7 +240,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (fileInfoList == null)
                 {
                     Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrFetchingFileMetadataNull, nameSpace);
-                    return;
+                    return true;
                 }
 
                 if (nameSpace != null)
@@ -261,9 +271,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         string regularExpression = !String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPatternToRegex(this.GlobPattern) : this.RegularExpression;
                         Regex regexPattern = null;
 
+                        TimeSpan regexTimeoutValue = fileStatusCheckOptions?.RegexTimeoutSeconds != null ? TimeSpan.FromSeconds(fileStatusCheckOptions.RegexTimeoutSeconds.Value) : DefaultRegexTimeoutValue;
+
                         try
                         {
-                            regexPattern = new Regex(regularExpression);
+                            regexPattern = new Regex(regularExpression, RegexOptions.None, regexTimeoutValue);
+                        }
+                        catch (ArgumentOutOfRangeException rangeEx)
+                        {
+                            Logger.Error(
+                                this.Ctx,
+                                Tag,
+                                nameof(FileStatusCheckAsync),
+                                this.AtCorpusPath,
+                                CdmLogCode.ErrRegexTimeoutOutOfRange, regexTimeoutValue.ToString(), rangeEx.Message);
                         }
                         catch (Exception e)
                         {
@@ -302,7 +323,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 string fileName = fi.Key;
                                 CdmFileMetadata partitionMetadata = fi.Value;
 
-                                Match m = regexPattern.Match(fileName);
+                                Match m;
+
+                                try
+                                {
+                                    m = regexPattern.Match(fileName);
+                                }
+                                catch (RegexMatchTimeoutException e)
+                                {
+                                    Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrRegexTimeout, e.Message);
+
+                                    // do not continue processing the manifest/entity/partition pattern if timeout
+                                    return false;
+                                }
+
                                 if (m.Success && m.Length > 1 && m.Value == fileName)
                                 {
                                     // create a map of arguments out of capture groups
@@ -337,7 +371,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     if (pathTuple == null)
                                     {
                                         Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath, this.AtCorpusPath);
-                                        return;
+                                        return true;
                                     }
 
                                     CdmTraitCollection exhibitsTraits = this.ExhibitsTraits;
@@ -374,6 +408,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                     }
                 }
+                return true;
             }
         }
 

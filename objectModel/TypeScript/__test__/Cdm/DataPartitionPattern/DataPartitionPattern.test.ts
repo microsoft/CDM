@@ -1103,4 +1103,16 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         var fetchNullManifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('fetchNull:/manifest.manifest.cdm.json');
         await fetchNullManifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
     });
+
+    /**
+     * Test Regex Timeout handled correctly
+     */
+    it('TestRegexTimeout', async () => {
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrRegexTimeout]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestFetchAllFilesMetadata', undefined, false, expectedLogCodes);
+        const fileStatusCheckOptions: fileStatusCheckOptions = { regexTimeoutSeconds: 0 };
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('manifest.manifest.cdm.json');
+        await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+    });
 });

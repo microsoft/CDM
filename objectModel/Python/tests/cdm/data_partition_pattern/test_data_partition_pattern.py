@@ -762,3 +762,12 @@ class DataPartitionPatternTest(unittest.TestCase):
         corpus.storage.mount('fetchNull', FetchAllMetadataNullAdapter(test_local_adapter))
         fetch_null_manifest = await corpus.fetch_object_async('fetchNull:/manifest.manifest.cdm.json')
         await fetch_null_manifest.file_status_check_async(PartitionFileStatusCheckType.FULL, CdmIncrementalPartitionType.NONE, file_status_check_options)
+
+    @async_test
+    async def test_regex_timeout(self):
+        expected_log_codes = {CdmLogCode.ERR_REGEX_TIMEOUT}
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'TestFetchAllFilesMetadata', expected_codes=expected_log_codes)
+        file_status_check__options = {'regex_timeout_seconds': 0}
+
+        manifest = await corpus.fetch_object_async('manifest.manifest.cdm.json')
+        await manifest.file_status_check_async(file_status_check_options=file_status_check__options)

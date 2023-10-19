@@ -21,7 +21,68 @@ import { isLocalEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGu
 import { Logger, enterScope } from '../Utilities/Logging/Logger';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { using } from "using-statement";
-import path = require('node:path');
+import * as util from 'util';
+import * as path from 'path';
+
+const isInBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+
+let execFile;
+if (!isInBrowser) {
+    execFile = util.promisify(require('child_process').execFile);
+}
+
+const evaluateRegexp = async (regularExpression: string, configuredRegexTimeout: number, cleanedFileNames: string[]): Promise<[Map<string, RegExpExecArray>, Error]> => {
+    if (isInBrowser) {
+        let regexPattern: RegExp;
+        try {
+            regexPattern = new RegExp(regularExpression);
+        } catch (e) {
+            throw new Error('Regex init error');
+        }
+
+        const browserResult: Map<string, RegExpExecArray> = new Map<string, RegExpExecArray>();
+        for (const name of cleanedFileNames) {
+            browserResult.set(name, regexPattern.exec(name));
+        }
+
+        return [browserResult, undefined];
+    }
+
+    let error: Error = undefined;
+    const defaultRegexTimeout: number = Math.max(3000, 1000 * cleanedFileNames.length);
+    const regexPromise = execFile('node', [path.resolve(__dirname, '../Utilities/evaluateRegexp.js'), regularExpression, ...cleanedFileNames]);
+
+    const timeout = setTimeout(() => {
+        var spawn = require('child_process').spawn;
+        spawn("taskkill", ["/pid", regexPromise.child.pid, '/f', '/t']);
+
+        error = new Error('Regex timeout.');
+    }, configuredRegexTimeout != undefined ? configuredRegexTimeout : defaultRegexTimeout);
+
+    const { stdout, stderr } = await regexPromise;
+
+    clearTimeout(timeout);
+
+    if (error) {
+        return [undefined, error];
+    }
+
+    if (stdout) {
+        let jsonOutput;
+        try {
+            jsonOutput = JSON.parse(stdout);
+        } catch (e) {
+            return [undefined, e];
+        }
+        return [new Map(jsonOutput), undefined];
+    }
+
+    if (stderr) {
+        return [undefined, new Error(stderr)];
+    }
+
+    return undefined;
+};
 
 /**
  * The object model implementation for Data Partition Pattern.
@@ -203,6 +264,13 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      * @inheritdoc
      */
     public async fileStatusCheckAsync(fileStatusCheckOptions?: fileStatusCheckOptions): Promise<void> {
+        await this.fileStatusCheckAsyncInternal(fileStatusCheckOptions);
+    }
+
+    /**
+     * @internal
+     */
+    public async fileStatusCheckAsyncInternal(fileStatusCheckOptions?: fileStatusCheckOptions): Promise<boolean> {
         return await using(enterScope(CdmDataPartitionPatternDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
             let namespace: string = undefined;
             let adapter: StorageAdapterBase = undefined;
@@ -220,7 +288,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                 const pathTuple: [string, string] = StorageUtils.splitNamespacePath(rootCorpus);
                 if (!pathTuple) {
                     Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
-                    return;
+                    return true;
                 }
 
                 namespace = pathTuple[0];
@@ -228,7 +296,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
                 if (adapter === undefined) {
                     Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrDocAdapterNotFound, this.inDocument.name);
-                    return;
+                    return true;
                 }
 
                 // get a list of all corpusPaths under the root
@@ -242,7 +310,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
             if (fileInfoList === undefined) {
                 Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrFetchingFileMetadataNull, namespace);
-                return;
+                return true;
             }
 
             if (namespace !== undefined) {
@@ -263,15 +331,21 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                     }
                     const regularExpression: string =
                         this.globPattern && this.globPattern.trim() !== '' ? this.globPatternToRegex(this.globPattern) : this.regularExpression;
-                    let regexPattern: RegExp;
 
-                    try {
-                        regexPattern = new RegExp(regularExpression);
-                    } catch (e) {
-                        Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidExpression, this.globPattern, this.regularExpression, e.message);
+                    const [regexMatchMap, err]: [Map<string, RegExpExecArray>, Error] = await evaluateRegexp(regularExpression, fileStatusCheckOptions?.regexTimeoutSeconds, Array.from(cleanedFileList.keys()));
+
+                    if (err) {
+                        if (err.message && err.message.indexOf('Regex init error') !== -1) {
+                            Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidExpression, this.globPattern, this.regularExpression, err.message);
+                        } else {
+                            Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrRegexTimeout);
+
+                            // do not continue processing the manifest/entity/partition pattern if timeout
+                            return false;
+                        }
                     }
 
-                    if (regexPattern !== undefined) {
+                    if (regexMatchMap !== undefined) {
                         const dataPartitionPathSet: Set<string> = new Set<string>();
                         if (localEntDecDefOwner.dataPartitions) {
                             for (const dataPartition of localEntDecDefOwner.dataPartitions) {
@@ -288,11 +362,16 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                             }
                         }
 
-                        for (const fi of cleanedFileList) {
-                            const fileName: string = fi[0];
-                            const partitionMetadata: CdmFileMetadata = fi[1];
+                        for (const regexMatch of regexMatchMap.entries()) {
+                            const fileName: string = regexMatch[0];
 
-                            const m: RegExpExecArray = regexPattern.exec(fileName);
+                            if (!cleanedFileList.has(fileName)) {
+                                continue;
+                            }
+
+                            const partitionMetadata: CdmFileMetadata = cleanedFileList.get(fileName);
+                            const m: RegExpExecArray = regexMatch[1];
+
                             if (m && m.length > 0 && m[0] === fileName) {
                                 // create a map of arguments out of capture groups
                                 const args: Map<string, string[]> = new Map();
@@ -309,14 +388,14 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                                     }
                                 }
 
-                                // put the origial but cleaned up root back onto the matched doc as the location stored in the partition
+                                // put the original but cleaned up root back onto the matched doc as the location stored in the partition
                                 const locationCorpusPath: string = `${rootCleaned}${fileName}`;
                                 const fullPath: string = `${rootCorpus}${fileName}`;
                                 // Remove namespace from path
                                 const pathTuple: [string, string] = StorageUtils.splitNamespacePath(fullPath);
                                 if (!pathTuple) {
                                     Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
-                                    return;
+                                    return true;
                                 }
 
                                 let exhibitsTraits: CdmTraitCollection = this.exhibitsTraits;
@@ -345,6 +424,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                     }
                 }
             }
+            return true;
         });
     }
 

@@ -919,5 +919,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             var fetchNullManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("fetchNull:/manifest.manifest.cdm.json");
             await fetchNullManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
         }
+
+        /// <summary>
+        /// Test RegexTimeout is handled correctly
+        /// </summary>
+        [TestMethod]
+        public async Task TestRegexTimeout()
+        {
+            var outOfRangeExpectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrRegexTimeoutOutOfRange };
+            CdmCorpusDefinition outOfRangeCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestFetchAllFilesMetadata), expectedCodes: outOfRangeExpectedLogCodes);
+            var fileStatusCheckOptions = new FileStatusCheckOptions() { RegexTimeoutSeconds = 0 };
+
+            var outOfRangeManifest = await outOfRangeCorpus.FetchObjectAsync<CdmManifestDefinition>("manifest.manifest.cdm.json");
+            await outOfRangeManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+        }
     }
 }
