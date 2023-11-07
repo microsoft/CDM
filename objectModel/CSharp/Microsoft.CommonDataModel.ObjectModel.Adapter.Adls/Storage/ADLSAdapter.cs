@@ -6,18 +6,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
-
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Storage;
-
     using Microsoft.Identity.Client;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -326,7 +325,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             catch (Exception e)
             {
                 await this.DeleteContentAtPath(corpusPath, url, e);
-                throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'", e);
+                throw new StorageAdapterException($"Could not write ADLS content at path, there was an issue at: '{corpusPath}'. Reason: {e.Message}", e);
             }
         }
 
@@ -474,32 +473,81 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     continuationToken = null;
                     cdmResponse.ResponseHeaders.TryGetValue(HttpXmsContinuation, out continuationToken);
 
-                    string json = await cdmResponse.Content.ReadAsStringAsync();
-                    JObject jObject1 = JObject.Parse(json);
-                    JArray jArray = JArray.FromObject(jObject1.GetValue("paths"));
+                    var stream = await cdmResponse.Content.ReadAsStreamAsync();
 
-                    foreach (JObject jObject in jArray.Children<JObject>())
+                    using (var streamReader = new StreamReader(stream))
                     {
-                        jObject.TryGetValue("isDirectory", StringComparison.OrdinalIgnoreCase, out JToken isDirectory);
-                        if (isDirectory == null || !isDirectory.ToObject<bool>())
+                        using (var jsonReader = new JsonTextReader(streamReader))
                         {
-                            jObject.TryGetValue("name", StringComparison.OrdinalIgnoreCase, out JToken name);
-
-                            string nameWithoutSubPath = this.unescapedRootSubPath.Length > 0 && name.ToString().StartsWith(this.unescapedRootSubPath) ?
-                                name.ToString().Substring(this.unescapedRootSubPath.Length + 1) : name.ToString();
-
-                            string path = this.FormatCorpusPath(nameWithoutSubPath);
-
-                            jObject.TryGetValue("contentLength", StringComparison.OrdinalIgnoreCase, out JToken contentLengthToken);
-                            long.TryParse(contentLengthToken.ToString(), out long contentLength);
-
-                            result.Add(path, new CdmFileMetadata { FileSizeBytes = contentLength });
-
-                            jObject.TryGetValue("lastModified", StringComparison.OrdinalIgnoreCase, out JToken lastModifiedTime);
-
-                            if (this.IsCacheEnabled && DateTimeOffset.TryParse(lastModifiedTime.ToString(), out DateTimeOffset offset))
+                            while (jsonReader.Read())
                             {
-                                fileModifiedTimeCache[path] = offset;
+                                bool isDirectory = false;
+                                string path = "";
+                                long contentLength = 0;
+                                string lastModified = "";
+
+                                while (jsonReader.TokenType != JsonToken.EndObject)
+                                {
+                                    if (jsonReader.Value != null)
+                                    {
+                                        if (jsonReader.TokenType == JsonToken.PropertyName)
+                                        {
+                                            string value = jsonReader.Value.ToString();
+                                            if (value == "contentLength")
+                                            {
+                                                if (!jsonReader.Read())
+                                                {
+                                                    break;
+                                                }
+                                                contentLength = (long)Convert.ToDouble(jsonReader.Value.ToString());
+                                            }
+                                            else if (value == "lastModified")
+                                            {
+                                                if (!jsonReader.Read())
+                                                {
+                                                    break;
+                                                }
+                                                lastModified = jsonReader.Value.ToString();
+                                            }
+                                            else if (value == "name")
+                                            {
+                                                if (!jsonReader.Read())
+                                                {
+                                                    break;
+                                                }
+                                                string name = jsonReader.Value.ToString();
+                                                string nameWithoutSubPath = !string.IsNullOrWhiteSpace(this.unescapedRootSubPath) && name.StartsWith(this.unescapedRootSubPath) ?
+                                                    name.Substring(this.unescapedRootSubPath.Length + 1) : name;
+                                                path = this.FormatCorpusPath(nameWithoutSubPath);
+                                            }
+                                            else if (value == "isDirectory")
+                                            {
+                                                isDirectory = true;
+                                            }
+                                        }
+                                    }
+
+                                    if (!jsonReader.Read())
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                // if path is not found, assume we have reached the end of the array
+                                if (string.IsNullOrWhiteSpace(path))
+                                {
+                                    break;
+                                }
+
+                                if (!isDirectory)
+                                {
+                                    result.Add(path, new CdmFileMetadata { FileSizeBytes = contentLength });
+
+                                    if (this.IsCacheEnabled && DateTimeOffset.TryParse(lastModified, out DateTimeOffset offset))
+                                    {
+                                        fileModifiedTimeCache[path] = offset;
+                                    }
+                                }
                             }
                         }
                     }

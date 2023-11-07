@@ -1076,7 +1076,7 @@ export class CdmCorpusDefinition {
             const loadedDoc: CdmDocumentDefinition = await this.documentLibrary.loadFolderOrDocument(docPath, false, resOpt) as CdmDocumentDefinition;
 
             if (loadedDoc) {
-                Logger.info(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, `resolved import for '${loadedDoc.name}'`);
+                Logger.debug(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, `resolved import for '${loadedDoc.name}'`);
             } else {
                 Logger.warning(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, cdmLogCode.WarnResolveImportFailed, docPath, doc.atCorpusPath);
             }
@@ -1959,7 +1959,7 @@ export class CdmCorpusDefinition {
                         }
                     }
                     if (found > 0 && found === resolved) {
-                        Logger.info(ctx, this.TAG, this.resolveReferencesTraitsArguments.name, currentDoc.atCorpusPath, `found and resolved '${found}' required parameters of trait '${rt.traitName}' on '${obj
+                        Logger.debug(ctx, this.TAG, this.resolveReferencesTraitsArguments.name, currentDoc.atCorpusPath, `found and resolved '${found}' required parameters of trait '${rt.traitName}' on '${obj
                             .fetchObjectDefinition(resOpt)
                             .getName()}'`);
                     }

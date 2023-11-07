@@ -163,7 +163,7 @@ public class CdmHttpClient {
             try {
                 if (ctx != null)
                 {
-                    Logger.debug(ctx, TAG, "sendAsyncHelper",
+                    Logger.info(ctx, TAG, "sendAsyncHelper",
                             null, Logger.format("Sending request {0}, request type: {1}, request url: {2}, retry number: {3}.", cdmHttpRequest.getRequestId(), httpRequest.getMethod(), cdmHttpRequest.stripSasSig(), retryNumber));
                 }
 
@@ -172,8 +172,13 @@ public class CdmHttpClient {
                 if (ctx != null)
                 {
                     final Instant endTime = java.time.Instant.now();
-                    Logger.debug(ctx, TAG, "sendAsyncHelper",
-                            null, Logger.format("Response for request {0} received, elapsed time: {1} ms.", cdmHttpRequest.getRequestId(), Duration.between(startTime, endTime).toMillis()));
+                    Logger.info(ctx, TAG, "sendAsyncHelper",
+                            null, Logger.format("Response for request id: {0}, elapsed time: {1} ms, content length: {2}, status code: {3}.",
+                            response.getFirstHeader("x-ms-request-id").getValue(),
+                            Duration.between(startTime, endTime).toMillis(),
+                            response.getEntity() != null ? response.getEntity().getContentLength() : "",
+                            response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : ""
+                            ));
                 }
 
                 if (response != null) {
@@ -200,7 +205,7 @@ public class CdmHttpClient {
                 hasFailed = true;
 
                 if (exception instanceof ConnectTimeoutException && ctx != null) {
-                    Logger.debug(ctx, TAG, "sendAsyncHelper",
+                    Logger.info(ctx, TAG, "sendAsyncHelper",
                             null, Logger.format("Request {0} timeout after {1} ms.", cdmHttpRequest.getRequestId(), Duration.between(startTime, endTime).toMillis()));
                 }
 

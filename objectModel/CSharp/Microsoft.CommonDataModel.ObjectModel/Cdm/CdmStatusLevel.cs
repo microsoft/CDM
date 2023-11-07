@@ -5,8 +5,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     public enum CdmStatusLevel
     {
-        Info,
         Progress,
+        Info,
         Warning,
         Error,
         None

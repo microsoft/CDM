@@ -5,8 +5,8 @@ from .utils import AutoNumber
 
 
 class CdmStatusLevel(AutoNumber):
-    INFO = ()
     PROGRESS = ()
+    INFO = ()
     WARNING = ()
     ERROR = ()
     NONE = ()

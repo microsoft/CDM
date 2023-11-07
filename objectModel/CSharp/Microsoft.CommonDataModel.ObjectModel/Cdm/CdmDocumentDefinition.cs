@@ -143,7 +143,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     obj.Ctx = this.Ctx;
                 }
 
-                Logger.Info(this.Ctx, Tag, nameof(CheckIntegrity), obj.AtCorpusPath, $"checked '{obj.AtCorpusPath}'");
+                Logger.Debug(this.Ctx, Tag, nameof(CheckIntegrity), obj.AtCorpusPath, $"checked '{obj.AtCorpusPath}'");
             }
 
             this.IsValid = errorCount == 0;
@@ -241,7 +241,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             this.InternalDeclarations.TryAdd(objPath, obj);
                             this.Ctx.Corpus.RegisterSymbol(objPath, this);
 
-                            Logger.Info(this.Ctx, Tag, nameof(DeclareObjectDefinitions), corpusPath, $"declared '{objPath}'");
+                            Logger.Debug(this.Ctx, Tag, nameof(DeclareObjectDefinitions), corpusPath, $"declared '{objPath}'");
                         }
                         break;
                 }
@@ -324,7 +324,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             }
                             else
                             {
-                                Logger.Info(ctx, Tag, nameof(ResolveObjectDefinitions), this.AtCorpusPath, $"resolved '{reff.NamedReference}'");
+                                Logger.Debug(ctx, Tag, nameof(ResolveObjectDefinitions), this.AtCorpusPath, $"resolved '{reff.NamedReference}'");
                             }
                         }
                         break;
@@ -396,7 +396,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             bool allWentWell = true;
 
             // shout into the void
-            Logger.Info((ResolveContext)this.Ctx, Tag, nameof(LocalizeCorpusPaths), newFolder.AtCorpusPath, $"Localizing corpus paths in document '{this.Name}'");
+            Logger.Debug((ResolveContext)this.Ctx, Tag, nameof(LocalizeCorpusPaths), newFolder.AtCorpusPath, $"Localizing corpus paths in document '{this.Name}'");
 
             // find anything in the document that is a corpus path
             this.Visit("", new VisitCallback

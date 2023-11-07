@@ -287,7 +287,7 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
         if (expectedTypes.indexOf(foundType) == -1) {
           Logger.error(ctx, TAG, "constTypeCheck", wrtDoc.getAtCorpusPath(), CdmLogCode.ErrResolutionFailure, this.getName(), expected, foundDesc, expected);
         } else {
-          Logger.info(ctx, TAG, "constTypeCheck", wrtDoc.getAtCorpusPath(), Logger.format("Resolved '{0}'", foundDesc));
+          Logger.debug(ctx, TAG, "constTypeCheck", wrtDoc.getAtCorpusPath(), Logger.format("Resolved '{0}'", foundDesc));
         }
       }
     }

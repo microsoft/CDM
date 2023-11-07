@@ -49,7 +49,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             }
         }
 
-        private IDictionary<string, List<string>> TraitToListOfProperties = new Dictionary<string, List<string>>()
+        private static IDictionary<string, List<string>> TraitToListOfProperties = new Dictionary<string, List<string>>()
         {
             { "is.CDM.entityVersion", new List<string> { "version" } },
             { "is.CDM.attributeGroup", new List<string> { "cdmSchemas" } },
@@ -63,7 +63,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             { "is.constrained", new List<string> { "maximumValue", "minimumValue", "maximumLength" } }
         };
 
-        private IList<string> DataFormatTraitNames = new List<string>()
+        private static IList<string> DataFormatTraitNames = new List<string>()
         {
             "is.dataFormat.integer",
             "is.dataFormat.small",
@@ -89,7 +89,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         internal void UpdatePropertyValue(string propertyName, dynamic newValue)
         {
             var traitName = this.MapTraitName(propertyName);
-            this.TraitToListOfProperties.TryGetValue(traitName, out List<string> listOfProps);
+            TraitToListOfProperties.TryGetValue(traitName, out List<string> listOfProps);
             bool multipleProperties = listOfProps?.Count > 1;
 
             if (newValue == null && !multipleProperties)

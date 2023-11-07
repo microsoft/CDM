@@ -27,10 +27,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 return null;
             }
             string nameSpace = "";
-            if (objectPath.Contains(namespaceSeparator))
+            int separatorIndex = objectPath.IndexOf(":/");
+            if (separatorIndex != -1)
             {
-                nameSpace = StringUtils.Slice(objectPath, 0, objectPath.IndexOf(namespaceSeparator));
-                objectPath = StringUtils.Slice(objectPath, objectPath.IndexOf(namespaceSeparator) + 1);
+                nameSpace = StringUtils.Slice(objectPath, 0, separatorIndex);
+                objectPath = StringUtils.Slice(objectPath, separatorIndex + 1);
             }
             return new Tuple<string, string>(nameSpace, objectPath);
         }

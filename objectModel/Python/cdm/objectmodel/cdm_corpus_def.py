@@ -714,7 +714,7 @@ class CdmCorpusDefinition:
             loaded_doc = await self._document_library._load_folder_or_document(doc_path, False, res_opt)  # type: CdmDocumentDefinition
 
             if loaded_doc:
-                logger.info(self.ctx, self._TAG, self._load_imports_async.__name__, loaded_doc.at_corpus_path,
+                logger.debug(self.ctx, self._TAG, self._load_imports_async.__name__, loaded_doc.at_corpus_path,
                             'resolved import for \'{}\''.format(loaded_doc.name))
             else:
                 logger.warning(self.ctx, self._TAG, CdmCorpusDefinition._load_imports_async.__name__,
@@ -977,7 +977,7 @@ class CdmCorpusDefinition:
                                 resolved += 1
                 if found > 0 and found == resolved:
                     defi = obj.fetch_object_definition(res_opt)
-                    logger.info(self.ctx, self._TAG, self._resolve_references_traits_arguments.__name__,
+                    logger.debug(self.ctx, self._TAG, self._resolve_references_traits_arguments.__name__,
                                 current_doc.at_corpus_path,
                                 'found and resolved \'{}\' required parameters of trait \'{}\' on \'{}\''.
                                 format(found, rt.trait_name, defi.get_name()))

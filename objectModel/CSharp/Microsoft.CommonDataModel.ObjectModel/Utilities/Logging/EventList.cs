@@ -120,7 +120,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         {
             if (IsRecording)
             {
-                base.Add(theEvent);
+                bool lockTaken = false;
+                try
+                {
+                    spinLock.Enter(ref lockTaken);
+                    base.Add(theEvent);
+                }
+                finally
+                {
+                    if (lockTaken)
+                    {
+                        spinLock.Exit();
+                    }
+                }
             }
         }
     }

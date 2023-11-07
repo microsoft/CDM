@@ -176,8 +176,8 @@ describe('Utilities.EventList', () => {
      */
     it('TestScoping', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestEventList');
-         // For scoping test we need to use log level info
-        corpus.setEventCallback(eventCallback, cdmStatusLevel.info, DummyCorrelationId);
+         // For scoping test we need to use log level progress
+        corpus.setEventCallback(eventCallback, cdmStatusLevel.progress, DummyCorrelationId);
 
         await corpus.fetchObjectAsync('local:/default.manifest.cdm.json');
         expect(corpus.ctx.events.isRecording).toBe(false);

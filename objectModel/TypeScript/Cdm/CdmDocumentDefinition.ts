@@ -191,7 +191,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 } else {
                     obj.ctx = this.ctx;
                 }
-                Logger.info(this.ctx, this.TAG, this.checkIntegrity.name, obj.atCorpusPath, `checked '${obj.atCorpusPath}'`);
+                Logger.debug(this.ctx, this.TAG, this.checkIntegrity.name, obj.atCorpusPath, `checked '${obj.atCorpusPath}'`);
             }
 
             this.isValid = errorCount === 0;
@@ -275,7 +275,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                             this.internalDeclarations.set(objPath, obj as CdmObjectDefinitionBase);
                             this.ctx.corpus.registerSymbol(objPath, this);
 
-                            Logger.info(this.ctx, this.TAG, this.declareObjectDefinitions.name, this.atCorpusPath, `declared '${objPath}'`);
+                            Logger.debug(this.ctx, this.TAG, this.declareObjectDefinitions.name, this.atCorpusPath, `declared '${objPath}'`);
                         }
                     default:
                 }
@@ -345,7 +345,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                                 // don't check in this file without both of these comments. handy for debug of failed lookups
                                 //const resTest: CdmObjectDefinitionBase = ref.fetchObjectDefinition(resOpt);
                             } else {
-                                Logger.info(ctx, this.TAG, this.resolveObjectDefinitions.name, this.atCorpusPath, `resolved '${ref.namedReference}'`);
+                                Logger.debug(ctx, this.TAG, this.resolveObjectDefinitions.name, this.atCorpusPath, `resolved '${ref.namedReference}'`);
                             }
                         }
                     default:
@@ -411,7 +411,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         let corpPath: string;
 
         // shout into the void
-        Logger.info(this.ctx, this.TAG, this.localizeCorpusPaths.name, this.atCorpusPath, `Localizing corpus paths in document '${this.name}'`);
+        Logger.debug(this.ctx, this.TAG, this.localizeCorpusPaths.name, this.atCorpusPath, `Localizing corpus paths in document '${this.name}'`);
 
         // find anything in the document that is a corpus path
         this.visit(

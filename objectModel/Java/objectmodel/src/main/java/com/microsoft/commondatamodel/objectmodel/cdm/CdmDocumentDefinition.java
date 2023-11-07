@@ -260,7 +260,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     final AtomicBoolean allWentWell = new AtomicBoolean(true);
 
     // shout into the void
-    Logger.info(this.getCtx(), TAG, "localizeCorpusPaths", newFolder.getAtCorpusPath(), Logger.format("Localizing corpus paths in document '{0}'.", this.getName()));
+    Logger.debug(this.getCtx(), TAG, "localizeCorpusPaths", newFolder.getAtCorpusPath(), Logger.format("Localizing corpus paths in document '{0}'.", this.getName()));
 
     // find anything in the document that is a corpus path
     this.visit("", (iObject, path) -> {
@@ -750,7 +750,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         obj.setCtx(this.getCtx());
       }
 
-      Logger.info(this.getCtx(), TAG, "checkObjectIntegrity", null,
+      Logger.debug(this.getCtx(), TAG, "checkObjectIntegrity", null,
               Logger.format("Checked, folderPath: '{0}', path: '{1}'", this.getFolderPath(), obj.getDeclaredPath()));
     }
 
@@ -815,7 +815,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
             this.internalDeclarations.putIfAbsent(objPath, (CdmObjectBase)obj);
 
             this.getCtx().getCorpus().registerSymbol(objPath, this);
-            Logger.info(this.getCtx(), TAG, "declareObjectDefinitions", corpusPath, Logger.format("Declared: '{0}'", corpusPath));
+            Logger.debug(this.getCtx(), TAG, "declareObjectDefinitions", corpusPath, Logger.format("Declared: '{0}'", corpusPath));
           }
           break;
         }
@@ -868,7 +868,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
               // don't check in this file without both of these comments. handy for debug of failed lookups
               // final CdmObjectDefinition resTest = objectRef.fetchObjectDefinition(resOpt);
             } else {
-              Logger.info(ctx, TAG, "resolveObjectDefinitions", resNew.getAtCorpusPath(), Logger.format("Resolved folderPath: '{0}', path: '{1}'", this.getFolderPath(), obj.getDeclaredPath()));
+              Logger.debug(ctx, TAG, "resolveObjectDefinitions", resNew.getAtCorpusPath(), Logger.format("Resolved folderPath: '{0}', path: '{1}'", this.getFolderPath(), obj.getDeclaredPath()));
             }
           }
 

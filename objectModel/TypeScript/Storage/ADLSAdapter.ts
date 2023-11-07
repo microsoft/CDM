@@ -172,7 +172,7 @@ export class ADLSAdapter extends NetworkAdapter {
                 throw e;
             } else {
                 await this.deleteContentAtPath(corpusPath, url, e);
-                throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath + e);
+                throw new StorageAdapterException(`Could not write ADLS content at path, there was an issue at: ${corpusPath}. Reason: ${e.message}`);
             }
         }
     }

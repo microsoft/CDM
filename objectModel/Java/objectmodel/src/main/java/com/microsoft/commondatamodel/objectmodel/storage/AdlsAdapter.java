@@ -208,7 +208,7 @@ public class AdlsAdapter extends NetworkAdapter {
         throw ex;
       } catch (final Exception e) {
         this.deleteContentAtPath(corpusPath, url, e);
-        throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath, e);
+        throw new StorageAdapterException(String.format("Could not write ADLS content at path, there was an issue at: \"%s\". Reason: %s.", corpusPath, e.getMessage()), e);
       }
     });
   }
