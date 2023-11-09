@@ -332,7 +332,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             raise
         except Exception as exc:
             await self.delete_content_at_path(corpus_path, url, exc)
-            raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: ' + corpus_path, exc)
+            raise StorageAdapterException('Could not write ADLS content at path, there was an issue at: "{0}". Reason: {1}'.format(corpus_path, str(exc)), exc)
 
     def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None,
                           content_type: Optional[str] = None):

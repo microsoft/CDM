@@ -154,7 +154,7 @@ public class EventListTest {
     @Test
     public void testStorageManagerEvents() throws InterruptedException {
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEventList");
-        corpus.setEventCallback(eventCallback, CdmStatusLevel.Info, DUMMY_CORRELATION_ID);
+        corpus.setEventCallback(eventCallback, CdmStatusLevel.Progress, DUMMY_CORRELATION_ID);
 
         corpus.getStorage().mount("dummy", null);
         testBasicLogsState(corpus);
@@ -195,8 +195,8 @@ public class EventListTest {
     @Test
     public void testScoping() throws InterruptedException {
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEventList");
-        // For scoping test we need to use log level Info
-        corpus.setEventCallback(eventCallback, CdmStatusLevel.Info);
+        // For scoping test we need to use log level Progress
+        corpus.setEventCallback(eventCallback, CdmStatusLevel.Progress);
         corpus.getCtx().setCorrelationId(DUMMY_CORRELATION_ID);
 
         // Test fetching a good object, this should result event recorder empty

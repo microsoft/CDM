@@ -201,8 +201,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
         public async Task TestScoping()
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestEventList");
-            // For scoping test we need to use log level Info
-            corpus.SetEventCallback(eventCallback, CdmStatusLevel.Info, DummyCorrelationId);
+            // For scoping test we need to use log level Progress
+            corpus.SetEventCallback(eventCallback, CdmStatusLevel.Progress, DummyCorrelationId);
 
             // Test fetching a good object, this should result event recorder empty
             _ = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/default.manifest.cdm.json");

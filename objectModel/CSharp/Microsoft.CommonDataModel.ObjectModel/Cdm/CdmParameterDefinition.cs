@@ -249,7 +249,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                     else
                     {
-                        Logger.Info(ctx, Tag, nameof(ConstTypeCheck), wrtDoc.AtCorpusPath, $"resolved '{foundDesc}'");
+                        Logger.Debug(ctx, Tag, nameof(ConstTypeCheck), wrtDoc.AtCorpusPath, $"resolved '{foundDesc}'");
                     }
                 }
             }

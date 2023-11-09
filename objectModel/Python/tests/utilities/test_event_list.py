@@ -162,8 +162,8 @@ class TestEventList(TestCase):
     async def test_scoping(self):
         """Test logging of API scope entry/exit."""
         corpus = TestHelper.get_local_corpus('Utilities', 'TestEventList') # type: CdmCorpusDefinition
-        # For scoping test we need to use log level INFO
-        corpus.set_event_callback(event_callback, CdmStatusLevel.INFO, DUMMY_CORRELATION_ID)
+        # For scoping test we need to use log level progress
+        corpus.set_event_callback(event_callback, CdmStatusLevel.PROGRESS, DUMMY_CORRELATION_ID)
 
         # Test fetching a good object, this should result event recorder empty
         await corpus.fetch_object_async('local:/default.manifest.cdm.json')

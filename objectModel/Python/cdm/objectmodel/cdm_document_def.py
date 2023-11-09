@@ -244,7 +244,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             else:
                 obj.ctx = self.ctx
 
-            logger.info(self.ctx, self._TAG, self._check_integrity.__name__, self.at_corpus_path,
+            logger.debug(self.ctx, self._TAG, self._check_integrity.__name__, self.at_corpus_path,
                         'checked \'{}\''.format(obj.at_corpus_path))
 
         self._is_valid = error_count == 0
@@ -314,7 +314,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                     self.internal_declarations[obj_path] = obj
                     self.ctx.corpus._register_symbol(obj_path, self)
 
-                    logger.info(self.ctx, self._TAG, self._declare_object_definitions.__name__, corpus_path,
+                    logger.debug(self.ctx, self._TAG, self._declare_object_definitions.__name__, corpus_path,
                                 'declared \'{}\''.format(obj_path))
 
     def _finish_indexing(self, loaded_imports: bool) -> None:
@@ -364,7 +364,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                         # don't check in this file without both of these comments. handy for debug of failed lookups
                         # res_test = obj.fetch_object_definition(res_opt)
                     else:
-                        logger.info(self.ctx, self._TAG, self._resolve_object_definitions.__name__,
+                        logger.debug(self.ctx, self._TAG, self._resolve_object_definitions.__name__,
                                     self.at_corpus_path, 'resolved \'{}\''.format(obj.named_reference))
                 elif obj.object_type == CdmObjectType.PARAMETER_DEF:
                     # when a parameter has a datatype that is a cdm object, validate that any default value is the
@@ -406,7 +406,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def _localize_corpus_paths(self, new_folder: 'CdmFolderDefinition') -> bool:
         all_went_well = True
 
-        logger.info(self.ctx, self._TAG, self._localize_corpus_paths.__name__, new_folder.at_corpus_path,
+        logger.debug(self.ctx, self._TAG, self._localize_corpus_paths.__name__, new_folder.at_corpus_path,
                     'Localizing corpus paths in document \'{}\''.format(self.name))
 
         def import_callback(obj: 'CdmObject', path: str) -> bool:

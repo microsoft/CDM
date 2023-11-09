@@ -100,7 +100,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <param name="method">The path, usually denotes the class and method calling this method.</param>
         /// <param name="defaultStatusEvent">The default status event (log using the default logger).</param>
         /// <param name="code">The code(optional), denotes the code enum for a message.</param>
-        private static void Log(CdmStatusLevel level, CdmCorpusContext ctx, string className, string message, string method, 
+        private static void Log(CdmStatusLevel level, CdmCorpusContext ctx, string className, string message, string method,
             Action<string> defaultStatusEvent, string corpusPath, CdmLogCode code = CdmLogCode.None, bool ingestTelemetry = false)
         {
             if (ctx.SuppressedLogCodes.Contains(code))
@@ -226,8 +226,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 
             public LoggerScope(TState state)
             {
-                time = DateTime.UtcNow;
                 this.state = state;
+
+                time = DateTime.UtcNow;
                 state.Ctx.Events.Enable();
 
                 // check if the method is at the outermost level
@@ -242,11 +243,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 
             public void Dispose()
             {
-                string message = $"Leaving scope. Time elapsed: {(DateTime.UtcNow - time).TotalMilliseconds} ms";
-                // Cache is a concurrent dict, and getting the Count on it is getting blocked by other cache updates
-                // + $"; Cache memory used: {(state.Ctx as ResolveContext).AttributeCache.Count}";
+                if (state.Ctx.ReportAtLevel <= CdmStatusLevel.Progress)
+                {
+                    StringBuilder sb = new StringBuilder("Leaving scope. Time elapsed: ");
+                    sb.Append((DateTime.UtcNow - time).TotalMilliseconds);
+                    sb.Append(" ms");
+                    // Cache is a concurrent dict, and getting the Count on it is getting blocked by other cache updates
+                    // + $"; Cache memory used: {(state.Ctx as ResolveContext).AttributeCache.Count}";
 
-                Debug(state.Ctx, state.Tag, state.Path, null, message: message, isTopLevelMethod);
+                    Debug(state.Ctx, state.Tag, state.Path, null, message: sb.ToString(), isTopLevelMethod);
+                }
 
                 state.Ctx.Events.Disable();
             }
@@ -274,7 +280,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
             {
                 storageNamespace = manifest.Ctx.Corpus.Storage.DefaultNamespace;
             }
-            
+
             // Get storage adapter type
             var adapter = manifest.Ctx.Corpus.Storage.FetchAdapter(storageNamespace);
             string adapterType = adapter.GetType().Name;

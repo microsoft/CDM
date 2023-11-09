@@ -1213,7 +1213,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (loadedDoc != null)
                 {
-                    Logger.Info(this.Ctx, Tag, nameof(LoadImportsAsync), loadedDoc.AtCorpusPath, $"resolved import for '{loadedDoc.Name}'");
+                    Logger.Debug(this.Ctx, Tag, nameof(LoadImportsAsync), loadedDoc.AtCorpusPath, $"resolved import for '{loadedDoc.Name}'");
                 }
                 else
                 {
@@ -2201,7 +2201,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             }
                             if (found > 0 && found == resolved)
                             {
-                                Logger.Info(ctx, Tag, nameof(ResolveReferencesTraitsArguments), CurrentDoc.AtCorpusPath, $"found and resolved '{found}' required parameters of trait '{rt.TraitName}' on '{obj.FetchObjectDefinition<CdmObjectDefinition>(resOpt)?.GetName()}'");
+                                Logger.Debug(ctx, Tag, nameof(ResolveReferencesTraitsArguments), CurrentDoc.AtCorpusPath, $"found and resolved '{found}' required parameters of trait '{rt.TraitName}' on '{obj.FetchObjectDefinition<CdmObjectDefinition>(resOpt)?.GetName()}'");
                             }
                         }
                     }

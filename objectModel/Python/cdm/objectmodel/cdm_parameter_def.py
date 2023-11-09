@@ -149,7 +149,7 @@ class CdmParameterDefinition(CdmObjectDefinition):
                                  CdmLogCode.ERR_RESOLUTION_FAILURE,
                                  self.get_name(), expected, found_desc)
                 else:
-                    logger.info(self.ctx, self._TAG, self._const_type_check.__name__,
+                    logger.debug(self.ctx, self._TAG, self._const_type_check.__name__,
                                 wrt_doc.at_corpus_path, 'resolved \'{}\''.format(found_desc))
 
         return replacement

@@ -107,7 +107,7 @@ class CdmHttpClient:
             try:
                 start_time = datetime.now()
                 if ctx is not None:
-                    logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                    logger.info(ctx, self._TAG, self._send_async_helper, None,
                                 'Sending request: {}, request type: {}, request url: {}, retry number: {}.'.format(
                                     cdm_request.request_id, request.method, cdm_request._strip_sas_sig(), retry_number))
 
@@ -125,9 +125,14 @@ class CdmHttpClient:
                     if response is not None:
                         end_time = datetime.now()
                         if ctx is not None:
-                            logger.debug(ctx, self._TAG, self._send_async_helper, None,
-                                        'Response for request {} received with elapsed time: {} ms.'.format(
-                                            cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0))
+                            content_length = response.headers.get('content-length') if 'content-length' in response.headers else ''
+                            adls_request_id = response.headers.get('x-ms-request-id') if 'x-ms-request-id' in response.headers else ''
+                            logger.info(ctx, self._TAG, self._send_async_helper, None,
+                                        'Response for request id: {}, elapsed time: {} ms, content length {}, status code {}.'.format(
+                                            adls_request_id,
+                                            (end_time - start_time).total_seconds() * 1000.0,
+                                            content_length,
+                                            response.status))
                         cdm_response = CdmHttpResponse()
                         encoded_content = response.read()
 
@@ -149,7 +154,7 @@ class CdmHttpClient:
                 has_failed = True
 
                 if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out' and ctx is not None:
-                    logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                    logger.info(ctx, self._TAG, self._send_async_helper, None,
                                         'Request {} timeout after {} ms.'.format(
                                             cdm_request.request_id,
                                             (end_time - start_time).total_seconds() * 1000.0))
@@ -157,7 +162,7 @@ class CdmHttpClient:
                 # If the server returned an error like, 404, 500...
                 if isinstance(exception, urllib.error.URLError):
                     if ctx is not None:
-                        logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                        logger.info(ctx, self._TAG, self._send_async_helper, None,
                                     'Response for request {} received with elapsed time: {} ms.'.format(
                                         cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0))
 

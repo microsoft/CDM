@@ -88,7 +88,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets whether the data partition pattern is incremental.
         /// </summary>
-        public bool IsIncremental { get => this.TraitToPropertyMap.FetchPropertyValue(nameof(IsIncremental).Substring(0, 1).ToLower() + nameof(IsIncremental).Substring(1)); }
+        public bool IsIncremental { get => this.TraitToPropertyMap.FetchPropertyValue("isIncremental"); }
 
         /// <inheritdoc />
         [Obsolete]

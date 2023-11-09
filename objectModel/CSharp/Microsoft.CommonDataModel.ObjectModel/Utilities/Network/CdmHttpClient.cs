@@ -7,11 +7,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using static Microsoft.CommonDataModel.ObjectModel.Utilities.Network.ICdmHttpClient;
 
     /// <summary>
     /// CDM Http Client is an HTTP client which implements retry logic to execute retries 
@@ -47,7 +47,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
             {
                 this.apiEndpoint = apiEndpoint;
                 this.isApiEndpointSet = true;
-            } else
+            }
+            else
             {
                 this.isApiEndpointSet = false;
             }
@@ -55,7 +56,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
             if (handler == null)
             {
                 this.client = new HttpClient();
-            } else
+            }
+            else
             {
                 this.client = new HttpClient(handler);
             }
@@ -143,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                     if (ctx != null)
                     {
-                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.");
+                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.");
                     }
 
                     TimeSpan timeout = (TimeSpan)cdmRequest.Timeout;
@@ -151,7 +153,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                     CancellationTokenSource requestToken = new CancellationTokenSource();
                     requestToken.CancelAfter(timeoutMilliseconds);
-                    
+
                     // The request should timeout either for its own timeout or if maximum timeout is reached.
                     CancellationTokenSource requestLinkedToken = CancellationTokenSource.CreateLinkedTokenSource(requestToken.Token, maxTimeoutToken);
 
@@ -170,7 +172,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                     if (ctx != null)
                     {
                         DateTimeOffset endTime = DateTimeOffset.UtcNow;
-                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.");
+                        string contentLength = string.Empty;
+                        if (response?.Content.Headers.Contains("Content-Length") == true)
+                        {
+                            contentLength = response.Content.Headers.ContentLength.ToString();
+                        }
+                        string adlsRequestId = response?.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request id: {adlsRequestId}, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms, content length: {contentLength}, status code: {response.StatusCode}.");
                     }
 
                     if (response != null)
@@ -195,7 +203,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                     if (ex is TaskCanceledException && ctx != null)
                     {
-                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Request {cdmRequest.RequestId} timeout after {endTime.Subtract(startTime).TotalMilliseconds} ms.");
+                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Request {cdmRequest.RequestId} timeout after {endTime.Subtract(startTime).TotalMilliseconds} ms.");
                     }
 
                     if (ex is AggregateException aggrEx)
@@ -215,7 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                         {
                             throw new CdmTimedOutException("Request timeout.");
                         }
-                        
+
                         throw ex;
                     }
                 }

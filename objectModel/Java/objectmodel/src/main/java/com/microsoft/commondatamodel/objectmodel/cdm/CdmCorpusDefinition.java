@@ -646,7 +646,7 @@ public class CdmCorpusDefinition {
                 (CdmDocumentDefinition) this.documentLibrary.loadFolderOrDocumentAsync(docPath, false, resOpt).join();
 
         if (loadedDoc != null) {
-          Logger.info(this.ctx, TAG, "loadImportsAsync", loadedDoc.getAtCorpusPath(), Logger.format("Resolved import for '{0}'.", loadedDoc.getName()));
+          Logger.debug(this.ctx, TAG, "loadImportsAsync", loadedDoc.getAtCorpusPath(), Logger.format("Resolved import for '{0}'.", loadedDoc.getName()));
         } else {
           Logger.warning(this.ctx, TAG, "loadImportsAsync", null, CdmLogCode.WarnResolveImportFailed, docPath);
         }
@@ -2220,7 +2220,7 @@ public class CdmCorpusDefinition {
                  rt.getTraitName(),
                  obj.fetchObjectDefinition(resOpt).getName()
             );
-            Logger.info(ctx, TAG, "resolveReferencesTraitsArguments", currentDoc.getAtCorpusPath(), message);
+            Logger.debug(ctx, TAG, "resolveReferencesTraitsArguments", currentDoc.getAtCorpusPath(), message);
           }
         }
       }

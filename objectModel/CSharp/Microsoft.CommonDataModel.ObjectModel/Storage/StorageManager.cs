@@ -14,6 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using System.Text;
     using System.Threading.Tasks;
 
     public class StorageManager
@@ -390,19 +391,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     return null;
                 }
 
-                if (!string.IsNullOrEmpty(prefix) && prefix[prefix.Length - 1] != '/')
+                int maxPrefixLength = (!string.IsNullOrWhiteSpace(prefix) ? prefix.Length : 0) + 1;
+                StringBuilder prefixBuilder = new StringBuilder(maxPrefixLength);
+
+                if (!string.IsNullOrEmpty(prefix))
                 {
-                    Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.WarnStorageExpectedPathPrefix, prefix);
-                    prefix += "/";
+                    prefixBuilder.Append(prefix);
+                    if (prefix[prefix.Length - 1] != '/')
+                    {
+                        Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.WarnStorageExpectedPathPrefix, prefix);
+                        prefixBuilder.Append('/');
+                    }
                 }
 
+                StringBuilder fullPathBuilder = new StringBuilder();
                 // check if this is a relative path
                 if (!string.IsNullOrWhiteSpace(newObjectPath) && !newObjectPath.StartsWith("/"))
                 {
                     if (obj == null)
                     {
                         // relative path and no other info given, assume default and root
-                        prefix = "/";
+                        prefixBuilder.Clear();
+                        prefixBuilder.Append('/');
 
                     }
                     if (!string.IsNullOrWhiteSpace(nameSpace) && nameSpace != namespaceFromObj)
@@ -410,18 +420,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                         Logger.Error(this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.ErrStorageNamespaceMismatch, nameSpace, newObjectPath, prefix, namespaceFromObj);
                         return null;
                     }
-                    newObjectPath = prefix + newObjectPath;
 
                     finalNamespace = string.IsNullOrWhiteSpace(namespaceFromObj) ?
                                         (string.IsNullOrWhiteSpace(nameSpace) ? this.DefaultNamespace : nameSpace) : namespaceFromObj;
+
+                    if (!string.IsNullOrWhiteSpace(finalNamespace))
+                    {
+                        fullPathBuilder.Append(finalNamespace);
+                        fullPathBuilder.Append(':');
+                    }
+                    fullPathBuilder.Append(prefixBuilder);
                 }
                 else
                 {
                     finalNamespace = string.IsNullOrWhiteSpace(nameSpace) ?
                                         (string.IsNullOrWhiteSpace(namespaceFromObj) ? this.DefaultNamespace : namespaceFromObj) : nameSpace;
+                    if (!string.IsNullOrWhiteSpace(finalNamespace))
+                    {
+                        fullPathBuilder.Append(finalNamespace);
+                        fullPathBuilder.Append(':');
+                    }
                 }
 
-                return (!string.IsNullOrWhiteSpace(finalNamespace) ? $"{finalNamespace}:" : "") + newObjectPath;
+                fullPathBuilder.Append(newObjectPath);
+
+                return fullPathBuilder.ToString();
             }
         }
 

@@ -145,7 +145,7 @@ export class CdmHttpClient {
 
             try {
                 if (ctx !== undefined) {
-                    Logger.debug(ctx, this.TAG, this.SendAsyncHelper.name, undefined, `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`);
+                    Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, undefined, `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`);
                 }
 
                 if (cdmRequest.maximumTimeoutExceeded) {
@@ -162,14 +162,21 @@ export class CdmHttpClient {
 
                 if (ctx !== undefined) {
                     const endTime = new Date();
-                    Logger.debug(ctx, this.TAG, this.SendAsyncHelper.name, undefined, `Response for request ${cdmRequest.requestId} received, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms.`);
+                    const contentLength: string = response.responseHeaders.get('content-length') ?? '';
+                    const adlsRequestId: string = response.responseHeaders.get('x-ms-request-id') ?? '';
+                    Logger.info(
+                        ctx,
+                        this.TAG,
+                        this.SendAsyncHelper.name,
+                        undefined,
+                        `Response for request id: ${adlsRequestId}, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms, content length: ${contentLength}, status code: ${response.statusCode}.`);
                 }
             } catch (err) {
                 hasFailed = true;
                 const endTime = new Date();
                 
                 if (err.code === 'ECONNRESET' && ctx) {
-                    Logger.debug(ctx, this.TAG, this.SendAsyncHelper.name, undefined,  `Request ${cdmRequest.requestId} timeout after ${endTime.valueOf() - startTime.valueOf()} ms.`);
+                    Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, undefined,  `Request ${cdmRequest.requestId} timeout after ${endTime.valueOf() - startTime.valueOf()} ms.`);
                 }
 
                 // Only throw an exception if another retry is not expected anymore.
