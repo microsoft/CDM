@@ -1,3 +1,9 @@
+# ❗Important Notice❗
+
+Starting with CDM SDK release 1.7.1 the CdmStandardsAdapter is no longer requiring CDM Schema Store to provision foundational definitions required for CDM metadata parsing, as they are now bundled in the SDK binaries directly. The bundled definitions **do not** include CDM application schemas (e.g. [schemaDocuments/core]([url](https://github.com/microsoft/CDM/tree/master/schemaDocuments/core)), [schemaDocuments/FinancialServices]([url](https://github.com/microsoft/CDM/tree/master/schemaDocuments/FinancialServices))...), only the foundational definitions in the [schemaDocuments]([url](https://github.com/microsoft/CDM/tree/master/schemaDocuments)) root are included to reduce binary size. If you have a dependency to these additional schemas, please package them and reference them from your project.
+
+The CDM Schema Store will be shut down by **end of March '24**, and any services still using the older CDM SDK releases may start failing due to unavailability of the store. If you are still using the SDK versions prior to 1.7.1, please upgrade **now**! 
+
 # Common Data Model Official Packages
 
 | [![NuGet](https://img.shields.io/nuget/v/Microsoft.CommonDataModel.ObjectModel.svg?style=flat-square&label=nuget&colorB=00b200)](https://www.nuget.org/profiles/CommonDataModel/) | [![Maven Central](https://img.shields.io/maven-central/v/com.microsoft.commondatamodel/objectmodel.svg?style=flat-square&label=maven-central&colorB=00b200)](https://search.maven.org/artifact/com.microsoft.commondatamodel/objectmodel) | [![PyPI](https://img.shields.io/pypi/v/commondatamodel-objectmodel.svg?style=flat-square&label=pypi&colorB=00b200)](https://pypi.org/project/commondatamodel-objectmodel/) | [![npm](https://img.shields.io/npm/v/cdm.objectmodel.svg?style=flat-square&label=npm&colorB=00b200)](https://www.npmjs.com/package/cdm.objectmodel) |
