@@ -203,7 +203,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // this context object holds all of the info about what needs to happen to resolve these attributes.
             // make a copy and add defaults if missing
-            CdmAttributeResolutionGuidance resGuideWithDefault = this.ResolutionGuidance == null 
+            CdmAttributeResolutionGuidance resGuideWithDefault = this.ResolutionGuidance == null
                 ? new CdmAttributeResolutionGuidance(this.Ctx) : this.ResolutionGuidance?.Copy(resOpt) as CdmAttributeResolutionGuidance;
 
             resGuideWithDefault.UpdateAttributeDefaults(this.Name, this);
@@ -259,7 +259,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // A Projection
 
                     // if the max depth is exceeded it should not try to execute the projection
-                    if (!resOpt.DepthInfo.MaxDepthExceeded)
+                    if (resOpt.DepthInfo.MaxDepthExceeded)
+                    {
+                        Logger.Warning(this.Ctx, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.WarnMaxDepthExceeded, resOpt.DepthInfo.MaxDepth?.ToString(), this.Entity.FetchObjectDefinitionName());
+                    }
+                    else
                     {
                         CdmProjection projDef = this.Entity.FetchObjectDefinition<CdmProjection>(resOpt);
                         ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, ownerRef: this.Entity);
@@ -346,6 +350,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // if we got here because of the max depth, need to impose the directives to make the trait work as expected
                         if (resOpt.DepthInfo.MaxDepthExceeded)
                         {
+                            Logger.Warning(this.Ctx, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.WarnMaxDepthExceeded, resOpt.DepthInfo.MaxDepth?.ToString(), this.Entity.FetchObjectDefinitionName());
+
                             if (arc.ResOpt.Directives == null)
                                 arc.ResOpt.Directives = new AttributeResolutionDirectiveSet();
                             arc.ResOpt.Directives.Add("referenceOnly");

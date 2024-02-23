@@ -11,13 +11,13 @@ from .applier_state import ApplierState
 from .attribute_context_parameters import AttributeContextParameters
 from .attribute_resolution_applier import AttributeResolutionApplier
 from .attribute_resolution_directive_set import AttributeResolutionDirectiveSet
+from .exceptions.cdm_error import CdmError
 from .cdm_file_metadata import CdmFileMetadata
 from .copy_options import CopyOptions
 from .constants import Constants
 from .depth_info import DepthInfo
 from .docs_result import DocsResult
 from .event_callback import EventCallback
-from .exceptions import CdmError
 from .file_status_check_options import FileStatusCheckOptions
 from .friendly_format_node import FriendlyFormatNode
 from .identifier_ref import IdentifierRef

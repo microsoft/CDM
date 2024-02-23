@@ -5,9 +5,11 @@ import math
 import abc
 from threading import Lock
 from typing import List, cast, Dict, Iterable, Optional, TYPE_CHECKING
+from cdm.enums import CdmLogCode
 from cdm.resolvedmodel import TraitProfile, TraitProfileCache
 
 from cdm.enums import CdmObjectType
+from cdm.utilities import logger
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityAttributeDefinition, \
@@ -224,6 +226,7 @@ class CdmObject(abc.ABC):
         if rasb_cache \
                 and res_opt._depth_info.max_depth \
                 and res_opt._depth_info.current_depth + rasb_cache._resolved_attribute_set._depth_traveled > res_opt._depth_info.max_depth:
+            logger.warning(self.ctx, self._TAG, self._fetch_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_MAX_DEPTH_EXCEEDED, res_opt._depth_info.max_depth, self.fetch_object_definition_name())
             rasb_cache = None
 
         if not rasb_cache:

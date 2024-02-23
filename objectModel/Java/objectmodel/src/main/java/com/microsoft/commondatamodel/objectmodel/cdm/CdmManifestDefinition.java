@@ -12,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmIncrementalPartitionType;
 import com.microsoft.commondatamodel.objectmodel.enums.PartitionFileStatusCheckType;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -456,19 +458,19 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   }
 
   @Override
-  public CompletableFuture<Void> fileStatusCheckAsync() {
+  public CompletableFuture<Void> fileStatusCheckAsync() throws CdmReadPartitionFromPatternException {
     return fileStatusCheckAsync(PartitionFileStatusCheckType.Full);
   }
 
-  public CompletableFuture<Void> fileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType) {
+  public CompletableFuture<Void> fileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType) throws CdmReadPartitionFromPatternException {
     return fileStatusCheckAsync(partitionFileStatusCheckType, CdmIncrementalPartitionType.None);
   }
 
-  public CompletableFuture<Void> fileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType) {
+  public CompletableFuture<Void> fileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType) throws CdmReadPartitionFromPatternException {
     return fileStatusCheckAsync(partitionFileStatusCheckType, incrementalType, null);
   }
 
-  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType, final FileStatusCheckOptions fileStatusCheckOptions) {
+  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType, final FileStatusCheckOptions fileStatusCheckOptions) throws CdmReadPartitionFromPatternException {
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
         StorageAdapterBase adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
@@ -615,9 +617,27 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
    * @return CompletableFuture
    */
   public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
+          String newManifestName,
+          String newEntityDocumentNameFormat) {
+    return createResolvedManifestAsync(newManifestName, newEntityDocumentNameFormat, null);
+  }
+
+  /**
+   * Creates a resolved copy of the manifest.
+   * newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entities.
+   * The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest.
+   * Every instance of the string {n} is replaced with the entity name from the source manifest.
+   * Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
+   * (if there is one that is possible as a relative location, else nothing).
+   * @param newManifestName name string
+   * @param newEntityDocumentNameFormat format string
+   * @return CompletableFuture
+   */
+  public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
     String newManifestName,
-    String newEntityDocumentNameFormat) {
-      return createResolvedManifestAsync(newManifestName, newEntityDocumentNameFormat, null);
+    String newEntityDocumentNameFormat,
+    final AttributeResolutionDirectiveSet directives) {
+      return createResolvedManifestAsync(newManifestName, newEntityDocumentNameFormat, null, null);
   }
 
   /**
@@ -635,7 +655,8 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
       final String newManifestName,
       final String newEntityDocumentNameFormat,
-      final AttributeResolutionDirectiveSet directives) {
+      final AttributeResolutionDirectiveSet directives,
+      final ResolveOptions resOpt) {
     return CompletableFuture.supplyAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "createResolvedManifestAsync")) {
 
@@ -778,18 +799,20 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           // Next create the resolved entity.
           AttributeResolutionDirectiveSet withDirectives =
                   directives != null ? directives : this.getCtx().getCorpus().getDefaultResolutionDirectives();
-          final ResolveOptions resOpt = new ResolveOptions(entDef.getInDocument(), withDirectives != null ? withDirectives.copy() : null);
+          final ResolveOptions resOptEntity = resOpt != null ? resOpt.copy() : new ResolveOptions();
+          resOptEntity.setWrtDoc(entDef.getInDocument());
+          resOptEntity.setDirectives(withDirectives != null ? withDirectives.copy() : null);
           Logger.debug(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), Logger.format("resolving entity {0} to document {1}", sourceEntityFullPath, newDocumentFullPath));
 
           final CdmEntityDefinition resolvedEntity = entDef
-                  .createResolvedEntityAsync(entDef.getEntityName(), resOpt, folder, newDocumentName).join();
+                  .createResolvedEntityAsync(entDef.getEntityName(), resOptEntity, folder, newDocumentName).join();
 
           if (null == resolvedEntity) {
             // Fail all resolution, if any one entity resolution fails.
             return null;
           }
 
-          CdmEntityDeclarationDefinition result = (CdmEntityDeclarationDefinition) entity.copy(resOpt);
+          CdmEntityDeclarationDefinition result = (CdmEntityDeclarationDefinition) entity.copy(resOptEntity);
           if (result.getObjectType() == CdmObjectType.LocalEntityDeclarationDef) {
             result.setEntityPath(
                     ObjectUtils.firstNonNull(
@@ -806,7 +829,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         Logger.debug(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), "calculating relationships");
 
         // Calculate the entity graph for just this folio and any subManifests.
-        this.getCtx().getCorpus().calculateEntityGraphAsync(resolvedManifest).join();
+        this.getCtx().getCorpus().calculateEntityGraphAsync(resolvedManifest, resOpt).join();
         // Stick results into the relationships list for the manifest.
         // Only put in relationships that are between the entities that are used in the manifest.
         resolvedManifest.populateManifestRelationshipsAsync(

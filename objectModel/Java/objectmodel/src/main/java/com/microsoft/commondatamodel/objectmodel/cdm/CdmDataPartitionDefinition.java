@@ -5,20 +5,13 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
-import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
@@ -279,6 +272,12 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
    */
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
+    this.fileStatusCheckAsync(null);
+
+    return CompletableFuture.completedFuture(null);
+  }
+
+  public CompletableFuture<Void> fileStatusCheckAsync(FileStatusCheckOptions fileStatusCheckOptions) {
     try (Logger.LoggerScope logScope = Logger.enterScope(CdmDataPartitionDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
       final String fullPath =
               this.getCtx()
@@ -286,12 +285,16 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
                       .getStorage()
                       .createAbsoluteCorpusPath(this.getLocation(), this.getInDocument());
 
-      final OffsetDateTime modifiedTime =
-              this.getCtx().getCorpus().getLastModifiedTimeFromPartitionPathAsync(fullPath).join();
+      final CdmFileMetadata fileMetadata =
+              this.getCtx().getCorpus().getFileMetadataFromPartitionPathAsync(fullPath).join();
 
       // update modified times
       setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
-      setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
+      setLastFileModifiedTime(TimeUtils.maxTime(fileMetadata != null ? fileMetadata.getLastModifiedTime() : null, getLastFileModifiedTime()));
+
+      if (fileStatusCheckOptions != null && fileStatusCheckOptions.getIncludeDataPartitionSize() == true && fileMetadata != null) {
+        this.getExhibitsTraits().add("is.partition.size", new ArrayList<>(Collections.singletonList(new ImmutablePair<>("value", fileMetadata.getSize()))));
+      }
 
       return reportMostRecentTimeAsync(getLastFileModifiedTime());
     }

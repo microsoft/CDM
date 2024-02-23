@@ -152,7 +152,7 @@ export class resolveOptions {
         if (this.directives) {
             resOptCopy.directives = this.directives.copy();
         }
-        resOptCopy.depthInfo = this.depthInfo.copy();
+        resOptCopy.maxDepth = this.maxDepth;
         resOptCopy.inCircularReference = this.inCircularReference;
         resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
         resOptCopy.indexingDoc = this.indexingDoc;

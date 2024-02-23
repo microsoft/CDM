@@ -5,6 +5,7 @@ from cdm.storage.local import LocalAdapter
 from datetime import datetime, timedelta, timezone
 import os
 import time
+import traceback
 import unittest
 
 from cdm.objectmodel import CdmManifestDefinition, CdmLocalEntityDeclarationDefinition, CdmTraitDefinition, CdmParameterDefinition, CdmTraitReference
@@ -15,9 +16,11 @@ from cdm.persistence.cdmfolder.types import ManifestContent
 from cdm.objectmodel.cdm_corpus_context import CdmCorpusContext
 from cdm.enums import CdmStatusLevel, PartitionFileStatusCheckType, CdmIncrementalPartitionType, CdmObjectType, \
     CdmLogCode
+from cdm.utilities.exceptions.cdm_read_partition_from_pattern_exception import CdmReadPartitionFromPatternException
 from tests.adls_test_helper import AdlsTestHelper
 from tests.common import async_test, TestHelper
 from tests.storage.testAdapters.fetch_all_metadata import FetchAllMetadataNullAdapter
+from tests.storage.testAdapters.fetch_all_metadata_throw_error import FetchAllMetadataThrowErrorAdapter
 from tests.storage.testAdapters.no_override import NoOverride
 from tests.storage.testAdapters.override_fetch_all_files import OverrideFetchAllFiles
 
@@ -771,3 +774,43 @@ class DataPartitionPatternTest(unittest.TestCase):
 
         manifest = await corpus.fetch_object_async('manifest.manifest.cdm.json')
         await manifest.file_status_check_async(file_status_check_options=file_status_check__options)
+
+    @async_test
+    async def test_throw_on_partition_error(self):
+        expected_log_codes = {CdmLogCode.WARN_PARTITION_FILE_FETCH_FAILED}
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'TestFetchAllFilesMetadata', expected_codes=expected_log_codes)
+        test_local_adapter = corpus.storage.namespace_adapters[corpus.storage.default_namespace]
+        corpus.storage.mount('error', FetchAllMetadataThrowErrorAdapter(test_local_adapter))
+        file_status_check_options = { 'throw_on_partition_error': True }
+
+        manifestThrowsError = False
+        entityDecThrowsError = False
+        partitionPatternThrowsError = False
+
+        manifest = await corpus.fetch_object_async('error:/manifest.manifest.cdm.json')
+        try:
+            await manifest.file_status_check_async(file_status_check_options=file_status_check_options)
+        except CdmReadPartitionFromPatternException as e:
+            error_message = traceback.format_exc()
+            self.assertTrue('Some test error message.' in error_message)
+            manifestThrowsError = True
+
+        entity_dec = manifest.entities[0]
+
+        try:
+            await entity_dec.file_status_check_async(file_status_check_options=file_status_check_options)
+        except CdmReadPartitionFromPatternException as e:
+            error_message = traceback.format_exc()
+            self.assertTrue('Some test error message.' in error_message)
+            entityDecThrowsError = True
+
+        partition_pattern = manifest.entities[0].data_partition_patterns[0]
+
+        try:
+            await partition_pattern.file_status_check_async(file_status_check_options=file_status_check_options)
+        except CdmReadPartitionFromPatternException as e:
+            error_message = traceback.format_exc()
+            self.assertTrue('Some test error message.' in error_message)
+            partitionPatternThrowsError = True
+
+        self.assertTrue(manifestThrowsError and entityDecThrowsError and partitionPatternThrowsError)

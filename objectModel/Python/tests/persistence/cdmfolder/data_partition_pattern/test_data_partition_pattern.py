@@ -79,7 +79,7 @@ class DataPartitionPatternTest(unittest.TestCase):
             self.assertEqual(status_level, CdmStatusLevel.ERROR, 'Error level message should have been reported')
             self.assertTrue(
                 (message == 'StorageManager | The object path cannot be null or empty. | create_absolute_corpus_path') or \
-                (message == 'CdmCorpusDefinition | The object path cannot be null or empty. | _get_last_modified_time_from_partition_path_async'),
+                (message == 'CdmCorpusDefinition | The object path cannot be null or empty. | _get_file_metadata_from_partition_path_async'),
                 "Unexpected error message received"
             )
 

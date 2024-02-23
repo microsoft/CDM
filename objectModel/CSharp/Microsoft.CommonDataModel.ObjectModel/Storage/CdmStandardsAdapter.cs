@@ -11,5 +11,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             : base(cdmStandardsPackageName)
         {
         }
+
+        public override string FetchConfig()
+        {
+            return "{\"config\":{},\"type\":\"cdm-standards\"}";
+        }
     }
 }

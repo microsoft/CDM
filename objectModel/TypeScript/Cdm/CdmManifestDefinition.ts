@@ -184,7 +184,8 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     public async createResolvedManifestAsync(
         newManifestName: string,
         newEntityDocumentNameFormat: string,
-        directives?: AttributeResolutionDirectiveSet): Promise<CdmManifestDefinition> {
+        directives?: AttributeResolutionDirectiveSet,
+        resOpt?: resolveOptions): Promise<CdmManifestDefinition> {
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.createResolvedManifestAsync.name), async _ => {
             if (!this.entities) {
                 return undefined;
@@ -299,18 +300,20 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 // Next create the resolved entity
                 const withDirectives: AttributeResolutionDirectiveSet = directives !== undefined ? directives :
                     this.ctx.corpus.defaultResolutionDirectives;
-                const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, withDirectives?.copy());
+                const entityResOpt: resolveOptions = resOpt != undefined ? resOpt.copy() : new resolveOptions();
+                entityResOpt.wrtDoc = entDef.inDocument;
+                entityResOpt.directives = withDirectives?.copy();
 
                 Logger.debug(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, `resolving entity ${sourceEntityFullPath} to document ${newDocumentFullPath}`);
 
                 const resolvedEntity: CdmEntityDefinition =
-                    await entDef.createResolvedEntityAsync(entDef.entityName, resOpt, folder, newDocumentName);
+                    await entDef.createResolvedEntityAsync(entDef.entityName, entityResOpt, folder, newDocumentName);
                 if (resolvedEntity === undefined) {
                     // Fail all resolution, if any one entity resolution fails
                     return undefined;
                 }
 
-                const result: CdmEntityDeclarationDefinition = entity.copy(resOpt) as CdmEntityDeclarationDefinition;
+                const result: CdmEntityDeclarationDefinition = entity.copy(entityResOpt) as CdmEntityDeclarationDefinition;
                 if (result.objectType === cdmObjectType.localEntityDeclarationDef) {
                     result.entityPath =
                         this.ctx.corpus.storage.createRelativeCorpusPath(resolvedEntity.atCorpusPath, resolvedManifest)
@@ -322,7 +325,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             Logger.debug(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, `calculating relationships`);
 
             // calculate the entity graph for this manifest and any submanifests
-            await this.ctx.corpus.calculateEntityGraphAsync(resolvedManifest);
+            await this.ctx.corpus.calculateEntityGraphAsync(resolvedManifest, resOpt);
             // stick results into the relationships list for the manifest
             // only put in relationships that are between the entities that are used in the manifest
             await resolvedManifest.populateManifestRelationshipsAsync(cdmRelationshipDiscoveryStyle.exclusive);

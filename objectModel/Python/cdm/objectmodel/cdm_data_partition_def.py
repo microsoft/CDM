@@ -99,15 +99,17 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
         return copy
 
-    async def file_status_check_async(self) -> None:
+    async def file_status_check_async(self, file_status_check_options = None) -> None:
         """Check the modified time for this object and any children."""
         with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
             full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.location, self.in_document)
-            modified_time = await self.ctx.corpus._get_last_modified_time_from_partition_path_async(full_path)
+            partition_metadata = await self.ctx.corpus._get_file_metadata_from_partition_path_async(full_path)
 
             # Update modified times.
             self.last_file_status_check_time = datetime.now(timezone.utc)
-            self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
+            self.last_file_modified_time = time_utils._max_time(partition_metadata['last_modified_time'], self.last_file_modified_time) if partition_metadata and partition_metadata['last_modified_time'] else self.last_file_modified_time
+            if file_status_check_options and file_status_check_options['include_data_partition_size'] and partition_metadata and partition_metadata['file_size_bytes']:
+                self.exhibits_traits.append('is.partition.size', [['value', partition_metadata['file_size_bytes']]])
 
             await self.report_most_recent_time_async(self.last_file_modified_time)
 

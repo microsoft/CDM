@@ -15,6 +15,8 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmIncrementalPartitionTy
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.PartitionFileStatusCheckType;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.Test;
@@ -26,11 +28,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SearchPartitionPatternTest extends SampleTestBase{
+public class SearchPartitionPatternTest extends SampleTestBase {
     private static final String TEST_NAME = "TestSearchPartitionPattern";
 
     @Test
-    public void testSearchPartitionPattern() throws InterruptedException, IOException {
+    public void testSearchPartitionPattern() throws CdmReadPartitionFromPatternException, InterruptedException, IOException {
         this.checkSampleRunTestsFlag();
 
         TestHelper.deleteFilesFromActualOutput(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME));
@@ -65,7 +67,7 @@ public class SearchPartitionPatternTest extends SampleTestBase{
         return cdmCorpus;
     }
 
-    private void searchPartitionPattern(CdmCorpusDefinition cdmCorpus) {
+    private void searchPartitionPattern(CdmCorpusDefinition cdmCorpus) throws CdmReadPartitionFromPatternException {
         String sampleEntityName = "Account";
 
         System.out.println("Make placeholder manifest.");

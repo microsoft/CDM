@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmFileMetadata;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -128,6 +129,15 @@ public abstract class StorageAdapterBase {
   }
 
   /**
+   * Returns the file metadata info about the specified document.
+   * @param corpusPath The path to the document.
+   * @return the Cdm File Metadata of the document
+   */
+  public CompletableFuture<CdmFileMetadata> fetchFileMetadataAsync(String corpusPath) {
+    return CompletableFuture.completedFuture(null);
+  }
+
+  /**
    * @deprecated Deprecated in favor of fetchAllFilesMetadataAsync
    * meant to be called externally at all. Please refrain from using it.
    * Returns a list of corpus paths to all files and folders at or under the provided corpus path to
@@ -146,7 +156,7 @@ public abstract class StorageAdapterBase {
    * @param folderCorpusPath Path to the folder to scan
    * @return Dictionary with list of corpus paths as keys and CdmFileMetadata info for each as the value
    */
-  public CompletableFuture<HashMap<String, CdmFileMetadata>> fetchAllFilesMetadataAsync(String folderCorpusPath) {
+  public CompletableFuture<HashMap<String, CdmFileMetadata>> fetchAllFilesMetadataAsync(String folderCorpusPath) throws CdmReadPartitionFromPatternException {
     List<String> allFiles = this.fetchAllFilesAsync(folderCorpusPath).join();
 
     HashMap<String, CdmFileMetadata> filesMetadata = new HashMap<String, CdmFileMetadata>();

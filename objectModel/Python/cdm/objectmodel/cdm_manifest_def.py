@@ -113,7 +113,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         return copy
 
-    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: Optional[str], directives: Optional[AttributeResolutionDirectiveSet] = None) -> Optional['CdmManifestDefinition']:
+    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: Optional[str], directives: Optional[AttributeResolutionDirectiveSet] = None, res_opt: Optional[ResolveOptions] = None) -> Optional['CdmManifestDefinition']:
         """Creates a resolved copy of the manifest.
         new_entity_document_name_format specifies a pattern to use when creating documents for resolved entities.
         The default is "resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as
@@ -229,18 +229,20 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
                 # next create the resolved entity.
                 with_directives = directives if directives is not None else self.ctx.corpus.default_resolution_directives
-                res_opt = ResolveOptions(ent_def.in_document, with_directives.copy())
+                entity_res_opt = res_opt.copy() if res_opt is not None else ResolveOptions()
+                entity_res_opt.wrt_doc = ent_def.in_document
+                entity_res_opt.directives = with_directives.copy()
 
                 logger.debug(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
                              'resolving entity {} to document {}'.format(source_entity_full_path,
                                                                          new_document_full_path))
 
-                resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, res_opt, folder, new_document_name)
+                resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, entity_res_opt, folder, new_document_name)
                 if not resolved_entity:
                     # fail all resolution, if any one entity resolution fails
                     return None
 
-                result = entity.copy(res_opt)
+                result = entity.copy(entity_res_opt)
                 if result.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
                     relative_entity_path = self.ctx.corpus.storage.create_relative_corpus_path(resolved_entity.at_corpus_path, resolved_manifest)
                     result.entity_path = relative_entity_path or result.at_corpus_path
@@ -250,7 +252,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             logger.debug(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
                          'calculating relationships')
             # Calculate the entity graph for just this manifest.
-            await self.ctx.corpus.calculate_entity_graph_async(resolved_manifest)
+            await self.ctx.corpus.calculate_entity_graph_async(resolved_manifest, res_opt)
             # Stick results into the relationships list for the manifest.
             await resolved_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
 

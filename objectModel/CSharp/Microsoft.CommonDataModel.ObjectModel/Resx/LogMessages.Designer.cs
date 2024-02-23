@@ -187,7 +187,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not fetch file metadata. The FetchAllFilesMetadata method of the &apos;{0}&apos; adapter may be misconfigured..
+        ///   Looks up a localized string similar to Could not fetch file metadata from root location, the &apos;{0}&apos; adapter may be misconfigured..
         /// </summary>
         internal static string ErrFetchingFileMetadataNull {
             get {
@@ -246,6 +246,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrObjectWithoutOwnerFound {
             get {
                 return ResourceManager.GetString("ErrObjectWithoutOwnerFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to get file metadata for partition file {0}. Exception: {1}.
+        /// </summary>
+        internal static string ErrPartitionFileMetadataFailure {
+            get {
+                return ResourceManager.GetString("ErrPartitionFileMetadataFailure", resourceCulture);
             }
         }
         
@@ -1452,6 +1461,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string WarnLinkEntIdentArgsNotSupported {
             get {
                 return ResourceManager.GetString("WarnLinkEntIdentArgsNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The entity max depth of {0} has been exceeded. Entity {1} will not be resolved any further..
+        /// </summary>
+        internal static string WarnMaxDepthExceeded {
+            get {
+                return ResourceManager.GetString("WarnMaxDepthExceeded", resourceCulture);
             }
         }
         

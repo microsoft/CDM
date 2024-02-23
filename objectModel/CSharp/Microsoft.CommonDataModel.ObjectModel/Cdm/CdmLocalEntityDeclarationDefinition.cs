@@ -6,6 +6,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -214,12 +215,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
         }
 
-        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null)
+        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null, CancellationToken ct = default)
         {
-            await FileStatusCheckAsyncInternal(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions);
+            await FileStatusCheckAsyncInternal(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions, ct);
         }
 
-        internal async Task<bool> FileStatusCheckAsyncInternal(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null)
+        internal async Task<bool> FileStatusCheckAsyncInternal(PartitionFileStatusCheckType partitionFileStatusCheckType, CdmIncrementalPartitionType incrementalType, FileStatusCheckOptions fileStatusCheckOptions, CancellationToken ct)
         {
             using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
             {
@@ -234,6 +235,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     foreach (var pattern in this.DataPartitionPatterns)
                     {
+                        ct.ThrowIfCancellationRequested();
+
                         if (pattern.IsIncremental)
                         {
                             Logger.Error(pattern.Ctx, Tag, nameof(FileStatusCheckAsync), pattern.AtCorpusPath, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
@@ -241,7 +244,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         else
                         {
-                            bool shouldContinue = await pattern.FileStatusCheckAsyncInternal(fileStatusCheckOptions);
+                            bool shouldContinue = await pattern.FileStatusCheckAsyncInternal(fileStatusCheckOptions, ct);
 
                             if (!shouldContinue)
                             {
@@ -252,6 +255,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     foreach (var partition in this.DataPartitions)
                     {
+                        ct.ThrowIfCancellationRequested();
+
                         if (partition.IsIncremental)
                         {
                             Logger.Error(partition.Ctx, Tag, nameof(FileStatusCheckAsync), partition.AtCorpusPath, CdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
@@ -259,7 +264,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         else
                         {
-                            await partition.FileStatusCheckAsync();
+                            await partition.FileStatusCheckAsync(fileStatusCheckOptions, ct);
                         }
                     }
                 }
@@ -268,17 +273,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     foreach (var pattern in this.IncrementalPartitionPatterns)
                     {
+                        ct.ThrowIfCancellationRequested();
+
                         if (this.ShouldCallFileStatusCheck(incrementalType, true, pattern))
                         {
-                            await pattern.FileStatusCheckAsync();
+                            await pattern.FileStatusCheckAsync(null, ct);
                         }
                     }
 
                     foreach (var partition in this.IncrementalPartitions)
+                    {
+                        ct.ThrowIfCancellationRequested();
+
                         if (this.ShouldCallFileStatusCheck(incrementalType, false, partition))
                         {
-                            await partition.FileStatusCheckAsync();
+                            await partition.FileStatusCheckAsync(null, ct);
                         }
+                    }
                 }
 
                 // update modified times

@@ -89,7 +89,7 @@ export class ADLSAdapter extends NetworkAdapter {
     private rootBlobContainer: string = '';
     private unescapedRootSubPath: string = '';
     private escapedRootSubPath: string = '';
-    private fileModifiedTimeCache: Map<string, Date> = new Map<string, Date>();
+    private fileMetadataCache: Map<string, CdmFileMetadata> = new Map<string, CdmFileMetadata>();
 
     // The ADLS constructor for clientId/secret authentication.
     constructor(
@@ -227,7 +227,17 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        const cachedValue: Date = this.isCacheEnabled() ? this.fileModifiedTimeCache.get(corpusPath) : undefined;
+        var fileMetadata = await this.fetchFileMetadataAsync(corpusPath);
+
+        if (fileMetadata == null) {
+            return null;
+        }
+
+        return fileMetadata.lastModifiedTime;
+    }
+
+    public async fetchFileMetadataAsync(corpusPath: string): Promise<CdmFileMetadata> {
+        const cachedValue: CdmFileMetadata = this.isCacheEnabled() ? this.fileMetadataCache.get(corpusPath) : undefined;
         if (cachedValue) {
             return cachedValue;
         }
@@ -245,10 +255,12 @@ export class ADLSAdapter extends NetworkAdapter {
                 const lastTimeString: string = cdmResponse.responseHeaders.get('last-modified');
                 if (lastTimeString) {
                     const lastTime: Date = new Date(lastTimeString);
+                    const fileSize: number = parseInt(cdmResponse.responseHeaders.get('content-length'));
+                    const fileMetadata: CdmFileMetadata = { lastModifiedTime: lastTime, fileSizeBytes: fileSize };
                     if (this.isCacheEnabled()) {
-                        this.fileModifiedTimeCache.set(corpusPath, lastTime);
+                        this.fileMetadataCache.set(corpusPath, fileMetadata);
                     }
-                    return lastTime;
+                    return fileMetadata;
                 }
             }
         }
@@ -301,10 +313,11 @@ export class ADLSAdapter extends NetworkAdapter {
                             name.substring(this.unescapedRootSubPath.length + 1) : name;
 
                         const path: string = this.formatCorpusPath(nameWithoutSubPath);
-                        result.set(path, { fileSizeBytes: Number(jObject.contentLength) });
+                        const fileMetadata: CdmFileMetadata = { lastModifiedTime: new Date(jObject.lastModified), fileSizeBytes: parseInt(jObject.contentLength)};
+                        result.set(path, fileMetadata);
 
                         if (jObject.lastModified && this.isCacheEnabled()) {
-                            this.fileModifiedTimeCache.set(path, new Date(jObject.lastModified));
+                            this.fileMetadataCache.set(path, fileMetadata);
                         }
                     }
                 }
@@ -315,7 +328,7 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public clearCache(): void {
-        this.fileModifiedTimeCache.clear();
+        this.fileMetadataCache.clear();
     }
 
     public fetchConfig(): string {

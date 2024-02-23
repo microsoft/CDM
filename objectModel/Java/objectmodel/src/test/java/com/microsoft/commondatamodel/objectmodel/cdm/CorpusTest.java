@@ -187,4 +187,30 @@ public class CorpusTest {
         corpus.calculateEntityGraphAsync(manifest).join();
         TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrInvalidCast, true);
     }
+
+    /**
+     * Test warning correctly logged when max depth is exceeded for Resolution Guidance
+     */
+    @Test
+    public void testMaxDepthExceededResolutionGuidance() throws InterruptedException {
+        final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.WarnMaxDepthExceeded ));
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestMaxDepthExceededResolutionGuidance", null, false, expectedLogCodes);
+
+        final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/firstEntity.cdm.json/firstEntity").join();
+        entity.createResolvedEntityAsync("resFirstEntity").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnMaxDepthExceeded, true);
+    }
+
+    /**
+     * Test warning correctly logged when max depth is exceeded for Projections
+     */
+    @Test
+    public void testMaxDepthExceededProjections() throws InterruptedException {
+        final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.WarnMaxDepthExceeded ));
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestMaxDepthExceededProjections", null, false, expectedLogCodes);
+
+        final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/A.cdm.json/A").join();
+        entity.createResolvedEntityAsync("resA").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnMaxDepthExceeded, true);
+    }
 }

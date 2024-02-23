@@ -16,7 +16,8 @@ import {
     CdmPurposeReference,
     cdmStatusLevel,
     CdmTypeAttributeDefinition,
-    resolveOptions
+    resolveOptions,
+    cdmLogCode
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
@@ -187,7 +188,8 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
         const testName: string = 'TestMaxDepthOnPolymorphicEntity';
         const entityName: string = 'A';
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnMaxDepthExceeded]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName, undefined, false, expectedLogCodes);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`${entityName}.cdm.json/${entityName}`);
 
@@ -200,7 +202,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
             .not
             .toBeUndefined();
         expect(resEntity.attributes.length)
-            .toBe(4);
+            .toBe(2);
     });
 
     /**

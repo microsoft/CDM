@@ -25,6 +25,7 @@ import {
     CdmEntityAttributeDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
+    CdmFileMetadata,
     CdmFolderDefinition,
     CdmImport,
     CdmLocalEntityDeclarationDefinition,
@@ -1141,11 +1142,11 @@ export class CdmCorpusDefinition {
      * @param currObject A CDM object
      */
     public async getLastModifiedTimeFromObjectAsync(currObject: CdmObject): Promise<Date> {
-        const referencedEntity: CdmReferencedEntityDeclarationDefinition = currObject instanceof CdmReferencedEntityDeclarationDefinition ? currObject  as CdmReferencedEntityDeclarationDefinition : undefined;
+        const referencedEntity: CdmReferencedEntityDeclarationDefinition = currObject instanceof CdmReferencedEntityDeclarationDefinition ? currObject as CdmReferencedEntityDeclarationDefinition : undefined;
         if ("namespace" in currObject || (referencedEntity !== undefined && referencedEntity.isVirtual())) {
-            
+
             const namespacePath = referencedEntity !== undefined ? referencedEntity.virtualLocation : currObject.atCorpusPath;
-            
+
             // Remove namespace from path
             const pathTuple: [string, string] = StorageUtils.splitNamespacePath(namespacePath);
             if (!pathTuple) {
@@ -1188,30 +1189,44 @@ export class CdmCorpusDefinition {
      * @param corpusPath The corpus path to a CDM object
      */
     public async getLastModifiedTimeFromPartitionPathAsync(corpusPath: string): Promise<Date> {
+        const fileMetadata: CdmFileMetadata = await this.getFileMetadataFromPartitionPathAsync(corpusPath);
+
+        if (fileMetadata == undefined) {
+            return undefined;
+        }
+
+        return fileMetadata.lastModifiedTime;
+    }
+
+    /**
+ * @internal
+ * Returns the file metadata of the partition without trying to read the file itself.
+ */
+    public async getFileMetadataFromPartitionPathAsync(corpusPath: string): Promise<CdmFileMetadata> {
         // we do not want to load partitions from file, just check the modified times
         const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
         if (!pathTuple) {
-            Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPathNullObjectPath);
+            Logger.error(this.ctx, this.TAG, this.getFileMetadataFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPathNullObjectPath);
 
             return undefined;
         }
         const namespace: string = pathTuple[0];
+        let adapter: StorageAdapterBase;
         if (namespace) {
-            const adapter: StorageAdapterBase = this.storage.fetchAdapter(namespace);
-
-            if (adapter === undefined) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrAdapterNotFound);
-
-                return undefined;
-            }
-
-            try {
-                return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
-            } catch (e) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
-            }
+            adapter = this.storage.fetchAdapter(namespace);
         }
-        return undefined;
+
+        if (adapter === undefined) {
+            Logger.error(this.ctx, this.TAG, this.getFileMetadataFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrAdapterNotFound);
+
+            return undefined;
+        }
+
+        try {
+            return adapter.fetchFileMetadataAsync(pathTuple[1]);
+        } catch (e) {
+            Logger.error(this.ctx, this.TAG, this.getFileMetadataFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
+        }
     }
 
     /**
@@ -1243,7 +1258,7 @@ export class CdmCorpusDefinition {
      * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate relationships for.
      * @returns A Promise for the completion of entity graph calculation.
      */
-    public async calculateEntityGraphAsync(currManifest: CdmManifestDefinition): Promise<void> {
+    public async calculateEntityGraphAsync(currManifest: CdmManifestDefinition, resOpt: resolveOptions = undefined): Promise<void> {
         return await using(enterScope(CdmCorpusDefinition.name, this.ctx, this.calculateEntityGraphAsync.name), async _ => {
             for (const entityDec of currManifest.entities) {
                 const entityPath: string = await currManifest.getEntityPathFromDeclaration(entityDec, currManifest);
@@ -1262,21 +1277,23 @@ export class CdmCorpusDefinition {
 
                 let resEntity: CdmEntityDefinition;
                 // make options wrt this entity document and "relational" always
-                const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+                const resOptCopy: resolveOptions = resOpt != undefined ? resOpt.copy() : new resolveOptions();
+                resOptCopy.wrtDoc = entity.inDocument;
+                resOptCopy.directives = new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
 
                 const isResolvedEntity: boolean = entity.isResolved;
 
                 // only create a resolved entity if the entity passed in was not a resolved entity
                 if (!isResolvedEntity) {
                     // first get the resolved entity so that all of the references are present
-                    resEntity = await entity.createResolvedEntityAsync(`wrtSelf_${entity.entityName}`, resOpt);
+                    resEntity = await entity.createResolvedEntityAsync(`wrtSelf_${entity.entityName}`, resOptCopy);
                 } else {
                     resEntity = entity;
                 }
 
                 // find outgoing entity relationships using attribute context
                 const newOutgoingRelationships: CdmE2ERelationship[] =
-                    this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext, isResolvedEntity);
+                    this.findOutgoingRelationships(resOptCopy, resEntity, resEntity.attributeContext, isResolvedEntity);
 
                 const oldOutgoingRelationships: CdmE2ERelationship[] = this.outgoingRelationships.get(entity.atCorpusPath);
 
@@ -1341,7 +1358,7 @@ export class CdmCorpusDefinition {
                 }
 
                 if (subManifest) {
-                    await this.calculateEntityGraphAsync(subManifest);
+                    await this.calculateEntityGraphAsync(subManifest, resOpt);
                 }
             }
         });
@@ -1408,7 +1425,7 @@ export class CdmCorpusDefinition {
                             let traitRefsAndCorpusPaths: [CdmTraitReference, string][] = undefined;
                             const entityAtt: CdmEntityAttributeDefinition = owner.fetchObjectDefinition<CdmObjectDefinition>(resOpt) as CdmEntityAttributeDefinition;
                             if (entityAtt?.purpose !== undefined) {
-                                const resolvedTraitSet= entityAtt.purpose.fetchResolvedTraits(resOpt);
+                                const resolvedTraitSet = entityAtt.purpose.fetchResolvedTraits(resOpt);
                                 if (resolvedTraitSet !== undefined) {
                                     traitRefsAndCorpusPaths = this.findElevatedTraitRefsAndCorpusPaths(resOpt, resolvedTraitSet);
                                 }
@@ -1477,7 +1494,7 @@ export class CdmCorpusDefinition {
         const traitRefsAndCorpusPaths: [CdmTraitReference, string][] = [];
         resolvedTraitSet.set.forEach(rt => {
             var traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
-            if (traitRef !== undefined && !StringUtils.isNullOrWhiteSpace(rt.trait.inDocument?.atCorpusPath)){
+            if (traitRef !== undefined && !StringUtils.isNullOrWhiteSpace(rt.trait.inDocument?.atCorpusPath)) {
                 traitRefsAndCorpusPaths.push([traitRef, rt.trait.inDocument.atCorpusPath]);
             }
         })

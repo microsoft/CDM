@@ -166,7 +166,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// A cache for storing last modified times of file paths.
         /// </summary>
-        private Dictionary<string, DateTimeOffset> fileModifiedTimeCache = new Dictionary<string, DateTimeOffset>();
+        private Dictionary<string, CdmFileMetadata> fileMetadataCache = new Dictionary<string, CdmFileMetadata>();
 
         /// <summary>
         /// The Scopes.
@@ -388,37 +388,51 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         public override void ClearCache()
         {
-            this.fileModifiedTimeCache.Clear();
+            this.fileMetadataCache.Clear();
         }
 
         /// <inheritdoc />
         public override async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
         {
-            if (this.IsCacheEnabled && fileModifiedTimeCache.TryGetValue(corpusPath, out DateTimeOffset time))
+            var fileMetadata = await this.FetchFileMetadataAsync(corpusPath);
+
+            if (fileMetadata == null)
             {
-                return time;
-            }
-            else
-            {
-                var url = this.CreateFormattedAdapterPath(corpusPath);
-
-                var httpRequest = await this.BuildRequest(url, HttpMethod.Head);
-
-                using (var cdmResponse = await base.ExecuteRequest(httpRequest))
-                {
-                    if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
-                    {
-                        var lastTime = cdmResponse.Content.Headers.LastModified;
-                        if (this.IsCacheEnabled && lastTime.HasValue)
-                        {
-                            this.fileModifiedTimeCache[corpusPath] = lastTime.Value;
-                        }
-                        return lastTime;
-                    }
-                }
-
                 return null;
             }
+
+            return fileMetadata.LastModifiedTime;
+        }
+
+        /// <inheritdoc />
+        public override async Task<CdmFileMetadata> FetchFileMetadataAsync(string corpusPath)
+        {
+            if (this.IsCacheEnabled && fileMetadataCache.TryGetValue(corpusPath, out CdmFileMetadata metadata))
+            {
+                return metadata;
+            }
+
+            var url = this.CreateFormattedAdapterPath(corpusPath);
+
+            var httpRequest = await this.BuildRequest(url, HttpMethod.Head);
+
+            using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+            {
+                if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    var lastTime = cdmResponse.Content.Headers.LastModified;
+                    var fileSize = cdmResponse.Content.Headers.ContentLength;
+                    var fileMetadata = new CdmFileMetadata { FileSizeBytes = fileSize.Value, LastModifiedTime = lastTime.Value };
+
+                    if (this.IsCacheEnabled && lastTime.HasValue)
+                    {
+                        this.fileMetadataCache[corpusPath] = fileMetadata;
+                    }
+                    return fileMetadata;
+                }
+            }
+
+            return null;
         }
 
         /// <inheritdoc />
@@ -541,11 +555,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                                 if (!isDirectory)
                                 {
-                                    result.Add(path, new CdmFileMetadata { FileSizeBytes = contentLength });
+                                    DateTimeOffset.TryParse(lastModified, out DateTimeOffset offset);
+                                    var fileMetadata = new CdmFileMetadata { FileSizeBytes = contentLength, LastModifiedTime = offset };
+                                    result.Add(path, fileMetadata);
 
-                                    if (this.IsCacheEnabled && DateTimeOffset.TryParse(lastModified, out DateTimeOffset offset))
+                                    if (this.IsCacheEnabled)
                                     {
-                                        fileModifiedTimeCache[path] = offset;
+                                        fileMetadataCache[path] = fileMetadata;
                                     }
                                 }
                             }

@@ -5,6 +5,8 @@ import { CdmCustomPackageAdapter } from '../../Storage';
 import * as path from 'path';
 import { CdmStandardsAdapter } from '../../Storage';
 import * as cdmstandards from 'cdm.objectmodel.cdmstandards';
+import { CdmCorpusDefinition } from '../../Cdm/CdmCorpusDefinition';
+import { cdmStatusLevel } from '../../Cdm/cdmStatusLevel';
 
 /**
  * Tests if the CdmCustomPackageAdapter functions correctly.
@@ -78,7 +80,7 @@ describe('Storage.CdmStandardsAdapter', () => {
 
         expect(errorWasThrown).toBeTruthy();
     });
-    
+
     /**
      * Tests if the CdmCustomPackageAdapter works when assembly is passed in the constructor.
      */
@@ -87,5 +89,21 @@ describe('Storage.CdmStandardsAdapter', () => {
         const adapter: CdmCustomPackageAdapter = new CdmCustomPackageAdapter(cdmstandards);
         const foundations: string = await adapter.readAsync(FOUNDATIONS_FILE_PATH);
         expect(foundations).toBeDefined();
+    });
+
+    /**
+     * Test mounting CdmStandards adapter from config does not cause an error
+     */
+    it('CdmStandardsMountFromConfig', async () => {
+        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+
+        corpus.setEventCallback((level, message) => {
+            expect(message).toBe('');
+        }, cdmStatusLevel.warning);
+
+        corpus.storage.mountFromConfig("{\"adapters\": [{\"config\": {\"locationHint\": \"\", \"maximumTimeout\": 20000, \"numberOfRetries\": 2, \"root\": \"/logical\", \"timeout\": 5000}, \"namespace\": \"cdm\", \"type\": \"cdm-standards\"}], \"defaultNamespace\": \"local\"}");
+        corpus.storage.mount('cdm', new CdmStandardsAdapter());
+        const config: string = corpus.storage.fetchConfig();
+        corpus.storage.mountFromConfig(config);
     });
 });

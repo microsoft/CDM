@@ -3,4 +3,5 @@
 
 export class CdmFileMetadata {
     public fileSizeBytes: number;
+    public lastModifiedTime: Date;
 }

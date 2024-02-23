@@ -144,6 +144,7 @@ class CorpusTests(unittest.TestCase):
         wrt_entity = await corpus.fetch_object_async('local:/wrtConstEntity.cdm.json/wrtConstEntity') # type: CdmEntityDefinition
         res_opt = ResolveOptions(wrt_entity, AttributeResolutionDirectiveSet())
         await wrt_entity.create_resolved_entity_async('NewEntity', res_opt)
+
     @async_test
     async def test_incorrect_cast_on_fetch(self):
         """Tests that errors when trying to cast objects after fetching is handled correctly."""
@@ -154,3 +155,21 @@ class CorpusTests(unittest.TestCase):
         await corpus.calculate_entity_graph_async(manifest)
         TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_INVALID_CAST, True, self)
 
+    @async_test
+    async def test_max_depth_exceeded_resolution_guidance(self):
+        """Test warning correctly logged when max depth is exceeded for Resolution Guidance"""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_max_depth_exceeded_resolution_guidance', expected_codes=[CdmLogCode.WARN_MAX_DEPTH_EXCEEDED])
+
+        entity = await corpus.fetch_object_async('local:/firstEntity.cdm.json/firstEntity')
+        await entity.create_resolved_entity_async('resFirstEntity')
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_MAX_DEPTH_EXCEEDED, True, self)
+
+    
+    @async_test
+    async def test_max_depth_exceeded_projections(self):
+        """Test warning correctly logged when max depth is exceeded for Projections"""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_max_depth_exceeded_projections', expected_codes=[CdmLogCode.WARN_MAX_DEPTH_EXCEEDED])
+
+        entity = await corpus.fetch_object_async('local:/A.cdm.json/A')
+        await entity.create_resolved_entity_async('resA')
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_MAX_DEPTH_EXCEEDED, True, self)

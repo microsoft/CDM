@@ -15,4 +15,8 @@ export class CdmStandardsAdapter extends CdmCustomPackageAdapter {
             super('cdm.objectmodel.cdmstandards');
         }
     }
+
+    public fetchConfig(): string {
+        return "{\"config\":{},\"type\":\"cdm-standards\"}";
+    }
 }

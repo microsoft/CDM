@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using Microsoft.CommonDataModel.ObjectModel.Cdm;
 using Microsoft.CommonDataModel.ObjectModel.Storage;
+using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Reflection;
@@ -42,7 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             Assert.IsTrue(errorCalled);
         }
-        
+
         /// <summary>
         /// Tests if the calls to CreateCorpusPath return the expected corpus path.
         /// </summary>
@@ -102,7 +104,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             Assert.IsTrue(errorWasThrown);
         }
-        
+
         /// <summary>
         /// Tests if the CdmCustomPackageAdapter works when assembly is passed in the constructor.
         /// </summary>
@@ -113,6 +115,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             var adapter = new CdmCustomPackageAdapter(cdmStandardsPackage);
 
             Assert.IsNotNull(await adapter.ReadAsync(FoundationsFile));
+        }
+
+        /// <summary>
+        /// Test mounting CdmStandards adapter from config does not cause an error
+        /// </summary>
+        [TestMethod]
+        public void TestCdmStandardsMountFromConfig()
+        {
+            CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (CdmStatusLevel statusLevel, string message) =>
+                {
+                    Assert.Fail(message);
+                }
+            }, CdmStatusLevel.Warning);
+
+            corpus.Storage.MountFromConfig("{\"adapters\": [{\"config\": {\"locationHint\": \"\", \"maximumTimeout\": 20000, \"numberOfRetries\": 2, \"root\": \"/logical\", \"timeout\": 5000}, \"namespace\": \"cdm\", \"type\": \"cdm-standards\"}], \"defaultNamespace\": \"local\"}");
+            corpus.Storage.Mount("cdm", new CdmStandardsAdapter());
+            String config = corpus.Storage.FetchConfig();
+            corpus.Storage.MountFromConfig(config);
         }
     }
 }

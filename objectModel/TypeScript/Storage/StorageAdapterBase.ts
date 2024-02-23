@@ -68,6 +68,13 @@ export abstract class StorageAdapterBase {
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
         return new Date();
     }
+    
+    /**
+     * Returns the file metadata info about the specified document
+     */
+    public async fetchFileMetadataAsync(corpusPath: string): Promise<CdmFileMetadata> {
+        return undefined;
+    }
 
     /**
      * @deprecated
@@ -103,7 +110,7 @@ export abstract class StorageAdapterBase {
 
     /**
      * Constructs the config.
-     * Reeturns the object, representing the constructed config for that adapter.
+     * Returns the object, representing the constructed config for that adapter.
      */
     public fetchConfig(): string {
         return "{}";

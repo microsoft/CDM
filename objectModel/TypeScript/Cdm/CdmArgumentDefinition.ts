@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { isString } from 'util';
 import {
     ArgumentValue,
     CdmCorpusContext,
@@ -13,8 +12,7 @@ import {
     cdmLogCode,
     Logger,
     resolveOptions,
-    VisitCallback,
-    StringUtils
+    VisitCallback
 } from '../internal';
 
 export class CdmArgumentDefinition extends cdmObjectSimple {

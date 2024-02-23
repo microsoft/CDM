@@ -10,6 +10,7 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    CdmReadPartitionFromPatternException,
     CdmTraitCollection,
     fileStatusCheckOptions,
     resolveOptions,
@@ -303,6 +304,10 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                 fileInfoList = await adapter.fetchAllFilesMetadataAsync(pathTuple[1]);
             } catch (e) {
                 Logger.warning(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
+
+                if (fileStatusCheckOptions?.throwOnPartitionError) {
+                    throw new CdmReadPartitionFromPatternException(`There was an error fetching partitions from '${rootCorpus}', see the inner exception.`, e);
+                }
             }
 
             // update modified times

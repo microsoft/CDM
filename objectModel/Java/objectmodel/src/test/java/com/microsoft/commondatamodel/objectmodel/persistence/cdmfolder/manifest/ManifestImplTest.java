@@ -13,6 +13,8 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -154,7 +156,7 @@ public class ManifestImplTest {
    * Test modified times for manifest and files beneath it
    */
   @Test
-  public void testLoadsAndSetsTimesCorrectly() throws InterruptedException {
+  public void testLoadsAndSetsTimesCorrectly() throws CdmReadPartitionFromPatternException, InterruptedException {
     String inputPath = TestHelper.getInputFolderPath(TESTS_SUBPATH, "testLoadsAndSetsTimesCorrectly");
     final OffsetDateTime timeBeforeLoad = OffsetDateTime.now();
 
