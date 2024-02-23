@@ -138,7 +138,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                                      Constants._INCREMENTAL_TRAIT_NAME,
                                      CdmLocalEntityDeclarationDefinition.data_partitions.fget.__name__)
                     else:
-                        await partition.file_status_check_async()
+                        await partition.file_status_check_async(file_status_check_options)
 
             if partition_file_status_check_type == partition_file_status_check_type.INCREMENTAL or partition_file_status_check_type == PartitionFileStatusCheckType.FULL_AND_INCREMENTAL:
                 for pattern in self.incremental_partition_patterns:

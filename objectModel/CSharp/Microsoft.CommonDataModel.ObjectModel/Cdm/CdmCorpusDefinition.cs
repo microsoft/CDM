@@ -1363,7 +1363,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="currManifest">The manifest (and any sub-manifests it contains) that we want to calculate relationships for.</param>
         /// <returns>A <see cref="Task"/> for the completion of entity graph calculation.</returns>
-        public async Task CalculateEntityGraphAsync(CdmManifestDefinition currManifest)
+        public async Task CalculateEntityGraphAsync(CdmManifestDefinition currManifest, ResolveOptions resOpt = null)
         {
             using (Logger.EnterScope(nameof(CdmCorpusDefinition), Ctx, nameof(CalculateEntityGraphAsync)))
             {
@@ -1385,7 +1385,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             CdmEntityDefinition resEntity;
 
                             // make options wrt this entity document and "relational" always
-                            var resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" }));
+                            var resOptCopy = resOpt != null ? resOpt.Copy() : new ResolveOptions();
+                            resOptCopy.WrtDoc = entity.InDocument;
+                            resOptCopy.Directives = new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" });
 
                             bool isResolvedEntity = entity.IsResolved;
 
@@ -1393,7 +1395,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             if (!isResolvedEntity)
                             {
                                 // first get the resolved entity so that all of the references are present
-                                resEntity = await entity.CreateResolvedEntityAsync($"wrtSelf_{entity.EntityName}", resOpt);
+                                resEntity = await entity.CreateResolvedEntityAsync($"wrtSelf_{entity.EntityName}", resOptCopy);
                             }
                             else
                             {
@@ -1402,7 +1404,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                             // find outgoing entity relationships using attribute context
                             List<CdmE2ERelationship> newOutgoingRelationships = this.FindOutgoingRelationships(
-                                resOpt,
+                                resOptCopy,
                                 resEntity,
                                 resEntity.AttributeContext,
                                 isResolvedEntity);
@@ -1472,7 +1474,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             var subManifest = await this.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
                             if (subManifest != null)
                             {
-                                await this.CalculateEntityGraphAsync(subManifest);
+                                await this.CalculateEntityGraphAsync(subManifest, resOpt);
                             }
                         }
                     }
@@ -1937,34 +1939,49 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         internal async Task<DateTimeOffset?> GetLastModifiedTimeFromPartitionPathAsync(string corpusPath)
         {
-            // we do not want to load partitions from file, just check the modified times
+            var fileMetadata = await this.GetFileMetadataFromPartitionPathAsync(corpusPath);
+
+            if (fileMetadata == null)
+            {
+                return null;
+            }
+
+            return fileMetadata.LastModifiedTime;
+        }
+
+        /// <summary>
+        /// Gets the file metadata of the partition without trying to read the file itself.
+        /// </summary>
+        internal async Task<CdmFileMetadata> GetFileMetadataFromPartitionPathAsync(string corpusPath)
+        {
             Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
             if (pathTuple == null)
             {
-                Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromPartitionPathAsync), corpusPath, CdmLogCode.ErrPathNullObjectPath);
+                Logger.Error(this.Ctx, Tag, nameof(GetFileMetadataFromPartitionPathAsync), corpusPath, CdmLogCode.ErrPathNullObjectPath);
                 return null;
             }
             string nameSpace = pathTuple.Item1;
+            StorageAdapterBase adapter = null;
             if (!string.IsNullOrWhiteSpace(nameSpace))
             {
-                StorageAdapterBase adapter = this.Storage.FetchAdapter(nameSpace);
-
-                if (adapter == null)
-                {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromPartitionPathAsync), corpusPath, CdmLogCode.ErrStorageAdapterNotFound, corpusPath);
-                    return null;
-                }
-
-                try
-                {
-                    return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromPartitionPathAsync), corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
-                }
+                adapter = this.Storage.FetchAdapter(nameSpace);
             }
-            return null;
+
+            if (adapter == null)
+            {
+                Logger.Error(this.Ctx, Tag, nameof(GetFileMetadataFromPartitionPathAsync), corpusPath, CdmLogCode.ErrStorageAdapterNotFound, corpusPath);
+                return null;
+            }
+
+            try
+            {
+                return await adapter.FetchFileMetadataAsync(pathTuple.Item2);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(this.Ctx, Tag, nameof(GetFileMetadataFromPartitionPathAsync), corpusPath, CdmLogCode.ErrPartitionFileMetadataFailure, pathTuple.Item2, e.Message);
+                return null;
+            }
         }
 
         /// <summary>

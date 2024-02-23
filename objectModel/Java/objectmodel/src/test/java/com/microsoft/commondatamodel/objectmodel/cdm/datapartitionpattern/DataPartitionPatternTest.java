@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -37,12 +38,14 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Man
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.FetchAllMetadataNullAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.FetchAllMetadataThrowErrorAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.NoOverrideAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.OverrideFetchAllFilesAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.Constants;
 import com.microsoft.commondatamodel.objectmodel.utilities.FileStatusCheckOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
@@ -56,7 +59,7 @@ public class DataPartitionPatternTest {
    * Tests refreshing files that match the regular expression
    */
   @Test
-  public void testRefreshesDataPartitionPatterns() throws InterruptedException {
+  public void testRefreshesDataPartitionPatterns() throws CdmReadPartitionFromPatternException, InterruptedException {
     final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshDataPartitionPatterns");
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
 
@@ -138,7 +141,7 @@ public class DataPartitionPatternTest {
    * Tests data partition objects created by a partition pattern do not share the same trait with the partition pattern
    */
   @Test
-  public void testRefreshesDataPartitionPatternsWithTrait() throws InterruptedException {
+  public void testRefreshesDataPartitionPatternsWithTrait() throws CdmReadPartitionFromPatternException, InterruptedException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshesDataPartitionPatternsWithTrait");
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
 
@@ -175,7 +178,7 @@ public class DataPartitionPatternTest {
    * Tests refreshing incremental partition files that match the regular expression
    */
   @Test
-  public void testIncrementalPatternsRefreshesFullAndIncremental() throws InterruptedException {
+  public void testIncrementalPatternsRefreshesFullAndIncremental() throws CdmReadPartitionFromPatternException, InterruptedException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testIncrementalPatternsRefreshesFullAndIncremental");
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
 
@@ -250,7 +253,7 @@ public class DataPartitionPatternTest {
    * Tests refreshing incremental partition files that match the regular expression
    */
   @Test
-  public void testIncrementalPatternsRefreshesDeleteIncremental() throws InterruptedException {
+  public void testIncrementalPatternsRefreshesDeleteIncremental() throws CdmReadPartitionFromPatternException, InterruptedException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testIncrementalPatternsRefreshesDeleteIncremental");
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
 
@@ -317,7 +320,7 @@ public class DataPartitionPatternTest {
    * Tests refreshing partition pattern with invalid incremental partition trait and invalid arguments.
    */
   @Test
-  public void testPatternRefreshesWithInvalidTraitAndArgument() throws InterruptedException {
+  public void testPatternRefreshesWithInvalidTraitAndArgument() throws CdmReadPartitionFromPatternException, InterruptedException {
     // providing invalid enum value of CdmIncrementalPartitionType in string
     // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
 
@@ -406,7 +409,7 @@ public class DataPartitionPatternTest {
    * Tests refreshing partition with invalid incremental partition trait and invalid arguments.
    */
   @Test
-  public void testPartitionRefreshesWithInvalidTraitAndArgument() throws InterruptedException {
+  public void testPartitionRefreshesWithInvalidTraitAndArgument() throws CdmReadPartitionFromPatternException, InterruptedException {
     // providing invalid enum value of CdmIncrementalPartitionType in string
     // "traitReference": "is.partition.incremental", "arguments": [{"name": "type","value": "typo"}]
 
@@ -495,7 +498,7 @@ public class DataPartitionPatternTest {
    * Tests fileStatusCheckAsync(), fileStatusCheckAsync(PartitionFileStatusCheckType.Full), and fileStatusCheckAsync(PartitionFileStatusCheckType.None).
    */
   @Test
-  public void testPartitionFileRefreshTypeFullOrNone() throws InterruptedException {
+  public void testPartitionFileRefreshTypeFullOrNone() throws CdmReadPartitionFromPatternException, InterruptedException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionFileRefreshTypeFullOrNone");
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/pattern.manifest.cdm.json").join();
 
@@ -552,7 +555,7 @@ public class DataPartitionPatternTest {
    * Testing that error is handled when partition pattern contains a folder that does not exist
    */
   @Test
-  public void testPatternWithNonExistingFolder() throws IOException, InterruptedException {
+  public void testPatternWithNonExistingFolder() throws CdmReadPartitionFromPatternException, InterruptedException, IOException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternWithNonExistingFolder");
     final String content = TestHelper.getInputFileContent(TESTS_SUBPATH, "testPatternWithNonExistingFolder", "entities.manifest.cdm.json");
     final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(new ResolveContext(corpus), "entities", "local", "/", JMapper.MAP.readValue(content, ManifestContent.class));
@@ -575,7 +578,7 @@ public class DataPartitionPatternTest {
    * Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
    */
   @Test
-  public void TestPatternWithDifferentNamespace() throws IOException, InterruptedException {
+  public void TestPatternWithDifferentNamespace() throws CdmReadPartitionFromPatternException, InterruptedException {
     final String testName = "TestPatternWithDifferentNamespace";
     final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
     LocalAdapter localAdapter = (LocalAdapter)cdmCorpus.getStorage().fetchAdapter("local");
@@ -592,7 +595,7 @@ public class DataPartitionPatternTest {
    * Testing that patterns behave correctly with variations to rootLocation
    */
   @Test
-  public void testVariationsInRootLocation() throws IOException, InterruptedException {
+  public void testVariationsInRootLocation() throws CdmReadPartitionFromPatternException, InterruptedException {
     CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestVariationsInRootLocation");
     CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
     manifest.fileStatusCheckAsync().join();
@@ -617,7 +620,7 @@ public class DataPartitionPatternTest {
    * Testing data partition patterns that use glob patterns
    */
   @Test
-  public void testPartitionPatternWithGlob() throws InterruptedException {
+  public void testPartitionPatternWithGlob() throws CdmReadPartitionFromPatternException, InterruptedException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionPatternWithGlob");
 
     HashMap<String, String> patternWithGlobAndRegex = new HashMap<>();
@@ -786,7 +789,7 @@ public class DataPartitionPatternTest {
    * Testing data partition patterns that use glob patterns with variations in path style
    */
   @Test
-  public void testGlobPathVariation() throws InterruptedException {
+  public void testGlobPathVariation() throws CdmReadPartitionFromPatternException, InterruptedException {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testGlobPathVariation");
 
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
@@ -843,13 +846,13 @@ public class DataPartitionPatternTest {
    * @throws ExecutionException
    */
   @Test
-  public void testFileStatusCheckOnNullLocation() throws InterruptedException, ExecutionException {
+  public void testFileStatusCheckOnNullLocation() throws CdmReadPartitionFromPatternException, InterruptedException {
     CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFileStatusCheckOnNullLocation");
     corpus.setEventCallback((level, message) -> {
       Assert.assertEquals(level, CdmStatusLevel.Error, "Error level message should have been reported");
       Assert.assertTrue(
               message.equals("StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath") ||
-                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPathAsync"),
+                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | getFileMetadataFromPartitionPathAsync"),
               "Unexpected error message received");
     }, CdmStatusLevel.Warning);
 
@@ -879,7 +882,7 @@ public class DataPartitionPatternTest {
    * @throws InterruptedException
    */
   @Test
-  public void testFetchAllFilesMetadata() throws InterruptedException {
+  public void testFetchAllFilesMetadata() throws CdmReadPartitionFromPatternException, InterruptedException {
     final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.ErrFetchingFileMetadataNull));
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFetchAllFilesMetadata", null, false, expectedLogCodes);
     final FileStatusCheckOptions fileStatusCheckOptions = new FileStatusCheckOptions(true);
@@ -936,5 +939,63 @@ public class DataPartitionPatternTest {
     corpus.getStorage().mount("fetchNull", new FetchAllMetadataNullAdapter(testLocalAdapter));
     final CdmManifestDefinition fetchNullManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("fetchNull:/manifest.manifest.cdm.json").join();
     fetchNullManifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+  }
+  /**
+   * Test that error is thrown when FileStatusCheckOption is set
+   */
+  @Test
+  public void testThrowOnPartitionError() throws InterruptedException {
+    final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.WarnPartitionFileFetchFailed));
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestFetchAllFilesMetadata", null, false, expectedLogCodes);
+    final LocalAdapter testLocalAdapter = (LocalAdapter)corpus.getStorage().getNamespaceAdapters().get(corpus.getStorage().getDefaultNamespace());
+    corpus.getStorage().mount("error", new FetchAllMetadataThrowErrorAdapter(testLocalAdapter));
+    final FileStatusCheckOptions fileStatusCheckOptions = new FileStatusCheckOptions(false, true);
+
+    boolean manifestThrowsError = false;
+    boolean entityDecThrowsError = false;
+    boolean partitionPatternThrowsError = false;
+
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("error:/manifest.manifest.cdm.json").join();
+    try {
+      manifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+    } catch (CompletionException e) {
+      Throwable cdmReadPartitionException = e.getCause();
+      Assert.assertTrue(cdmReadPartitionException instanceof CdmReadPartitionFromPatternException);
+
+      Throwable innerException = cdmReadPartitionException.getCause();
+      Assert.assertNotNull(innerException);
+      Assert.assertEquals("Some test error message.", innerException.getMessage());
+      manifestThrowsError = true;
+    }
+
+    final CdmLocalEntityDeclarationDefinition entityDec = (CdmLocalEntityDeclarationDefinition) manifest.getEntities().get(0);
+
+    try {
+      entityDec.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+    } catch (CompletionException e) {
+      Throwable cdmReadPartitionException = e.getCause();
+      Assert.assertTrue(cdmReadPartitionException instanceof CdmReadPartitionFromPatternException);
+
+      Throwable innerException = cdmReadPartitionException.getCause();
+      Assert.assertNotNull(innerException);
+      Assert.assertEquals("Some test error message.", innerException.getMessage());
+      entityDecThrowsError = true;
+    }
+
+    final CdmDataPartitionPatternDefinition partitionPattern = (manifest.getEntities().get(0)).getDataPartitionPatterns().get(0);
+
+    try {
+      partitionPattern.fileStatusCheckAsync(fileStatusCheckOptions).join();
+    } catch (CompletionException e) {
+      Throwable cdmReadPartitionException = e.getCause();
+      Assert.assertTrue(cdmReadPartitionException instanceof CdmReadPartitionFromPatternException);
+
+      Throwable innerException = cdmReadPartitionException.getCause();
+      Assert.assertNotNull(innerException);
+      Assert.assertEquals("Some test error message.", innerException.getMessage());
+      partitionPatternThrowsError = true;
+    }
+
+    Assert.assertTrue(manifestThrowsError && entityDecThrowsError && partitionPatternThrowsError);
   }
 }

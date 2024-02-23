@@ -253,7 +253,9 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                     // A Projection
 
                     // if the max depth is exceeded it should not try to execute the projection
-                    if (!resOpt.depthInfo.maxDepthExceeded) {
+                    if (resOpt.depthInfo.maxDepthExceeded) {
+                        Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnMaxDepthExceeded, resOpt.depthInfo.maxDepth, this.entity.fetchObjectDefinitionName());
+                    } else {
                         const projDef: CdmProjection = this.entity.fetchObjectDefinition<CdmProjection>(resOpt);;
                         const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, this.entity);
                         const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, under);
@@ -329,6 +331,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                         }
                         // if we got here because of the max depth, need to impose the directives to make the trait work as expected
                         if (resOpt.depthInfo.maxDepthExceeded) {
+                            Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnMaxDepthExceeded, resOpt.depthInfo.maxDepth, this.entity.fetchObjectDefinitionName());
                             if (!arc.resOpt.directives) {
                                 arc.resOpt.directives = new AttributeResolutionDirectiveSet();
                             }

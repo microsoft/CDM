@@ -707,5 +707,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             Assert.IsTrue(notFlushedErrorHit);
         }
+
+        /// <summary>
+        /// Tests refreshing data partition gets file size in ADLS
+        /// </summary>
+        [TestMethod]
+        public async Task TestADLSRefreshesDataPartition()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+            
+            var adlsAdapter = AdlsTestHelper.CreateAdapterWithSharedKey();
+
+            var corpus = new CdmCorpusDefinition();
+            corpus.Storage.Mount("adls", adlsAdapter);
+            var cdmManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("adls:/TestPartitionMetadata/partitions.manifest.cdm.json");
+            var fileStatusCheckOptions = new FileStatusCheckOptions { IncludeDataPartitionSize = true };
+
+            var partitionEntity = cdmManifest.Entities.AllItems[0];
+            Assert.AreEqual(partitionEntity.DataPartitions.Count, 1);
+            var partition = partitionEntity.DataPartitions[0];
+
+            await cdmManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+            
+            var localTraitIndex = partition.ExhibitsTraits.IndexOf("is.partition.size");
+            Assert.AreNotEqual(localTraitIndex, -1);
+            var localTrait = partition.ExhibitsTraits[localTraitIndex] as CdmTraitReference;
+            Assert.AreEqual(localTrait.NamedReference, "is.partition.size");
+            Assert.AreEqual(localTrait.Arguments[0].Value, 2);
+        }
     }
 }

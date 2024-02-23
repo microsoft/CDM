@@ -63,10 +63,19 @@ class LocalAdapter(StorageAdapterBase):
         return None
 
     async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
+        file_metadata = await self.fetch_file_metadata_async(corpus_path)
+
+        if file_metadata is None:
+            return None
+
+        return file_metadata['last_modified_time']
+
+    async def fetch_file_metadata_async(self, corpus_path: str) -> Optional[CdmFileMetadata]:
         adapter_path = self.create_adapter_path(corpus_path)
         if os.path.exists(adapter_path):
+            file_size = os.path.getsize(adapter_path)
             modified_time = datetime.fromtimestamp(os.path.getmtime(adapter_path))
-            return modified_time.replace(tzinfo=timezone.utc)
+            return { 'last_modified_time': modified_time.replace(tzinfo=timezone.utc), 'file_size_bytes': file_size }
         return None
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
@@ -83,7 +92,7 @@ class LocalAdapter(StorageAdapterBase):
         for file_name in file_names:
             path = self.create_adapter_path(file_name)
             if os.path.exists(path):
-                file_metadatas[file_name] = {'file_size_bytes': os.path.getsize(path) if os.path.isfile else None}
+                file_metadatas[file_name] = {'file_size_bytes': os.path.getsize(path) if os.path.isfile else None, 'last_modified_time': datetime.fromtimestamp(os.path.getmtime(path))}
 
         return file_metadatas
 

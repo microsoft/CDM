@@ -5,4 +5,6 @@ export class fileStatusCheckOptions {
     public includeDataPartitionSize?: boolean;
 
     public regexTimeoutSeconds?: number;
+
+    public throwOnPartitionError?: boolean;
 }

@@ -36,7 +36,7 @@ public class EventListTest {
      * @throws InterruptedException
      */
     @Test
-    public void testWithoutNesting() throws InterruptedException {
+    public void testWithoutNesting() throws Exception {
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEventList");
         corpus.setEventCallback(eventCallback, CdmStatusLevel.Warning);
         corpus.getCtx().setCorrelationId(DUMMY_CORRELATION_ID);

@@ -4,7 +4,7 @@
 import { Stopwatch } from 'ts-stopwatch';
 
 import { azureCloudEndpoint } from '../../Enums/azureCloudEndpoint';
-import { CdmCorpusDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition, cdmStatusLevel, StorageAdapterCacheContext } from '../../internal';
+import { CdmCorpusDefinition, CdmDataPartitionDefinition, CdmDocumentDefinition, CdmFolderDefinition, CdmManifestDefinition, cdmStatusLevel, CdmTraitReference, fileStatusCheckOptions, StorageAdapterCacheContext } from '../../internal';
 import { ADLSAdapter } from '../../Storage';
 import { CdmHttpClient, CdmHttpResponse, TokenProvider } from '../../Utilities/Network';
 import { adlsTestHelper } from '../adlsTestHelper';
@@ -489,5 +489,33 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         const someDoc: CdmDocumentDefinition = adlsFolder.documents.push('someDoc');
         await someDoc.saveAsAsync('someDoc.cdm.json');
         expect(notFlushedErrorHit).toBeTruthy();
+    });
+
+    /**
+     * 
+     */
+    adlsIt('TestADLSRefreshesDataPartition', async () => {
+        const adlsAdapter: ADLSAdapter = adlsTestHelper.createAdapterWithSharedKey();
+
+        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        corpus.storage.mount('adls', adlsAdapter);
+        const cdmManifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('adls:/TestPartitionMetadata/partitions.manifest.cdm.json');
+        const fileStatusCheckOptions: fileStatusCheckOptions = { includeDataPartitionSize: true };
+
+        var partitionEntity = cdmManifest.entities.allItems[0];
+        expect(partitionEntity.dataPartitions.length)
+            .toBe(1);
+        const partition: CdmDataPartitionDefinition = partitionEntity.dataPartitions.allItems[0];
+
+        await cdmManifest.fileStatusCheckAsync(undefined, undefined, fileStatusCheckOptions);
+
+        const localTraitIndex: number = partition.exhibitsTraits.indexOf('is.partition.size');
+        expect(localTraitIndex)
+            .not.toBe(-1);
+        const localTrait: CdmTraitReference = partition.exhibitsTraits.allItems[localTraitIndex] as CdmTraitReference;
+        expect(localTrait.namedReference)
+            .toBe('is.partition.size');
+        expect(localTrait.arguments.allItems[0].value)
+            .toBe(2);
     });
 });

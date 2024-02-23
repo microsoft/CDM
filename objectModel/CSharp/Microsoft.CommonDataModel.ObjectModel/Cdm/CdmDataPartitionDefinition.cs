@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -100,7 +101,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return true;
         }
 
- 
+
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
@@ -184,14 +185,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
+            await this.FileStatusCheckAsync(null);
+        }
+
+        /// <inheritdoc />
+        public async Task FileStatusCheckAsync(FileStatusCheckOptions fileStatusCheckOptions, CancellationToken ct = default)
+        {
+            ct.ThrowIfCancellationRequested();
+
             using (Logger.EnterScope(nameof(CdmDataPartitionDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
                 string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
-                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeFromPartitionPathAsync(fullPath);
+                CdmFileMetadata partitionMetadata = await this.Ctx.Corpus.GetFileMetadataFromPartitionPathAsync(fullPath);
 
                 // update modified times
                 this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-                this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
+                this.LastFileModifiedTime = TimeUtils.MaxTime(partitionMetadata?.LastModifiedTime, this.LastFileModifiedTime);
+
+                if (fileStatusCheckOptions?.IncludeDataPartitionSize == true && partitionMetadata?.FileSizeBytes != null)
+                {
+                    this.ExhibitsTraits.Add("is.partition.size", new List<Tuple<string, dynamic>> { new Tuple<string, dynamic>("value", partitionMetadata.FileSizeBytes) });
+                }
 
                 await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
             }

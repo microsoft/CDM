@@ -121,7 +121,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestResolveManifestWithInterdependentPolymorphicSource));
 
             var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/Input.manifest.cdm.json");
-            var resolvedManifest = await manifest.CreateResolvedManifestAsync("resolved", null);
+            var resOpt = new ResolveOptions
+            {
+                MaxDepth = 3
+            };
+            var resolvedManifest = await manifest.CreateResolvedManifestAsync("resolved", null, resOpt: resOpt);
 
             Assert.AreEqual(2, resolvedManifest.Entities.Count);
             Assert.AreEqual("resolved/group.cdm.json/group", resolvedManifest.Entities[0].EntityPath.ToLowerInvariant());

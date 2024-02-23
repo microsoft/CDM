@@ -16,3 +16,6 @@ class CdmStandardsAdapter(CdmCustomPackageAdapter):
 
         # --- internal ---
         self._type = 'cdm-standards'
+
+    def fetch_config(self):
+        return '{"config":{},"type":"cdm-standards"}'

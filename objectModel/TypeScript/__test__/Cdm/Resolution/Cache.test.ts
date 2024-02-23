@@ -9,6 +9,7 @@ import { CdmEntityDefinition } from '../../../Cdm/CdmEntityDefinition';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
 import { resolveOptions } from '../../../Utilities/resolveOptions';
 import { testHelper } from '../../testHelper';
+import { cdmLogCode } from '../../../Enums/cdmLogCode';
 
 describe('Cdm/Resolution/Cache', () => {
     /**
@@ -26,7 +27,8 @@ describe('Cdm/Resolution/Cache', () => {
      * attributes where max depth should not be reached
      */
     it('TestMaxDepthCached', async () => {
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testNamePath);
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnMaxDepthExceeded]);
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testNamePath, undefined, false, expectedLogCodes);
         const aEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('A.cdm.json/A');
         const bEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('B.cdm.json/B');
         const cEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('C.cdm.json/C');
@@ -81,7 +83,8 @@ describe('Cdm/Resolution/Cache', () => {
      * now getting attributes where max depth should be hit
      */
     it('TestNonMaxDepthCached', async () => {
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testNamePath);
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnMaxDepthExceeded]);
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testNamePath, undefined, false, expectedLogCodes);
         const aEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('A.cdm.json/A');
         const bEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('B.cdm.json/B');
         const cEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('C.cdm.json/C');

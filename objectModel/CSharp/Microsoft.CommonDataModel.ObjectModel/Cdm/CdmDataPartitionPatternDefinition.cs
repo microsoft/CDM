@@ -7,10 +7,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Exceptions;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     /// <summary>
@@ -186,12 +188,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public async Task FileStatusCheckAsync(FileStatusCheckOptions fileStatusCheckOptions)
+        public async Task FileStatusCheckAsync(FileStatusCheckOptions fileStatusCheckOptions, CancellationToken ct = default)
         {
-            await this.FileStatusCheckAsyncInternal(fileStatusCheckOptions);
+            await this.FileStatusCheckAsyncInternal(fileStatusCheckOptions, ct);
         }
 
-        internal async Task<bool> FileStatusCheckAsyncInternal(FileStatusCheckOptions fileStatusCheckOptions)
+        internal async Task<bool> FileStatusCheckAsyncInternal(FileStatusCheckOptions fileStatusCheckOptions, CancellationToken ct)
         {
             using (Logger.EnterScope(nameof(CdmDataPartitionPatternDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
@@ -226,12 +228,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         return true;
                     }
 
+                    ct.ThrowIfCancellationRequested();
+
                     // get a list of all corpusPaths under the root
                     fileInfoList = await adapter.FetchAllFilesMetadataAsync(pathTuple.Item2);
                 }
                 catch (Exception e)
                 {
                     Logger.Warning(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
+
+                    if (fileStatusCheckOptions?.ThrowOnPartitionError == true)
+                    {
+                        throw new CdmReadPartitionFromPatternException($"There was an error fetching partitions from '{rootCorpus}', see the inner exception.", e);
+                    }
                 }
 
                 // update modified times
@@ -258,7 +267,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (this.Owner is CdmLocalEntityDeclarationDefinition localEntDecDefOwner)
                     {
                         // if both are present log warning and use glob pattern, otherwise use regularExpression
-                        if (!String.IsNullOrWhiteSpace(this.GlobPattern) && !String.IsNullOrWhiteSpace(this.RegularExpression))
+                        if (!string.IsNullOrWhiteSpace(this.GlobPattern) && !string.IsNullOrWhiteSpace(this.RegularExpression))
                         {
                             Logger.Warning(this.Ctx,
                                 Tag,
@@ -320,6 +329,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                             foreach (var fi in cleanedFileList)
                             {
+                                ct.ThrowIfCancellationRequested();
+
                                 string fileName = fi.Key;
                                 CdmFileMetadata partitionMetadata = fi.Value;
 

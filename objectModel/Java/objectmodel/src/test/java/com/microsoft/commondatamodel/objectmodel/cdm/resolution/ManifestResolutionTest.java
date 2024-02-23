@@ -14,6 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -147,7 +148,9 @@ public class ManifestResolutionTest {
       try {
         final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveManifestWithInterdependentPolymorphicSource");
         final CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/Input.manifest.cdm.json").join();
-        final CdmManifestDefinition resolvedManifest = manifest.createResolvedManifestAsync("resolved", null).join();
+        final ResolveOptions resOpt = new ResolveOptions();
+        resOpt.setMaxDepth(3);
+        final CdmManifestDefinition resolvedManifest = manifest.createResolvedManifestAsync("resolved", null, null, resOpt).join();
 
         Assert.assertEquals(2, resolvedManifest.getEntities().getCount());
         Assert.assertEquals("resolved/group.cdm.json/group", resolvedManifest.getEntities().get(0).getEntityPath().toLowerCase());

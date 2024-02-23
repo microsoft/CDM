@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
@@ -19,10 +20,12 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.*;
 
 public abstract class CdmObjectBase implements CdmObject {
+  private static final String TAG = CdmEntityAttributeDefinition.class.getSimpleName();
 
   /**
    * The minimum json semantic versions that can be loaded by this ObjectModel version.
@@ -622,6 +625,7 @@ public abstract class CdmObjectBase implements CdmObject {
     // if using the cache passes the maxDepth, we cannot use it
     if (rasbCache != null && resOpt.depthInfo.getMaxDepth() != null
         && resOpt.depthInfo.getCurrentDepth() + rasbCache.getResolvedAttributeSet().getDepthTraveled() > resOpt.depthInfo.getMaxDepth()) {
+      Logger.warning(this.getCtx(), TAG, "fetchResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnMaxDepthExceeded, resOpt.depthInfo.getMaxDepth() != null ? resOpt.depthInfo.getMaxDepth().toString() : "", this.fetchObjectDefinitionName());
       rasbCache = null;
     }
 

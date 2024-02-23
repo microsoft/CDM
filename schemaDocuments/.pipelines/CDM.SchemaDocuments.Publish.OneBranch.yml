@@ -1,0 +1,111 @@
+trigger: none
+resources:
+  repositories:
+  - repository: templates
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
+extends:
+  template: v2/OneBranch.Official.CrossPlat.yml@templates
+  parameters:
+    stages:
+    - stage: Test__Ev2
+      displayName: 'Test: Ev2'
+      variables:
+      - name: ob_release_environment
+        value: Test
+      dependsOn: []
+      jobs:
+      - job: agent_job
+        displayName: Agent job
+        pool:
+          type: release
+        steps:
+        - task: vsrm-ev2.vss-services-ev2.adm-release-task.ExpressV2Internal@1
+          inputs:
+            UseServerMonitorTask: false
+            EnableStrictValidation: false
+            ValidateOnly: false
+            EndpointProviderType: Ev2Endpoint
+            ConnectedServiceName: fd0bcd3a-f669-40e6-9558-1540ac118676
+            ServiceRootLocation: LinkedArtifact
+            RolloutSpecType: RSPath
+            ServiceRootPath: $(Pipeline.Workspace)/_CDM.SchemaDocuments-Official/drop_build_main/service-model-root
+            RolloutSpecPath: $(Pipeline.Workspace)/_CDM.SchemaDocuments-Official/drop_build_main/service-model-root/RolloutSpec.Public.Test.json
+    - stage: Mooncake__Ev2
+      displayName: 'Mooncake: Ev2'
+      variables:
+      - name: ob_release_environment
+        value: Mooncake
+      dependsOn: []
+      jobs:
+      - job: agent_job
+        displayName: Agent job
+        pool:
+          type: release
+        steps:
+        - task: vsrm-ev2.vss-services-ev2.adm-release-task.ExpressV2Internal@1
+          inputs:
+            UseServerMonitorTask: false
+            EnableStrictValidation: false
+            ValidateOnly: false
+            EndpointProviderType: ApprovalService
+            ServiceRootLocation: LinkedArtifact
+            RolloutSpecType: RSPath
+            ServiceRootPath: $(Pipeline.Workspace)/CloudVault - CDPXOfficialBuilds/service-model-root
+            RolloutSpecPath: $(Pipeline.Workspace)/CloudVault - CDPXOfficialBuilds/service-model-root/RolloutSpec.Mooncake.Prod.json
+            ApprovalServiceEnvironment: Mooncake
+    - stage: USSec__Ev2
+      displayName: 'USSec: Ev2'
+      variables:
+      - name: ob_release_environment
+        value: USSec
+      - name: CustomDownloadPath
+        value: '\\portal.gbl\public\USSec\WARM\Builds'
+      - name: CvrpManifestRelativePath
+        value: default.cvrp
+      dependsOn: []
+      jobs:
+      - job: agent_job
+        displayName: Agent job
+        pool:
+          type: release
+        steps:
+        - task: vsrm-ev2.vss-services-ev2.adm-release-task.ExpressV2Internal@1
+          inputs:
+            UseServerMonitorTask: false
+            EnableStrictValidation: false
+            ValidateOnly: false
+            EndpointProviderType: ApprovalService
+            ServiceRootLocation: LinkedArtifact
+            RolloutSpecType: RSPath
+            ServiceRootPath: $(Pipeline.Workspace)/CloudVault_CDPXOfficialBuilds/service-group-root
+            RolloutSpecPath: $(Pipeline.Workspace)/CloudVault_CDPXOfficialBuilds/service-group-root/RolloutSpec.USSec.USSecEast.json
+            ApprovalServiceEnvironment: USSec
+    - stage: USNat__US_Nat_East
+      displayName: 'USNat: US Nat East'
+      variables:
+      - name: ob_release_environment
+        value: USNat
+      - name: CustomDownloadPath
+        value: '\\portal.gbl\public\USNat\WARM\Builds'
+      - name: CvrpManifestRelativePath
+        value: default.cvrp
+      dependsOn: []
+      jobs:
+      - job: agent_job
+        displayName: Agent job
+        pool:
+          type: release
+        steps:
+        - task: vsrm-ev2.vss-services-ev2.adm-release-task.ExpressV2Internal@1
+          inputs:
+            UseServerMonitorTask: false
+            EnableStrictValidation: false
+            ValidateOnly: false
+            EndpointProviderType: ApprovalService
+            ServiceRootLocation: LinkedArtifact
+            RolloutSpecType: RSPath
+            ServiceRootPath: $(Pipeline.Workspace)/CloudVault_CDPXOfficialBuilds/service-group-root
+            RolloutSpecPath: $(Pipeline.Workspace)/CloudVault_CDPXOfficialBuilds/service-group-root/RolloutSpec.EagleX.USNatEast.json
+            ApprovalServiceEnvironment: USNat

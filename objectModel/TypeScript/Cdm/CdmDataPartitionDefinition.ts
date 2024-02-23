@@ -3,10 +3,12 @@
 
 import {
     CdmCorpusContext,
+    CdmFileMetadata,
     CdmFileStatus,
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    fileStatusCheckOptions,
     resolveOptions,
     traitToPropertyMap,
     VisitCallback
@@ -186,7 +188,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     /**
      * @internal
      */
-     public fetchDeclaredPath(pathFrom: string): string {
+    public fetchDeclaredPath(pathFrom: string): string {
         return pathFrom + (this.getName() || 'UNNAMED');
     }
 
@@ -200,16 +202,19 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     /**
      * @inheritdoc
      */
-    public async fileStatusCheckAsync(): Promise<void> {
+    public async fileStatusCheckAsync(fileStatusCheckOptions?: fileStatusCheckOptions): Promise<void> {
         return await using(enterScope(CdmDataPartitionDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
             const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.location, this.inDocument);
-
-            const modifiedTime: Date = await this.ctx.corpus.getLastModifiedTimeFromPartitionPathAsync(fullPath);
+            const partitionMetadata: CdmFileMetadata = await this.ctx.corpus.getFileMetadataFromPartitionPathAsync(fullPath);
 
             // update modified times
             this.lastFileStatusCheckTime = new Date();
-            this.lastFileModifiedTime = (modifiedTime !== undefined) ? timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime)
+            this.lastFileModifiedTime = (partitionMetadata?.lastModifiedTime !== undefined) ? timeUtils.maxTime(partitionMetadata.lastModifiedTime, this.lastFileModifiedTime)
                 : this.lastFileModifiedTime;
+            if (fileStatusCheckOptions?.includeDataPartitionSize == true && partitionMetadata?.fileSizeBytes != undefined) {
+                this.exhibitsTraits.push('is.partition.size', [['value', partitionMetadata.fileSizeBytes]]);
+            }
+
             await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
         });
     }

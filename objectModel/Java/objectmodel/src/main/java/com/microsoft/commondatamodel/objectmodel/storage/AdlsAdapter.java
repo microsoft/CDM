@@ -99,7 +99,7 @@ public class AdlsAdapter extends NetworkAdapter {
    */
   private int httpMaxResults = 5000;
 
-  private Map<String, OffsetDateTime> fileModifiedTimeCache = new LinkedHashMap<String, OffsetDateTime>();
+  private Map<String, CdmFileMetadata> fileMetadataCache = new LinkedHashMap<String, CdmFileMetadata>();
 
   private AdlsAdapterAuthenticator adlsAdapterAuthenticator;
 
@@ -273,18 +273,28 @@ public class AdlsAdapter extends NetworkAdapter {
 
   @Override
   public void clearCache() {
-    this.fileModifiedTimeCache.clear();
+    this.fileMetadataCache.clear();
   }
 
   @Override
-  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) { 
+  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
+    final CdmFileMetadata fileMetadata = this.fetchFileMetadataAsync(corpusPath).join();
+
+    if (fileMetadata == null) {
+      return CompletableFuture.completedFuture(null);
+    }
+
+    return CompletableFuture.completedFuture(fileMetadata.getLastModifiedTime());
+  }
+
+  @Override
+  public CompletableFuture<CdmFileMetadata> fetchFileMetadataAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
-      OffsetDateTime cachedValue = this.getIsCacheEnabled() ? this.fileModifiedTimeCache.get(corpusPath) : null;
+      CdmFileMetadata cachedValue = this.getIsCacheEnabled() ? this.fileMetadataCache.get(corpusPath) : null;
       if(cachedValue != null)
       {
         return cachedValue;
-      }
-      else{
+      } else{
         String url = this.createFormattedAdapterPath(corpusPath);
 
         final CdmHttpRequest request = this.buildRequest(url, "HEAD");
@@ -295,10 +305,12 @@ public class AdlsAdapter extends NetworkAdapter {
             DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Last-Modified"))
                 .toInstant()
                 .atOffset(ZoneOffset.UTC);
+          int fileSize = Integer.parseInt(cdmResponse.getResponseHeaders().get("Content-Length"));
+          CdmFileMetadata fileMetadata = new CdmFileMetadata(lastTime, fileSize);
             if(this.getIsCacheEnabled()) {
-              this.fileModifiedTimeCache.put(corpusPath, lastTime);
+              this.fileMetadataCache.put(corpusPath, fileMetadata);
             }
-            return lastTime;
+            return fileMetadata;
         }
         
         return null;
@@ -384,14 +396,15 @@ public class AdlsAdapter extends NetworkAdapter {
                   String filepath = this.formatCorpusPath(nameWithoutSubPath);
 
                   final JsonNode contentLength = path.get("contentLength");
-                  result.put(filepath, new CdmFileMetadata(contentLength.asLong()));
-
                   OffsetDateTime lastTime = DateUtils.parseDate(path.get("lastModified").asText())
                           .toInstant()
                           .atOffset(ZoneOffset.UTC);
 
+                  final CdmFileMetadata fileMetadata = new CdmFileMetadata(lastTime, contentLength.asLong());
+                  result.put(filepath, fileMetadata);
+
                   if (this.getIsCacheEnabled()) {
-                    this.fileModifiedTimeCache.put(filepath, lastTime);
+                    this.fileMetadataCache.put(filepath, fileMetadata);
                   }
                 }
               }

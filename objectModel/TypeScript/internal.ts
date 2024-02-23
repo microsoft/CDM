@@ -152,4 +152,4 @@ export * from './Utilities/Logging/EventList';
 export * from './Enums/partitionFileStatusCheckType';
 export * from './Enums/cdmIncrementalPartitionType';
 export * from './Utilities/constants';
-
+export * from './Utilities/Exceptions';

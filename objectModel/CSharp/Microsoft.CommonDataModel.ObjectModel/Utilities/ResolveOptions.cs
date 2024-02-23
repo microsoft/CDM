@@ -113,6 +113,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             {
                 WrtDoc = this.WrtDoc,
                 DepthInfo = this.DepthInfo.Copy(),
+                MaxDepth = this.MaxDepth,
                 LocalizeReferencesFor = this.LocalizeReferencesFor,
                 IndexingDoc = this.IndexingDoc,
                 ShallowValidation = this.ShallowValidation,

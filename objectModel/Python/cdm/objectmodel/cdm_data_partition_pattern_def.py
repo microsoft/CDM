@@ -8,6 +8,7 @@ import regex
 
 from cdm.enums import CdmLogCode, CdmObjectType
 from cdm.utilities import FileStatusCheckOptions, logger, ResolveOptions, StorageUtils, TraitToPropertyMap
+from cdm.utilities.exceptions.cdm_read_partition_from_pattern_exception import CdmReadPartitionFromPatternException
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
@@ -125,6 +126,10 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                 file_info_list = None
                 logger.warning(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path,
                                CdmLogCode.WARN_PARTITION_FILE_FETCH_FAILED, root_corpus, e)
+
+                if file_status_check_options is not None and file_status_check_options['throw_on_partition_error']:
+                    message = 'There was an error fetching partitions from \'{}\', see the inner exception.'.format(root_corpus)
+                    raise CdmReadPartitionFromPatternException(message) from e
 
             # update modified times.
             self.last_file_status_check_time = datetime.now(timezone.utc)

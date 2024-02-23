@@ -200,7 +200,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             string testName = "TestMaxDepthOnPolymorphicEntity";
             string entityName = "A";
 
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnMaxDepthExceeded };
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName, expectedCodes: expectedLogCodes);
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"{entityName}.cdm.json/{entityName}");
 
@@ -211,7 +212,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             CdmEntityDefinition resEntity = await entity.CreateResolvedEntityAsync($"resolved-{entityName}", resOpt);
 
             Assert.IsNotNull(resEntity);
-            Assert.AreEqual(4, resEntity.Attributes.Count);
+            Assert.AreEqual(2, resEntity.Attributes.Count);
         }
 
         /// <summary>

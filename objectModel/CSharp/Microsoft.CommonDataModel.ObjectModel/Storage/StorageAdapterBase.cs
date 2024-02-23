@@ -84,6 +84,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
+        /// Returns the file metadata info about the specified document.
+        /// </summary>
+        public virtual Task<CdmFileMetadata> FetchFileMetadataAsync(string corpusPath)
+        {
+            return Task.FromResult<CdmFileMetadata>(null);
+        }
+
+        /// <summary>
         /// Returns a list of corpus paths to all files and folders at or under the provided corpus path to a folder.
         /// </summary>
         [Obsolete("FetchAllFilesAsync is deprecated. Please use FetchAllFilesMetadataAsync instead.")]

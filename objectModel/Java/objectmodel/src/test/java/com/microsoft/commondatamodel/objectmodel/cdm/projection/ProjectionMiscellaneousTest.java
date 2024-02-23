@@ -7,6 +7,7 @@ import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
@@ -189,7 +190,8 @@ public class ProjectionMiscellaneousTest {
         String testName = "testMaxDepthOnPolymorphicEntity";
         String entityName = "A";
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+        final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.WarnMaxDepthExceeded ));
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null, false, expectedLogCodes);
 
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync(entityName + ".cdm.json/" + entityName).join();
 
@@ -198,7 +200,7 @@ public class ProjectionMiscellaneousTest {
         CdmEntityDefinition resEntity = entity.createResolvedEntityAsync("resolved-" + entityName, resOpt).join();
 
         Assert.assertNotNull(resEntity);
-        Assert.assertEquals(resEntity.getAttributes().getCount(), 4);
+        Assert.assertEquals(resEntity.getAttributes().getCount(), 2);
     }
 
     /**

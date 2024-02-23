@@ -114,7 +114,9 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                 # A Projection
 
                 # if the max depth is exceeded it should not try to execute the projection
-                if not res_opt._depth_info.max_depth_exceeded:
+                if res_opt._depth_info.max_depth_exceeded:
+                    logger.warning(self.ctx, self._TAG, self._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_MAX_DEPTH_EXCEEDED, res_opt._depth_info.max_depth, self.entity.fetch_object_definition_name())
+                else:
                     proj_def = self.entity.fetch_object_definition(res_opt)
                     proj_directive = ProjectionDirective(res_opt, self, self.entity)
                     proj_ctx = proj_def._construct_projection_context(proj_directive, under)
@@ -179,6 +181,8 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
                     # if we got here because of the max depth, need to impose the directives to make the trait work as expected
                     if res_opt._depth_info.max_depth_exceeded:
+                        logger.warning(self.ctx, self._TAG, self._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_MAX_DEPTH_EXCEEDED, res_opt._depth_info.max_depth, self.entity.fetch_object_definition_name())
+
                         if not arc.res_opt.directives:
                             arc.res_opt.directives = AttributeResolutionDirectiveSet()
                         arc.res_opt.directives.add('referenceOnly')

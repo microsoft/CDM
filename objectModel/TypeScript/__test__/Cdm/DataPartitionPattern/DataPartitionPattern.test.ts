@@ -9,7 +9,7 @@ import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntity
 import { CdmManifestDefinition } from '../../../Cdm/CdmManifestDefinition';
 import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
 import { cdmObjectType } from '../../../Enums/cdmObjectType';
-import { CdmEntityDefinition, cdmIncrementalPartitionType, cdmLogCode, CdmParameterDefinition, CdmTraitDefinition, CdmTraitReference, constants, fileStatusCheckOptions, partitionFileStatusCheckType } from '../../../internal';
+import { CdmEntityDefinition, cdmIncrementalPartitionType, cdmLogCode, CdmParameterDefinition, CdmReadPartitionFromPatternException, CdmTraitDefinition, CdmTraitReference, constants, fileStatusCheckOptions, partitionFileStatusCheckType } from '../../../internal';
 import { CdmFolder } from '../../../Persistence';
 import { resolveContext } from '../../../Utilities/resolveContext';
 import { testHelper } from '../../testHelper';
@@ -18,6 +18,7 @@ import { adlsTestHelper } from '../../adlsTestHelper';
 import { OverrideFetchAllFilesAdapter } from '../../Storage/TestAdapters/OverrideFetchAllFilesAdapter';
 import { NoOverrideAdapter } from '../../Storage/TestAdapters/NoOverrideAdapter';
 import { FetchAllMetadataNullAdapter } from '../../Storage/TestAdapters/FetchAllMetadataNullAdapter';
+import { FetchAllMetadataThrowErrorAdapter } from '../../Storage/TestAdapters/FetchAllMetadataThrowErrorAdapter';
 
 // tslint:disable-next-line: max-func-body-length
 describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
@@ -1005,7 +1006,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             }
 
             if (message.indexOf('StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath') == -1 &&
-                message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPathAsync') == -1) {
+                message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getFileMetadataFromPartitionPathAsync') == -1) {
                 throw new Error('Unexpected error message received');
             }
         }, cdmStatusLevel.warning);
@@ -1114,5 +1115,56 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('manifest.manifest.cdm.json');
         await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+    });
+    
+    /*
+    * Test that error is thrown when FileStatusCheckOption is set
+    */
+    it('TestThrowOnPartitionError', async () => {
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnPartitionFileFetchFailed]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestFetchAllFilesMetadata', undefined, false, expectedLogCodes);
+        const testLocalAdapter: LocalAdapter = corpus.storage.namespaceAdapters.get(corpus.storage.defaultNamespace) as LocalAdapter;
+        corpus.storage.mount("error", new FetchAllMetadataThrowErrorAdapter(testLocalAdapter));
+        const fileStatusCheckOptions: fileStatusCheckOptions = { throwOnPartitionError: true };
+
+        let manifestThrowsError: boolean = false;
+        let entityDecThrowsError: boolean = false;
+        let partitionPatternThrowsError: boolean = false;
+
+        var manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('error:/manifest.manifest.cdm.json');
+
+        try {
+            await manifest.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+        } catch (e) {
+            expect(e instanceof CdmReadPartitionFromPatternException).toBeTruthy();
+            expect(e.innerException).not.toBeUndefined();
+            expect('Some test error message').toBe((e as CdmReadPartitionFromPatternException).innerException.message);
+            manifestThrowsError = true;
+        }
+
+        var entityDec = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+
+        try {
+            await entityDec.fileStatusCheckAsync(partitionFileStatusCheckType.Full, cdmIncrementalPartitionType.None, fileStatusCheckOptions);
+        } catch (e) {
+            expect(e instanceof CdmReadPartitionFromPatternException).toBeTruthy();
+            expect(e.innerException).not.toBeUndefined();
+            expect('Some test error message').toBe((e as CdmReadPartitionFromPatternException).innerException.message);
+            entityDecThrowsError = true;
+        }
+
+        const partitionPattern: CdmDataPartitionPatternDefinition = (manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition).dataPartitionPatterns.allItems[0];
+
+        try {
+            await partitionPattern.fileStatusCheckAsync(fileStatusCheckOptions);
+        } catch (e) {
+            console.log(e.message);
+            expect(e instanceof CdmReadPartitionFromPatternException).toBeTruthy();
+            expect(e.innerException).not.toBeUndefined();
+            expect('Some test error message').toBe((e as CdmReadPartitionFromPatternException).innerException.message);
+            partitionPatternThrowsError = true;
+        }
+
+        expect(manifestThrowsError && entityDecThrowsError && partitionPatternThrowsError).toBeTruthy();
     });
 });

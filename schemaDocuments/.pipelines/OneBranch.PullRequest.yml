@@ -1,0 +1,330 @@
+#################################################################################
+#                      OneBranch Pipelines - PR Build                           #
+# This pipeline was created by EasyStart from a sample located at:              #
+#   https://aka.ms/obpipelines/easystart/samples                                #
+# Documentation:  https://aka.ms/obpipelines                                    #
+# Yaml Schema:    https://aka.ms/obpipelines/yaml/schema                        #
+# Retail Tasks:   https://aka.ms/obpipelines/tasks                              #
+# Support:        https://aka.ms/onebranchsup                                   #
+#################################################################################
+
+trigger: none # https://aka.ms/obpipelines/triggers
+
+schedules:
+- cron: "0 12 * * 0"
+  displayName: Weekly Sunday build
+  branches:
+    include:
+    - develop
+  always: true
+
+parameters: # parameters are shown up in ADO UI in a build queue time
+- name: 'debug'
+  displayName: 'Enable debug output'
+  type: boolean
+  default: false
+
+variables:
+  CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
+  system.debug: ${{ parameters.debug }}
+  ENABLE_PRS_DELAYSIGN: 0
+  ROOT: $(Build.SourcesDirectory)
+  REPOROOT: $(Build.SourcesDirectory)
+  OUTPUTROOT: $(REPOROOT)\out
+  NUGET_XMLDOC_MODE: none
+
+  WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
+
+resources:
+  repositories: 
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+
+extends:
+  template: v2/OneBranch.NonOfficial.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    featureFlags:
+      ensureArtifactsDirExists: true  
+    git:
+      fetchDepth: -1
+      longpaths: true
+      retryCount: 3
+    globalSdl: # https://aka.ms/obpipelines/sdl
+      runmode: buildtime
+      tsa:
+        enabled: true
+      credscan:
+        enabled: true
+      antimalwareScan:
+        enabled: true
+      policheck:
+        enabled: true
+      armory:
+        enabled: false
+      binskim:
+        enabled: true
+      apiscan:
+        enabled: false
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
+      sdtReport:
+        enabled: false
+      publishLogs:
+        enabled: false
+      codeql:
+        compiled: 
+          enabled: true
+        tsaEnabled: true
+      prefast:
+        enabled: false
+      psscriptanalyzer:
+        enabled: false
+
+    stages:
+    - stage: build
+      jobs:
+      - job: main
+        pool:
+          type: windows  # read more about custom job pool types at https://aka.ms/obpipelines/yaml/jobs
+        
+        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
+          ob_outputDirectory: '$(Build.SourcesDirectory)\out' # this directory is uploaded to Pipeline artifacts, VSODrop, \\reddog, and Cloud Vault
+          ob_attachments: report.html,report,VersioningReport\report.html;
+          ob_attachments_condition: eq(variables['SKIPBUILD'], false)
+
+        steps:
+        - checkout: self
+          persistCredentials: True
+
+        - task: DeleteFiles@1
+          displayName: Clean up environment
+          inputs:
+            SourceFolder: $(Build.Repository.LocalPath)
+            Contents: '*'
+        
+        - task: PowerShell@2
+          displayName: Configure git identity
+          inputs:
+            targetType: 'inline'
+            script: |
+              git config --global user.email "cdmditeam-dev@microsoft.com"
+
+              git config --global user.name "Versioning tool"
+        
+        - task: PowerShell@2
+          displayName: Set target and source branches
+          inputs:
+            targetType: 'inline'
+            script: |
+              # sets the SourceBranch
+              #if ("$(System.PullRequest.TargetBranch)" -eq "refs/heads/master") { 
+              # the master branch will only take PR's from develop
+              #   echo "##vso[task.setvariable variable=SourceBranch]develop"
+              #} else {
+
+              $SourceBranch = "$(System.PullRequest.SourceBranch)"
+
+              echo "##vso[task.setvariable variable=SourceBranch]$SourceBranch"
+
+              #}
+              
+              # sets the TargetBranch
+              $TargetBranch = "$(System.PullRequest.TargetBranch)"
+              
+              echo "##vso[task.setvariable variable=TargetBranch]$TargetBranch"
+        
+        - task: PowerShell@2
+          displayName: Clone target branch
+          inputs:
+            targetType: 'inline'
+            script: |
+              git clone https://$(System.AccessToken)@commondatamodel.visualstudio.com/CDM/_git/CDM.SchemaDocuments CDM.SchemaDocuments.Target
+
+              cd CDM.SchemaDocuments.Target
+
+              git fetch origin $(TargetBranch)
+
+              git checkout -b target FETCH_HEAD
+
+              $commit = git rev-parse HEAD
+
+              echo "##vso[task.setvariable variable=TargetHeadCommit]$commit"
+        
+        - task: PowerShell@2
+          displayName: Clone source branch
+          inputs:
+            targetType: 'inline'
+            script: |
+              git clone https://$(System.AccessToken)@commondatamodel.visualstudio.com/CDM/_git/CDM.SchemaDocuments CDM.SchemaDocuments.Source
+
+              cd CDM.SchemaDocuments.Source
+
+              git fetch origin $(SourceBranch)
+
+              git checkout -b versioning FETCH_HEAD
+
+              git pull origin $(TargetBranch)
+
+              Get-Location
+        
+        - task: PowerShell@2
+          displayName: Move sdl files to root
+          inputs:
+            targetType: 'inline'
+            script: |
+              cd CDM.SchemaDocuments.Source
+
+              Copy-Item -Path ".config" -Destination ".." -Recurse
+        
+        - task: PowerShell@2
+          displayName: Check if the rest of tasks should be skipped (aka last commit is submitted by the versioning tool in the same PR)
+          inputs:
+            targetType: 'inline'
+            script: |
+              cd CDM.SchemaDocuments.Source
+
+              Write-Host "##vso[task.setvariable variable=SKIPBUILD;]false"
+
+              if("$(System.PullRequest.TargetBranch)" -eq "refs/heads/master" ) {
+
+                git branch
+
+                echo "Last 1 commits on refs/heads/versioning"
+                
+                git log refs/heads/versioning --pretty=format:"%cn | %s | %cd" -1
+
+                $prevCommitter = git log refs/heads/versioning --pretty=format:"%cn %s" -1
+               
+                if($prevCommitter -eq "Versioning tool Versioning Tool is adding versioned files.") {
+                  Write-Host "##vso[task.setvariable variable=SKIPBUILD;]true"
+                }
+              }
+
+              cd ..
+        
+        - task: PowerShell@2
+          displayName: Print target and source branch names
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            targetType: 'inline'
+            script: |
+              Write-Host $(TargetBranch)
+
+              cd CDM.SchemaDocuments.Target
+
+              git branch
+
+              git rev-parse HEAD
+              
+              cd ..
+
+              Write-Host $(SourceBranch)
+
+              cd CDM.SchemaDocuments.Source
+
+              git branch
+
+              git rev-parse HEAD
+
+              cd ..
+
+              Write-Host $(TargetHeadCommit)
+
+              Write-Host $(Build.Repository.LocalPath)
+
+              Write-Host $(System.PullRequest.PullRequestId)
+        
+        - task: PowerShell@2
+          displayName: Get versioning tool and dependencies
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            targetType: 'inline'
+            script: |
+              git config --system core.longpaths true
+
+              git clone -b master https://$(System.AccessToken)@commondatamodel.visualstudio.com/CDM/_git/CDM.Tools.External
+
+              git clone -b develop https://$(System.AccessToken)@commondatamodel.visualstudio.com/CDM/_git/CDM.ObjectModel
+              
+              cd CDM.ObjectModel/objectModel/CSharp/Microsoft.CommonDataModel.ObjectModel
+
+              # Checks if there is an OM branch with the same name. If so, pull it.
+              $result = git ls-remote --heads https://$(System.AccessToken)@commondatamodel.visualstudio.com/CDM/_git/CDM.ObjectModel $(SourceBranch) | Measure-Object -l
+              
+              echo $result.lines
+              
+              if($result.lines -eq 1){
+                  git pull origin $(SourceBranch)
+              }
+
+              rm Microsoft.CommonDataModel.ObjectModel-github.csproj
+              cd ..
+        
+        - task: NuGetToolInstaller@1
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          displayName: Use NuGet 6.0.0
+          inputs:
+            versionSpec: 6.0.0
+
+        - task: UseDotNet@2
+          displayName: Use .NET 6.0
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            packageType: 'sdk'
+            version: '6.0.x'
+            
+        - task: NuGetAuthenticate@1
+          displayName: NuGet Authenticate
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+
+        - task: NuGetToolInstaller@1
+          displayName: Restore NuGet dependencies
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+
+        - task: DotNetCoreCLI@2
+          displayName: Build versioning tool
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            projects: CDM.Tools.External/schema-versioning-tool/Microsoft.CommonDataModel.ObjectModel.Versioning/*.csproj
+            arguments: -c release
+
+        - task: AzureKeyVault@2
+          displayName: 'Azure Key Vault: Blob Storage Connection String'
+          condition: false #and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            ConnectedServiceName: 70105e6f-38f9-48b5-8121-2b6df26cd153
+            KeyVaultName: CDM-KeyVault
+            SecretsFilter: SchemaBlobStorage
+
+        - task: DotNetCoreCLI@2
+          displayName: Run versioning tool
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            command: run
+            projects: CDM.Tools.External/schema-versioning-tool/Microsoft.CommonDataModel.ObjectModel.Versioning
+            arguments: $(Build.Repository.LocalPath) CDM.SchemaDocuments.Target CDM.SchemaDocuments.Source  "" $(System.PullRequest.PullRequestId) $(TargetHeadCommit)
+        
+        - task: CopyFiles@2
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            SourceFolder: '$(Build.Repository.LocalPath)/VersioningReport/'
+            Contents: '**'
+            TargetFolder: '$(Build.SourcesDirectory)\out\VersioningReport'
+        
+        - task: PowerShell@2
+          displayName: Publish versioned files
+          condition: and(succeeded(), eq(variables['SKIPBUILD'], false))
+          inputs:
+            targetType: inline
+            script: >-
+              cd CDM.SchemaDocuments.Source
+
+              if ("$(TargetBranch)" -eq "refs/heads/master") {
+                  git add .
+              
+                  git commit -m "Versioning Tool is adding versioned files."
+              
+                  git push origin versioning
+              }

@@ -102,11 +102,21 @@ export class LocalAdapter extends StorageAdapterBase {
     }
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
+        const fileMetadata: CdmFileMetadata = await this.fetchFileMetadataAsync(corpusPath);
+
+        if (fileMetadata == undefined) {
+            return undefined;
+        }
+
+        return fileMetadata.lastModifiedTime;
+    }
+
+    public async fetchFileMetadataAsync(corpusPath: string): Promise<CdmFileMetadata> {
         try {
             const adapterPath: string = this.createAdapterPath(corpusPath);
             const stats: fs.Stats = await stat(adapterPath) as fs.Stats;
 
-            return stats.mtime;
+            return { lastModifiedTime: stats.mtime, fileSizeBytes: stats.size };
         } catch (err) {
             return undefined;
         }
@@ -126,7 +136,7 @@ export class LocalAdapter extends StorageAdapterBase {
         for (const fileName of fileNames) {
             const path: string = this.createAdapterPath(fileName);
             const stats: fs.Stats = await stat(path);
-            fileMetadatas.set(fileName, { fileSizeBytes: stats.isFile ? stats.size : undefined });
+            fileMetadatas.set(fileName, { lastModifiedTime: stats.mtime, fileSizeBytes: stats.isFile ? stats.size : undefined });
         }
 
         return fileMetadatas;

@@ -302,6 +302,7 @@ public class ResolveOptions {
     final ResolveOptions resOptCopy = new ResolveOptions();
     resOptCopy.wrtDoc = this.wrtDoc;
     resOptCopy.depthInfo = this.depthInfo.copy();
+    resOptCopy.maxDepth = this.maxDepth;
     resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
     resOptCopy.indexingDoc = this.indexingDoc;
     resOptCopy.shallowValidation = this.shallowValidation;

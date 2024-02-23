@@ -16,4 +16,8 @@ public class CdmStandardsAdapter extends CdmCustomPackageAdapter {
   public CdmStandardsAdapter() throws ClassNotFoundException {
     super("com.microsoft.commondatamodel.cdmstandards.CdmStandards");
   }
+
+  public String fetchConfig() {
+    return "{\"config\":{},\"type\":\"cdm-standards\"}";
+  }
 }

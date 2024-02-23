@@ -114,6 +114,7 @@ class ResolveOptions:
     def copy(self) -> 'ResolveOptions':
         res_opt_copy = ResolveOptions()
         res_opt_copy.wrt_doc = self.wrt_doc
+        res_opt_copy.max_depth = self.max_depth
         res_opt_copy._depth_info = self._depth_info._copy()
         res_opt_copy._in_circular_reference = self._in_circular_reference
         res_opt_copy._localize_references_for = self._localize_references_for

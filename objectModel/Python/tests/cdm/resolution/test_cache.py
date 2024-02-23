@@ -3,6 +3,7 @@
 
 import os
 import unittest
+from cdm.enums import CdmLogCode
 from tests.common import async_test, TestHelper
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 
@@ -13,7 +14,7 @@ class Cache(unittest.TestCase):
 
     @async_test
     async def test_max_depth_cached(self):
-        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, self.test_name_path)
+        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, self.test_name_path, expected_codes=[CdmLogCode.WARN_MAX_DEPTH_EXCEEDED])
         a_ent = await cdm_corpus .fetch_object_async('A.cdm.json/A')
         b_ent = await cdm_corpus .fetch_object_async('B.cdm.json/B')
         c_ent = await cdm_corpus .fetch_object_async('C.cdm.json/C')
@@ -46,7 +47,7 @@ class Cache(unittest.TestCase):
 
     @async_test
     async def test_non_max_depth_cached(self):
-        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, self.test_name_path)
+        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, self.test_name_path, expected_codes=[CdmLogCode.WARN_MAX_DEPTH_EXCEEDED])
         a_ent = await cdm_corpus.fetch_object_async('A.cdm.json/A')
         b_ent = await cdm_corpus.fetch_object_async('B.cdm.json/B')
         c_ent = await cdm_corpus.fetch_object_async('C.cdm.json/C')
