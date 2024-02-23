@@ -138,7 +138,7 @@ describe('Cdm/CdmCorpusDefinition', () => {
         let resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
-        expect(errorCount) 
+        expect(errorCount)
             .toEqual(1);
 
         errorCount = 0;
@@ -156,7 +156,7 @@ describe('Cdm/CdmCorpusDefinition', () => {
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
         resOpt.shallowValidation = true;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
-        expect(errorCount) 
+        expect(errorCount)
             .toEqual(1);
     });
 
@@ -185,5 +185,27 @@ describe('Cdm/CdmCorpusDefinition', () => {
         // this function will fetch the entity inside it
         await corpus.calculateEntityGraphAsync(manifest);
         testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrInvalidCast, true);
+    });
+
+    /**
+     * Test warning correctly logged when max depth is exceeded for Resolution Guidance
+     */
+    it('TestMaxDepthExceededResolutionGuidance', async () => {
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnMaxDepthExceeded]);
+        var corpus = testHelper.getLocalCorpus(testsSubpath, "TestMaxDepthExceededResolutionGuidance", undefined, false, expectedLogCodes);
+        var entity = await corpus.fetchObjectAsync<CdmEntityDefinition>("local:/firstEntity.cdm.json/firstEntity");
+        await entity.createResolvedEntityAsync("resFirstEntity");
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnMaxDepthExceeded, true);
+    });
+
+    /**
+    * Test warning correctly logged when max depth is exceeded for Projections
+    */
+    it('TestMaxDepthExceededProjections', async () => {
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnMaxDepthExceeded]);
+        var corpus = testHelper.getLocalCorpus(testsSubpath, "TestMaxDepthExceededProjections", undefined, false, expectedLogCodes);
+        var entity = await corpus.fetchObjectAsync<CdmEntityDefinition>("local:/A.cdm.json/A");
+        await entity.createResolvedEntityAsync("resA");
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnMaxDepthExceeded, true);
     });
 });

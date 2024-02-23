@@ -166,13 +166,25 @@ public class LocalAdapter extends StorageAdapterBase {
 
   @Override
   public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
+    final CdmFileMetadata fileMetadata = this.fetchFileMetadataAsync(corpusPath).join();
+
+    if (fileMetadata == null) {
+      return CompletableFuture.completedFuture(null);
+    }
+
+    return CompletableFuture.completedFuture(fileMetadata.getLastModifiedTime());
+  }
+
+  @Override
+  public CompletableFuture<CdmFileMetadata> fetchFileMetadataAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
       final Path adapterPath = Paths.get(this.createAdapterPath(corpusPath));
 
       if (Files.exists(adapterPath)) {
         try {
-          return OffsetDateTime
+          final OffsetDateTime lastTime = OffsetDateTime
                   .ofInstant(Files.getLastModifiedTime(adapterPath).toInstant(), ZoneOffset.UTC);
+          return new CdmFileMetadata(lastTime, Files.size(adapterPath));
         } catch (final IOException e) {
           throw new StorageAdapterException(
                   "Failed to get last modified time of file at adapter path " + corpusPath, e);
@@ -225,7 +237,9 @@ public class LocalAdapter extends StorageAdapterBase {
       Path path = Paths.get(this.createAdapterPath(fileName));
       if (Files.exists(path)) {
         try {
-          fileMetadatas.put(fileName, new CdmFileMetadata(Files.size(path)));
+          final OffsetDateTime lastTime = OffsetDateTime
+                  .ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneOffset.UTC);
+          fileMetadatas.put(fileName, new CdmFileMetadata(lastTime, Files.size(path)));
         } catch (IOException e) {
         }
       }

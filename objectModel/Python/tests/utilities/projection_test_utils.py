@@ -82,13 +82,15 @@ class ProjectionTestUtils:
         return resolved_entity
 
     @staticmethod
-    def get_local_corpus(tests_subpath: str, test_name: str) -> 'CdmCorpusDefinition':
+    def get_local_corpus(tests_subpath: str, test_name: str, expected_codes: Optional[set] = None) -> 'CdmCorpusDefinition':
         """Creates a corpus"""
-        corpus = TestHelper.get_local_corpus(tests_subpath, test_name)
+        corpus = TestHelper.get_local_corpus(tests_subpath, test_name, expected_codes=expected_codes)
 
         def callback(level: CdmStatusLevel, message: str):
             last_event = corpus.ctx.events[-1]
             if not last_event.get('code') or last_event['code'] not in ProjectionTestUtils.allowed_logs:
+                if expected_codes is not None and CdmLogCode[last_event['code']] in expected_codes:
+                    return
                 raise Exception(message)
         corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
 

@@ -4,7 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
-import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmException;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 import java.util.ArrayList;

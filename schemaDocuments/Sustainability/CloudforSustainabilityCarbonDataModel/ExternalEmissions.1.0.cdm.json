@@ -1,0 +1,4086 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/core/cdsConcepts.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/Account.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/EmissionFactor.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/FactorMapping.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/Facility.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/OrganizationalUnit.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/PreviewSustainabilityProduct.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/PreviewSustainabilityProductIdentifier.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/Sustainability/CloudforSustainabilitySharedDataModel/Unit.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "EmissionsSource.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "ExternalActivity.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PreviewSustainabilityProductFootprint.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ExternalEmissions",
+      "extendsEntity": "CdmEntity",
+      "displayName": "External Emissions",
+      "description": "Emissions from external sources",
+      "sourceName": "msdyn_externalemission",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Emissions from external sources"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "External Emissions"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "externalemissionId",
+                "sourceName": "msdyn_externalemissionid",
+                "sourceOrdering": 1,
+                "description": "Unique identifier for entity instances",
+                "displayName": "External Emissions",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "External Emissions"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msdyn_externalemissionid"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "TTLInSeconds",
+                "sourceName": "ttlinseconds",
+                "sourceOrdering": 2,
+                "description": "Time to live in seconds.",
+                "displayName": "Time to live",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "integer",
+                "maximumValue": "2147483647",
+                "minimumValue": "1",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Time to live in seconds."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Time to live"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "partitionId",
+                "sourceName": "partitionid",
+                "sourceOrdering": 3,
+                "description": "Logical partition id. A logical partition consists of a set of records with same partition id.",
+                "displayName": "Partition Id",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Logical partition id. A logical partition consists of a set of records with same partition id."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Partition Id"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "createdOn",
+                "sourceName": "createdon",
+                "sourceOrdering": 4,
+                "description": "Date and time when the record was created.",
+                "displayName": "Created On",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Date and time when the record was created."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Created On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "modifiedOn",
+                "sourceName": "modifiedon",
+                "sourceOrdering": 6,
+                "description": "Date and time when the record was modified.",
+                "displayName": "Modified On",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Date and time when the record was modified."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Modified On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "importSequenceNumber",
+                "sourceName": "importsequencenumber",
+                "sourceOrdering": 28,
+                "description": "Sequence number of the import that created this record.",
+                "displayName": "Import Sequence Number",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "integer",
+                "maximumValue": "2147483647",
+                "minimumValue": "-2147483648",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Sequence number of the import that created this record."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Import Sequence Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "overriddenCreatedOn",
+                "sourceName": "overriddencreatedon",
+                "sourceOrdering": 29,
+                "description": "Date and time that the record was migrated.",
+                "displayName": "Record Created On",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "date",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Date and time that the record was migrated."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Record Created On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "name",
+                "sourceName": "msdyn_name",
+                "sourceOrdering": 30,
+                "description": "Name of external emission",
+                "displayName": "Name",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "applicationrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name of external emission"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "account",
+                "sourceName": "msdyn_account",
+                "sourceOrdering": 31,
+                "description": "Lookup to account.",
+                "displayName": "Account",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Account",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "accountId",
+                      "replaceWith": {
+                        "name": "account",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Lookup to account."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Account"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "source",
+                "sourceName": "msdyn_source",
+                "sourceOrdering": 32,
+                "description": "",
+                "displayName": "Source",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "ExternalActivity",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "externalactivityId",
+                      "replaceWith": {
+                        "name": "source",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": []
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Source"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "activity",
+                "sourceName": "msdyn_activity",
+                "sourceOrdering": 33,
+                "description": "Unique identifier of the activity linked to the emission.",
+                "displayName": "Activity",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "255",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier of the activity linked to the emission."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Activity"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "255"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activityentityname",
+                "sourceName": "msdyn_activityentityname",
+                "sourceOrdering": 34,
+                "description": "Activity entity name",
+                "displayName": "Activity entity name",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Activity entity name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Activity entity name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activityid",
+                "sourceName": "msdyn_activityid",
+                "sourceOrdering": 35,
+                "description": "Activity ID",
+                "displayName": "Activity ID",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Activity ID"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Activity ID"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "activityname",
+                "sourceName": "msdyn_activityname",
+                "sourceOrdering": 36,
+                "description": "Category or reference data used for reporting purposes and populated during the calculation process.",
+                "displayName": "Activity type",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "255",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Category or reference data used for reporting purposes and populated during the calculation process."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Activity type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "255"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "actualquantity",
+                "sourceName": "msdyn_actualquantity",
+                "sourceOrdering": 37,
+                "description": "Adjusted activity quantity used for emission calculation.",
+                "displayName": "Adjusted activity quantity",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Adjusted activity quantity used for emission calculation."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Adjusted activity quantity"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "actualquantityunit",
+                "sourceName": "msdyn_actualquantityunit",
+                "sourceOrdering": 38,
+                "description": "Adjusted activity quantity unit used for emission calculation.",
+                "displayName": "Adjusted activity quantity unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "actualquantityunit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Adjusted activity quantity unit used for emission calculation."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Adjusted activity quantity unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "calculationdate",
+                "sourceName": "msdyn_calculationdate",
+                "sourceOrdering": 39,
+                "description": "Date calculation occurred",
+                "displayName": "Calculation date",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "date",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Date calculation occurred"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Calculation date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "category",
+                "sourceName": "msdyn_category",
+                "sourceOrdering": 40,
+                "description": "Scope 3 category number.",
+                "displayName": "Category",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "255",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Scope 3 category number."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Category"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "255"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "ch4",
+                "sourceName": "msdyn_ch4",
+                "sourceOrdering": 41,
+                "description": "The amount of the CH₄ factor.",
+                "displayName": "CH₄",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of the CH₄ factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "CH₄"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "ch4unit",
+                "sourceName": "msdyn_ch4unit",
+                "sourceOrdering": 42,
+                "description": "The unit for the CH₄ amount.",
+                "displayName": "CH₄ unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "ch4unit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "The unit for the CH₄ amount."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "CH₄ unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "co2",
+                "sourceName": "msdyn_co2",
+                "sourceOrdering": 43,
+                "description": "The amount of the CO₂ factor.",
+                "displayName": "CO₂",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of the CO₂ factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "CO₂"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "co2e",
+                "sourceName": "msdyn_co2e",
+                "sourceOrdering": 44,
+                "description": "The amount of the CO₂ equivalent factor.",
+                "displayName": "CO₂E",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of the CO₂ equivalent factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "CO₂E"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "co2emt",
+                "sourceName": "msdyn_co2emt",
+                "sourceOrdering": 45,
+                "description": "The amount of the CO₂ equivalent factor in metric tons.",
+                "displayName": "CO₂E (mt)",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of the CO₂ equivalent factor in metric tons."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "CO₂E (mt)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "co2eunit",
+                "sourceName": "msdyn_co2eunit",
+                "sourceOrdering": 46,
+                "description": "Unique identifier for the unit associated with the emission.",
+                "displayName": "CO₂E unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "co2eunit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Unique identifier for the unit associated with the emission."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "CO₂E unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "co2unit",
+                "sourceName": "msdyn_co2unit",
+                "sourceOrdering": 47,
+                "description": "The unit for the CO₂ factor.",
+                "displayName": "CO₂ unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "co2unit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "The unit for the CO₂ factor."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "CO₂ unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "consumptionenddate",
+                "sourceName": "msdyn_consumptionenddate",
+                "sourceOrdering": 48,
+                "description": "End date of activity consumption.",
+                "displayName": "Consumption end date",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "date",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "applicationrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "End date of activity consumption."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Consumption end date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "consumptionstartdate",
+                "sourceName": "msdyn_consumptionstartdate",
+                "sourceOrdering": 49,
+                "description": "Start date of activity consumption.",
+                "displayName": "Consumption start date",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "date",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "applicationrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Start date of activity consumption."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Consumption start date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "countryisocode",
+                "sourceName": "msdyn_countryisocode",
+                "sourceOrdering": 50,
+                "description": "The three letter ISO code of the country/region.",
+                "displayName": "Country/Region",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "3",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The three letter ISO code of the country/region."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Country/Region"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "3"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "customdimension",
+                "sourceName": "msdyn_customdimension",
+                "sourceOrdering": 51,
+                "description": "Field where Custom Dimension values are stored in JSON format.",
+                "displayName": "Custom Dimension",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "1048576",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Field where Custom Dimension values are stored in JSON format."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Custom Dimension"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "1048576"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "emissionfactor",
+                "sourceName": "msdyn_emissionfactor",
+                "sourceOrdering": 52,
+                "description": "Emission factor through which external emission is calculated",
+                "displayName": "Emission factor",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "EmissionFactor",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "emissionfactorId",
+                      "replaceWith": {
+                        "name": "emissionfactor",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Emission factor through which external emission is calculated"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Emission factor"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "emissionlookup",
+                "sourceName": "msdyn_emissionlookup",
+                "sourceOrdering": 53,
+                "description": "Factor mapping used for emission calculations.",
+                "displayName": "Factor mapping",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "FactorMapping",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "emissionlookupId",
+                      "replaceWith": {
+                        "name": "emissionlookup",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Factor mapping used for emission calculations."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Factor mapping"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "emissionsource",
+                "sourceName": "msdyn_emissionsource",
+                "sourceOrdering": 54,
+                "description": "Emissions Source (Internal)",
+                "displayName": "Emissions Source (Internal)",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "255",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Emissions Source (Internal)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Emissions Source (Internal)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "255"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "emissionsourcev2",
+                "sourceName": "msdyn_emissionsourcev2",
+                "sourceOrdering": 55,
+                "description": "Emissions source reference.",
+                "displayName": "Emissions Source",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "EmissionsSource",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "emissionsourceId",
+                      "replaceWith": {
+                        "name": "emissionsourcev2",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Emissions source reference."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Emissions Source"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "facilityid",
+                "sourceName": "msdyn_facilityid",
+                "sourceOrdering": 56,
+                "description": "Unique identifier for the facility associated with mobile combustion.",
+                "displayName": "Facility",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Facility",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "facilityId",
+                      "replaceWith": {
+                        "name": "facilityid",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Unique identifier for the facility associated with mobile combustion."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Facility"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "hfcs",
+                "sourceName": "msdyn_hfcs",
+                "sourceOrdering": 57,
+                "description": "The amount of hydrofluorocarbons factor.",
+                "displayName": "HFCs",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of hydrofluorocarbons factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "HFCs"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "hfcsunit",
+                "sourceName": "msdyn_hfcsunit",
+                "sourceOrdering": 58,
+                "description": "The unit for the hydrofluorocarbons factor.",
+                "displayName": "HFCs unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "hfcsunit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "The unit for the hydrofluorocarbons factor."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "HFCs unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "isbiogenic",
+                "sourceName": "msdyn_isbiogenic",
+                "sourceOrdering": 59,
+                "description": "Indicates if it is a biogenic emission, or emission from a natural source.",
+                "displayName": "Is biogenic",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Indicates if it is a biogenic emission, or emission from a natural source."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Is biogenic"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "ismarketbased",
+                "sourceName": "msdyn_ismarketbased",
+                "sourceOrdering": 61,
+                "description": "Indicates if emission calculation is market-based or considered a \"net\" calculation.",
+                "displayName": "Is market based",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Indicates if emission calculation is market-based or considered a \"net\" calculation."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Is market based"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "latitude",
+                "sourceName": "msdyn_latitude",
+                "sourceOrdering": 63,
+                "description": "This information can make it easier to submit reports for public disclosure.",
+                "displayName": "Latitude",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "This information can make it easier to submit reports for public disclosure."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Latitude"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "longitude",
+                "sourceName": "msdyn_longitude",
+                "sourceOrdering": 64,
+                "description": "This information can make it easier to submit reports for public disclosure.",
+                "displayName": "Longitude",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "This information can make it easier to submit reports for public disclosure."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Longitude"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "n2o",
+                "sourceName": "msdyn_n2o",
+                "sourceOrdering": 65,
+                "description": "The amount of the N₂O factor.",
+                "displayName": "N₂O",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of the N₂O factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "N₂O"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "n2ounit",
+                "sourceName": "msdyn_n2ounit",
+                "sourceOrdering": 66,
+                "description": "Unique identifier for the unit associated with the emission.",
+                "displayName": "N₂O unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "n2ounit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Unique identifier for the unit associated with the emission."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "N₂O unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "nf3",
+                "sourceName": "msdyn_nf3",
+                "sourceOrdering": 67,
+                "description": "The amount of nitrogen trifluoride factor.",
+                "displayName": "NF₃",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of nitrogen trifluoride factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "NF₃"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "nf3unit",
+                "sourceName": "msdyn_nf3unit",
+                "sourceOrdering": 68,
+                "description": "The unit for the NF₃ factor.",
+                "displayName": "NF₃ unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "nf3unit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "The unit for the NF₃ factor."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "NF₃ unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "organizationalunitid",
+                "sourceName": "msdyn_organizationalunitid",
+                "sourceOrdering": 69,
+                "description": "Unique identifier for the organizational unit associated with the emission.",
+                "displayName": "Organizational unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "OrganizationalUnit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "sustainabilityorganizationalunitId",
+                      "replaceWith": {
+                        "name": "organizationalunitid",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Unique identifier for the organizational unit associated with the emission."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Organizational unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "origincorrelationid",
+                "sourceName": "msdyn_origincorrelationid",
+                "sourceOrdering": 70,
+                "description": "An optional identifier to correlate record with data origin.",
+                "displayName": "Origin correlation ID",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "An optional identifier to correlate record with data origin."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Origin correlation ID"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "otherghgs",
+                "sourceName": "msdyn_otherghgs",
+                "sourceOrdering": 71,
+                "description": "Greenhouse gases associated with emissions that are not allocated in an individual category.",
+                "displayName": "Other GHGs",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Greenhouse gases associated with emissions that are not allocated in an individual category."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Other GHGs"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "otherghgsunit",
+                "sourceName": "msdyn_otherghgsunit",
+                "sourceOrdering": 72,
+                "description": "Unique identifier for the unit associated with the emission.",
+                "displayName": "Other GHGs unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "otherghgsunit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Unique identifier for the unit associated with the emission."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Other GHGs unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "pfcs",
+                "sourceName": "msdyn_pfcs",
+                "sourceOrdering": 73,
+                "description": "The amount of perfluorocarbons factor.",
+                "displayName": "PFCs",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of perfluorocarbons factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "PFCs"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "pfcsunit",
+                "sourceName": "msdyn_pfcsunit",
+                "sourceOrdering": 74,
+                "description": "The unit for the perfluorocarbons factor.",
+                "displayName": "PFCs unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "pfcsunit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "The unit for the perfluorocarbons factor."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "PFCs unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "product",
+                "sourceName": "msdyn_product",
+                "sourceOrdering": 75,
+                "description": "A tangible or intangible item created through manufacturing, design, or development, intended for sale or use.",
+                "displayName": "Product",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "PreviewSustainabilityProduct",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "sustainabilityproductId",
+                      "replaceWith": {
+                        "name": "product",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "A tangible or intangible item created through manufacturing, design, or development, intended for sale or use."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Product"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "productfootprint",
+                "sourceName": "msdyn_productfootprint",
+                "sourceOrdering": 76,
+                "description": "Product footprint",
+                "displayName": "(Preview) Sustainability product footprint",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "PreviewSustainabilityProductFootprint",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "sustainabilityproductfootprintId",
+                      "replaceWith": {
+                        "name": "productfootprint",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Product footprint"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "(Preview) Sustainability product footprint"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "productidentifier",
+                "sourceName": "msdyn_productidentifier",
+                "sourceOrdering": 77,
+                "description": "A unique alphanumeric code or number assigned to a specific product for the purpose of identification, tracking, and inventory management.",
+                "displayName": "Product identifier",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "PreviewSustainabilityProductIdentifier",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "sustainabilityproductidentifierId",
+                      "replaceWith": {
+                        "name": "productidentifier",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "A unique alphanumeric code or number assigned to a specific product for the purpose of identification, tracking, and inventory management."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Product identifier"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "sf6",
+                "sourceName": "msdyn_sf6",
+                "sourceOrdering": 78,
+                "description": "The amount of sulfur hexafluoride factor.",
+                "displayName": "SF₆",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The amount of sulfur hexafluoride factor."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "SF₆"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      },
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sf6unit",
+                "sourceName": "msdyn_sf6unit",
+                "sourceOrdering": 79,
+                "description": "The unit for SF₆ factor.",
+                "displayName": "SF₆ unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Unit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "unitId",
+                      "replaceWith": {
+                        "name": "sf6unit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "The unit for SF₆ factor."
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "SF₆ unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "transactiondate",
+                "sourceName": "msdyn_transactiondate",
+                "sourceOrdering": 80,
+                "description": "Date associated with the actual date when the transaction occurred.",
+                "displayName": "Transaction date",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "date",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Date associated with the actual date when the transaction occurred."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Transaction date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "emissionoriginator",
+                "sourceName": "msdyn_emissionoriginator",
+                "sourceOrdering": 81,
+                "description": "Identifies emission as customer, supplier or other origination",
+                "displayName": "Emission Originator",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Customer",
+                                "178890000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Supplier",
+                                "178890001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Other",
+                                "178890002",
+                                "3"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'emissionoriginator_display' is added to the 'ExternalEmissions' entity to provide the localized display text for the value of the listLookup attribute 'emissionoriginator'",
+                        "name": "emissionoriginator_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "applicationrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Identifies emission as customer, supplier or other origination"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Emission Originator"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "scope",
+                "sourceName": "msdyn_scope",
+                "sourceOrdering": 83,
+                "description": "Emission scope as defined by the Greenhouse Gas Protocol.",
+                "displayName": "Scope",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Scope 1",
+                                "700610000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Scope 2",
+                                "700610001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Scope 3",
+                                "700610002",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Total Emissions",
+                                "700610003",
+                                "4"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'scope_display' is added to the 'ExternalEmissions' entity to provide the localized display text for the value of the listLookup attribute 'scope'",
+                        "name": "scope_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Emission scope as defined by the Greenhouse Gas Protocol."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Scope"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/Sustainability/CloudforSustainabilityCarbonDataModel/ExternalEmissions.1.0.cdm.json/ExternalEmissions/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "documentVersion": "1.0"
+}

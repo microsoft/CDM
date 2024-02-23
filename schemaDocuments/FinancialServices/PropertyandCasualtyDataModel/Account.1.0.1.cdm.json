@@ -1,0 +1,249 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "/core/cdsConcepts.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Account",
+      "extendsEntity": "CdmEntity",
+      "displayName": "Account",
+      "description": "Business that represents a customer or potential customer. The company that is billed in business transactions.",
+      "sourceName": "account",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Business that represents a customer or potential customer. The company that is billed in business transactions."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Account"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "accountId",
+                "sourceName": "accountid",
+                "sourceOrdering": 1,
+                "description": "Unique identifier of the account.",
+                "displayName": "Account",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier of the account."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Account"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "accountid"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msfsi_profiletier",
+                "sourceName": "msfsi_profiletier",
+                "sourceOrdering": 10032,
+                "description": "Internal ranking of the customer based on profitability to the Insurer (high, medium, low).",
+                "displayName": "Profile tier",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "High",
+                                "104800000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Medium",
+                                "104800001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Low",
+                                "104800002",
+                                "3"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'msfsi_profiletier_display' is added to the 'Account' entity to provide the localized display text for the value of the listLookup attribute 'msfsi_profiletier'",
+                        "name": "msfsi_profiletier_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Internal ranking of the customer based on profitability to the Insurer (high, medium, low)."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Profile tier"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/FinancialServices/PropertyandCasualtyDataModel/Account.1.0.1.cdm.json/Account/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "documentVersion": "1.0.1"
+}

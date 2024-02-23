@@ -12,7 +12,9 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import jdk.jshell.spi.ExecutionControlProvider;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -21,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase implements
@@ -252,23 +255,23 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   }
 
   @Override
-  public CompletableFuture<Void> fileStatusCheckAsync() {
+  public CompletableFuture<Void> fileStatusCheckAsync() throws CdmReadPartitionFromPatternException {
     return fileStatusCheckAsync(PartitionFileStatusCheckType.Full);
   }
 
-  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType) {
+  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType) throws CdmReadPartitionFromPatternException {
     return fileStatusCheckAsync(partitionFileStatusCheckType, CdmIncrementalPartitionType.None);
   }
 
-  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType) {
+  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType) throws CdmReadPartitionFromPatternException {
     return fileStatusCheckAsync(partitionFileStatusCheckType, incrementalType, null);
   }
 
-  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType, final FileStatusCheckOptions fileStatusCheckOptions) {
+  public CompletableFuture<Void> fileStatusCheckAsync(final PartitionFileStatusCheckType partitionFileStatusCheckType, final CdmIncrementalPartitionType incrementalType, final FileStatusCheckOptions fileStatusCheckOptions) throws CdmReadPartitionFromPatternException {
     return CompletableFuture.runAsync(() -> {
       StorageAdapterBase adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
       StorageAdapterBase.CacheContext cacheContext = null;
-      if(adapter != null) {
+      if (adapter != null) {
         cacheContext = adapter.createFileQueryCacheContext();
       }
       try {
@@ -295,7 +298,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
               Logger.error(partition.getCtx(), TAG, "fileStatusCheckAsync", partition.getAtCorpusPath(), CdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
                       partition.getClass().getSimpleName(), partition.fetchObjectDefinitionName(), Constants.IncrementalTraitName, "dataPartitions");
             } else {
-              partition.fileStatusCheckAsync().join();
+              partition.fileStatusCheckAsync(fileStatusCheckOptions).join();
             }
           }
         }
@@ -318,10 +321,8 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
 
         reportMostRecentTimeAsync(getLastFileModifiedTime()).join();
-      }
-      finally {
-        if(cacheContext != null)
-        {
+      } finally {
+        if (cacheContext != null) {
           cacheContext.dispose();
         }
       }

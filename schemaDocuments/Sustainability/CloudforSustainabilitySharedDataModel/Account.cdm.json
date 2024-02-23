@@ -1,0 +1,1071 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/core/cdsConcepts.cdm.json"
+    },
+    {
+      "corpusPath": "Industry.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Account",
+      "extendsEntity": "CdmEntity",
+      "displayName": "Account",
+      "description": "Business that represents a customer or potential customer. The company that is billed in business transactions.",
+      "sourceName": "account",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Business that represents a customer or potential customer. The company that is billed in business transactions."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Account"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "accountId",
+                "sourceName": "accountid",
+                "sourceOrdering": 1,
+                "description": "Unique identifier of the account.",
+                "displayName": "Account",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier of the account."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Account"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "accountid"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "accountCategoryCode",
+                "sourceName": "accountcategorycode",
+                "sourceOrdering": 2,
+                "description": "Select a category to indicate whether the customer account is standard or preferred.",
+                "displayName": "Category",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Preferred Customer",
+                                "1",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Standard",
+                                "2",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Supplier",
+                                "192350000",
+                                "3"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'accountCategoryCode_display' is added to the 'Account' entity to provide the localized display text for the value of the listLookup attribute 'accountCategoryCode'",
+                        "name": "accountCategoryCode_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select a category to indicate whether the customer account is standard or preferred."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Category"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "companyname",
+                "sourceName": "msdyn_companyname",
+                "sourceOrdering": 10008,
+                "description": "The name of a supplier",
+                "displayName": "Company Name",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "200",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of a supplier"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Company Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "200"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "industry",
+                "sourceName": "msdyn_industry",
+                "sourceOrdering": 10009,
+                "description": "Industry of the supplier",
+                "displayName": "Industry",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Industry",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "industryId",
+                      "replaceWith": {
+                        "name": "industry",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Industry of the supplier"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Industry"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "reportingstartday",
+                "sourceName": "msdyn_reportingstartday",
+                "sourceOrdering": 10010,
+                "description": "The day on which the supplier's reporting year starts",
+                "displayName": "Reporting start day",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "1",
+                                "700610000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "2",
+                                "700610001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "3",
+                                "700610002",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "4",
+                                "700610003",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "5",
+                                "700610004",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "6",
+                                "700610005",
+                                "6"
+                              ],
+                              [
+                                "en",
+                                "7",
+                                "700610006",
+                                "7"
+                              ],
+                              [
+                                "en",
+                                "8",
+                                "700610007",
+                                "8"
+                              ],
+                              [
+                                "en",
+                                "9",
+                                "700610008",
+                                "9"
+                              ],
+                              [
+                                "en",
+                                "10",
+                                "700610009",
+                                "10"
+                              ],
+                              [
+                                "en",
+                                "11",
+                                "700610010",
+                                "11"
+                              ],
+                              [
+                                "en",
+                                "12",
+                                "700610011",
+                                "12"
+                              ],
+                              [
+                                "en",
+                                "13",
+                                "700610012",
+                                "13"
+                              ],
+                              [
+                                "en",
+                                "14",
+                                "700610013",
+                                "14"
+                              ],
+                              [
+                                "en",
+                                "15",
+                                "700610014",
+                                "15"
+                              ],
+                              [
+                                "en",
+                                "16",
+                                "700610015",
+                                "16"
+                              ],
+                              [
+                                "en",
+                                "17",
+                                "700610016",
+                                "17"
+                              ],
+                              [
+                                "en",
+                                "18",
+                                "700610017",
+                                "18"
+                              ],
+                              [
+                                "en",
+                                "19",
+                                "700610018",
+                                "19"
+                              ],
+                              [
+                                "en",
+                                "20",
+                                "700610019",
+                                "20"
+                              ],
+                              [
+                                "en",
+                                "21",
+                                "700610020",
+                                "21"
+                              ],
+                              [
+                                "en",
+                                "22",
+                                "700610021",
+                                "22"
+                              ],
+                              [
+                                "en",
+                                "23",
+                                "700610022",
+                                "23"
+                              ],
+                              [
+                                "en",
+                                "24",
+                                "700610023",
+                                "24"
+                              ],
+                              [
+                                "en",
+                                "25",
+                                "700610024",
+                                "25"
+                              ],
+                              [
+                                "en",
+                                "26",
+                                "700610025",
+                                "26"
+                              ],
+                              [
+                                "en",
+                                "27",
+                                "700610026",
+                                "27"
+                              ],
+                              [
+                                "en",
+                                "28",
+                                "700610027",
+                                "28"
+                              ],
+                              [
+                                "en",
+                                "29",
+                                "700610028",
+                                "29"
+                              ],
+                              [
+                                "en",
+                                "30",
+                                "700610029",
+                                "30"
+                              ],
+                              [
+                                "en",
+                                "31",
+                                "700610030",
+                                "31"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'reportingstartday_display' is added to the 'Account' entity to provide the localized display text for the value of the listLookup attribute 'reportingstartday'",
+                        "name": "reportingstartday_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The day on which the supplier's reporting year starts"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reporting start day"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "reportingstartmonth",
+                "sourceName": "msdyn_reportingstartmonth",
+                "sourceOrdering": 10012,
+                "description": "The month in which the supplier's reporting year starts",
+                "displayName": "Reporting start month",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "January",
+                                "700610000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "February",
+                                "700610001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "March",
+                                "700610002",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "April",
+                                "700610003",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "May",
+                                "700610004",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "June",
+                                "700610005",
+                                "6"
+                              ],
+                              [
+                                "en",
+                                "July",
+                                "700610006",
+                                "7"
+                              ],
+                              [
+                                "en",
+                                "August",
+                                "700610007",
+                                "8"
+                              ],
+                              [
+                                "en",
+                                "September",
+                                "700610008",
+                                "9"
+                              ],
+                              [
+                                "en",
+                                "October",
+                                "700610009",
+                                "10"
+                              ],
+                              [
+                                "en",
+                                "November",
+                                "700610010",
+                                "11"
+                              ],
+                              [
+                                "en",
+                                "December",
+                                "700610011",
+                                "12"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'reportingstartmonth_display' is added to the 'Account' entity to provide the localized display text for the value of the listLookup attribute 'reportingstartmonth'",
+                        "name": "reportingstartmonth_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The month in which the supplier's reporting year starts"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reporting start month"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "siccode",
+                "sourceName": "msdyn_siccode",
+                "sourceOrdering": 10014,
+                "description": "Standard Industrial Classification code assigned by the US government",
+                "displayName": "SIC Code",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Standard Industrial Classification code assigned by the US government"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "SIC Code"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "suppliertier",
+                "sourceName": "msdyn_suppliertier",
+                "sourceOrdering": 10015,
+                "description": "Tier of Supplier",
+                "displayName": "Supplier Tier",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Tier of Supplier"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Supplier Tier"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "origincorrelationid",
+                "sourceName": "msdyn_origincorrelationid",
+                "sourceOrdering": 10016,
+                "description": "An optional identifier to correlate record with data origin.",
+                "displayName": "Origin correlation ID",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "An optional identifier to correlate record with data origin."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Origin correlation ID"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sustainabilityaccountname",
+                "sourceName": "msdyn_sustainabilityaccountname",
+                "sourceOrdering": 10017,
+                "description": "Unique name of the account, for integration with Sustainability",
+                "displayName": "Sustainability account name",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "200",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique name of the account, for integration with Sustainability"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Sustainability account name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "200"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/Sustainability/CloudforSustainabilitySharedDataModel/Account.cdm.json/Account/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "documentVersion": "1.0"
+}

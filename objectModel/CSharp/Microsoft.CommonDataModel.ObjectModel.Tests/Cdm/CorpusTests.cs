@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
@@ -234,6 +234,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             // this function will fetch the entity inside it
             await corpus.CalculateEntityGraphAsync(manifest);
             TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrInvalidCast, true);
+        }
+
+        /// <summary>
+        /// Test warning correctly logged when max depth is exceeded for Resolution Guidance
+        /// </summary>
+        [TestMethod]
+        public async Task TestMaxDepthExceededResolutionGuidance()
+        {
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnMaxDepthExceeded };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMaxDepthExceededResolutionGuidance", expectedCodes: expectedLogCodes);
+
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/firstEntity.cdm.json/firstEntity");
+            await entity.CreateResolvedEntityAsync("resFirstEntity");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnMaxDepthExceeded, true);
+        }
+
+        /// <summary>
+        /// Test warning correctly logged when max depth is exceeded for Projections
+        /// </summary>
+        [TestMethod]
+        public async Task TestMaxDepthExceededProjections()
+        {
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnMaxDepthExceeded };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMaxDepthExceededProjections", expectedCodes: expectedLogCodes);
+
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/A.cdm.json/A");
+            await entity.CreateResolvedEntityAsync("resA");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnMaxDepthExceeded, true);
         }
     }
 }

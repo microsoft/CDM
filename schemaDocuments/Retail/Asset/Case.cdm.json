@@ -1,0 +1,472 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "/core/cdsConcepts.cdm.json"
+    },
+    {
+      "corpusPath": "CustomerAsset.cdm.json"
+    },
+    {
+      "corpusPath": "Visit.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Case",
+      "extendsEntity": "CdmEntity",
+      "displayName": "Case",
+      "description": "Service request case associated with a contract.",
+      "sourceName": "incident",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Service request case associated with a contract."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Case"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "incidentId",
+                "sourceName": "incidentid",
+                "sourceOrdering": 10000,
+                "description": "Unique identifier of the case.",
+                "displayName": "Case",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier of the case."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Case"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "incidentid"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msrex_CustomerAsset",
+                "sourceName": "msrex_customerasset",
+                "sourceOrdering": 10160,
+                "description": "",
+                "displayName": "Customer Asset",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "CustomerAsset",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "customerassetId",
+                      "replaceWith": {
+                        "name": "msrex_CustomerAsset",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      ""
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Customer Asset"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msrex_PreferredExecutionDate",
+                "sourceName": "msrex_preferredexecutiondate",
+                "sourceOrdering": 10161,
+                "description": "",
+                "displayName": "Preferred Execution Date",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "date",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "recommended"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Preferred Execution Date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msrex_RequestType",
+                "sourceName": "msrex_requesttype",
+                "sourceOrdering": 10162,
+                "description": "",
+                "displayName": "Request Type",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Installation",
+                                "384470000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Repair",
+                                "384470001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Maintenance",
+                                "384470002",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Removal",
+                                "384470003",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Other",
+                                "384470004",
+                                "5"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'msrex_RequestType_display' is added to the 'Case' entity to provide the localized display text for the value of the listLookup attribute 'msrex_RequestType'",
+                        "name": "msrex_RequestType_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Request Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msrex_Visit",
+                "sourceName": "msrex_visit",
+                "sourceOrdering": 10164,
+                "description": "",
+                "displayName": "Visit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Visit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "visitId",
+                      "replaceWith": {
+                        "name": "msrex_Visit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      ""
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Visit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/Retail/Asset/Case.cdm.json/Case/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "documentVersion": "1.0"
+}

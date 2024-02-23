@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Tests.Storage.TestAdapters;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Exceptions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using System;
@@ -830,7 +831,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
                     Assert.AreEqual(statusLevel, CdmStatusLevel.Error, "Error level message should have been reported");
                     Assert.IsTrue(
                         message == "StorageManager | The object path cannot be null or empty. | CreateAbsoluteCorpusPath" ||
-                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetLastModifiedTimeFromPartitionPathAsync",
+                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetFileMetadataFromPartitionPathAsync",
                        "Unexpected error message received");
                 }
             }, CdmStatusLevel.Warning);
@@ -911,7 +912,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             var overrideFetchDataPartitionList = overrideFetchAllManifest.Entities[0].DataPartitions;
             Assert.AreEqual(overrideFetchDataPartitionList.Count, 1);
             var overrideFetchTraitIndex = overrideFetchDataPartitionList[0].ExhibitsTraits.IndexOf("is.partition.size");
-            Assert.AreEqual(overrideFetchTraitIndex , -1);
+            Assert.AreEqual(overrideFetchTraitIndex, -1);
             Assert.AreEqual(overrideFetchDataPartitionList[0].ExhibitsTraits.Count, 1);
 
             // check that error is correctly logged when FetchAllFilesMetadata is misconfigured and returns null
@@ -932,6 +933,65 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
 
             var outOfRangeManifest = await outOfRangeCorpus.FetchObjectAsync<CdmManifestDefinition>("manifest.manifest.cdm.json");
             await outOfRangeManifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+        }
+
+        /// <summary>
+        /// Test that error is thrown when FileStatusCheckOption is set
+        /// </summary>
+        [TestMethod]
+        public async Task TestThrowOnPartitionError()
+        {
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnPartitionFileFetchFailed };
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestFetchAllFilesMetadata), expectedCodes: expectedLogCodes);
+            var testLocalAdapter = (LocalAdapter)corpus.Storage.NamespaceAdapters[corpus.Storage.DefaultNamespace];
+            corpus.Storage.Mount("error", new FetchAllMetadataThrowErrorAdapter(testLocalAdapter));
+            var fileStatusCheckOptions = new FileStatusCheckOptions() { ThrowOnPartitionError = true };
+
+
+            var manifestThrowsError = false;
+            var entityDecThrowsError = false;
+            var partitionPatternThrowsError = false;
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("error:/manifest.manifest.cdm.json");
+
+            try
+            {
+                await manifest.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+            }
+            catch (CdmReadPartitionFromPatternException e)
+            {
+                Assert.IsNotNull(e.InnerException);
+                Assert.AreEqual("Exception of type 'System.Exception' was thrown.", e.InnerException.Message);
+                manifestThrowsError = true;
+            }
+
+            var entityDec = (CdmLocalEntityDeclarationDefinition)manifest.Entities[0];
+
+            try
+            {
+                await entityDec.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+            }
+            catch (CdmReadPartitionFromPatternException e)
+            {
+                Assert.IsNotNull(e.InnerException);
+                Assert.AreEqual("Exception of type 'System.Exception' was thrown.", e.InnerException.Message);
+                entityDecThrowsError = true;
+            }
+            
+            var partitionPattern = ((CdmLocalEntityDeclarationDefinition)manifest.Entities[0]).DataPartitionPatterns[0];
+
+            try
+            {
+                await partitionPattern.FileStatusCheckAsync(fileStatusCheckOptions: fileStatusCheckOptions);
+            }
+            catch (CdmReadPartitionFromPatternException e)
+            {
+                Assert.IsNotNull(e.InnerException);
+                Assert.AreEqual("Exception of type 'System.Exception' was thrown.", e.InnerException.Message);
+                partitionPatternThrowsError = true;
+            }
+
+            Assert.IsTrue(manifestThrowsError && entityDecThrowsError && partitionPatternThrowsError);
         }
     }
 }

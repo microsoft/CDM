@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Cdm;
+using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -30,7 +31,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         [TestMethod]
         public async Task TestMaxDepthCached()
         {
-            CdmCorpusDefinition cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, testPath);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnMaxDepthExceeded };
+            CdmCorpusDefinition cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, testPath, expectedCodes: expectedLogCodes);
             CdmEntityDefinition aEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("A.cdm.json/A");
             CdmEntityDefinition bEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("B.cdm.json/B");
             CdmEntityDefinition cEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("C.cdm.json/C");
@@ -75,7 +77,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         [TestMethod]
         public async Task TestNonMaxDepthCached()
         {
-            CdmCorpusDefinition cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMaxDepth");
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnMaxDepthExceeded };
+            CdmCorpusDefinition cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMaxDepth", expectedCodes: expectedLogCodes);
             CdmEntityDefinition aEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("A.cdm.json/A");
             CdmEntityDefinition bEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("B.cdm.json/B");
             CdmEntityDefinition cEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("C.cdm.json/C");

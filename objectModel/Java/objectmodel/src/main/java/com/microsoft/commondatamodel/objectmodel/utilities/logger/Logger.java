@@ -241,7 +241,10 @@ public class Logger {
     int i = 0;
     for (String x : args) {
       String from = "{" + i + "}";
-      builder = builder.replace(builder.indexOf(from), builder.indexOf(from) + from.length(), x == null ? "" : x);
+      int index = builder.indexOf(from);
+      if (index > -1) {
+        builder = builder.replace(index, index + from.length(), x == null ? "" : x);
+      }
       i++;
     }
     return builder.toString();

@@ -8,5 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public bool IncludeDataPartitionSize { get; set; }
 
         public double? RegexTimeoutSeconds { get; set; }
+        
+        public bool ThrowOnPartitionError { get; set; }
     }
 }

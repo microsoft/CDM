@@ -1,0 +1,1495 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "/core/cdsConcepts.cdm.json"
+    },
+    {
+      "corpusPath": "ActivityCancellationReason.cdm.json"
+    },
+    {
+      "corpusPath": "TaskType.cdm.json"
+    },
+    {
+      "corpusPath": "TaskSetup.cdm.json"
+    },
+    {
+      "corpusPath": "/Retail/Activities/OutletZone.cdm.json"
+    },
+    {
+      "corpusPath": "/Retail/Activities/VisitActivity.cdm.json"
+    },
+    {
+      "corpusPath": "/Retail/SOAClienteling/User.cdm.json"
+    },
+    {
+      "corpusPath": "/core/applicationCommon/Task.cdm.json",
+      "moniker": "base_Task"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Task",
+      "extendsEntity": "base_Task/Task",
+      "displayName": "Task",
+      "description": "Generic activity representing work needed to be done.",
+      "sourceName": "task",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Generic activity representing work needed to be done."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Task"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "activityId",
+                "sourceName": "activityid",
+                "sourceOrdering": 9,
+                "description": "Unique identifier of the task.",
+                "displayName": "Task",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier of the task."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Task"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "activityid"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "statusCode",
+                "sourceName": "statuscode",
+                "sourceOrdering": 27,
+                "description": "Select the task's status.",
+                "displayName": "Status Reason",
+                "isNullable": true,
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "statecode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Not Started",
+                                "2",
+                                "1",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "In Progress",
+                                "3",
+                                "2",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Waiting on someone else",
+                                "4",
+                                "3",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Deferred",
+                                "7",
+                                "4",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Sent for Review",
+                                "547950001",
+                                "5",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "Completed",
+                                "5",
+                                "6",
+                                "6"
+                              ],
+                              [
+                                "en",
+                                "Canceled",
+                                "6",
+                                "7",
+                                "7"
+                              ],
+                              [
+                                "en",
+                                "Reviewed",
+                                "547950002",
+                                "8",
+                                "8"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'statusCode_display' is added to the 'Task' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                        "name": "statusCode_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select the task's status."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_CancellationReason",
+                "sourceName": "msret_cancellationreason",
+                "sourceOrdering": 10003,
+                "description": "Reason for cancelling this task",
+                "displayName": "Cancellation Reason",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "ActivityCancellationReason",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "activityCancellationReasonId",
+                      "replaceWith": {
+                        "name": "msret_CancellationReason",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Reason for cancelling this task"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Cancellation Reason"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_ExecutionActivity",
+                "sourceName": "msret_executionactivity",
+                "sourceOrdering": 10004,
+                "description": "Related Task setup from which was Task created. If empty, Task category is Ad Hoc Task. ",
+                "displayName": "Task setup",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "TaskSetup",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "executionactivityId",
+                      "replaceWith": {
+                        "name": "msret_ExecutionActivity",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Related Task setup from which was Task created. If empty, Task category is Ad Hoc Task. "
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Task setup"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_FollowUpTask",
+                "sourceName": "msret_followuptask",
+                "sourceOrdering": 10005,
+                "description": "",
+                "displayName": "Follow Up Task",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Task",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "activityId",
+                      "replaceWith": {
+                        "name": "msret_FollowUpTask",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      ""
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Follow Up Task"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_Guidelines",
+                "sourceName": "msret_guidelines",
+                "sourceOrdering": 10006,
+                "description": "Guidelines associated to this task",
+                "displayName": "Guidelines",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "10000",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Guidelines associated to this task"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Guidelines"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "10000"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_IsReviewRequired",
+                "sourceName": "msret_isreviewrequired",
+                "sourceOrdering": 10007,
+                "description": "Indicates if task completion requires review or not",
+                "displayName": "Is Review Required",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Indicates if task completion requires review or not"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Is Review Required"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_OutletZone",
+                "sourceName": "msret_outletzone",
+                "sourceOrdering": 10009,
+                "description": "Zone / location inside the retail store",
+                "displayName": "Outlet Zone",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "OutletZone",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "outletzoneId",
+                      "replaceWith": {
+                        "name": "msret_OutletZone",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Zone / location inside the retail store"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Outlet Zone"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_PictureMandatory",
+                "sourceName": "msret_picturemandatory",
+                "sourceOrdering": 10010,
+                "description": "Image must be attached to the task when true",
+                "displayName": "Picture Mandatory",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Image must be attached to the task when true"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Picture Mandatory"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_PreviousUser",
+                "sourceName": "msret_previoususer",
+                "sourceOrdering": 10012,
+                "description": "User who switched the state to \"For review\"",
+                "displayName": "Submitted by",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "User",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "systemUserId",
+                      "replaceWith": {
+                        "name": "msret_PreviousUser",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "User who switched the state to \"For review\""
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Submitted by"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_RetailActivityType",
+                "sourceName": "msret_retailactivitytype",
+                "sourceOrdering": 10013,
+                "description": "Type of task",
+                "displayName": "Type",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "TaskType",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "retailActivityTypeId",
+                      "replaceWith": {
+                        "name": "msret_RetailActivityType",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Type of task"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Type"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_Reviewer",
+                "sourceName": "msret_reviewer",
+                "sourceOrdering": 10014,
+                "description": "Select who reviews the task upon submission ",
+                "displayName": "Reviewer",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "User",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "systemUserId",
+                      "replaceWith": {
+                        "name": "msret_Reviewer",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Select who reviews the task upon submission "
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Reviewer"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_TaskListName",
+                "sourceName": "msret_tasklistname",
+                "sourceOrdering": 10015,
+                "description": "Name of plan from which was task Created",
+                "displayName": "Task List Name",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "string",
+                "maximumLength": "100",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name of plan from which was task Created"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Task List Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_VisitActivity",
+                "sourceName": "msret_visitactivity",
+                "sourceOrdering": 10016,
+                "description": "",
+                "displayName": "Visit Activity",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "VisitActivity",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "visitactivityId",
+                      "replaceWith": {
+                        "name": "msret_VisitActivity",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      ""
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Visit Activity"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_IsPastDue",
+                "sourceName": "msret_ispastdue",
+                "sourceOrdering": 10017,
+                "description": "Indicates if the task is past the due date or not",
+                "displayName": "Is Past Due",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Indicates if the task is past the due date or not"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Is Past Due"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_StatusBreakdown",
+                "sourceName": "msret_statusbreakdown",
+                "sourceOrdering": 10019,
+                "description": "",
+                "displayName": "Status Breakdown",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Completed",
+                                "547950000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Not completed",
+                                "547950002",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Completed + past due",
+                                "547950001",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Not completed + past due",
+                                "547950003",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Canceled",
+                                "547950004",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "Canceled + past due",
+                                "547950005",
+                                "6"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'msret_StatusBreakdown_display' is added to the 'Task' entity to provide the localized display text for the value of the listLookup attribute 'msret_StatusBreakdown'",
+                        "name": "msret_StatusBreakdown_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Breakdown"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_Tasktype",
+                "sourceName": "msret_tasktype",
+                "sourceOrdering": 10021,
+                "description": "Selection for task type",
+                "displayName": "Task category",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Ad-hoc task",
+                                "547950000",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Related task",
+                                "547950001",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Planned task",
+                                "547950002",
+                                "3"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "projections": {
+                  "operations": [
+                    {
+                      "$type": "addSupportingAttribute",
+                      "condition": "virtual",
+                      "supportingAttribute": {
+                        "explanation": "This attribute 'msret_Tasktype_display' is added to the 'Task' entity to provide the localized display text for the value of the listLookup attribute 'msret_Tasktype'",
+                        "name": "msret_Tasktype_display",
+                        "purpose": "hasA",
+                        "dataType": "localizedDisplayText",
+                        "isReadOnly": true
+                      }
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Selection for task type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Task category"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "msret_Today",
+                "sourceName": "msret_today",
+                "sourceOrdering": 10023,
+                "description": "",
+                "displayName": "Today",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Today"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/Retail/SOACommon/Task.cdm.json/Task/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "documentVersion": "1.0"
+}

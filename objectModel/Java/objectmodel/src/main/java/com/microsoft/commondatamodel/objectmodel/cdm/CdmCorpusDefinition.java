@@ -29,16 +29,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageManager;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
-import com.microsoft.commondatamodel.objectmodel.utilities.DocsResult;
-import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
-import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.TelemetryClient;
 
 import java.time.OffsetDateTime;
@@ -1325,6 +1316,19 @@ public class CdmCorpusDefinition {
    * @return A link of CompletableFuture for the completion of entity graph calculation.
    */
   public CompletableFuture<Void> calculateEntityGraphAsync(final CdmManifestDefinition currManifest) {
+    return this.calculateEntityGraphAsync(currManifest, null);
+  }
+
+  /**
+   * Calculates the entity to entity relationships for all the entities present in the manifest and
+   * its sub-manifests.
+   *
+   * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate
+   *                     relationships for.
+   * @param resOpt The resolve options.
+   * @return A link of CompletableFuture for the completion of entity graph calculation.
+   */
+  public CompletableFuture<Void> calculateEntityGraphAsync(final CdmManifestDefinition currManifest, final ResolveOptions resOpt) {
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmCorpusDefinition.class.getSimpleName(), ctx, "calculateEntityGraphAsync")) {
         if (currManifest.getEntities() != null) {
@@ -1349,20 +1353,22 @@ public class CdmCorpusDefinition {
               Set<String> directives = new LinkedHashSet<>();
               directives.add("normalized");
               directives.add("referenceOnly");
-              final ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), new AttributeResolutionDirectiveSet(directives));
+              final ResolveOptions resOptCopy = resOpt != null ? resOpt.copy() : new ResolveOptions();
+              resOptCopy.setWrtDoc(entity.getInDocument());
+              resOptCopy.setDirectives(new AttributeResolutionDirectiveSet(directives));
               final boolean isResolvedEntity = entity.getIsResolved();
 
               // only create a resolved entity if the entity passed in was not a resolved entity
               if (!isResolvedEntity) {
                 // first get the resolved entity so that all of the references are present
-                resEntity = entity.createResolvedEntityAsync("wrtSelf_" + entity.getEntityName(), resOpt).join();
+                resEntity = entity.createResolvedEntityAsync("wrtSelf_" + entity.getEntityName(), resOptCopy).join();
               } else {
                 resEntity = entity;
               }
 
               // find outgoing entity relationships using attribute context
               final ArrayList<CdmE2ERelationship> newOutgoingRelationships =
-                      this.findOutgoingRelationships(resOpt, resEntity, resEntity.getAttributeContext(), isResolvedEntity);
+                      this.findOutgoingRelationships(resOptCopy, resEntity, resEntity.getAttributeContext(), isResolvedEntity);
 
               final ArrayList<CdmE2ERelationship> oldOutgoingRelationships = this.outgoingRelationships.get(entity.getAtCorpusPath());
 
@@ -1443,7 +1449,7 @@ public class CdmCorpusDefinition {
               Logger.error(this.getCtx(), TAG, "calculateEntityGraphAsync", currManifest.getAtCorpusPath(), CdmLogCode.ErrInvalidCast, subManifestDef.getDefinition(), "CdmManifestDefinition");
             }
             if (subManifest != null) {
-              this.calculateEntityGraphAsync(subManifest).join();
+              this.calculateEntityGraphAsync(subManifest, resOpt).join();
             }
           }
         }
@@ -2351,7 +2357,7 @@ public class CdmCorpusDefinition {
         return adapter.computeLastModifiedTimeAsync(path);
       } catch (Exception e) {
         Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrManifestFileModTimeFailure, path, e.getMessage());
-        return null;
+        return CompletableFuture.completedFuture(null);
       }
     } else {
       return getLastModifiedTimeFromObjectAsync(currObject.getInDocument());
@@ -2373,26 +2379,42 @@ public class CdmCorpusDefinition {
    * @return The last modified time
    */
   CompletableFuture<OffsetDateTime> getLastModifiedTimeFromPartitionPathAsync(final String corpusPath) {
+    CdmFileMetadata fileMetadata = this.getFileMetadataFromPartitionPathAsync(corpusPath).join();
+
+    if (fileMetadata == null) {
+      return null;
+    }
+
+    return CompletableFuture.completedFuture(fileMetadata.getLastModifiedTime());
+  }
+
+  /**
+   *
+   * @param corpusPath The corpus path
+   * @return The Cdm File Metadata object
+   */
+  CompletableFuture<CdmFileMetadata> getFileMetadataFromPartitionPathAsync(final String corpusPath) {
     // we do not want to load partitions from file, just check the modified times
     final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
     if (pathTuple == null) {
-      Logger.error(this.ctx, TAG, "getLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPathNullObjectPath);
+      Logger.error(this.ctx, TAG, "getFileMetadataFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPathNullObjectPath);
       return CompletableFuture.completedFuture(null);
     }
     final String nameSpace = pathTuple.getLeft();
 
+    StorageAdapterBase adapter = null;
     if (!StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      final StorageAdapterBase adapter = this.storage.fetchAdapter(nameSpace);
+       adapter = this.storage.fetchAdapter(nameSpace);
+    }
 
-      if (adapter == null) {
-        Logger.error(this.ctx, TAG, "getLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
-        return CompletableFuture.completedFuture(null);
-      }
-      try {
-        return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
-      } catch (Exception e) {
-        Logger.error(this.ctx, TAG, "getLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.getRight(), e.getMessage());
-      }
+    if (adapter == null) {
+      Logger.error(this.ctx, TAG, "getFileMetadataFromPartitionPathAsync", corpusPath, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
+      return CompletableFuture.completedFuture(null);
+    }
+    try {
+      return adapter.fetchFileMetadataAsync(pathTuple.getRight());
+    } catch (Exception e) {
+      Logger.error(this.ctx, TAG, "getFileMetadataFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.getRight(), e.getMessage());
     }
 
     return CompletableFuture.completedFuture(null);

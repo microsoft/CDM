@@ -6,6 +6,8 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import java.time.OffsetDateTime;
 import java.util.concurrent.CompletableFuture;
 
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
+
 public interface CdmFileStatus extends CdmObject {
 
   /**
@@ -36,7 +38,7 @@ public interface CdmFileStatus extends CdmObject {
    * Updates the object and any children with changes made in the document file where it came from.
    * @return OffsetDateTime
    */
-  CompletableFuture<Void> fileStatusCheckAsync();
+  CompletableFuture<Void> fileStatusCheckAsync() throws CdmReadPartitionFromPatternException;
 
   /**
    * Report most recent modified time (of current or children objects) to the parent object.

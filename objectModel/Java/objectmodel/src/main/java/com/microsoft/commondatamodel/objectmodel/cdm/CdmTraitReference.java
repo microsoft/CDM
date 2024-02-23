@@ -10,7 +10,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
-import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmException;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;

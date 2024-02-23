@@ -1,0 +1,304 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "/core/cdsConcepts.cdm.json"
+    },
+    {
+      "corpusPath": "/Retail/Common/Account.cdm.json"
+    },
+    {
+      "corpusPath": "/Retail/SOAClienteling/BusinessUnit.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TargetGroupMember",
+      "extendsEntity": "CdmEntity",
+      "displayName": "Target group member",
+      "description": "This entity defines outlet memberships in many target groups. This allows an outlet to be a member of many target groups. ",
+      "sourceName": "msrex_targetgroupmember",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "This entity defines outlet memberships in many target groups. This allows an outlet to be a member of many target groups. "
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Target group member"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "targetgroupmemberId",
+                "sourceName": "msrex_targetgroupmemberid",
+                "sourceOrdering": 1,
+                "description": "Unique identifier for entity instances",
+                "displayName": "Target group member",
+                "isNullable": false,
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Target group member"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msrex_targetgroupmemberid"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "outlet",
+                "sourceName": "msrex_outlet",
+                "sourceOrdering": 36,
+                "description": "The business unit which is member of the target group",
+                "displayName": "Outlet",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "Account",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "accountId",
+                      "replaceWith": {
+                        "name": "outlet",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "The business unit which is member of the target group"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Outlet"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "msret_BusinessUnit",
+                "sourceName": "msret_businessunit",
+                "sourceOrdering": 42,
+                "description": "Lookup business unit which should be made member of the target group",
+                "displayName": "Business Unit",
+                "isNullable": true,
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "entity": {
+                  "source": "BusinessUnit",
+                  "operations": [
+                    {
+                      "$type": "replaceAsForeignKey",
+                      "condition": "referenceOnly",
+                      "reference": "businessUnitId",
+                      "replaceWith": {
+                        "name": "msret_BusinessUnit",
+                        "dataType": "entityId",
+                        "appliedTraits": [
+                          {
+                            "traitReference": "is.requiredAtLevel",
+                            "arguments": [
+                              {
+                                "name": "level",
+                                "value": "none"
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.describedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Lookup business unit which should be made member of the target group"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.localized.displayedAs",
+                            "arguments": [
+                              {
+                                "entityReference": {
+                                  "entityShape": "localizedTable",
+                                  "constantValues": [
+                                    [
+                                      "en",
+                                      "Business Unit"
+                                    ]
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "traitReference": "is.CDS.lookup",
+                            "arguments": [
+                              {
+                                "name": "style",
+                                "value": "single"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/Retail/SOACommon/TargetGroupMember.cdm.json/TargetGroupMember/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "documentVersion": "1.0"
+}

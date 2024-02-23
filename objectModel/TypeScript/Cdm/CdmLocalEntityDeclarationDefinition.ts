@@ -276,7 +276,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
                         Logger.error(partition.ctx, this.TAG, this.fileStatusCheckAsync.name, partition.atCorpusPath, cdmLogCode.ErrUnexpectedIncrementalPartitionTrait,
                             CdmDataPartitionDefinition.name, partition.fetchObjectDefinitionName(), constants.INCREMENTAL_TRAIT_NAME, 'dataPartitions');
                     } else {
-                        await partition.fileStatusCheckAsync();
+                        await partition.fileStatusCheckAsync(fileStatusCheckOptions);
                     }
                 }
             }

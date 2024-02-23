@@ -10,7 +10,8 @@ import {
     CdmManifestDefinition,
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
-    cdmStatusLevel
+    cdmStatusLevel,
+    resolveOptions
 } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
@@ -124,7 +125,9 @@ describe('Cdm/Resolution/ManifestResolution', () => {
       var corpus = testHelper.getLocalCorpus(testsSubPath, 'TestResolveManifestWithInterdependentPolymorphicSource');
 
       const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync('local:/Input.manifest.cdm.json');
-      const resolvedManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync('resolved', undefined);
+      const resOpt: resolveOptions = new resolveOptions();
+      resOpt.maxDepth = 3;
+      const resolvedManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync('resolved', undefined, undefined, resOpt);
 
       expect(resolvedManifest.entities.length)
         .toBe(2);

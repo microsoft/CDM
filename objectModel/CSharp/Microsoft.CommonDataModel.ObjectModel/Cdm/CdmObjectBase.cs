@@ -7,11 +7,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Persistence;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
 
     public abstract class CdmObjectBase : CdmObject
     {
+        private static readonly string Tag = nameof(CdmObjectBase);
         /// <summary>
         /// The minimum json semantic versions that can be loaded by this ObjectModel version.
         /// </summary>
@@ -353,6 +355,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // if using the cache passes the maxDepth, we cannot use it
             if (rasbCache != null && resOpt.DepthInfo.CurrentDepth + rasbCache.ResolvedAttributeSet.DepthTraveled > resOpt.DepthInfo.MaxDepth)
             {
+                Logger.Warning(ctx, Tag, nameof(FetchResolvedAttributes), this.AtCorpusPath, CdmLogCode.WarnMaxDepthExceeded, resOpt.DepthInfo.MaxDepth?.ToString(), this.FetchObjectDefinitionName());
                 rasbCache = null;
             }
 

@@ -57,7 +57,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._sas_token = None
         self._unescaped_root_sub_path = None  # type: Optional[str]
         self._escaped_root_sub_path = None  # type: Optional[str]
-        self._file_modified_time_cache = {}  # type: Dict[str, datetime]
+        self._file_metadata_cache = {}  # type: Dict[str, CdmFileMetadata]
         self.http_max_results = self.HTTP_DEFAULT_MAX_RESULTS  # type: int
         self.timeout = self.ADLS_DEFAULT_TIMEOUT  # type: int
 
@@ -123,12 +123,20 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         return True
 
     def clear_cache(self) -> None:
-        self._file_modified_time_cache.clear()
+        self._file_metadata_cache.clear()
 
     async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
+        file_metadata = await self.fetch_file_metadata_async(corpus_path)
+
+        if file_metadata is None:
+            return None
+        
+        return file_metadata['last_modified_time']
+
+    async def fetch_file_metadata_async(self, corpus_path: str) -> Optional[CdmFileMetadata]:
         cachedValue = None
         if self._is_cache_enabled:
-            cachedValue = self._file_modified_time_cache.get(corpus_path)
+            cachedValue = self._file_metadata_cache.get(corpus_path)
 
         if cachedValue is not None:
             return cachedValue
@@ -139,10 +147,12 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
             cdm_response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
             if cdm_response.status_code == HTTPStatus.OK:
-                lastTime = dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
-                if lastTime is not None and self._is_cache_enabled:
-                    self._file_modified_time_cache[corpus_path] = lastTime
-                return lastTime
+                file_size = int(cdm_response.response_headers['Content-Length'])
+                last_time = dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
+                file_metadata = { 'last_modified_time': last_time, 'file_size_bytes': file_size }
+                if self._is_cache_enabled:
+                    self._file_metadata_cache[corpus_path] = file_metadata
+                return file_metadata
 
             return None
 
@@ -232,11 +242,13 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
                         filepath = self._format_corpus_path(name_without_root_sub_path)
 
                         content_length = int(path['contentLength'])
-                        results[filepath] = { 'file_size_bytes': content_length }
-
                         lastTimeString = path.get('lastModified')
+
+                        file_metadata = { 'last_modified_time': dateutil.parser.parse(lastTimeString), 'file_size_bytes': content_length }
+                        results[filepath] = file_metadata
+
                         if lastTimeString is not None and self._is_cache_enabled:
-                            self._file_modified_time_cache[filepath] = dateutil.parser.parse(lastTimeString)
+                            self._file_metadata_cache[filepath] = file_metadata
 
             if continuation_token is None:
                 break

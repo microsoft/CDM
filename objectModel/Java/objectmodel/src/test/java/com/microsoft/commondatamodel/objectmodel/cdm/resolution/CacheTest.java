@@ -10,6 +10,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
@@ -25,7 +26,8 @@ public class CacheTest {
      */
     @Test
     public void testMaxDepthCached() throws InterruptedException {
-        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth");
+        final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.WarnMaxDepthExceeded ));
+        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth", null, false, expectedLogCodes);
         CdmEntityDefinition aEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("A.cdm.json/A").join();
         CdmEntityDefinition bEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("B.cdm.json/B").join();
         CdmEntityDefinition cEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("C.cdm.json/C").join();
@@ -68,7 +70,8 @@ public class CacheTest {
      */
     @Test
     public void testNonMaxDepthCached() throws InterruptedException {
-        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth");
+        final HashSet<CdmLogCode> expectedLogCodes = new HashSet<>(Arrays.asList(CdmLogCode.WarnMaxDepthExceeded ));
+        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth", null, false, expectedLogCodes);
         CdmEntityDefinition aEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("A.cdm.json/A").join();
         CdmEntityDefinition bEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("B.cdm.json/B").join();
         CdmEntityDefinition cEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("C.cdm.json/C").join();

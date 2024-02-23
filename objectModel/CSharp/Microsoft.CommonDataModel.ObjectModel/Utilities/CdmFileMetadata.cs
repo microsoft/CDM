@@ -3,8 +3,12 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
+    using System;
+
     public class CdmFileMetadata
     {
         public long? FileSizeBytes { get; set; }
+
+        public DateTimeOffset? LastModifiedTime { get; set; }
     }
 }

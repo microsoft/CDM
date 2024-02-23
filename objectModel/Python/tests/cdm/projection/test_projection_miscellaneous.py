@@ -5,6 +5,7 @@ import os
 import unittest
 
 from cdm.enums import CdmStatusLevel, CdmObjectType
+from cdm.enums import CdmLogCode
 from cdm.objectmodel import CdmCorpusDefinition, CdmEntityAttributeDefinition, CdmEntityDefinition, CdmEntityReference, CdmProjection, CdmTypeAttributeDefinition
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
@@ -169,7 +170,7 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
         test_name = 'test_max_depth_on_polymorphic_entity'
         entity_name = 'A'
 
-        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name, [CdmLogCode.WARN_MAX_DEPTH_EXCEEDED])  # type: CdmCorpusDefinition
 
         entity = await corpus.fetch_object_async('{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
 
@@ -178,7 +179,7 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
         res_entity = await entity.create_resolved_entity_async('resolved-{}'.format(entity_name), res_opt)  # type: CdmEntityDefinition
 
         self.assertIsNotNone(res_entity)
-        self.assertEqual(4, len(res_entity.attributes))
+        self.assertEqual(2, len(res_entity.attributes))
 
     def test_type_attribute_source(self):
         """Tests if setting the projection "source" on a type attribute triggers an error log"""

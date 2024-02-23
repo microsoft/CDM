@@ -43,6 +43,7 @@ export {
     CdmDataPartitionPatternDefinition,
     CdmAttributeContext,
     CdmManifestDefinition,
+    CdmReadPartitionFromPatternException,
     CdmReferencedEntityDeclarationDefinition,
     CdmTypeAttributeDefinition,
     cdmStatusLevel,

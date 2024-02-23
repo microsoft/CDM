@@ -568,6 +568,28 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         await some_doc.save_as_async('someDoc.cdm.json')
         self.assertTrue(uploaded_data_not_accepted_error)
 
+    @async_test
+    @unittest.skipIf(not AdlsTestHelper.is_adls_env_enabled(), "ADLS environment variables not set up")
+    async def test_adls_refreshes_data_partition(self):
+        adls_adapter = AdlsTestHelper.create_adapter_with_shared_key()
+
+        corpus = CdmCorpusDefinition()
+        corpus.storage.mount('adls', adls_adapter)
+        cdmManifest = await corpus.fetch_object_async('adls:/TestPartitionMetadata/partitions.manifest.cdm.json');
+        file_status_check_options = {'include_data_partition_size': True}
+
+        partitionEntity = cdmManifest.entities[0]
+        self.assertEqual(len(partitionEntity.data_partitions), 1)
+        partition = partitionEntity.data_partitions[0]
+
+        await cdmManifest.file_status_check_async(file_status_check_options=file_status_check_options)
+
+        local_trait_index = partition.exhibits_traits.index('is.partition.size')
+        self.assertNotEqual(local_trait_index, -1)
+        local_trait = partition.exhibits_traits[local_trait_index]
+        self.assertEqual(local_trait.named_reference, 'is.partition.size')
+        self.assertEqual(local_trait.arguments[0].value, 2)
+
 
 if __name__ == '__main__':
     unittest.main()

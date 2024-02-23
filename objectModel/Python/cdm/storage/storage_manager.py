@@ -292,13 +292,13 @@ class StorageManager:
 
             configs = None
             # Check whether the config exists.
-            if item.get('config'):
+            if item.get('config') is not None:
                 configs = item['config']
             else:
                 logger.error(self._ctx, self._TAG, StorageManager.mount_from_config.__name__, None, CdmLogCode.ERR_STORAGE_MISSING_JSON_CONFIG, namespace)
                 continue
 
-            if not item.get('type'):
+            if item.get('type') is None:
                 logger.error(self._ctx, self._TAG, StorageManager.mount_from_config.__name__, None, CdmLogCode.ERR_STORAGE_MISSING_TYPE_JSON_CONFIG, namespace)
                 continue
 

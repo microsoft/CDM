@@ -140,14 +140,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public override Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
+        public override async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
+        {
+            var fileMetadata = await this.FetchFileMetadataAsync(corpusPath);
+
+            if (fileMetadata == null)
+            {
+                return null;
+            }
+
+            return fileMetadata.LastModifiedTime;
+        }
+
+        /// <inheritdoc />
+        public override Task<CdmFileMetadata> FetchFileMetadataAsync(string corpusPath)
         {
             var adapterPath = this.CreateAdapterPath(corpusPath);
             FileInfo fileInfo = new FileInfo(adapterPath);
             if (fileInfo.Exists)
-                return Task.FromResult((DateTimeOffset?)fileInfo.LastWriteTimeUtc);
+                return Task.FromResult(new CdmFileMetadata { FileSizeBytes = fileInfo.Length, LastModifiedTime = (DateTimeOffset?)fileInfo.LastWriteTimeUtc});
             else
-                return Task.FromResult<DateTimeOffset?>(null);
+                return Task.FromResult<CdmFileMetadata>(null);
         }
 
         /// <inheritdoc />

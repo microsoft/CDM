@@ -10,15 +10,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.commondatamodel.objectmodel.AdlsTestHelper;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmIncrementalPartitionType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.enums.PartitionFileStatusCheckType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase.CacheContext;
 import com.microsoft.commondatamodel.objectmodel.storage.testAdapters.MockAdlsAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.FileStatusCheckOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
@@ -648,5 +648,31 @@ public class AdlsAdapterTest {
     CdmDocumentDefinition someDoc = adlsFolder.getDocuments().add("someDoc");
     someDoc.saveAsAsync("someDoc.cdm.json").join();
     assertTrue(noFlushErrorHit.get());
+  }
+
+  /**
+   * Tests refreshing data partition gets file size in ADLS
+   */
+  @Test
+  public void testADLSRefreshesDataPartition() throws Exception {
+    AdlsTestHelper.checkADLSEnvironment();
+    final AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithSharedKey();
+
+    final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+    corpus.getStorage().mount("adls", adlsAdapter);
+    final CdmManifestDefinition cdmManifest = corpus.<CdmManifestDefinition>fetchObjectAsync("adls:/TestPartitionMetadata/partitions.manifest.cdm.json").join();
+    final FileStatusCheckOptions fileStatusCheckOptions = new FileStatusCheckOptions(true);
+
+    final CdmEntityDeclarationDefinition partitionEntity = cdmManifest.getEntities().get(0);
+    Assert.assertEquals(partitionEntity.getDataPartitions().size(), 1);
+    final CdmDataPartitionDefinition partition = partitionEntity.getDataPartitions().get(0);
+
+    cdmManifest.fileStatusCheckAsync(PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType.None, fileStatusCheckOptions).join();
+
+    int localTraitIndex = partition.getExhibitsTraits().indexOf("is.partition.size");
+    Assert.assertNotEquals(localTraitIndex, -1);
+    final CdmTraitReference localTrait = (CdmTraitReference) partition.getExhibitsTraits().get(localTraitIndex);
+    Assert.assertEquals(localTrait.getNamedReference(), "is.partition.size");
+    Assert.assertEquals(localTrait.getArguments().get(0).getValue(), (long) 2);
   }
 }

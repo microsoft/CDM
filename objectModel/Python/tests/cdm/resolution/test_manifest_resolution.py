@@ -9,6 +9,7 @@ from cdm.enums import CdmStatusLevel, CdmLogCode, CdmObjectType
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.storage import LocalAdapter
+from cdm.utilities import resolve_options
 
 from tests.common import async_test, TestHelper
 
@@ -101,13 +102,13 @@ class ManifestResolution(unittest.TestCase):
         """
         Test that manifest containing entities having dependency on each other for polymorphic sources resolves.
         """
-        cdm_corpus = CdmCorpusDefinition()
-
-        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolve_manifest_with_interdependent_polymorphic_source')
+        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolve_manifest_with_interdependent_polymorphic_source', expected_codes=[CdmLogCode.WARN_MAX_DEPTH_EXCEEDED])
 
         manifest = await cdm_corpus.fetch_object_async('local:/Input.manifest.cdm.json')
 
-        resolved_manifest = await manifest.create_resolved_manifest_async('resolved', None)
+        res_opt = resolve_options.ResolveOptions()
+        res_opt.max_depth = 3
+        resolved_manifest = await manifest.create_resolved_manifest_async('resolved', None, None, res_opt)
 
         self.assertEqual(2, len(resolved_manifest.entities))
         self.assertEqual('resolved/group.cdm.json/group',

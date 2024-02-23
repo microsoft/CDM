@@ -5,11 +5,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System.Collections.Generic;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public class CdmManifestDefinition : CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus
     {
@@ -175,7 +176,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="newEntityDocumentNameFormat"></param>
         /// <param name="Directives"></param>
         /// <returns></returns>
-        public async Task<CdmManifestDefinition> CreateResolvedManifestAsync(string newManifestName, string newEntityDocumentNameFormat, AttributeResolutionDirectiveSet Directives = null)
+        public async Task<CdmManifestDefinition> CreateResolvedManifestAsync(string newManifestName, string newEntityDocumentNameFormat, AttributeResolutionDirectiveSet Directives = null, ResolveOptions resOpt = null)
         {
             using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(CreateResolvedManifestAsync)))
             {
@@ -294,22 +295,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     // Next create the resolved entity
                     AttributeResolutionDirectiveSet withDirectives = Directives != null ? Directives : this.Ctx.Corpus.DefaultResolutionDirectives;
-                    var resOpt = new ResolveOptions
-                    {
-                        WrtDoc = entDef.InDocument,
-                        Directives = withDirectives?.Copy()
-                    };
+                    var entityResOpt = resOpt != null ? resOpt.Copy() : new ResolveOptions();
+                    entityResOpt.WrtDoc = entDef.InDocument;
+                    entityResOpt.Directives = withDirectives?.Copy();
 
                     Logger.Debug(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, $"resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}");
 
-                    var resolvedEntity = await entDef.CreateResolvedEntityAsync(entDef.EntityName, resOpt, folder, newDocumentName);
+                    var resolvedEntity = await entDef.CreateResolvedEntityAsync(entDef.EntityName, entityResOpt, folder, newDocumentName);
                     if (resolvedEntity == null)
                     {
                         // Fail all resolution, if any one entity resolution fails
                         return null;
                     }
 
-                    var result = entity.Copy(resOpt) as CdmEntityDeclarationDefinition;
+                    var result = entity.Copy(entityResOpt) as CdmEntityDeclarationDefinition;
                     if (result.ObjectType == CdmObjectType.LocalEntityDeclarationDef)
                     {
                         result.EntityPath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(resolvedEntity.AtCorpusPath, resolvedManifest) ?? result.AtCorpusPath;
@@ -321,7 +320,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 Logger.Debug(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, "calculating relationships");
 
                 // calculate the entity graph for just this manifest and any submanifests
-                await this.Ctx.Corpus.CalculateEntityGraphAsync(resolvedManifest);
+                await this.Ctx.Corpus.CalculateEntityGraphAsync(resolvedManifest, resOpt);
                 // stick results into the relationships list for the manifest
                 // only put in relationships that are between the entities that are used in the manifest
                 await resolvedManifest.PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive);
@@ -535,7 +534,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             await this.FileStatusCheckAsync(PartitionFileStatusCheckType.Full);
         }
 
-        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null)
+        public async Task FileStatusCheckAsync(PartitionFileStatusCheckType partitionFileStatusCheckType = PartitionFileStatusCheckType.Full, CdmIncrementalPartitionType incrementalType = CdmIncrementalPartitionType.None, FileStatusCheckOptions fileStatusCheckOptions = null, CancellationToken ct = default)
         {
             using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
@@ -557,13 +556,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     foreach (var entity in this.Entities)
                     {
+                        ct.ThrowIfCancellationRequested();
+
                         if (entity is CdmReferencedEntityDeclarationDefinition)
                         {
                             await entity.FileStatusCheckAsync();
                         }
                         else if (entity is CdmLocalEntityDeclarationDefinition localEntity)
                         {
-                            bool shouldContinue = await localEntity.FileStatusCheckAsyncInternal(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions);
+                            bool shouldContinue = await localEntity.FileStatusCheckAsyncInternal(partitionFileStatusCheckType, incrementalType, fileStatusCheckOptions, ct);
 
                             if (!shouldContinue)
                             {
@@ -574,6 +575,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     foreach (var subManifest in this.SubManifests)
                     {
+                        ct.ThrowIfCancellationRequested();
+
                         await subManifest.FileStatusCheckAsync();
                     }
                 }

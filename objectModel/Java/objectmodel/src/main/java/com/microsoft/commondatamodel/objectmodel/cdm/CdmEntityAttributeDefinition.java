@@ -354,7 +354,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         // A Projection
 
         // if the max depth is exceeded it should not try to execute the projection
-        if (!resOpt.depthInfo.getMaxDepthExceeded()) {
+        if (resOpt.depthInfo.getMaxDepthExceeded()) {
+          Logger.warning(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnMaxDepthExceeded, resOpt.depthInfo.getMaxDepth() != null ? resOpt.depthInfo.getMaxDepth().toString() : "", this.entity.fetchObjectDefinitionName());
+        } else {
           CdmProjection projDef = this.getEntity().fetchObjectDefinition(resOpt);
           ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, this.getEntity());
           ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, under);
@@ -432,6 +434,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
           // if we got here because of the max depth, need to impose the directives to make the trait work as expected
           if (resOpt.depthInfo.getMaxDepthExceeded()) {
+            Logger.warning(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnMaxDepthExceeded, resOpt.depthInfo.getMaxDepth() != null ? resOpt.depthInfo.getMaxDepth().toString() : "", this.entity.fetchObjectDefinitionName());
             if (arc.getResOpt().getDirectives() == null) {
               arc.getResOpt().setDirectives(new AttributeResolutionDirectiveSet());
             }

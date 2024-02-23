@@ -15,6 +15,7 @@ from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmStatusLevel, Cd
 from cdm.objectmodel import CdmContainerDefinition
 from cdm.utilities import AttributeResolutionDirectiveSet, DocsResult, ImportInfo, ResolveOptions, \
     StorageUtils, SymbolSet, logger
+from cdm.utilities.cdm_file_metadata import CdmFileMetadata
 
 from .cdm_attribute_ref import CdmAttributeReference
 from .cdm_corpus_context import CdmCorpusContext
@@ -115,7 +116,7 @@ class CdmCorpusDefinition:
 
         return doc
 
-    async def calculate_entity_graph_async(self, curr_manifest: 'CdmManifestDefinition') -> None:
+    async def calculate_entity_graph_async(self, curr_manifest: 'CdmManifestDefinition', res_opt: Optional['ResolveOptions'] = None) -> None:
         """Calculate the entity to entity relationships for all the entities present in the folder and its sub folder."""
         with logger._enter_scope(self._TAG, self.ctx, self.calculate_entity_graph_async.__name__):
             for entity_dec in curr_manifest.entities:
@@ -132,21 +133,22 @@ class CdmCorpusDefinition:
 
                     res_entity = None  # type: Optional[CdmEntityDefinition]
                     # make options wrt this entity document and "relational" always
-                    res_opt = ResolveOptions(entity.in_document,
-                                             AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'}))
+                    res_opt_copy = res_opt.copy() if res_opt is not None else ResolveOptions()
+                    res_opt_copy.wrt_doc = entity.in_document
+                    res_opt_copy.directives = AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'})
 
                     is_resolved_entity = entity._is_resolved
 
                     # only create a resolved entity if the entity passed in was not a resolved entity
                     if not is_resolved_entity:
                         # first get the resolved entity so that all of the references are present
-                        res_entity = await entity.create_resolved_entity_async('wrtSelf_' + entity.entity_name, res_opt)
+                        res_entity = await entity.create_resolved_entity_async('wrtSelf_' + entity.entity_name, res_opt_copy)
                     else:
                         res_entity = entity
 
                     # find outgoing entity relationships using attribute context
                     new_outgoing_relationships = self._find_outgoing_relationships(
-                        res_opt, res_entity, res_entity.attribute_context, is_resolved_entity)  # type: List[CdmE2ERelationship]
+                        res_opt_copy, res_entity, res_entity.attribute_context, is_resolved_entity)  # type: List[CdmE2ERelationship]
 
                     old_outgoing_relationships = self._outgoing_relationships.get(entity.at_corpus_path)  # type: List[CdmE2ERelationship]
 
@@ -195,7 +197,7 @@ class CdmCorpusDefinition:
                     logger.error(self.ctx, self._TAG, self.calculate_entity_graph_async.__name__, curr_manifest.at_corpus_path,
                                  CdmLogCode.ERR_INVALID_CAST, sub_manifest_def.definition, 'CdmManifestDefinition')
                     continue
-                await self.calculate_entity_graph_async(sub_manifest)
+                await self.calculate_entity_graph_async(sub_manifest, res_opt)
 
     async def create_root_manifest_async(self, corpus_path: str) -> Optional['CdmManifestDefinition']:
         if self._is_path_manifest_document(corpus_path):
@@ -1226,25 +1228,34 @@ class CdmCorpusDefinition:
 
     async def _get_last_modified_time_from_partition_path_async(self, corpus_path: str) -> datetime:
         """Return last modified time of a partition object."""
+        file_metadata = await self._get_file_metadata_from_partition_path_async(corpus_path)
+
+        if file_metadata is None:
+            return None
+
+        return file_metadata['last_modified_time']
+
+    async def _get_file_metadata_from_partition_path_async(self, corpus_path: 'CdmObject') -> CdmFileMetadata:
+        """Gets the file metadata of the partition without trying to read the file itself."""
 
         # We do not want to load partitions from file, just check the modified times.
         path_tuple = StorageUtils.split_namespace_path(corpus_path)
         if not path_tuple:
-            logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_partition_path_async.__name__, corpus_path,
+            logger.error(self.ctx, self._TAG, self._get_file_metadata_from_partition_path_async.__name__, corpus_path,
                          CdmLogCode.ERR_PATH_NULL_OBJECT_PATH)
             return None
         namespace = path_tuple[0]
         if namespace:
             adapter = self.storage.fetch_adapter(namespace)
-            if not adapter:
-                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_partition_path_async.__name__, corpus_path,
-                             CdmLogCode.ERR_ADAPTER_NOT_FOUND, namespace)
-                return None
-            try:
-                return await adapter.compute_last_modified_time_async(path_tuple[1])
-            except Exception as e:
-                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_partition_path_async.__name__, corpus_path,
-                             CdmLogCode.ERR_PARTITION_FILE_MOD_TIME_FAILURE, path_tuple, e)
+        if not adapter:
+            logger.error(self.ctx, self._TAG, self._get_file_metadata_from_partition_path_async.__name__, corpus_path,
+                         CdmLogCode.ERR_ADAPTER_NOT_FOUND, namespace)
+            return None
+        try:
+            return await adapter.fetch_file_metadata_async(path_tuple[1])
+        except Exception as e:
+            logger.error(self.ctx, self._TAG, self._get_file_metadata_from_partition_path_async.__name__, corpus_path,
+                         CdmLogCode.ERR_PARTITION_FILE_MOD_TIME_FAILURE, path_tuple, e)
         return None
 
     @staticmethod

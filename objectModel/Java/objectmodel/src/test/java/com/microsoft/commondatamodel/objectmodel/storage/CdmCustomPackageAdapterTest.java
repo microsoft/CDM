@@ -3,6 +3,11 @@
 
 package com.microsoft.commondatamodel.objectmodel.storage;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -94,4 +99,22 @@ public class CdmCustomPackageAdapterTest {
     String foundations = adapter.readAsync(FOUNDATIONS_FILE_PATH).join();
     Assert.assertNotNull(foundations);
   }
+
+  /**
+   * Test mounting CdmStandards adapter from config does not cause an error
+   */
+  @Test
+  public void testCdmStandardsMountFromConfig() throws ClassNotFoundException {
+    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+
+    corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      Assert.fail(String.format("Unexpected error: %s", message));
+    }, CdmStatusLevel.Warning);
+
+    corpus.getStorage().mountFromConfig("{\"adapters\": [{\"config\": {\"locationHint\": \"\", \"maximumTimeout\": 20000, \"numberOfRetries\": 2, \"root\": \"/logical\", \"timeout\": 5000}, \"namespace\": \"cdm\", \"type\": \"cdm-standards\"}], \"defaultNamespace\": \"local\"}");
+    corpus.getStorage().mount("cdm", new CdmStandardsAdapter());
+    String config = corpus.getStorage().fetchConfig();
+    corpus.getStorage().mountFromConfig(config);
+  }
+
 }

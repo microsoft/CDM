@@ -5,13 +5,14 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.io.File;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 import com.microsoft.commondatamodel.objectmodel.ModelJsonUnitTestLocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.exceptions.CdmReadPartitionFromPatternException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -83,7 +84,7 @@ public class ManifestDefinitionTest {
    * Tests if FileStatusCheckAsync() works properly for manifest loaded from model.json
    */
   @Test
-  public void testModelJsonManifestFileStatusCheckAsync() throws InterruptedException {
+  public void testModelJsonManifestFileStatusCheckAsync() throws CdmReadPartitionFromPatternException, InterruptedException {
     CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonManifestFileStatusCheckAsync");
     ModelJsonUnitTestLocalAdapter modeljsonAdapter = new ModelJsonUnitTestLocalAdapter(((LocalAdapter)corpus.getStorage().getNamespaceAdapters().get("local")).getRoot());
     corpus.getStorage().mount("modeljson", modeljsonAdapter);

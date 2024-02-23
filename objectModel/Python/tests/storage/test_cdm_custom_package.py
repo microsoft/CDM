@@ -5,6 +5,8 @@ import os
 import unittest
 from tests.common import async_test
 
+from cdm.enums import CdmStatusLevel
+from cdm.objectmodel import CdmCorpusDefinition
 from cdm.storage import CdmCustomPackageAdapter
 from cdm.storage import CdmStandardsAdapter
 import commondatamodel_objectmodel_cdmstandards as cdmstandards
@@ -72,3 +74,18 @@ class CdmCustomPackageAdapterTests(unittest.TestCase):
         """Tests if the CdmCustomPackageAdapter works when assembly is passed in the constructor"""
         adapter = CdmCustomPackageAdapter(cdmstandards, 'schema_documents')
         self.assertIsNotNone(await adapter.read_async(self.FOUNDATIONS_FILE_PATH))
+    
+    @async_test
+    async def test_cdmstandards_mount_from_config(self):
+        """Test mounting CdmStandards adapter from config does not cause an error"""
+        corpus = CdmCorpusDefinition()
+
+        def callback(level: CdmStatusLevel, message: str):
+            self.fail()
+
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
+        corpus.storage.mount_from_config("{\"adapters\": [{\"config\": {\"locationHint\": \"\", \"maximumTimeout\": 20000, \"numberOfRetries\": 2, \"root\": \"/logical\", \"timeout\": 5000}, \"namespace\": \"cdm\", \"type\": \"cdm-standards\"}], \"defaultNamespace\": \"local\"}")
+        corpus.storage.mount('cdm', CdmStandardsAdapter())
+        config = corpus.storage.fetch_config()
+        corpus.storage.mount_from_config(config)

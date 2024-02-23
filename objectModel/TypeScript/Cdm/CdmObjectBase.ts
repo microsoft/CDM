@@ -11,6 +11,7 @@ import {
     CdmCorpusDefinition,
     CdmDocumentDefinition,
     CdmEntityReference,
+    cdmLogCode,
     CdmObject,
     CdmObjectDefinition,
     CdmObjectReference,
@@ -23,6 +24,7 @@ import {
     copyOptions,
     isEntityAttributeDefinition,
     isEntityDefinition,
+    Logger,
     resolveContext,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -37,7 +39,6 @@ import {
 } from '../internal';
 import { PersistenceLayer } from '../Persistence';
 import { CdmJsonType } from '../Persistence/CdmFolder/types';
-import { CdmObjectDefinitionBase } from './CdmObjectDefinitionBase';
 
 export abstract class CdmObjectBase implements CdmObject {
 
@@ -423,6 +424,7 @@ export abstract class CdmObjectBase implements CdmObject {
 
             // if using the cache passes the maxDepth, we cannot use it
             if (rasbCache && resOpt.depthInfo.currentDepth + rasbCache.ras.depthTraveled > resOpt.depthInfo.maxDepth) {
+                Logger.warning(ctx, 'CdmObjectBase', this.fetchResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnMaxDepthExceeded, resOpt.depthInfo.maxDepth, this.fetchObjectDefinitionName());
                 rasbCache = undefined;
             }
 

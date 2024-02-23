@@ -64,6 +64,10 @@ class StorageAdapterBase:
         """Return last modified time of specified document."""
         return datetime.datetime.now()
 
+    async def fetch_file_metadata_async(self, corpus_path: str) -> Optional[CdmFileMetadata]:
+        """Returns the file metadata info about the specified document"""
+        return None
+
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
         """Deprecated: Deprecated in favor of fetch_all_files_metadata_async. Return list of corpus paths to all files and folders under the specified corpus path to
         a folder.
@@ -101,3 +105,9 @@ class StorageAdapterBase:
                 self.clear_cache()
         cache_context.dispose = dispose
         return cache_context
+
+    def fetch_config(self):
+        return None
+
+    def update_config(self, config: str) -> None:
+        return
