@@ -7,6 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -291,8 +292,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     var referenceModelIdAsString = referenceModelId.ToString();
                     var referenceModelLocation = referenceModel["location"];
                     var referenceModelLocationAsString = referenceModelLocation.ToString();
-                    referenceModels.Add(referenceModelIdAsString, referenceModelLocationAsString);
-                    referenceEntityLocations.Add(referenceModelLocationAsString, referenceModelIdAsString);
+                    var referenceModelLocationAsStringNormalized = Regex.Replace(referenceModelLocationAsString, @"\\+", "/");
+                    referenceModels.Add(referenceModelIdAsString, referenceModelLocationAsStringNormalized);
+                    referenceEntityLocations.Add(referenceModelLocationAsStringNormalized, referenceModelIdAsString);
                 }
             }
 

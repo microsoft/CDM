@@ -3,6 +3,8 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
+    using System;
+    using System.IO;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,11 +17,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         [TestMethod]
         public void TestCreateAdapterPath()
         {
-            var adapter = new LocalAdapter("C:/some/dir");
+            string rootPath = OperatingSystem.IsWindows() ? "C:\\" : "/";
+            string fullPath = Path.Combine(rootPath, "some", "dir");
+
+            var adapter = new LocalAdapter(fullPath);
             string pathWithLeadingSlash = adapter.CreateAdapterPath("/folder");
             string pathWithoutLeadingSlash = adapter.CreateAdapterPath("folder");
 
-            Assert.AreEqual(pathWithLeadingSlash, "C:\\some\\dir\\folder");
+            string fullPathWithFolder = Path.Combine(fullPath, "folder");
+
+            Assert.AreEqual(pathWithLeadingSlash, fullPathWithFolder);
             Assert.AreEqual(pathWithLeadingSlash, pathWithoutLeadingSlash);
 
             // A null corpus path should return a null adapter path

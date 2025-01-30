@@ -268,7 +268,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipToDifferentNamespace");
 
             // entity B will be in a different namespace
-            corpus.Storage.Mount("differentNamespace", new LocalAdapter($"{TestHelper.GetInputFolderPath(testsSubpath, "TestRelationshipToDifferentNamespace")}\\differentNamespace"));
+            corpus.Storage.Mount("differentNamespace", new LocalAdapter($"{TestHelper.GetInputFolderPath(testsSubpath, "TestRelationshipToDifferentNamespace")}/differentNamespace"));
 
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
 
