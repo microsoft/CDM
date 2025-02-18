@@ -174,7 +174,7 @@ public class CdmHttpClient {
                     final Instant endTime = java.time.Instant.now();
                     Logger.info(ctx, TAG, "sendAsyncHelper",
                             null, Logger.format("Response for request id: {0}, elapsed time: {1} ms, content length: {2}, status code: {3}.",
-                            response.getFirstHeader("x-ms-request-id").getValue(),
+                            response.getFirstHeader("x-ms-request-id") != null ? response.getFirstHeader("x-ms-request-id").getValue() : "",
                             Duration.between(startTime, endTime).toMillis(),
                             response.getEntity() != null ? response.getEntity().getContentLength() : "",
                             response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : ""

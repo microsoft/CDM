@@ -12,11 +12,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Cdm;
 
     [TestClass]
     public class CdmHttpClientTest
     {
         private int requestsExecutionCounter = 0;
+        
+        /// <summary>
+        /// The path between TestDataPath and TestName.
+        /// </summary>
+        private readonly string testsSubpath = "Utilities";
+
+        /// <summary>
+        /// Dummy value used for correlation ID testing.
+        /// </summary>
+        private readonly string DummyCorrelationId = "12345";
+
+        /// <summary>
+        /// Declare a blackhole callback. We're focusing on event recorder, don't care about output going to the standard log stream.
+        /// </summary>
+        private readonly EventCallback eventCallback = new EventCallback
+        {
+            Invoke = (level, message) =>
+            {
+                // NOOP
+            }
+        };
+
 
         private async Task<HttpResponseMessage> CompleteResponseMethod(HttpRequestMessage request, CancellationToken token)
         {
@@ -70,6 +94,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
                 };
 
                 var result = await cdmHttpClient.SendAsync(cdmHttpRequest, null);
+
+                var content = await result.Content.ReadAsStringAsync();
+
+                Assert.AreEqual("REPLY1", content);
+            }
+        }
+
+        /// <summary>
+        /// Testing for a result returned immediatelly when a corpus is defined
+        /// </summary>
+        [TestMethod]
+        public async Task TestResultReturnedFirstTimeWithCorpus()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestHttpClient");
+            corpus.SetEventCallback(eventCallback, CdmStatusLevel.Warning, DummyCorrelationId);
+
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(CompleteResponseMethod)))
+            {
+                var cdmHttpRequest = new CdmHttpRequest("/folder1")
+                {
+                    Timeout = TimeSpan.FromSeconds(5),
+                    MaximumTimeout = TimeSpan.FromSeconds(9)
+                };
+
+                var result = await cdmHttpClient.SendAsync(cdmHttpRequest, null, corpus.Ctx);
 
                 var content = await result.Content.ReadAsStringAsync();
 

@@ -177,7 +177,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                         {
                             contentLength = response.Content.Headers.ContentLength.ToString();
                         }
-                        string adlsRequestId = response?.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+
+                        string adlsRequestId = string.Empty;
+                        if (response?.Content.Headers.Contains("x-ms-request-id") == true)
+                        {
+                            adlsRequestId = response?.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                        }
+                        
                         Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request id: {adlsRequestId}, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms, content length: {contentLength}, status code: {response.StatusCode}.");
                     }
 
