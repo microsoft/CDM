@@ -141,7 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal string UpdateConstantValue(ResolveOptions resOpt, dynamic attReturn, string newValue, dynamic attSearch, string valueSearch, int order)
         {
             string result = null;
-            Func<string, string> action = found => { result = found; return found; };
+            Func<string, string> action = found => { result = newValue; return newValue; };
             this.FindValue(resOpt, attReturn, attSearch, valueSearch, order, action);
             return result;
         }

@@ -41,5 +41,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             // Checks if there is no residue of the transformation of the properties into traits.
             Assert.IsNull(data.AppliedTraits);
         }
+
+        /// <summary>
+        /// Tests if updating the properties description and displayName will persist
+        /// </summary>
+        [TestMethod]
+        public void TestUpdatingDescriptionAndDisplayName()
+        {
+            var corpus = new CdmCorpusDefinition();
+            var entityName = "TheEntity";
+            var description = "entityAttributeDescription";
+            var displayName = "whatABeutifulDisplayName";
+            var inputData = new JObject() 
+            {
+                ["name"] = entityName,
+                ["displayName"] = displayName,
+                ["description"] = description
+            };
+
+            var instance = EntityAttributePersistence.FromData(corpus.Ctx, inputData);
+
+            var newDescription = "newEntityAttributeDescription";
+            var newDisplayName = "anotherBeautifulDisplanyName";
+
+            instance.Description = newDescription;
+            instance.DisplayName = newDisplayName;
+
+            // Make sure the properties got updated on the instance correctly
+            Assert.AreEqual(newDescription, instance.Description);
+            Assert.AreEqual(newDisplayName, instance.DisplayName);
+        }
     }
 }
