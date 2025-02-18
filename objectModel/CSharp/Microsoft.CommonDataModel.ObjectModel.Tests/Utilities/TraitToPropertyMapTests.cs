@@ -103,6 +103,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
         }
 
         /// <summary>
+        /// Test fetching primary key of a resolved entity from an abstract manifest.
+        /// </summary>
+        [TestMethod]
+        public async Task TestFetchAbstractPrimaryKey()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestFetchAbstractPrimaryKey));
+            var doc = await corpus.FetchObjectAsync<CdmDocumentDefinition>("Account.cdm.json");
+
+            if (doc == null)
+            {
+                Assert.Fail($"Unable to load acccount.cdm.json. Please inspect error log for additional details.");
+            }
+
+            var entity = (CdmEntityDefinition)doc.Definitions[0];
+            var resolvedEntity = await entity.CreateResolvedEntityAsync("ResolvedAccount");
+            try
+            {
+                var pk = resolvedEntity.PrimaryKey;
+                Assert.IsNotNull(pk);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail($"Exception occur while reading primary key for entity account. {e.Message}");
+            }
+        }
+
+        /// <summary>
         /// Test setting and getting of data format
         /// </summary>
         [TestMethod]

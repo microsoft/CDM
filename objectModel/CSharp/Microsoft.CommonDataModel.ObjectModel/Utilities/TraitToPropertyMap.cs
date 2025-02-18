@@ -203,7 +203,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                         {
                             return attRef;
                         }
-                        return ((CdmTypeAttributeDefinition)attRef).FetchObjectDefinitionName();
+                        return ((CdmObject)attRef).FetchObjectDefinitionName();
                     }
                     break;
                 case "defaultValue":
